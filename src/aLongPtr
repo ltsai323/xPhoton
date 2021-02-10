@@ -1,2 +1,0 @@
-    Long64_t*   jetFiredTrgs = data.GetPtrLong64("jetFiredTrgs");      
-    Long64_t* phoFiredTrgs = data.GetPtrLong64("phoFiredSingleTrgs");

@@ -1,8 +1,0 @@
-    run     = data.GetInt("run");
-    nVtx = data.GetInt("nVtx");    
-    Int_t    nPho     = data.GetInt("nPho");
-    Int_t nJet = data.GetInt("nJet");
-      metFilters = data.GetInt("metFilters");
-      nMC       = data.GetInt("nMC");
-      nPUInfo = data.GetInt("nPUInfo");
-    Int_t    nEle     = data.GetInt("nEle");

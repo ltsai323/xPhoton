@@ -1,1 +1,0 @@
-    vector<bool> &jetId             = *((vector<bool>*) data.GetPtr("jetPFLooseId"));
