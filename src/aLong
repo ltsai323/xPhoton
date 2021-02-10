@@ -1,0 +1,4 @@
+    event   = data.GetLong64("event"); 
+      HLT = data.GetLong64("HLTPho");
+      HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
+      Long64_t HLTelemu = data.GetLong64("HLTEleMuX");

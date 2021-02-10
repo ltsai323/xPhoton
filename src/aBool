@@ -1,0 +1,2 @@
+    isData = data.GetBool("isData");
+      hasGoodVtx = data.GetBool("hasGoodVtx");
