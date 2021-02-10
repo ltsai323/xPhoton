@@ -1,0 +1,32 @@
+This directory contains files taken from external sources.
+
+---------
+1. rochcor2012*: muon energy scale correction.
+
+Sources and documentation:
+    https://twiki.cern.ch/twiki/bin/viewauth/CMS/RochcorMuon?rev=2
+
+In short,
+    rochcor2012jan22 - newest muon energy scale correction;
+    rochcor2012v2 - previous muon energy scale correction.
+
+---------
+2. photonID_*.xml: photon identification with MVA.
+
+Those weight files are taken on 2014/02/02 from
+    /afs/cern.ch/user/r/rslu/public/photonIDMVA_2014/
+
+Documentation:
+    https://indico.cern.ch/getFile.py/access?contribId=3&resId=0&materialId=slides&confId=298231
+
+---------
+3. PHOSPHOR/*: photon energy scale correction.
+
+Files taken from
+    pcncu1X:/home/poter/CMSSW_5_2_5/src/HiggsToZgamma/MyPhosphorDir
+
+---------
+4. LeptonScaleCorrections.hh: electron energy scale correction.
+
+Taken from Poter's code. Some info is found here:
+    https://twiki.cern.ch/twiki/bin/view/CMS/HtoZgtoELEL?rev=149
