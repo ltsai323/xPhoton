@@ -30,3 +30,14 @@
 *.exe
 *.out
 *.app
+
+*.root
+
+*.pyc
+
+*.png
+*.pdf
+*.jpg
+
+*.swp
+*.swo

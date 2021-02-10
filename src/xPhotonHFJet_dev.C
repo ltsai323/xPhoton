@@ -20,20 +20,21 @@ using namespace std;
 //#include "MuonSelections.h"
 //#include "ElectronSelections.h"
 //#include "puweicalc.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/untuplizer.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/PhotonSelections.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/MuonSelections.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/ElectronSelections.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/puweicalc.h"
-//#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/usefulFuncs.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/src/usefulFuncs.cc"
+#include "/home/ltsai/Work/github/xPhoton/interface/untuplizer.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/PhotonSelections.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/MuonSelections.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/ElectronSelections.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/puweicalc.h"
+//#include "/home/ltsai/Work/github/xPhoton/interface/usefulFuncs.h"
+#include "/home/ltsai/Work/github/xPhoton/src/usefulFuncs.cc"
 
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/logger.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/histMgr.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/readMgr.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/logger.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/histMgr.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/treeMgr.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/readMgr.h"
 
 // you can only load ONE readBrahBrah.h in the analysis.
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/readgganalysis.h"
+#include "/home/ltsai/Work/github/xPhoton/interface/readgganalysis.h"
 
 
 
@@ -298,6 +299,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
     }
 
 
+    treeMgr otree;
+    otree.RegOutputTree("t");
     outtree_ = new TTree("t", "mini tree");
 
 
@@ -477,14 +480,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
     tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
 
 
-    LOG_INFO("total entries %lli \n", data.GetEntriesFast());
+    LOG_INFO("total entries %lli", data.GetEntriesFast());
     // event loop
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) 
     {
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
-        if (ev % 100000 == 0)
-            LOG_INFO( "Processing event %lli of %lli  ( %.3f %% )", ev+1, data.GetEntriesFast(), (ev+1)*100./data.GetEntriesFast());
+        if (ev % 10000 == 0)
+            LOG_CRITICAL( "Processing event %lli of %lli  ( %.3f %% )", ev+1, data.GetEntriesFast(), (ev+1)*100./data.GetEntriesFast());
 
         data.GetEntry(ev);
         run     = data.GetInt("run");
@@ -2028,224 +2031,224 @@ matchingRes mcTruthMatching(readMgr* evtInfo)
     return matchedObj;
 }
 
-void BuildingCandidateFromThisPhoton(readMgr* evtInfo, int selPhoIdx)
-{
-    // NNN = each select first NNN photons
-        {            
-            phoFiredTrgs_ = phoFiredTrgs[selPhoIdx];
-            phoP4.SetPtEtaPhiM(phoEt[selPhoIdx], phoEta[selPhoIdx], phoPhi[selPhoIdx], 0.);
-
-            if(jet_index>=0) 
-            {
-                jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
-                //jetP4.SetPtEtaPhiM(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index],0.);
-                jetPt_ = jetPt[jet_index];
-                jetEta_ = jetEta[jet_index];
-                jetPhi_ = jetPhi[jet_index];
-                jetY_ = jetP4.Rapidity();
-                jetJECUnc_ = jetJECUnc[jet_index];
-                if(isData!=1) 
-                {
-                    TLorentzVector jetGenJetP4;
-                    jetGenJetP4.SetPtEtaPhiE(jetGenJetPt[jet_index], jetGenJetEta[jet_index], jetGenJetPhi[jet_index], jetGenJetEn[jet_index]);   
-                    jetGenJetPt_ = jetGenJetPt[jet_index];
-                    jetGenJetEta_ = jetGenJetEta[jet_index];
-                    jetGenJetPhi_ = jetGenJetPhi[jet_index];
-                    jetGenJetY_ = jetGenJetP4.Rapidity();
-                    jetGenPartonID_ = jetGenPartonID[jet_index];		
-                    //if(jetGenJetPt_ < 0.) printf("event %d, jet Pt %.2f, jet eta %.2f, jet phi %.2f \n", event, jetPt_, jetEta_, jetPhi_);
-                }else 
-                {
-                    jetGenJetPt_ = 0.;
-                    jetGenJetEta_ = 0.;
-                    jetGenJetPhi_ = 0.;
-                    jetGenJetY_ = 0.;
-                    jetGenPartonID_ = 0;
-                }
-            }else
-            {
-                jetPt_=0.;
-                jetEta_=0.;
-                jetPhi_=0.;
-                jetY_=0.;
-                jetJECUnc_=0.;
-                jetGenJetPt_ = 0.;
-                jetGenJetEta_ = 0.;
-                jetGenJetPhi_ = 0.;
-                jetGenJetY_ = 0.;
-                jetGenPartonID_ = 0;
-            }
-            if (hasSubVtxInfo)
-            {
-                jetSubVtxPt_    = jetSubVtxPt   [jet_index];
-                jetSubVtxMass_  = jetSubVtxMass [jet_index];
-                jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
-                jetSubVtx3DErr_ = jetSubVtx3DErr[jet_index];
-                jetSubVtxNtrks_ = jetSubVtxNtrks[jet_index];
-                h_subVtxPt   ->Fill(jetSubVtxPt_   );
-                h_subVtxMass ->Fill(jetSubVtxMass_ );
-                h_subVtx3DVal->Fill(jetSubVtx3DVal_);
-                h_subVtx3DErr->Fill(jetSubVtx3DErr_);
-                h_subVtxNtrks->Fill(jetSubVtxNtrks_);
-            }
-
-            jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
-            jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
-            jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
-            jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
-            jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
-            // jetJetProbabilityBJetTags_ = jetJetProbabilityBJetTags[jet_index];
-            // jetpfCombinedMVAV2BJetTags_ = jetpfCombinedMVAV2BJetTags[jet_index];
-
-
-            jetPartonID_ = jetPartonID[jet_index];
-            jetHadFlvr_ = jetHadFlvr[jet_index];
-
-            //for Z+jet events
-            if((doZmm==1 && nLep_m>=2) || (doZee==1 && nLep_e>=2)) 
-            {
-                if(phoP4.DeltaR(lepP4[0]) < 0.3) continue;
-                if(phoP4.DeltaR(lepP4[1]) < 0.3) continue;
-                if(phoP4.DeltaR(electronP4)>0.3) continue;
-            }
-
-            if(doWmn==1) 
-            {
-                if(isData==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-                else if(truthmatchedObj.isMatched[selPhoIdx]==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-                else hdR_fake_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-
-                //trying other option
-                //if(phoP4.DeltaR(lepP4[0]) > 0.3) continue; //normal for Wgamma Wjets
-                //
-                //if(phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
-                //if(TMath::Abs(phoSCEta[selPhoIdx]>1.556) && phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
-
-                //if(phoP4.DeltaR(lepP4[0]) < 0.4) continue; // <<-- for e* 
-                //if(phoP4.DeltaR(lepP4[0]) <1.0) continue; // <<-- for HZg
-
-                deta_wg = lepP4[0].Eta() - phoEta[selPhoIdx];
-                dphi_wg = deltaPhi(lepP4[0].Phi(), phoPhi[selPhoIdx]);
-            }
-
-            idLoose      = -1;
-            idMedium     = -1;
-            idTight      = -1;
-
-            if(!isData)
-            {
-                isMatched = truthmatchedObj.isMatched[selPhoIdx];
-                isMatchedEle = truthmatchedObj.isMatchedEle[selPhoIdx];
-                isConverted = truthmatchedObj.isConverted[selPhoIdx];
-                pthat_    = pthat;
-                mcPt_     = truthmatchedObj.pt[selPhoIdx];
-                mcEta_    = truthmatchedObj.eta[selPhoIdx];
-                mcPhi_    = truthmatchedObj.phi[selPhoIdx];
-                mcCalIso04_ = truthmatchedObj.calIso04[selPhoIdx];
-                mcTrkIso04_ = truthmatchedObj.trkIso04[selPhoIdx];
-                genHT_ = genHT;
-
-                h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
-                h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
-
-            }else
-            {
-                isMatched = 1;
-                isMatchedEle = 0;
-                isConverted = 0;
-            }
-
-            h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
-            h2_mcPID_mcPt->Fill( phoEt[selPhoIdx], 10.09, xsweight);
-
-            recoPt    = phoEt[selPhoIdx];
-            recoEta   = phoEta[selPhoIdx];
-            recoPhi   = phoPhi[selPhoIdx];
-            recoSCEta = phoSCEta[selPhoIdx];
-            r9        = phoR9[selPhoIdx];
-            eleVeto   = phoEleVeto[selPhoIdx];
-            HoverE    = phoHoverE[selPhoIdx];
-            //sieie     = phoSigmaIEtaIEta[selPhoIdx];
-            phohasPixelSeed_ = phohasPixelSeed[selPhoIdx];
-            chIsoRaw   = phoPFChIso[selPhoIdx];
-            phoIsoRaw  = phoPFPhoIso[selPhoIdx];
-            nhIsoRaw   = phoPFNeuIso[selPhoIdx];
-
-            // sieip      = phoSigmaIEtaIPhi[selPhoIdx];
-            // sipip      = phoSigmaIPhiIPhi[selPhoIdx];
-            // e1x3       = phoE1x3[selPhoIdx];
-            // e2x2       = phoE2x2[selPhoIdx];
-            // e2x5       = phoE2x5Max[selPhoIdx];
-            // e5x5       = phoE5x5[selPhoIdx];
-            rawE       = phoSCRawE[selPhoIdx];
-            scEtaWidth = phoSCEtaWidth[selPhoIdx];
-            scPhiWidth = phoSCPhiWidth[selPhoIdx];
-            esRR       = phoESEffSigmaRR[selPhoIdx];
-            esEn       = phoESEnP1[selPhoIdx] +phoESEnP2[selPhoIdx];//      esEn       = phoESEn[selPhoIdx];
-            chWorstIso = phoPFChWorstIso[selPhoIdx];
-
-            sieieFull5x5     = phoSigmaIEtaIEtaFull5x5[selPhoIdx];
-            sieipFull5x5     = phoSigmaIEtaIPhiFull5x5[selPhoIdx];
-            sipipFull5x5     = phoSigmaIPhiIPhiFull5x5[selPhoIdx];
-            r9Full5x5        = phoR9Full5x5[selPhoIdx];
-            // e1x3Full5x5       = phoE1x3Full5x5[selPhoIdx];
-            e2x2Full5x5       = phoE2x2Full5x5[selPhoIdx];
-            // e2x5Full5x5       = phoE2x5MaxFull5x5[selPhoIdx];
-            e5x5Full5x5       = phoE5x5Full5x5[selPhoIdx];
-            photon_jetID_ = photon_jetID[ii];
-
-            if(isData==1)
-            {
-                // 	SeedTime_ = phoSeedTime[selPhoIdx];
-                SeedEnergy_ = phoSeedEnergy[selPhoIdx];
-                // 	MIPTotEnergy_ = phoMIPTotEnergy[selPhoIdx];
-            }
-            phoIDbit_ = phoIDbit[selPhoIdx];
-
-            HggPresel = 0.;
-            mva = -99.;
-
-            // HggPresel= HggPreselection(data, selPhoIdx, kTRUE);
-            // if(TMath::Abs(phoSCEta[selPhoIdx])<1.5)  	mva = select_photon_mva(data, selPhoIdx, tgr);
-            // else mva = phoIDMVA[selPhoIdx];
-            mva = select_photon_mvanoIso(data, selPhoIdx, tgr);
-
-            photonIDmva = phoIDMVA[selPhoIdx];
-
-            mva_hgg=0.;
-            //mva_hgg = select_photon_mva_hgg(data, i);
-
-            if(isMatched==1)
-            {
-                if(TMath::Abs(phoEta[selPhoIdx])<1.5) h_EB_bdt->Fill(mva);
-                else h_EE_bdt->Fill(mva);
-            }
-
-            if(isData==1 && doWmn==0 && qstar==1 && photonIDmva>0.4 && eleVeto==1 && TMath::Abs(phoSCEta[selPhoIdx])<1.4442 )
-            {
-                //loop jets for photon+jet invarient mass
-                h_phoEt->Fill(phoEt[selPhoIdx]);	
-                TLorentzVector pjP4;//= new TLorentzVector();	  
-                //if(jetP4.Eta()>2.4) continue;
-                //if(jetP4.DeltaR(phoP4)<0.5) continue;
-                //if(TMath::Abs(jetP4.DeltaPhi(phoP4))<1.5) continue;
-                // if( jetCHF[j] > 0. && jetNHF[j] < 0.9 && jetCEF[j] < 0.9 && jetNEF[j] < 0.9 &&
-
-                pjP4 = phoP4;
-                pjP4 += jetP4;
-
-                h_jetPt->Fill(jetP4.Pt());
-                h_pjmass->Fill(pjP4.M());
-                //if(pjP4.M()>3000.) printf("run %d, event %d, phoEt %.1f, jetPt %.1f \n", run, event, phoEt[selPhoIdx], jetP4.Pt());
-                npj++;
-            }
-
-            if(MINITREE==1 ) 	
-            {
-                outtree_->Fill();
-                //if(isData==1 && doWmn==0) break;
-            }
-
-        }
-}
+// void BuildingCandidateFromThisPhoton(readMgr* evtInfo, int selPhoIdx)
+// {
+//     // NNN = each select first NNN photons
+//         {            
+//             phoFiredTrgs_ = phoFiredTrgs[selPhoIdx];
+//             phoP4.SetPtEtaPhiM(phoEt[selPhoIdx], phoEta[selPhoIdx], phoPhi[selPhoIdx], 0.);
+// 
+//             if(jet_index>=0) 
+//             {
+//                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
+//                 //jetP4.SetPtEtaPhiM(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index],0.);
+//                 jetPt_ = jetPt[jet_index];
+//                 jetEta_ = jetEta[jet_index];
+//                 jetPhi_ = jetPhi[jet_index];
+//                 jetY_ = jetP4.Rapidity();
+//                 jetJECUnc_ = jetJECUnc[jet_index];
+//                 if(isData!=1) 
+//                 {
+//                     TLorentzVector jetGenJetP4;
+//                     jetGenJetP4.SetPtEtaPhiE(jetGenJetPt[jet_index], jetGenJetEta[jet_index], jetGenJetPhi[jet_index], jetGenJetEn[jet_index]);   
+//                     jetGenJetPt_ = jetGenJetPt[jet_index];
+//                     jetGenJetEta_ = jetGenJetEta[jet_index];
+//                     jetGenJetPhi_ = jetGenJetPhi[jet_index];
+//                     jetGenJetY_ = jetGenJetP4.Rapidity();
+//                     jetGenPartonID_ = jetGenPartonID[jet_index];		
+//                     //if(jetGenJetPt_ < 0.) printf("event %d, jet Pt %.2f, jet eta %.2f, jet phi %.2f \n", event, jetPt_, jetEta_, jetPhi_);
+//                 }else 
+//                 {
+//                     jetGenJetPt_ = 0.;
+//                     jetGenJetEta_ = 0.;
+//                     jetGenJetPhi_ = 0.;
+//                     jetGenJetY_ = 0.;
+//                     jetGenPartonID_ = 0;
+//                 }
+//             }else
+//             {
+//                 jetPt_=0.;
+//                 jetEta_=0.;
+//                 jetPhi_=0.;
+//                 jetY_=0.;
+//                 jetJECUnc_=0.;
+//                 jetGenJetPt_ = 0.;
+//                 jetGenJetEta_ = 0.;
+//                 jetGenJetPhi_ = 0.;
+//                 jetGenJetY_ = 0.;
+//                 jetGenPartonID_ = 0;
+//             }
+//             if (hasSubVtxInfo)
+//             {
+//                 jetSubVtxPt_    = jetSubVtxPt   [jet_index];
+//                 jetSubVtxMass_  = jetSubVtxMass [jet_index];
+//                 jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
+//                 jetSubVtx3DErr_ = jetSubVtx3DErr[jet_index];
+//                 jetSubVtxNtrks_ = jetSubVtxNtrks[jet_index];
+//                 h_subVtxPt   ->Fill(jetSubVtxPt_   );
+//                 h_subVtxMass ->Fill(jetSubVtxMass_ );
+//                 h_subVtx3DVal->Fill(jetSubVtx3DVal_);
+//                 h_subVtx3DErr->Fill(jetSubVtx3DErr_);
+//                 h_subVtxNtrks->Fill(jetSubVtxNtrks_);
+//             }
+// 
+//             jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
+//             jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
+//             jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
+//             jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
+//             jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
+//             // jetJetProbabilityBJetTags_ = jetJetProbabilityBJetTags[jet_index];
+//             // jetpfCombinedMVAV2BJetTags_ = jetpfCombinedMVAV2BJetTags[jet_index];
+// 
+// 
+//             jetPartonID_ = jetPartonID[jet_index];
+//             jetHadFlvr_ = jetHadFlvr[jet_index];
+// 
+//             //for Z+jet events
+//             if((doZmm==1 && nLep_m>=2) || (doZee==1 && nLep_e>=2)) 
+//             {
+//                 if(phoP4.DeltaR(lepP4[0]) < 0.3) continue;
+//                 if(phoP4.DeltaR(lepP4[1]) < 0.3) continue;
+//                 if(phoP4.DeltaR(electronP4)>0.3) continue;
+//             }
+// 
+//             if(doWmn==1) 
+//             {
+//                 if(isData==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
+//                 else if(truthmatchedObj.isMatched[selPhoIdx]==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
+//                 else hdR_fake_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
+// 
+//                 //trying other option
+//                 //if(phoP4.DeltaR(lepP4[0]) > 0.3) continue; //normal for Wgamma Wjets
+//                 //
+//                 //if(phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
+//                 //if(TMath::Abs(phoSCEta[selPhoIdx]>1.556) && phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
+// 
+//                 //if(phoP4.DeltaR(lepP4[0]) < 0.4) continue; // <<-- for e* 
+//                 //if(phoP4.DeltaR(lepP4[0]) <1.0) continue; // <<-- for HZg
+// 
+//                 deta_wg = lepP4[0].Eta() - phoEta[selPhoIdx];
+//                 dphi_wg = deltaPhi(lepP4[0].Phi(), phoPhi[selPhoIdx]);
+//             }
+// 
+//             idLoose      = -1;
+//             idMedium     = -1;
+//             idTight      = -1;
+// 
+//             if(!isData)
+//             {
+//                 isMatched = truthmatchedObj.isMatched[selPhoIdx];
+//                 isMatchedEle = truthmatchedObj.isMatchedEle[selPhoIdx];
+//                 isConverted = truthmatchedObj.isConverted[selPhoIdx];
+//                 pthat_    = pthat;
+//                 mcPt_     = truthmatchedObj.pt[selPhoIdx];
+//                 mcEta_    = truthmatchedObj.eta[selPhoIdx];
+//                 mcPhi_    = truthmatchedObj.phi[selPhoIdx];
+//                 mcCalIso04_ = truthmatchedObj.calIso04[selPhoIdx];
+//                 mcTrkIso04_ = truthmatchedObj.trkIso04[selPhoIdx];
+//                 genHT_ = genHT;
+// 
+//                 h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
+//                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
+// 
+//             }else
+//             {
+//                 isMatched = 1;
+//                 isMatchedEle = 0;
+//                 isConverted = 0;
+//             }
+// 
+//             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
+//             h2_mcPID_mcPt->Fill( phoEt[selPhoIdx], 10.09, xsweight);
+// 
+//             recoPt    = phoEt[selPhoIdx];
+//             recoEta   = phoEta[selPhoIdx];
+//             recoPhi   = phoPhi[selPhoIdx];
+//             recoSCEta = phoSCEta[selPhoIdx];
+//             r9        = phoR9[selPhoIdx];
+//             eleVeto   = phoEleVeto[selPhoIdx];
+//             HoverE    = phoHoverE[selPhoIdx];
+//             //sieie     = phoSigmaIEtaIEta[selPhoIdx];
+//             phohasPixelSeed_ = phohasPixelSeed[selPhoIdx];
+//             chIsoRaw   = phoPFChIso[selPhoIdx];
+//             phoIsoRaw  = phoPFPhoIso[selPhoIdx];
+//             nhIsoRaw   = phoPFNeuIso[selPhoIdx];
+// 
+//             // sieip      = phoSigmaIEtaIPhi[selPhoIdx];
+//             // sipip      = phoSigmaIPhiIPhi[selPhoIdx];
+//             // e1x3       = phoE1x3[selPhoIdx];
+//             // e2x2       = phoE2x2[selPhoIdx];
+//             // e2x5       = phoE2x5Max[selPhoIdx];
+//             // e5x5       = phoE5x5[selPhoIdx];
+//             rawE       = phoSCRawE[selPhoIdx];
+//             scEtaWidth = phoSCEtaWidth[selPhoIdx];
+//             scPhiWidth = phoSCPhiWidth[selPhoIdx];
+//             esRR       = phoESEffSigmaRR[selPhoIdx];
+//             esEn       = phoESEnP1[selPhoIdx] +phoESEnP2[selPhoIdx];//      esEn       = phoESEn[selPhoIdx];
+//             chWorstIso = phoPFChWorstIso[selPhoIdx];
+// 
+//             sieieFull5x5     = phoSigmaIEtaIEtaFull5x5[selPhoIdx];
+//             sieipFull5x5     = phoSigmaIEtaIPhiFull5x5[selPhoIdx];
+//             sipipFull5x5     = phoSigmaIPhiIPhiFull5x5[selPhoIdx];
+//             r9Full5x5        = phoR9Full5x5[selPhoIdx];
+//             // e1x3Full5x5       = phoE1x3Full5x5[selPhoIdx];
+//             e2x2Full5x5       = phoE2x2Full5x5[selPhoIdx];
+//             // e2x5Full5x5       = phoE2x5MaxFull5x5[selPhoIdx];
+//             e5x5Full5x5       = phoE5x5Full5x5[selPhoIdx];
+//             photon_jetID_ = photon_jetID[ii];
+// 
+//             if(isData==1)
+//             {
+//                 // 	SeedTime_ = phoSeedTime[selPhoIdx];
+//                 SeedEnergy_ = phoSeedEnergy[selPhoIdx];
+//                 // 	MIPTotEnergy_ = phoMIPTotEnergy[selPhoIdx];
+//             }
+//             phoIDbit_ = phoIDbit[selPhoIdx];
+// 
+//             HggPresel = 0.;
+//             mva = -99.;
+// 
+//             // HggPresel= HggPreselection(data, selPhoIdx, kTRUE);
+//             // if(TMath::Abs(phoSCEta[selPhoIdx])<1.5)  	mva = select_photon_mva(data, selPhoIdx, tgr);
+//             // else mva = phoIDMVA[selPhoIdx];
+//             mva = select_photon_mvanoIso(data, selPhoIdx, tgr);
+// 
+//             photonIDmva = phoIDMVA[selPhoIdx];
+// 
+//             mva_hgg=0.;
+//             //mva_hgg = select_photon_mva_hgg(data, i);
+// 
+//             if(isMatched==1)
+//             {
+//                 if(TMath::Abs(phoEta[selPhoIdx])<1.5) h_EB_bdt->Fill(mva);
+//                 else h_EE_bdt->Fill(mva);
+//             }
+// 
+//             if(isData==1 && doWmn==0 && qstar==1 && photonIDmva>0.4 && eleVeto==1 && TMath::Abs(phoSCEta[selPhoIdx])<1.4442 )
+//             {
+//                 //loop jets for photon+jet invarient mass
+//                 h_phoEt->Fill(phoEt[selPhoIdx]);	
+//                 TLorentzVector pjP4;//= new TLorentzVector();	  
+//                 //if(jetP4.Eta()>2.4) continue;
+//                 //if(jetP4.DeltaR(phoP4)<0.5) continue;
+//                 //if(TMath::Abs(jetP4.DeltaPhi(phoP4))<1.5) continue;
+//                 // if( jetCHF[j] > 0. && jetNHF[j] < 0.9 && jetCEF[j] < 0.9 && jetNEF[j] < 0.9 &&
+// 
+//                 pjP4 = phoP4;
+//                 pjP4 += jetP4;
+// 
+//                 h_jetPt->Fill(jetP4.Pt());
+//                 h_pjmass->Fill(pjP4.M());
+//                 //if(pjP4.M()>3000.) printf("run %d, event %d, phoEt %.1f, jetPt %.1f \n", run, event, phoEt[selPhoIdx], jetP4.Pt());
+//                 npj++;
+//             }
+// 
+//             if(MINITREE==1 ) 	
+//             {
+//                 outtree_->Fill();
+//                 //if(isData==1 && doWmn==0) break;
+//             }
+// 
+//         }
+// }
 
