@@ -14,13 +14,13 @@ struct treeMgr
 {
 
 
-    TTree* RegOutputTree(const std::string& name, TDirectory* _dir = nullptr)
+    TTree* NewOutputTreeBuilding(const std::string& name)
     {
-        LOG_INFO( "In directory %s constructs tree in name : %s", _dir ? _dir->GetName() : "current directory", name.c_str() );
-        if ( _dir ) _dir->cd();
+
+        LOG_CRITICAL( "Building new tree %s", name.c_str() );
         t = new TTree( name.c_str(), name.c_str() );
 
-        LOG_INFO("Building format of output tree");
+        LOG_INFO("Register format of output tree");
         t->Branch("run",&run,"run/I");
         t->Branch("event",&event,"event/L");
         t->Branch("isData",&isData,"isData/O");
@@ -133,11 +133,18 @@ struct treeMgr
         LOG_DEBUG("filling output tree event");
         t->Fill();
     }
-    void Clean()
-    { TTree* _t = t; memset((treeMgr*)this, 0x0, sizeof(treeMgr)); t = _t; }
+    void Clean() { TTree* _t = t; memset((treeMgr*)this, 0x0, sizeof(treeMgr)); t = _t; }
+    void WriteTo(TDirectory* dir = nullptr )
+    {
+        if ( dir ) dir->cd();
+        LOG_INFO( "write tree %s In directory %s", t->GetName(), dir ? dir->GetName() : "current directory" );
+        t->Write();
+    }
+    void Delete(){ if (t) delete t; t=nullptr;  }
 
     explicit treeMgr() { Clean(); }
-    virtual ~treeMgr() { t->Write(); delete t; t = nullptr; }
+    virtual ~treeMgr() {}
+
 
     TTree* t;
 

@@ -299,8 +299,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
     }
 
 
+    TDirectory* hdir = (TDirectory*) fout_->mkdir("hists");
     treeMgr otree;
-    otree.RegOutputTree("t");
+    otree.NewOutputTreeBuilding("TTt");
     outtree_ = new TTree("t", "mini tree");
 
 
@@ -487,7 +488,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         if (ev % 10000 == 0)
+        {
             LOG_CRITICAL( "Processing event %lli of %lli  ( %.3f %% )", ev+1, data.GetEntriesFast(), (ev+1)*100./data.GetEntriesFast());
+            break;
+        }
 
         data.GetEntry(ev);
         run     = data.GetInt("run");
@@ -1630,7 +1634,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
     }
 
     fout_->cd();
-    // outtree_->Write();
+    outtree_->Write();
+
+    // write histos section {{{
 //    h_subVtxPt   ->Write();
 //    h_subVtxMass ->Write();
 //    h_subVtx3DVal->Write();
@@ -1742,8 +1748,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
 //    h_EESeedTimeW->Write();
 //
 //    h2_mcPID_mcPt->Write();
+//    write histos section end }}}
 
-    histMgr::WriteAll();
+    histMgr::WriteTo(hdir);
+    otree.WriteTo(fout_);
+    
+    
     // histMgr::ClearAll();
     fout_->Close();
 
