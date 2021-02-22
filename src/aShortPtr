@@ -1,2 +1,0 @@
-      mcStatus = data.GetPtrShort("mcStatusFlag");
-    Short_t* phoIDbit = data.GetPtrShort("phoIDbit");

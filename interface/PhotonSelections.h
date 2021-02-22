@@ -1,3 +1,5 @@
+#ifndef photonpreselection
+#define photonpreselection
 #include <TMath.h>
 #include <TMVA/Reader.h>
 /* #include <TRandom3.h> */
@@ -540,3 +542,4 @@ float select_photon_mva_hgg(TreeReader &data, Int_t i) {
   return tmvaReader[iBE]->EvaluateMVA("BDT");
 
 }
+#endif

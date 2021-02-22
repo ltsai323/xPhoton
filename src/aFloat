@@ -1,6 +1,0 @@
-      pthat     = data.GetFloat("pthat");
-      genHT = data.GetFloat("genHT");
-      genWeight = data.GetFloat("genWeight");      
-    Float_t pfMET = data.GetFloat("pfMET");
-    Float_t pfMETPhi = data.GetFloat("pfMETPhi");
-    rho                 = data.GetFloat("rho");

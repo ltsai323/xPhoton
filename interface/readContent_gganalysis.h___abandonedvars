@@ -1,0 +1,12 @@
+        t->Branch("sieie",        &sieie,        "sieie/F"); // disabled
+        t->Branch("sieip",        &sieip,        "sieip/F"); // disabled
+        t->Branch("sipip",        &sipip,        "sipip/F"); // disabled
+        t->Branch("chIso",        &chIso,        "chIso/F"); // decalred but not used in any region
+        t->Branch("phoIso",       &phoIso,       "phoIso/F"); // decalred but not used in any region
+        t->Branch("e1x3",         &e1x3,         "e1x3/F"); // disabled
+        t->Branch("e2x2",         &e2x2,         "e2x2/F"); // disabled
+        t->Branch("e2x5",         &e2x5,         "e2x5/F"); // disabled
+        t->Branch("e5x5",         &e5x5,         "e5x5/F"); // disabled
+        t->Branch("HggPresel",    &HggPresel,    "HggPresel/I");  // disabled
+        t->Branch("e1x3Full5x5",        &e1x3Full5x5,        "e1x3Full5x5/F"); // disabled
+        t->Branch("e2x5Full5x5",        &e2x5Full5x5,        "e2x5Full5x5/F"); // disabled
