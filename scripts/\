@@ -1,0 +1,126 @@
+#!/usr/bin/env python2
+import ROOT
+from types import MethodType
+import os
+from Managers.LogMgr import GetLogger
+logger=GetLogger(__name__)
+from Managers.AdditionalFunctionMgr import ImportAddFunc
+
+class RooFitSpaceMgr(object):
+    def __init__(self, workspace):
+        self._space=workspace
+        self._savedObj=[]
+        self._additionalInfo=ImportAddFunc()
+    def duplicateCheck(self, newobj):
+        for storedobj in self._savedObj:
+            if newobj.GetName() == storedobj.GetName():
+                return False
+        return True
+
+    def saving(self, obj):
+        getattr(self._space,'import')(obj) # for ROOT 5.x
+        #self._space.Import(obj) # for ROOT 6.x
+    def writetofile(self, filename):
+        outfile=ROOT.TFile(filename, 'recreate')
+        outfile.cd()
+        self._space.Write()
+        outfile.Close()
+
+    def AddToSpace(self, obj):
+        if self.duplicateCheck(obj):
+            self._savedObj.append(obj)
+        else:
+            logger.error('name duplicated! please change imported object name')
+            exit(1)
+    def AddComponent(self, **kwargs):
+        self._additionalInfo.AddComponent(**kwargs)
+
+    def Write(self, newfilename=None):
+        for obj in self._savedObj:
+            self.saving(obj)
+        if newfilename:
+            self.writetofile(newfilename)
+    def LoadVar(self, name):
+        return self._space.var(name)
+    def LoadPdf(self, name):
+        return self._space.pdf(name)
+
+
+def CreateHistPDF(spaceMGR, hist, label):
+    xvar=spaceMGR.LoadVar(hist.GetName())
+    name='dh_%s' % (hist.GetName())
+    npdf='histPDF_%s' % (label)
+    histpdf=ROOT.RooHistPdf(npdf,npdf,
+            ROOT.RooArgList( spaceMGR.LoadVar(hist.GetName()) ),
+            ROOT.RooDataHist(name,name, ROOT.RooArgList(xvar), hist),
+            0 )
+    spaceMGR.AddToSpace(histpdf)
+    return histpdf
+
+def CreateVar(spaceMGR, name, Xmin, Xmax):
+    xvar=ROOT.RooRealVar( name,name, Xmin, Xmax )
+    spaceMGR.AddToSpace(xvar)
+    return xvar
+def CreateNum(spaceMGR, name, Xdef, Xmin, Xmax):
+    xvar=ROOT.RooRealVar( name,name, Xdef, Xmin, Xmax )
+    spaceMGR.AddToSpace(xvar)
+    return xvar
+
+
+
+
+if __name__ == '__main__':
+    from array import array
+    import ROOT
+
+    space=ROOT.RooWorkspace('space',False)
+    myspace=RooFitSpaceMgr(space)
+    fname={ 'data':0, 'mcsig':1, 'mcbkg':2 }
+    SampleOrder=[ 'data', 'mcsig', 'mcbkg' ]
+    fnamedata='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists_data_Run2016G.root'
+    fname_sig='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists_mcbkg_Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root'
+    fname_bkg='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists_mcsig_Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root'
+
+    var='r9'
+    inputinfo=[
+    ('data' , '/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists_data_Run2016G.root'),
+    ('mcsig', '/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists_mcbkg_Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root'),
+    ('mcbkg', '/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists_mcsig_Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root'),
+    ]
+    inputfile=[ ROOT.TFile.Open(p) for t,p in inputinfo ]
+    inputhist=[ f.Get(var) for f in inputfile ]
+    CreateVar( myspace, var, inputhist[0].GetXaxis().GetXmin(), inputhist[0].GetXaxis().GetXmax() )
+    x=myspace.LoadVar(var)
+
+    #for (label,p), hist in zip(inputinfo,inputhist):
+    #    CreateHistPDF( myspace, hist, label )
+
+    '''
+    infile=[
+            ( 'data', ROOT.TFile.Open(fnamedata) ),
+            ( 'sig' , ROOT.TFile.Open(fname_sig) ),
+            ( 'bkg' , ROOT.TFile.Open(fname_bkg) ),
+            ]
+    inhist=[ f.Get('r9') for n, f in infile ]
+    varname=inhist[0].GetName()
+    varaxis=inhist[0].GetXaxis()
+    xvar=ROOT.RooRealVar(varname, varname, varaxis.GetXmin(), varaxis.GetXmax())
+    myspace.AddToSpace(xvar)
+
+
+    datahist=[
+            ROOT.RooDataHist(
+                'dataH_%s'%(sample), 'dataH_%s'%(sample),
+                ROOT.RooArgList(xvar), hist
+                ) for (sample, file), hist in zip(infile,inhist)
+            ]
+
+    sigpdf=ROOT.RooHistPdf('sigPDF', 'sigPDF', ROOT.RooArgSet(xvar),datahist[0], 0)
+    myspace.AddToSpace(sigpdf)
+    '''
+
+
+
+    myspace.Write('newfile.root')
+    for n,f in infile: f.Close()
+

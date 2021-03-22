@@ -10,6 +10,8 @@ public:
     // explicit readMgr( const std::vector<std::string>& pathes, std::map<int,const char*> nameMap) : TreeReader(pathes)
     explicit readMgr( const std::vector<std::string>& pathes, const std::vector<const char*>& sourcebranches) : TreeReader(pathes), bnames(sourcebranches)
     {}
+    explicit readMgr( const char* filepath, const char* treename, const std::vector<const char*>& sourcebranches) : TreeReader(filepath, treename), bnames(sourcebranches)
+    {}
 
     virtual ~readMgr() {}
 

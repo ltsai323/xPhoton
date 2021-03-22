@@ -120,20 +120,17 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
 
         data.GetEntry(ev);
         if ( data.Int(var::nJet) < 1 ) continue;
-
         if ( failedpreselection_evt(&data) ) continue;
 
         if ( data.Int(var::nPho) == 0 ) continue;
 
 
 
-        mcMatchInfo::truthVal truthPhotons;
-        // matchingRes truthmatchedObj;
-        // truthmatchedObj.Clean();
+
         LOG_DEBUG("doing mcTruthMatching");
+        mcMatchInfo::truthVal truthPhotons;
         if ( data.HasMC() )
             truthPhotons = mcMatchInfo::findtruthPhoton(&data);
-        LOG_DEBUG("real mcTruthMatching");
 
         LOG_DEBUG("temporally skiped section");
         /*
@@ -274,238 +271,34 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
         // if((doZee==1 || doZmm==1 || doWen==1 || doWmn==1) && ecandidate==0) continue;
         if((doZee==1 || doZmm==1 ) && ecandidate==0) continue;
         // temporarily skip section end }}}
-        // */
+        */
+        std::vector<int> eleID = recoInfo::electronsInEvt(&data);
+        std::vector<int>  muID = recoInfo::    muonsInEvt(&data);
+        std::vector<recoInfo::TLorentzDATA> electronpool = recoInfo::buildingCandidates_electron(&data, eleID);
+        // std::vector<recoInfo::TLorentzDATA>     muons = recoInfo::buildingCandidates_muon    (&data, eleID);
 
-        // int jet_index=-1;
 
         LOG_DEBUG("jet info section");
         std::vector<recoInfo::TLorentzDATA> selJets = recoInfo::selectedJets(&data);
         if ( !selJets.size() ) continue;
-        recoInfo::TLorentzDATA leadingJet = selJets.at(0);
+
 
 
         LOG_DEBUG("leading photon section");
-
         std::vector<recoInfo::TLorentzDATA> selPhotons = recoInfo::selectedPhotons(&data);
         if ( !selPhotons.size() ) continue;
-        recoInfo::TLorentzDATA leadingPhoton = selPhotons.at(0);
+        recoInfo::TLorentzDATA leadingphoton = selPhotons[0];
 
 
-        LOG_DEBUG("photon candidate finding section ");
 
-        //        LOG_DEBUG("preselect photon section");
 
-        //        // preselect reco::photon section {{{
-        //        for (Int_t i=0; i<nPho; ++i)
-        //        {
-        //            LOG_DEBUG("for PHSel 01");
-        //            if(phoEt[i]<15.) continue;       
-        //            LOG_DEBUG("for PHSel 02");
-        //            //if(phoEt[i]<100.) continue;
-        //            if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
-        //            LOG_DEBUG("for PHSel 03");
-        //            if(TMath::Abs(phoSCEta[i])>2.5) continue;
-        //            LOG_DEBUG("for PHSel 04");
-        //            if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
-        //            LOG_DEBUG("for PHSel 05");
-        //            if(isData==1 && JETPD_PHOTONHLT==0 && doWmn==0)
-        //            {
-        //            LOG_DEBUG("for PHSel 06.1");
-        //                if(phoFiredTrgs[i]==0) continue;
-        //            LOG_DEBUG("for PHSel 06.2");
-        //                if(((phoFiredTrgs[i]>>8)&1)==1) nphofiredtrgs++; //HLT175
-        //                //if(((phoFiredTrgs[i]>>6)&1)==1) nphofiredtrgs++; //HLT120
-        //                else 
-        //                    continue;       
-        //            LOG_DEBUG("for PHSel 06.3");
-        //            }
-        //            LOG_DEBUG("for PHSel 07");
-        //            phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
-        //            LOG_DEBUG("for PHSel 08");
-        //            int pho_presel = 0;
-        //            // if(doWmn==1) pho_presel = PhotonPreselection(data, i, kFALSE);
-        //            // else pho_presel = PhotonPreselection(data, i, kTRUE);
-        //            pho_presel = PhotonPreselection(data, i, kTRUE);
-        //            //check CSEV eff vs pt
-        //            LOG_DEBUG("for PHSel 09");
-        //            if(isData==0) 
-        //            {
-        //            LOG_DEBUG("for PHSel 10-1");
-        //                if(i==0 && truthmatchedObj.isMatched[i]==1)
-        //                {
-        //
-        //            LOG_DEBUG("for PHSel 10");
-        //                    if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_den->Fill(phoEt[i]);
-        //                    else hphoEE_pt_presel_den->Fill(phoEt[i]);	
-        //            LOG_DEBUG("for PHSel 10.1");
-        //                    if(pho_presel == 1)
-        //                    {
-        //            LOG_DEBUG("for PHSel 10.2");
-        //                        if(TMath::Abs(phoSCEta[i])<1.5) 
-        //                        {
-        //                            if(phoPFChIso[i]<2.) hphoEB_pt_presel_num->Fill(phoEt[i]);
-        //                        }else 
-        //                        {
-        //                            if(phoPFChIso[i]<1.5) hphoEE_pt_presel_num->Fill(phoEt[i]);
-        //                        }
-        //            LOG_DEBUG("for PHSel 10.3");
-        //                    }
-        //
-        //            LOG_DEBUG("for PHSel 10.4");
-        //                    if( PhotonPreselection(data, i, kFALSE) ==1)
-        //                    {
-        //            LOG_DEBUG("for PHSel 10.5");
-        //                        if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
-        //                        else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
-        //            LOG_DEBUG("for PHSel 10.6");
-        //
-        //                        if(pho_presel == 1)
-        //                        {
-        //                            if(TMath::Abs(phoSCEta[i])<1.5) 
-        //                            {
-        //                                hphoEB_pt_presel_csev->Fill(phoEt[i]);
-        //                            }else 
-        //                            {
-        //                                hphoEE_pt_presel_csev->Fill(phoEt[i]);
-        //                            }
-        //                        }
-        //            LOG_DEBUG("for PHSel 10.7");
-        //
-        //                    }
-        //            LOG_DEBUG("for PHSel 10.8");
-        //                }
-        //            LOG_DEBUG("for PHSel 10.9");
-        //            }
-        //
-        //            LOG_DEBUG("for PHSel 11");
-        //            //get e-pho mass from Z
-        //            if( PhotonPreselection(data, i, kFALSE) ==1)
-        //            {
-        //            LOG_DEBUG("for PHSel 12.1");
-        //                for(unsigned int jj=0; jj<eleID.size(); jj++)
-        //                {
-        //            LOG_DEBUG("for PHSel 12.2");
-        //                    TLorentzVector tmp_eP4;
-        //                    tmp_eP4.SetPtEtaPhiM(elePt[eleID[jj]], eleEta[eleID[jj]], elePhi[eleID[jj]],  0.511*0.001);
-        //            LOG_DEBUG("for PHSel 12.3");
-        //                    if(phoP4.DeltaR(tmp_eP4) > 0.5) 
-        //                    {
-        //            LOG_DEBUG("for PHSel 12.4");
-        //                        TLorentzVector tmp_phoele_P4;
-        //                        tmp_phoele_P4 = phoP4;
-        //                        tmp_phoele_P4 += tmp_eP4;
-        //                        h_Zee_mass->Fill(tmp_phoele_P4.M());
-        //                        if(tmp_phoele_P4.M()>70. && tmp_phoele_P4.M()<110.) 
-        //                            h_phoPt_eta_Z_all->Fill(phoEt[i], TMath::Abs(phoSCEta[i]));
-        //                        if(PhotonPreselection(data, i, kTRUE) ==1)
-        //                        {
-        //                            h_Zee_mass_csev->Fill(tmp_phoele_P4.M());	   
-        //                            if(tmp_phoele_P4.M()>70. && tmp_phoele_P4.M()<110.) 
-        //                                h_phoPt_eta_Z_csev->Fill(phoEt[i], TMath::Abs(phoSCEta[i]));
-        //                        }
-        //            LOG_DEBUG("for PHSel 12.5");
-        //                    }
-        //                }
-        //            LOG_DEBUG("for PHSel 12.6");
-        //            }	
-        //
-        //            LOG_DEBUG("for PHSel 13");
-        //            if(pho_presel!=1) continue;
-        //            LOG_DEBUG("for PHSel 14");
-        //            if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
-        //            LOG_DEBUG("for PHSel 15");
-        //            photon_list.push_back(i); 
-        //            if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
-        //            LOG_DEBUG("for PHSel 16");
-        //            //skim for TMVA training
-        //            //int pho_skim_presel = PhotonSkimPreselection(data, i, kTRUE);
-        //            //if(pho_skim_presel==1) photon_list.push_back(i);
-        //            // 	break;
-        //
-        //        }   
-        //        // preselect reco::photon section end }}}
-        //        h_npho->Fill(photon_list.size());
-        //        if(photon_list.size() < 1) continue;
-        //        //if(photon_list.size() > 1) continue;
-        //        //   printf(" ERROR more than one photon registered in event %d \n", event);
-        //        //   continue;
-        //
-        //        LOG_DEBUG("converted photon or fake photon ?");
-        //        // converted photon or fake photon ? section {{{
-        //        phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
-        //        for(unsigned int j=0; j<eleID.size(); j++)
-        //        {
-        //            if(elePt[eleID[j]]<100) continue;
-        //            TLorentzVector tmp_eP4;
-        //            tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-        //            h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
-        //            if(phoP4.DeltaR(tmp_eP4) < 0.3) 
-        //            {
-        //                // printf("photon_list reset, pt %.2f, eta %.2f, electron pt %.2f  \n", 
-        //                //        phoEt[photon_list[0]], phoEta[photon_list[0]], elePt[eleID[j]]);
-        //                photon_list.clear(); 
-        //            }
-        //        }
-        //        // converted photon or fake photon ? section end }}}
-        //
-        //        LOG_DEBUG("sig jet finding");
-        //        // find signal jet differ from sig photon section {{{
-        //        //find one jet in event
-        //        for(int j=0; j<nJet; j++)
-        //        {		         
-        //            float jetjecunc = 1.;
-        //            //float jetjecunc = 1.-jetJECUnc[j]; //1.;
-        //            if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) 
-        //            {
-        //                //if( jetPFLooseId[j] ) h_jetID->Fill(1.);	else h_jetID->Fill(0.);
-        //                if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
-        //                jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
-        //
-        //                if(phoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1)
-        //                {
-        //                    float dphojetpt = jetPt[j] / phoP4.Pt();
-        //                    h_dpt_phojet->Fill(dphojetpt);
-        //                    if( dphojetpt>0.5 || dphojetpt<2.) 
-        //                    {
-        //                        if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
-        //                        else photon_jetID.push_back(0.);
-        //                    }
-        //                }
-        //
-        //                if( jetId[j] ) {	  
-        //                    h_dR_phojet->Fill(phoP4.DeltaR(jetP4));
-        //                    if(phoP4.DeltaR(jetP4)>0.4)
-        //                    {
-        //                        if(jet_index<0) jet_index = j;
-        //                        nnjet++;
-        //                        if(nnjet==2) jet2_index = j;
-        //                    }	    
-        //                }    
-        //            }  
-        //        }
-        //        // find signal jet differ from sig photon section end }}}
-        //
-        //        LOG_DEBUG("highPT photon checking");
-        //        // highPT photon checking section {{{
-        //        if(phoEt[photon_list[0]] > 150.) 
-        //        {
-        //            h_njet->Fill(nnjet, xsweight);
-        //            if(nnjet>1)
-        //            {
-        //                int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-        //                int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-        //                h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
-        //            }
-        //        }
-        //        // highPT photon checking section end }}}
-        //
-        //        //swapping jets for systematics SinglePho_miniAOD_Silver_JET12_JETUNC.root
-        //        //   float jet1_et = jetPt[jet_index] * (1-jetJECUnc[jet_index]);
-        //        //   float jet2_et = jetPt[jet2_index] * (1+jetJECUnc[jet2_index]);
-        //        //   if(jet2_et > jet1_et) jet_index = jet2_index;
-        //
-        //
-        //        if(photon_jetID.size()==0) photon_jetID.push_back(0);
+        LOG_DEBUG("converted photon or fake photon ?");
+        if ( isElectron(&data,leadingphoton, electronpool) ) continue;
+        // define is photon coming from jet or not.
+        bool photon_jetID = recoInfo::isjetPhoton(&data,leadingphoton, selJets);
+
+        recoInfo::TLorentzDATA leadingjet = recoInfo::leadingJet(&data, leadingphoton, selJets);
+
         //        //if(isData==1 && doWmn==0 && nnjet==0) continue;
         //
         //        //main part of photon tree
@@ -752,63 +545,56 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
         //        }
         //        // composite candidate building section end }}}
         //
-        //        h_nphoFiredTrgs->Fill(nphofiredtrgs);
-        //        h_npj->Fill(npj);
-        //        h_npp->Fill(npp);
-        //
+
         LOG_DEBUG("fill output tree content from data section");
-        otree.run=data.GetInt("run");
-        otree.event=data.GetLong64("event");
-        otree.isData=data.GetBool("isData");
-        otree.nVtx=data.GetInt("nVtx");
-        //otree.nPho=data.GetInt("nPho");
-        //otree.nJet=data.GetInt("nJet");
-        //Int_tnPho=data.GetInt("nPho");
-        //Int_tnJet=data.GetInt("nJet");
+        otree.run=data.Int(var::run);
+        otree.event=data.Long64(var::event);
+        otree.isData=data.Bool(var::isData);
+        otree.nVtx=data.Int(var::nVtx);
 
         if(!data.HasMC())
         {
-            otree.HLT=data.GetLong64("HLTPho");
-            otree.HLTIsPrescaled=data.GetLong64("HLTPhoIsPrescaled");
-            otree.metFilters=data.GetInt("metFilters");
+            otree.HLT=data.Long64(var::HLTPho);
+            otree.HLTIsPrescaled=data.Long64(var::HLTPhoIsPrescaled);
+            otree.metFilters=data.Int(var::metFilters);
         }
 
         if(data.HasMC())
         {
-            otree.pthat=data.GetFloat("pthat");
-            otree.nMC=data.GetInt("nMC");
-            //otree.mcPID=data.GetPtrInt("mcPID")[0];
-            //otree.mcMomPID=data.GetPtrInt("mcMomPID")[0];
-            //otree.mcGMomPID=data.GetPtrInt("mcGMomPID")[0];
-            otree.mcPt=data.GetPtrFloat("mcPt")[0];
-            otree.mcEta=data.GetPtrFloat("mcEta")[0];
-            otree.mcPhi=data.GetPtrFloat("mcPhi")[0];
-            //otree.mcE=data.GetPtrFloat("mcE")[0];
-            //otree.mcMomPt=data.GetPtrFloat("mcMomPt")[0];
-            //otree.mcMomEta=data.GetPtrFloat("mcMomEta")[0];
-            //otree.mcMomPhi=data.GetPtrFloat("mcMomPhi")[0];
-            //otree.mcStatus=data.GetPtrShort("mcStatusFlag")[0];
-            otree.genHT=data.GetFloat("genHT");
-            otree.jetGenJetPt=data.GetPtrFloat("jetGenJetPt")[0];
-            //otree.jetGenJetEn=data.GetPtrFloat("jetGenJetEn")[0];
-            otree.jetGenJetEta=data.GetPtrFloat("jetGenJetEta")[0];
-            otree.jetGenJetPhi=data.GetPtrFloat("jetGenJetPhi")[0];
+            otree.pthat=data.Float(var::pthat);
+            otree.nMC=data.Int(var::nMC);
+            //otree.mcPID=data.PtrInt(var::mcPID)[0];
+            //otree.mcMomPID=data.PtrInt(var::mcMomPID)[0];
+            //otree.mcGMomPID=data.PtrInt(var::mcGMomPID)[0];
+            otree.mcPt=data.PtrFloat(var::mcPt)[0];
+            otree.mcEta=data.PtrFloat(var::mcEta)[0];
+            otree.mcPhi=data.PtrFloat(var::mcPhi)[0];
+            //otree.mcE=data.PtrFloat(var::mcE)[0];
+            //otree.mcMomPt=data.PtrFloat(var::mcMomPt)[0];
+            //otree.mcMomEta=data.PtrFloat(var::mcMomEta)[0];
+            //otree.mcMomPhi=data.PtrFloat(var::mcMomPhi)[0];
+            //otree.mcStatus=data.PtrShort(var::mcStatusFlag)[0];
+            otree.genHT=data.Float(var::genHT);
+            otree.jetGenJetPt=data.PtrFloat(var::jetGenJetPt)[0];
+            //otree.jetGenJetEn=data.PtrFloat(var::jetGenJetEn)[0];
+            otree.jetGenJetEta=data.PtrFloat(var::jetGenJetEta)[0];
+            otree.jetGenJetPhi=data.PtrFloat(var::jetGenJetPhi)[0];
         }
 
         /*temporarilydisabled
           {
-          nPUInfo=data.GetInt("nPUInfo");
-          puBX=data.GetPtrInt("puBX");
-          puTrue=data.GetPtrFloat("puTrue");
+          nPUInfo=data.Int(var::nPUInfo);
+          puBX=data.PtrInt(var::puBX);
+          puTrue=data.PtrFloat(var::puTrue);
           for(Int_ti=0;i<nPUInfo;++i){if(puBX[i]==0)nPU=puTrue[i];}
           }
-          mcCalIsoDR04=data.GetPtrFloat("mcCalIsoDR04");
-          mcTrkIsoDR04=data.GetPtrFloat("mcTrkIsoDR04");
+          mcCalIsoDR04=data.PtrFloat(var::mcCalIsoDR04);
+          mcTrkIsoDR04=data.PtrFloat(var::mcTrkIsoDR04);
           puwei_=(float)puCalc.GetWeight(run,puTrue[1]);//in-timePU
           */
 
         // / / / / asdf {
-        // / / / / asdf genWeight=data.GetFloat("genWeight");
+        // / / / / asdf genWeight=data.Float(var::genWeight);
         // / / / / asdf if(genWeight>0.)xsweight=XS;
         // / / / / asdf elsexsweight=XS*-1.;
         // / / / / asdf if(gjet15to6000==1)xsweight=genWeight;
@@ -816,127 +602,77 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200])
 
         //if(hasSubVtxInfo)
         {
-            otree.jetSubVtxPt=data.GetPtrFloat("jetSubVtxPt")[0];
-            otree.jetSubVtxMass=data.GetPtrFloat("jetSubVtxMass")[0];
-            otree.jetSubVtx3DVal=data.GetPtrFloat("jetSubVtx3DVal")[0];
-            otree.jetSubVtx3DErr=data.GetPtrFloat("jetSubVtx3DErr")[0];
-            otree.jetSubVtxNtrks=data.GetPtrInt("jetSubVtxNtrks")[0];
+            otree.jetSubVtxPt=data.PtrFloat(var::jetSubVtxPt)[0];
+            otree.jetSubVtxMass=data.PtrFloat(var::jetSubVtxMass)[0];
+            otree.jetSubVtx3DVal=data.PtrFloat(var::jetSubVtx3DVal)[0];
+            otree.jetSubVtx3DErr=data.PtrFloat(var::jetSubVtx3DErr)[0];
+            otree.jetSubVtxNtrks=data.PtrInt(var::jetSubVtxNtrks)[0];
         }
         {
-            //Float_t MET=data.GetFloat("pfMET");MET=pfMET;
-            //Float_t METPhi=data.GetFloat("pfMETPhi");METPhi=pfMETPhi;
+            otree.MET=data.Float(var::pfMET);
+            otree.METPhi=data.Float(var::pfMETPhi);
 
-            ////Int_tnJet=data.GetInt("nJet");
-            //Float_t*jetPt=data.GetPtrFloat("jetPt");
-            //Float_t*jetEn=data.GetPtrFloat("jetEn");
-            //Float_t*jetEta=data.GetPtrFloat("jetEta");
-            //Float_t*jetPhi=data.GetPtrFloat("jetPhi");
-            //Long64_t*jetFiredTrgs=data.GetPtrLong64("jetFiredTrgs");
-            //Float_t*jetJECUnc=data.GetPtrFloat("jetJECUnc");
+            otree.jetPt=data.PtrFloat(var::jetPt)[0];
+            otree.jetEta=data.PtrFloat(var::jetEta)[0];
+            otree.jetPhi=data.PtrFloat(var::jetPhi)[0];
+            otree.jetJECUnc=data.PtrFloat(var::jetJECUnc)[0];
 
-            //Float_t*jetCSV2BJetTags=data.GetPtrFloat("jetCSV2BJetTags");
-            //Float_t*jetDeepCSVTags_b=data.GetPtrFloat("jetDeepCSVTags_b");
-            //Float_t*jetDeepCSVTags_bb=data.GetPtrFloat("jetDeepCSVTags_bb");
-            //Float_t*jetDeepCSVTags_c=data.GetPtrFloat("jetDeepCSVTags_c");
-            //Float_t*jetDeepCSVTags_udsg=data.GetPtrFloat("jetDeepCSVTags_udsg");
-
-            otree.MET=data.GetFloat("pfMET");
-            otree.METPhi=data.GetFloat("pfMETPhi");
-
-            //Int_tnJet=data.GetInt("nJet");
-            otree.jetPt=data.GetPtrFloat("jetPt")[0];
-            otree.jetEta=data.GetPtrFloat("jetEta")[0];
-            otree.jetPhi=data.GetPtrFloat("jetPhi")[0];
-            otree.jetJECUnc=data.GetPtrFloat("jetJECUnc")[0];
-
-            otree.jetCSV2BJetTags=data.GetPtrFloat("jetCSV2BJetTags")[0];
-            otree.jetDeepCSVTags_b=data.GetPtrFloat("jetDeepCSVTags_b")[0];
-            otree.jetDeepCSVTags_bb=data.GetPtrFloat("jetDeepCSVTags_bb")[0];
-            otree.jetDeepCSVTags_c=data.GetPtrFloat("jetDeepCSVTags_c")[0];
-            otree.jetDeepCSVTags_udsg=data.GetPtrFloat("jetDeepCSVTags_udsg")[0];
+            otree.jetCSV2BJetTags=data.PtrFloat(var::jetCSV2BJetTags)[0];
+            otree.jetDeepCSVTags_b=data.PtrFloat(var::jetDeepCSVTags_b)[0];
+            otree.jetDeepCSVTags_bb=data.PtrFloat(var::jetDeepCSVTags_bb)[0];
+            otree.jetDeepCSVTags_c=data.PtrFloat(var::jetDeepCSVTags_c)[0];
+            otree.jetDeepCSVTags_udsg=data.PtrFloat(var::jetDeepCSVTags_udsg)[0];
         }
 
         if(data.HasMC())
-        {//isMC
-            otree.jetPartonID=data.GetPtrInt("jetPartonID")[0];
-            otree.jetGenPartonID=data.GetPtrInt("jetGenPartonID")[0];
-            otree.jetHadFlvr=data.GetPtrInt("jetHadFlvr")[0];
-            //Int_t*jetPartonID=data.GetPtrInt("jetPartonID")[0];
-            //Int_t*jetGenPartonID=data.GetPtrInt("jetGenPartonID")[0];
-            //Int_t*jetHadFlvr=data.GetPtrInt("jetHadFlvr")[0];
+        {
+            otree.jetPartonID=data.PtrInt(var::jetPartonID)[0];
+            otree.jetGenPartonID=data.PtrInt(var::jetGenPartonID)[0];
+            otree.jetHadFlvr=data.PtrInt(var::jetHadFlvr)[0];
         }
 
         {
-            otree.recoEta=data.GetPtrFloat("phoEta")[0];
-            otree.recoPhi=data.GetPtrFloat("phoPhi")[0];
-            otree.recoPt=data.GetPtrFloat("phoEt")[0];
-            otree.r9=data.GetPtrFloat("phoR9")[0];
-            otree.recoSCEta=data.GetPtrFloat("phoSCEta")[0];
-            //Float_t*phoEta=data.GetPtrFloat("phoEta");
-            //Float_t*phoPhi=data.GetPtrFloat("phoPhi");
-            //Float_t*phoEt=data.GetPtrFloat("phoEt");
-            //Float_t*phoR9=data.GetPtrFloat("phoR9");
-            //Float_t*phoSCEta=data.GetPtrFloat("phoSCEta");
+            otree.recoEta=data.PtrFloat(var::phoEta)[0];
+            otree.recoPhi=data.PtrFloat(var::phoPhi)[0];
+            otree.recoPt=data.PtrFloat(var::phoEt)[0];
+            otree.r9=data.PtrFloat(var::phoR9)[0];
+            otree.recoSCEta=data.PtrFloat(var::phoSCEta)[0];
         }
 
-        ////Int_t*phoEleVeto=data.GetPtrInt("phoEleVeto");
         {
-            otree.eleVeto=data.GetPtrInt("phoEleVeto")[0];
-            otree.HoverE=data.GetPtrFloat("phoHoverE")[0];
-            otree.chIsoRaw=data.GetPtrFloat("phoPFChIso")[0];
-            otree.nhIsoRaw=data.GetPtrFloat("phoPFNeuIso")[0];
-            otree.phoIsoRaw=data.GetPtrFloat("phoPFPhoIso")[0];
-            otree.phohasPixelSeed=data.GetPtrInt("phohasPixelSeed")[0];
-            //Float_t*recoHoverE=data.GetPtrFloat("phoHoverE");
-            //Float_t*recoPFChIso=data.GetPtrFloat("phoPFChIso");
-            //Float_t*recoPFNeuIso=data.GetPtrFloat("phoPFNeuIso");
-            //Float_t*recoPFPhoIso=data.GetPtrFloat("phoPFPhoIso");
-            //Int_t*recohasPixelSeed=data.GetPtrInt("phohasPixelSeed");
+            otree.eleVeto=data.PtrInt(var::phoEleVeto)[0];
+            otree.HoverE=data.PtrFloat(var::phoHoverE)[0];
+            otree.chIsoRaw=data.PtrFloat(var::phoPFChIso)[0];
+            otree.nhIsoRaw=data.PtrFloat(var::phoPFNeuIso)[0];
+            otree.phoIsoRaw=data.PtrFloat(var::phoPFPhoIso)[0];
+            otree.phohasPixelSeed=data.PtrInt(var::phohasPixelSeed)[0];
         }
 
-        otree.rho=data.GetFloat("rho");
+        otree.rho=data.Float(var::rho);
 
         {
-            otree.rawE=data.GetPtrFloat("phoSCRawE")[0];
-            otree.scEtaWidth=data.GetPtrFloat("phoSCEtaWidth")[0];
-            otree.scPhiWidth=data.GetPtrFloat("phoSCPhiWidth")[0];
-            otree.esEn=data.GetPtrFloat("phoESEnP1")[0] + data.GetPtrFloat("phoESEnP2")[0];
-            otree.esRR=data.GetPtrFloat("phoESEffSigmaRR")[0];
-            otree.chWorstIsoRaw=data.GetPtrFloat("phoPFChWorstIso")[0];
+            otree.rawE=data.PtrFloat(var::phoSCRawE)[0];
+            otree.scEtaWidth=data.PtrFloat(var::phoSCEtaWidth)[0];
+            otree.scPhiWidth=data.PtrFloat(var::phoSCPhiWidth)[0];
+            otree.esEn=data.PtrFloat(var::phoESEnP1)[0] + data.PtrFloat(var::phoESEnP2)[0];
+            otree.esRR=data.PtrFloat(var::phoESEffSigmaRR)[0];
+            otree.chWorstIsoRaw=data.PtrFloat(var::phoPFChWorstIso)[0];
 
-            otree.sieieFull5x5=data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[0];
-            otree.sieipFull5x5=data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[0];
-            otree.sipipFull5x5=data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[0];
-            otree.r9Full5x5=data.GetPtrFloat("phoR9Full5x5")[0];
-            otree.e2x2Full5x5=data.GetPtrFloat("phoE2x2Full5x5")[0];
-            otree.e5x5Full5x5=data.GetPtrFloat("phoE5x5Full5x5")[0];
-            otree.photonIDmva=data.GetPtrFloat("phoIDMVA")[0];
+            otree.sieieFull5x5=data.PtrFloat(var::phoSigmaIEtaIEtaFull5x5)[0];
+            otree.sieipFull5x5=data.PtrFloat(var::phoSigmaIEtaIPhiFull5x5)[0];
+            otree.sipipFull5x5=data.PtrFloat(var::phoSigmaIPhiIPhiFull5x5)[0];
+            otree.r9Full5x5=data.PtrFloat(var::phoR9Full5x5)[0];
+            otree.e2x2Full5x5=data.PtrFloat(var::phoE2x2Full5x5)[0];
+            otree.e5x5Full5x5=data.PtrFloat(var::phoE5x5Full5x5)[0];
+            otree.photonIDmva=data.PtrFloat(var::phoIDMVA)[0];
 
-            otree.phoFiredTrgs=data.GetPtrLong64("phoFiredSingleTrgs")[0];
-            otree.phoIDbit=data.GetPtrShort("phoIDbit")[0];
-            //Float_t*SCRawE=data.GetPtrFloat("phoSCRawE");
-            //Float_t*SCEtaWidth=data.GetPtrFloat("phoSCEtaWidth");
-            //Float_t*SCPhiWidth=data.GetPtrFloat("phoSCPhiWidth");
-            //Float_t*ESEnP1=data.GetPtrFloat("phoESEnP1");
-            //Float_t*ESEnP2=data.GetPtrFloat("phoESEnP2");
-            //Float_t*ESEffSigmaRR=data.GetPtrFloat("phoESEffSigmaRR");
-            //Float_t*PFChWorstIso=data.GetPtrFloat("phoPFChWorstIso");
-
-            //Float_t*SigmaIEtaIEtaFull5x5=data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5");
-            //Float_t*SigmaIEtaIPhiFull5x5=data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5");
-            //Float_t*SigmaIPhiIPhiFull5x5=data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5");
-            //Float_t*R9Full5x5=data.GetPtrFloat("phoR9Full5x5");
-            //Float_t*E2x2Full5x5=data.GetPtrFloat("phoE2x2Full5x5");
-            //Float_t*E5x5Full5x5=data.GetPtrFloat("phoE5x5Full5x5");
-            //Float_t*IDMVA=data.GetPtrFloat("phoIDMVA");
-
-            //Long64_t*FiredTrgs=data.GetPtrLong64("phoFiredSingleTrgs");
-            //Short_t*IDbit=data.GetPtrShort("phoIDbit");
+            otree.phoFiredTrgs=data.PtrLong64(var::phoFiredSingleTrgs)[0];
+            otree.phoIDbit=data.PtrShort(var::phoIDbit)[0];
         }
 
         if(!data.HasMC())//butSeedEnergyexistsinMC
         {
-            otree.SeedEnergy=data.GetPtrFloat("phoSeedEnergy")[0];
+            otree.SeedEnergy=data.PtrFloat(var::phoSeedEnergy)[0];
         }
 
 
@@ -1020,7 +756,8 @@ int failedpreselection_evt(readMgr* evtInfo)
 
     if ( isdata )
     {
-        if ( !evtInfo->Bool(var::hasGoodVtx) ) return 1;
+        // if ( !evtInfo->Bool(var::hasGoodVtx) ) return 1;
+        if ( !evtInfo->Int(var::nGoodVtx) ) return 1;
         if (  evtInfo->Int(var::metFilters)  ) return 2;
     }
     if ( isdata && doWmn )
@@ -1044,395 +781,4 @@ Double_t deltaR(Double_t eta1, Double_t phi1, Double_t eta2, Double_t phi2)
     dPhi = deltaPhi(phi1, phi2);
     return sqrt(dEta*dEta+dPhi*dPhi);
 }
-
-//matchingRes mcTruthMatching(readMgr* evtInfo)
-//{
-//    LOG_DEBUG("01 : get var");
-//    matchingRes matchedObj;
-//    Int_t*   mcPID     = evtInfo->PtrInt(var::mcPID);
-//    Int_t*   mcMomPID  = evtInfo->PtrInt(var::mcMomPID);
-//    //Int_t*   mcGMomPID = evtInfo->PtrInt(var::mcGMomPID);
-//    Float_t* mcPt      = evtInfo->PtrFloat(var::mcPt);
-//    Float_t* mcEta     = evtInfo->PtrFloat(var::mcEta);
-//    Float_t* mcPhi     = evtInfo->PtrFloat(var::mcPhi);
-//    Float_t* mcE       = evtInfo->PtrFloat(var::mcE);
-//    Float_t* mcMomPt   = evtInfo->PtrFloat(var::mcMomPt);
-//    Float_t* mcMomEta   = evtInfo->PtrFloat(var::mcMomEta);
-//    Float_t* mcMomPhi   = evtInfo->PtrFloat(var::mcMomPhi);
-//    Short_t* mcStatus = evtInfo->PtrShort(var::mcStatusFlag);
-//    Float_t*   mcCalIsoDR04 = evtInfo->PtrFloat(var::mcCalIsoDR04);
-//    Float_t*   mcTrkIsoDR04 = evtInfo->PtrFloat(var::mcTrkIsoDR04);
-//
-//    Float_t*  phoEt   = evtInfo->PtrFloat(var::phoEt);
-//    Float_t*  phoEta  = evtInfo->PtrFloat(var::phoEta);
-//    Float_t*  phoPhi  = evtInfo->PtrFloat(var::phoPhi);
-//
-//    LOG_DEBUG("02 : get gen photon");
-//    vector<int> mcid;
-//    for (Int_t k=0; k< evtInfo->Int(var::nMC); ++k)  // get gen photon directly from partons.
-//    {
-//        if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) 
-//        {
-//            if(verbose) printf("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
-//            mcid.push_back(k);
-//        }
-//    }
-//    LOG_DEBUG("03 : get gen muon");
-//    vector<int> muonmcid;
-//    for (Int_t k=0;k<evtInfo->Int(var::nMC); ++k)  // get gen muon ( but do nothing )
-//    {
-//        if (fabs(mcPID[k])==13 && mcPt[k]>20.)
-//        { muonmcid.push_back(k); }
-//    }
-//
-//    LOG_DEBUG("03 : get gen electron");
-//    vector<int> elemcid;
-//    for (Int_t k=0; k<evtInfo->Int(var::nMC); ++k)  // get gen electron ( used in converted photon )
-//    {
-//        if (fabs(mcPID[k]) == 11 )
-//        { elemcid.push_back(k); }
-//    }
-//
-//
-//
-//    int isMatched;
-//    int isMatchedEle;
-//    int isConverted;
-//
-//    LOG_DEBUG("04 : truth matching for reco::photon");
-//    for (Int_t i=0; i<evtInfo->Int(var::nPho); ++i)  // truth matching for reco::photon
-//    {
-//        histMgr::FillStatus("matchingStatus", 0.);
-//        int matchPho=0;
-//        int matchEleFake=0;
-//        int matchPhoConv=0;
-//        if(phoEt[i]<15.) continue;
-//        isMatched    = -1;
-//        isMatchedEle = -1;
-//        isConverted = -1;
-//
-//        float mcPt_ = 0.;
-//        float mcEta_ = 0.;
-//        float mcPhi_ = 0.;
-//        float mcCalIso04_=0.;
-//        float mcTrkIso04_=0.;
-//        
-//        //for (int jj=0; jj<nnMC; ++jj) 
-//        for ( int k : mcid )
-//        { // truth matching : genPho & recoPho
-//            float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
-//            float dpt = fabs((phoEt[i] - mcPt[k])/mcPt[k]);
-//            histMgr::Fill("TOTdeltaR_recoPhoton_genPhoton", dr);
-//            histMgr::Fill("TOTdPt_recoPhoton_genPhoton", dpt);
-//
-//
-//            if (dr  > 0.2 ) continue;
-//            if (dpt > 0.2 ) continue;
-//
-//            if( mcCalIsoDR04[k]>5.0 ) continue; //for gammajet photon pythia
-//            isMatched = 1;
-//            mcPt_  = mcPt[k];
-//            mcEta_ = mcEta[k];
-//            mcPhi_ = mcPhi[k];
-//            mcCalIso04_ = mcCalIsoDR04[k];
-//            mcTrkIso04_ = mcTrkIsoDR04[k];
-//            histMgr::Fill("SIGPhodeltaR_recoPhoton_genPhoton", dr);
-//            histMgr::Fill("SIGPhodPt_recoPhoton_genPhoton", dpt);
-//            if(verbose) printf("  mc matched !!! \n");
-//            //break;
-//            ++matchPho;
-//
-//        }
-//
-//        //for (int jj=0; jj<nneleMC; ++jj)
-//        for ( int k : elemcid )
-//        { // truth matching : genEle & recoPho
-//            if(fabs(mcPID[k]) == 11)
-//            {
-//                float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
-//                histMgr::Fill("TOTdeltaR_recoPhoton_genElectron", dr);
-//                histMgr::Fill("TOTdPt_recoPhoton_genElectron", fabs((phoEt[i] -mcPt[k])/mcPt[k]) );
-//                if ( mcMomPID[k] == 22 ) histMgr::Fill("dPt_recoPhoton_genMomPhoton", fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]) );
-//                if ( dr > 0.2 ) continue;
-//
-//                if (fabs((phoEt[i] -mcPt[k])/mcPt[k]) < 0.2) 
-//                { // electron is recognized as a photon.
-//                    isMatchedEle = 1;
-//                    histMgr::Fill("WRONGRECOPhodeltaR_recoPhoton_genElectron", dr);
-//                    histMgr::Fill("WRONGRECOPhodPt_recoPhoton_genElectron", fabs((phoEt[i] -mcPt[k])/mcPt[k]) );
-//                    ++matchEleFake;
-//                } // fake photon : reco::photon matches a gen::electron
-//                if ( mcMomPID[k] == 22 && 
-//                    fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]) < 0.2 &&
-//                    ((mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 || doWmn==1)
-//                    ) // converted photon : reco::photon matches a gen::electron in direction but pt matches with mother.
-//                {
-//                    isConverted = 1;
-//                    mcPt_  = mcMomPt[k];
-//                    mcEta_ = mcMomEta[k];
-//                    mcPhi_ = mcMomPhi[k];	      
-//                    mcCalIso04_ = mcCalIsoDR04[k];
-//                    mcTrkIso04_ = mcTrkIsoDR04[k];
-//                    histMgr::Fill("SIGConvPhodeltaR_recoPhoton_genElectron", dr);
-//                    histMgr::Fill("SIGConvPhodPt_recoPhoton_genElectron", fabs((phoEt[i] -mcPt[k])/mcPt[k]) );
-//                    ++matchPhoConv;
-//                }
-//            }
-//        }
-//
-//        if ( isMatched || isMatchedEle || isConverted )
-//        {
-//            matchedObj.pt.push_back(mcPt_);
-//            matchedObj.eta.push_back(mcEta_);
-//            matchedObj.phi.push_back(mcPhi_);
-//            matchedObj.calIso04.push_back(mcCalIso04_);
-//            matchedObj.trkIso04.push_back(mcTrkIso04_);
-//            matchedObj.isMatched.push_back(isMatched);
-//            matchedObj.isMatchedEle.push_back(isMatchedEle);
-//            matchedObj.isConverted.push_back(isConverted);
-//
-//            if ( isMatched+isMatchedEle+isConverted > 0 )
-//                LOG_WARNING("truth matching more than 1 result : isMacthed %d, isMatchedEle %d, isConverted %d", isMatched, isMatchedEle, isConverted);
-//            if ( matchPho )
-//            {
-//                histMgr::FillStatus("matchingStatus", 1);
-//                if ( matchPho>1 ) histMgr::FillStatus("matchingStatus",-1);
-//            }
-//            if ( matchEleFake )
-//            {
-//                histMgr::FillStatus("matchingStatus", 2);
-//                if ( matchEleFake>1 ) histMgr::FillStatus("matchingStatus",-2);
-//            }
-//            if ( matchPhoConv )
-//            {
-//                histMgr::FillStatus("matchingStatus", 3);
-//                if ( matchPhoConv>1 ) histMgr::FillStatus("matchingStatus",-3);
-//            }
-//        }
-//    }
-//    LOG_DEBUG("05 : end of truth matching to reco::photon");
-//
-//    return matchedObj;
-//}
-
-// void BuildingCandidateFromThisPhoton(readMgr* evtInfo, int selPhoIdx)
-// {
-//     // NNN = each select first NNN photons
-//         {            
-//             phoFiredTrgs_ = phoFiredTrgs[selPhoIdx];
-//             phoP4.SetPtEtaPhiM(phoEt[selPhoIdx], phoEta[selPhoIdx], phoPhi[selPhoIdx], 0.);
-// 
-//             if(jet_index>=0) 
-//             {
-//                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
-//                 //jetP4.SetPtEtaPhiM(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index],0.);
-//                 jetPt_ = jetPt[jet_index];
-//                 jetEta_ = jetEta[jet_index];
-//                 jetPhi_ = jetPhi[jet_index];
-//                 jetY_ = jetP4.Rapidity();
-//                 jetJECUnc_ = jetJECUnc[jet_index];
-//                 if(isData!=1) 
-//                 {
-//                     TLorentzVector jetGenJetP4;
-//                     jetGenJetP4.SetPtEtaPhiE(jetGenJetPt[jet_index], jetGenJetEta[jet_index], jetGenJetPhi[jet_index], jetGenJetEn[jet_index]);   
-//                     jetGenJetPt_ = jetGenJetPt[jet_index];
-//                     jetGenJetEta_ = jetGenJetEta[jet_index];
-//                     jetGenJetPhi_ = jetGenJetPhi[jet_index];
-//                     jetGenJetY_ = jetGenJetP4.Rapidity();
-//                     jetGenPartonID_ = jetGenPartonID[jet_index];		
-//                     //if(jetGenJetPt_ < 0.) printf("event %d, jet Pt %.2f, jet eta %.2f, jet phi %.2f \n", event, jetPt_, jetEta_, jetPhi_);
-//                 }else 
-//                 {
-//                     jetGenJetPt_ = 0.;
-//                     jetGenJetEta_ = 0.;
-//                     jetGenJetPhi_ = 0.;
-//                     jetGenJetY_ = 0.;
-//                     jetGenPartonID_ = 0;
-//                 }
-//             }else
-//             {
-//                 jetPt_=0.;
-//                 jetEta_=0.;
-//                 jetPhi_=0.;
-//                 jetY_=0.;
-//                 jetJECUnc_=0.;
-//                 jetGenJetPt_ = 0.;
-//                 jetGenJetEta_ = 0.;
-//                 jetGenJetPhi_ = 0.;
-//                 jetGenJetY_ = 0.;
-//                 jetGenPartonID_ = 0;
-//             }
-//             if (hasSubVtxInfo)
-//             {
-//                 jetSubVtxPt_    = jetSubVtxPt   [jet_index];
-//                 jetSubVtxMass_  = jetSubVtxMass [jet_index];
-//                 jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
-//                 jetSubVtx3DErr_ = jetSubVtx3DErr[jet_index];
-//                 jetSubVtxNtrks_ = jetSubVtxNtrks[jet_index];
-//                 h_subVtxPt   ->Fill(jetSubVtxPt_   );
-//                 h_subVtxMass ->Fill(jetSubVtxMass_ );
-//                 h_subVtx3DVal->Fill(jetSubVtx3DVal_);
-//                 h_subVtx3DErr->Fill(jetSubVtx3DErr_);
-//                 h_subVtxNtrks->Fill(jetSubVtxNtrks_);
-//             }
-// 
-//             jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
-//             jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
-//             jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
-//             jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
-//             jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
-//             // jetJetProbabilityBJetTags_ = jetJetProbabilityBJetTags[jet_index];
-//             // jetpfCombinedMVAV2BJetTags_ = jetpfCombinedMVAV2BJetTags[jet_index];
-// 
-// 
-//             jetPartonID_ = jetPartonID[jet_index];
-//             jetHadFlvr_ = jetHadFlvr[jet_index];
-// 
-//             //for Z+jet events
-//             if((doZmm==1 && nLep_m>=2) || (doZee==1 && nLep_e>=2)) 
-//             {
-//                 if(phoP4.DeltaR(lepP4[0]) < 0.3) continue;
-//                 if(phoP4.DeltaR(lepP4[1]) < 0.3) continue;
-//                 if(phoP4.DeltaR(electronP4)>0.3) continue;
-//             }
-// 
-//             if(doWmn==1) 
-//             {
-//                 if(isData==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-//                 else if(truthmatchedObj.isMatched[selPhoIdx]==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-//                 else hdR_fake_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-// 
-//                 //trying other option
-//                 //if(phoP4.DeltaR(lepP4[0]) > 0.3) continue; //normal for Wgamma Wjets
-//                 //
-//                 //if(phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
-//                 //if(TMath::Abs(phoSCEta[selPhoIdx]>1.556) && phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
-// 
-//                 //if(phoP4.DeltaR(lepP4[0]) < 0.4) continue; // <<-- for e* 
-//                 //if(phoP4.DeltaR(lepP4[0]) <1.0) continue; // <<-- for HZg
-// 
-//                 deta_wg = lepP4[0].Eta() - phoEta[selPhoIdx];
-//                 dphi_wg = deltaPhi(lepP4[0].Phi(), phoPhi[selPhoIdx]);
-//             }
-// 
-//             idLoose      = -1;
-//             idMedium     = -1;
-//             idTight      = -1;
-// 
-//             if(!isData)
-//             {
-//                 isMatched = truthmatchedObj.isMatched[selPhoIdx];
-//                 isMatchedEle = truthmatchedObj.isMatchedEle[selPhoIdx];
-//                 isConverted = truthmatchedObj.isConverted[selPhoIdx];
-//                 pthat_    = pthat;
-//                 mcPt_     = truthmatchedObj.pt[selPhoIdx];
-//                 mcEta_    = truthmatchedObj.eta[selPhoIdx];
-//                 mcPhi_    = truthmatchedObj.phi[selPhoIdx];
-//                 mcCalIso04_ = truthmatchedObj.calIso04[selPhoIdx];
-//                 mcTrkIso04_ = truthmatchedObj.trkIso04[selPhoIdx];
-//                 genHT_ = genHT;
-// 
-//                 h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
-//                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
-// 
-//             }else
-//             {
-//                 isMatched = 1;
-//                 isMatchedEle = 0;
-//                 isConverted = 0;
-//             }
-// 
-//             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
-//             h2_mcPID_mcPt->Fill( phoEt[selPhoIdx], 10.09, xsweight);
-// 
-//             recoPt    = phoEt[selPhoIdx];
-//             recoEta   = phoEta[selPhoIdx];
-//             recoPhi   = phoPhi[selPhoIdx];
-//             recoSCEta = phoSCEta[selPhoIdx];
-//             r9        = phoR9[selPhoIdx];
-//             eleVeto   = phoEleVeto[selPhoIdx];
-//             HoverE    = phoHoverE[selPhoIdx];
-//             //sieie     = phoSigmaIEtaIEta[selPhoIdx];
-//             phohasPixelSeed_ = phohasPixelSeed[selPhoIdx];
-//             chIsoRaw   = phoPFChIso[selPhoIdx];
-//             phoIsoRaw  = phoPFPhoIso[selPhoIdx];
-//             nhIsoRaw   = phoPFNeuIso[selPhoIdx];
-// 
-//             // sieip      = phoSigmaIEtaIPhi[selPhoIdx];
-//             // sipip      = phoSigmaIPhiIPhi[selPhoIdx];
-//             // e1x3       = phoE1x3[selPhoIdx];
-//             // e2x2       = phoE2x2[selPhoIdx];
-//             // e2x5       = phoE2x5Max[selPhoIdx];
-//             // e5x5       = phoE5x5[selPhoIdx];
-//             rawE       = phoSCRawE[selPhoIdx];
-//             scEtaWidth = phoSCEtaWidth[selPhoIdx];
-//             scPhiWidth = phoSCPhiWidth[selPhoIdx];
-//             esRR       = phoESEffSigmaRR[selPhoIdx];
-//             esEn       = phoESEnP1[selPhoIdx] +phoESEnP2[selPhoIdx];//      esEn       = phoESEn[selPhoIdx];
-//             chWorstIso = phoPFChWorstIso[selPhoIdx];
-// 
-//             sieieFull5x5     = phoSigmaIEtaIEtaFull5x5[selPhoIdx];
-//             sieipFull5x5     = phoSigmaIEtaIPhiFull5x5[selPhoIdx];
-//             sipipFull5x5     = phoSigmaIPhiIPhiFull5x5[selPhoIdx];
-//             r9Full5x5        = phoR9Full5x5[selPhoIdx];
-//             // e1x3Full5x5       = phoE1x3Full5x5[selPhoIdx];
-//             e2x2Full5x5       = phoE2x2Full5x5[selPhoIdx];
-//             // e2x5Full5x5       = phoE2x5MaxFull5x5[selPhoIdx];
-//             e5x5Full5x5       = phoE5x5Full5x5[selPhoIdx];
-//             photon_jetID_ = photon_jetID[ii];
-// 
-//             if(isData==1)
-//             {
-//                 // 	SeedTime_ = phoSeedTime[selPhoIdx];
-//                 SeedEnergy_ = phoSeedEnergy[selPhoIdx];
-//                 // 	MIPTotEnergy_ = phoMIPTotEnergy[selPhoIdx];
-//             }
-//             phoIDbit_ = phoIDbit[selPhoIdx];
-// 
-//             HggPresel = 0.;
-//             mva = -99.;
-// 
-//             // HggPresel= HggPreselection(data, selPhoIdx, kTRUE);
-//             // if(TMath::Abs(phoSCEta[selPhoIdx])<1.5)  	mva = select_photon_mva(data, selPhoIdx, tgr);
-//             // else mva = phoIDMVA[selPhoIdx];
-//             mva = select_photon_mvanoIso(data, selPhoIdx, tgr);
-// 
-//             photonIDmva = phoIDMVA[selPhoIdx];
-// 
-//             mva_hgg=0.;
-//             //mva_hgg = select_photon_mva_hgg(data, i);
-// 
-//             if(isMatched==1)
-//             {
-//                 if(TMath::Abs(phoEta[selPhoIdx])<1.5) h_EB_bdt->Fill(mva);
-//                 else h_EE_bdt->Fill(mva);
-//             }
-// 
-//             if(isData==1 && doWmn==0 && qstar==1 && photonIDmva>0.4 && eleVeto==1 && TMath::Abs(phoSCEta[selPhoIdx])<1.4442 )
-//             {
-//                 //loop jets for photon+jet invarient mass
-//                 h_phoEt->Fill(phoEt[selPhoIdx]);	
-//                 TLorentzVector pjP4;//= new TLorentzVector();	  
-//                 //if(jetP4.Eta()>2.4) continue;
-//                 //if(jetP4.DeltaR(phoP4)<0.5) continue;
-//                 //if(TMath::Abs(jetP4.DeltaPhi(phoP4))<1.5) continue;
-//                 // if( jetCHF[j] > 0. && jetNHF[j] < 0.9 && jetCEF[j] < 0.9 && jetNEF[j] < 0.9 &&
-// 
-//                 pjP4 = phoP4;
-//                 pjP4 += jetP4;
-// 
-//                 h_jetPt->Fill(jetP4.Pt());
-//                 h_pjmass->Fill(pjP4.M());
-//                 //if(pjP4.M()>3000.) printf("run %d, event %d, phoEt %.1f, jetPt %.1f \n", run, event, phoEt[selPhoIdx], jetP4.Pt());
-//                 npj++;
-//             }
-// 
-//             if(MINITREE==1 ) 	
-//             {
-//                 outtree_->Fill();
-//                 //if(isData==1 && doWmn==0) break;
-//             }
-// 
-//         }
-// }
 

@@ -1,3 +1,5 @@
+#ifndef __muonselection_h__
+#define __muonselection_h__
 using namespace std;
 
 void TightMuons2015(TreeReader &data, vector<int> &accepted) {
@@ -42,3 +44,4 @@ void TightMuons2015(TreeReader &data, vector<int> &accepted) {
   }
   
 }
+#endif

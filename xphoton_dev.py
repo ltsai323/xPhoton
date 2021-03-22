@@ -25,7 +25,7 @@ import os
 # my new code
 lines=[
 #'root://se01.grid.nchc.org.tw//cms/store/user/ltsai/ggAnalysis/2016miniAODv3/jetSubVtxInfo/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8/crab_GJet_Pt20toInf_DoubleEMEnriched_MGG_40to80_TuneCP5_13TeV_Pythia8/201130_100629/0000/ggtree_mc_1.root',
-'root://se01.grid.nchc.org.tw//cms/store/user/ltsai/ggAnalysis/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic__TuneCUETP8M1_13TeV_Pythia8/GJet_Pt-15To6000_TuneCUETHS1-Flat_13TeV_herwigpp/crab_GJet_Pt15To6000_TuneCUETHS1Flat_herwigpp/210103_091244/0000/ggtree_mc_1.root',
+'root://se01.grid.nchc.org.tw//cms/store/user/ltsai/ggAnalysis/2016miniAODv3/jetSubVtxInfo/SinglePhoton/crab_UL2016RunH/210225_071836/0000/ggtree_data_1.root',
 ]
 
 commandContentOrig  = 'root -b -q src/run.C\(\\\"%s\\\",%d\)'

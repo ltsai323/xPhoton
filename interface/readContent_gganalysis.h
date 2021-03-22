@@ -7,6 +7,7 @@
         // bool
         isData,
         hasGoodVtx,
+        nGoodVtx,
 
         // float
         pthat,
@@ -125,6 +126,7 @@
         // bool
         "isData",
         "hasGoodVtx",
+        "nGoodVtx", // int
 
         // float
         "pthat",
