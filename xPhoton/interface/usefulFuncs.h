@@ -2,6 +2,7 @@
 #define __usefulFuncs_h__
 #include <vector>
 #include <utility> // std::pair
+#include <stdio.h>
 #include "TH1.h"
 
 namespace usefulFuncs
@@ -15,5 +16,6 @@ namespace usefulFuncs
    int  SetBoolIntoInt(int idx);
    void PrintBoolIntStatus(int intBool);
    void StoreBoolInfoToHist( TH1* hist, int intBool );
+
 };
 #endif

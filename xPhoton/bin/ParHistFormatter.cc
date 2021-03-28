@@ -1,11 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
+//#include "/home/ltsai/Work/github/xPhoton/interface/untuplizer.h"
 #include "/home/ltsai/Work/github/xPhoton/interface/untuplizer.h"
 #include "/home/ltsai/Work/github/xPhoton/interface/logger.h"
-#include "/home/ltsai/Work/github/xPhoton/interface/histMgr.h"
+#include "xPhoton/interface/histMgr.h"
 #include "/home/ltsai/Work/github/xPhoton/interface/readMgr.h"
 #include "/home/ltsai/Work/github/xPhoton/interface/readContent_xPhoton.h"
+
 
 #include <TFile.h>
 #include <TTree.h>
@@ -23,9 +25,9 @@ bool passedEvt(readMgr* data, const char* datatype)
 {
     if ( strcmp(datatype, "data") == 0 ) return true;
     if ( strcmp(datatype, "mcsig")== 0 )
-        if ( data.Int(var::isMatched) )  return true;
+        if ( data->Int(var::isMatched == 1 ) )  return true;
     if ( strcmp(datatype, "mcbkg")== 0 )
-        if (!data.Int(var::isMatched) )  return true;
+        if ( data->Int(var::isMatched ==-1 ) )  return true;
     return false;
 }
 
@@ -70,7 +72,7 @@ int main( int argc, char* argv[])
     {
         if (!passedEvt(&data, argv[1]) ) continue;
         if (!checkevt ) checkevt=true;
-        checkpassedevt(
+        // checkpassedevt(
         if ( ievt%10000 == 0 ) LOG_DEBUG("At evt %d", ievt);
         data.GetEntry(ievt);
 

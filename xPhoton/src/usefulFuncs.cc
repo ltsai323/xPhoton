@@ -1,5 +1,6 @@
 #include <math.h>
-//#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/usefuleFuncs.h"
+#include <stdio.h>
+#include "xPhoton/interface/usefulFuncs.h"
 
 namespace usefulFuncs
 {
@@ -12,4 +13,5 @@ namespace usefulFuncs
    int  SetBoolIntoInt(int idx) { return 1<<idx; }
    void PrintBoolIntStatus(int intBool) { for ( int i=0; i<32; ++i ) printf( "(%d,%s)\n", i, CheckBoolInt(intBool, i) ? "True":"False" ); }
    void StoreBoolInfoToHist( TH1* hist, int intBool ) { for ( int i=0; i<32; ++i ) if ( CheckBoolInt(intBool, i)) hist->Fill(i); }
+
 }
