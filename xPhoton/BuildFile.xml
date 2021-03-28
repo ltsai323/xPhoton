@@ -1,0 +1,7 @@
+<use name="boost"/>
+<use name="rootcore"/>
+<use name="roofit"/>
+
+<export>
+    <lib   name="1"/>
+</export>
