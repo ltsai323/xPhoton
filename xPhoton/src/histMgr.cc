@@ -1,5 +1,5 @@
-#include "xPhoton/interface/histMgr.h"
-#include "xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/histMgr.h"
+#include "xPhoton/xPhoton/interface/logger.h"
 
 void histMgr::Create( const std::string& name, int nbin, double min, double max )
 {

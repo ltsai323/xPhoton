@@ -1,6 +1,6 @@
 #include <math.h>
 #include <stdio.h>
-#include "xPhoton/interface/usefulFuncs.h"
+#include "xPhoton/xPhoton/interface/usefulFuncs.h"
 
 namespace usefulFuncs
 {

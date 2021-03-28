@@ -4,11 +4,11 @@
 #include "TTree.h"
 #include "TDirectory.h"
 
-#include "/home/ltsai/Work/github/xPhoton/interface/readMgr.h"
+#include "xPhoton/xPhoton/interface/readMgr.h"
 
 // you can only load ONE readBrahBrah.h in the analysis.
-#include "/home/ltsai/Work/github/xPhoton/interface/readContent_gganalysis.h"
-#include "/home/ltsai/Work/github/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/readContent_gganalysis.h"
+#include "xPhoton/xPhoton/interface/logger.h"
 
 
 struct treeMgr

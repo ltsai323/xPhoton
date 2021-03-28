@@ -1,10 +1,10 @@
 #ifndef __RECOINFO_H__
 #define __RECOINFO_H__
-#include "/home/ltsai/Work/github/xPhoton/interface/readContent_gganalysis.h"
-#include "/home/ltsai/Work/github/xPhoton/interface/readMgr.h"
-#include "/home/ltsai/Work/github/xPhoton/interface/PhotonSelections.h"
-#include "/home/ltsai/Work/github/xPhoton/interface/logger.h"
-#include "/home/ltsai/Work/github/xPhoton/interface/MuonSelections.h"
+#include "xPhoton/xPhoton/interface/readContent_gganalysis.h"
+#include "xPhoton/xPhoton/interface/readMgr.h"
+#include "xPhoton/xPhoton/interface/PhotonSelections.h"
+#include "xPhoton/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/MuonSelections.h"
 
 #include <TLorentzVector.h>
 #include <TMath.h>
