@@ -27,7 +27,7 @@ using namespace std;
 #include "/home/ltsai/Work/workspaceGammaPlusJet/interface/puweicalc.h"
 //#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/usefulFuncs.h"
 #include "/home/ltsai/Work/workspaceGammaPlusJet/src/usefulFuncs.cc"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/interface/logger.h"
+#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/logger.h"
 
 
 Int_t MINITREE=1;
@@ -1090,18 +1090,17 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     for (Int_t i=0; i<nPho; ++i) {      
       //for (Int_t i=0; i<1; ++i) {      
-      // if(phoEt[i]<15.) continue;       
+       if(phoEt[i]<15.) continue;       
       //if(phoEt[i]<100.) continue;
       if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
       if(TMath::Abs(phoSCEta[i])>2.5) continue;
       if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
       if(isData==1 && JETPD_PHOTONHLT==0 && doWmn==0){
        	if(phoFiredTrgs[i]==0) continue;
-        ++nphofiredtrgs;
-       	// if(((phoFiredTrgs[i]>>6)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+       	if(((phoFiredTrgs[i]>>6)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
        	//if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
-       	// else 
-       	  // continue;       
+       	else 
+       	  continue;       
       }
 //    LOG_WARNING("114\n");
       phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
