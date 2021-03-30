@@ -4,5 +4,5 @@
 <use name="xPhoton/xPhoton"/>
 
 <export>
-    <bin   name="TT" file="ParHistFormatter.cc"></bin>
+    <bin name="exec_parhistformatter"       file="ParHistFormatter.cc"/>
 </export>

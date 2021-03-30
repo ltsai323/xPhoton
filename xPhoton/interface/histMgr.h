@@ -1,5 +1,5 @@
-#ifndef __histMgr_h__
-#define __histMgr_h__
+#ifndef __HISTMGR_H__
+#define __HISTMGR_H__
 
 #include <string>
 #include <vector>
@@ -10,11 +10,12 @@
 // #include "/home/ltsai/Work/github/xPhoton/interface/logger.h"
 
 
-namespace histMgr
+class histMgr
 {
     std::map< std::string, TH1F* > hMap;
     std::map< std::string, TH2F* > hMap2D;
 
+public:
     // create TH1F & TH2F
     void Create( const std::string& name, int nbin, double min, double max );
     void Create( const std::string& name, int nbin, double min, double max , int nbin2, double min2, double max2);

@@ -13,6 +13,11 @@
 #include <TTree.h>
 #include <TH1.h>
 #include <string.h>
+
+// usage : 
+//   ./exec_this data myinputxPhoton.root hihi
+//   which will get your ouptut as outputParHists_data_hihi.root
+
 const int BINNING = 100;
 
 
@@ -43,27 +48,28 @@ int main( int argc, char* argv[])
     TFile* fout = new TFile(ofile, "RECREATE");
 
     LOG_DEBUG("creating histograms");
-    histMgr::Create("HoverE"       , BINNING, 0.,    0.15);
-    histMgr::Create("sieieFull5x5" , BINNING, 0.,    0.05);
-    histMgr::Create("sieipFull5x5" , BINNING, -0.20, 0.2 );
-    histMgr::Create("phoIsoRaw"    , BINNING, 0.,   30.  );
-    histMgr::Create("pt"           , BINNING, 0., 1000.  );
-    histMgr::Create("phi"          , BINNING, -3.14, 3.14);
-    histMgr::Create("eta"          , BINNING, -3.14, 3.14);
-    histMgr::Create("chIsoRaw"     , BINNING, 0.,   15.  );
-    histMgr::Create("nVtx"         , BINNING, 0.,   50.  );
-    histMgr::Create("MET_pt"       , BINNING, 0.,    2.  );
-    histMgr::Create("SCeta"        , BINNING, -3.14, 3.14);
-    histMgr::Create("r9"           , BINNING, 0.,    1.1 );
-    histMgr::Create("s4"           , BINNING, 0.,    1.1 );
-    histMgr::Create("rawE"         , BINNING, 0., 2000.  );
-    histMgr::Create("SCetaWidth"   , BINNING, 0.,    0.10);
-    histMgr::Create("SCphiWidth"   , BINNING, 0.,    0.10);
-    histMgr::Create("rho"          , BINNING, 0.,   50.  );
-    histMgr::Create("mva"          , BINNING,-1.,    1.  );
+    histMgr hists;
+    hists.Create("HoverE"       , BINNING, 0.,    0.15);
+    hists.Create("sieieFull5x5" , BINNING, 0.,    0.05);
+    hists.Create("sieipFull5x5" , BINNING, -0.20, 0.2 );
+    hists.Create("phoIsoRaw"    , BINNING, 0.,   30.  );
+    hists.Create("pt"           , BINNING, 0., 1000.  );
+    hists.Create("phi"          , BINNING, -3.14, 3.14);
+    hists.Create("eta"          , BINNING, -3.14, 3.14);
+    hists.Create("chIsoRaw"     , BINNING, 0.,   15.  );
+    hists.Create("nVtx"         , BINNING, 0.,   50.  );
+    hists.Create("MET_pt"       , BINNING, 0.,    2.  );
+    hists.Create("SCeta"        , BINNING, -3.14, 3.14);
+    hists.Create("r9"           , BINNING, 0.,    1.1 );
+    hists.Create("s4"           , BINNING, 0.,    1.1 );
+    hists.Create("rawE"         , BINNING, 0., 2000.  );
+    hists.Create("SCetaWidth"   , BINNING, 0.,    0.10);
+    hists.Create("SCphiWidth"   , BINNING, 0.,    0.10);
+    hists.Create("rho"          , BINNING, 0.,   50.  );
+    hists.Create("mva"          , BINNING,-1.,    1.  );
 
 
-    histMgr::Create("MET_ptOVERphi", BINNING, -3.14, 3.14, BINNING, 0., 2.);
+    hists.Create("MET_ptOVERphi", BINNING, -3.14, 3.14, BINNING, 0., 2.);
 
     LOG_DEBUG("start looping event");
     
@@ -76,32 +82,32 @@ int main( int argc, char* argv[])
         if ( ievt%10000 == 0 ) LOG_DEBUG("At evt %d", ievt);
         data.GetEntry(ievt);
 
-        histMgr::Fill("HoverE"      , data.Float(var::HoverE            ));
-        histMgr::Fill("sieieFull5x5", data.Float(var::sieieFull5x5      ));
-        histMgr::Fill("sieipFull5x5", data.Float(var::sieipFull5x5      ));
-        histMgr::Fill("phoIsoRaw"   , data.Float(var::phoIsoRaw         ));
-        histMgr::Fill("pt"          , data.Float(var::recoPt            ));
-        histMgr::Fill("phi"         , data.Float(var::recoPhi           ));
-        histMgr::Fill("eta"         , data.Float(var::recoEta           ));
-        histMgr::Fill("chIsoRaw"    , data.Float(var::chIsoRaw          ));
-        histMgr::Fill("nVtx"        , data.Int  (var::nVtx              ));
-        histMgr::Fill("MET_pt"      , data.Float(var::MET)/data.Float(var::recoPt));
-        histMgr::Fill("SCeta"       , data.Float(var::recoSCEta         ));
-        histMgr::Fill("r9"          , data.Float(var::r9                ));
-        histMgr::Fill("s4"          , data.Float(var::e2x2Full5x5)/data.Float(var::e5x5Full5x5));
-        histMgr::Fill("rawE"        , data.Float(var::rawE              ));
-        histMgr::Fill("SCetaWidth"  , data.Float(var::scEtaWidth        ));
-        histMgr::Fill("SCphiWidth"  , data.Float(var::scPhiWidth        ));
-        histMgr::Fill("rho"         , data.Float(var::rho               ));
-        histMgr::Fill("mva"         , data.Float(var::mva               ));
+        hists.Fill("HoverE"      , data.Float(var::HoverE            ));
+        hists.Fill("sieieFull5x5", data.Float(var::sieieFull5x5      ));
+        hists.Fill("sieipFull5x5", data.Float(var::sieipFull5x5      ));
+        hists.Fill("phoIsoRaw"   , data.Float(var::phoIsoRaw         ));
+        hists.Fill("pt"          , data.Float(var::recoPt            ));
+        hists.Fill("phi"         , data.Float(var::recoPhi           ));
+        hists.Fill("eta"         , data.Float(var::recoEta           ));
+        hists.Fill("chIsoRaw"    , data.Float(var::chIsoRaw          ));
+        hists.Fill("nVtx"        , data.Int  (var::nVtx              ));
+        hists.Fill("MET_pt"      , data.Float(var::MET)/data.Float(var::recoPt));
+        hists.Fill("SCeta"       , data.Float(var::recoSCEta         ));
+        hists.Fill("r9"          , data.Float(var::r9                ));
+        hists.Fill("s4"          , data.Float(var::e2x2Full5x5)/data.Float(var::e5x5Full5x5));
+        hists.Fill("rawE"        , data.Float(var::rawE              ));
+        hists.Fill("SCetaWidth"  , data.Float(var::scEtaWidth        ));
+        hists.Fill("SCphiWidth"  , data.Float(var::scPhiWidth        ));
+        hists.Fill("rho"         , data.Float(var::rho               ));
+        hists.Fill("mva"         , data.Float(var::mva               ));
 
-        histMgr::Fill("MET_ptOVERphi", data.Float(var::recoPhi),
+        hists.Fill("MET_ptOVERphi", data.Float(var::recoPhi),
                                        data.Float(var::MET)/data.Float(var::recoPt));
     }
     if (!checkevt ) LOG_WARNING("no event filled! Your input arg setting is '%s'. Please check", argv[1] );
 
     LOG_DEBUG("end of loopgin event, start to fill everything into root file");
-    histMgr::WriteTo(fout);
+    hists.WriteTo(fout);
 
     fout->Write();
     fout->Close();
