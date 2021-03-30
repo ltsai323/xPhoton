@@ -9,7 +9,7 @@ class mcMatchInfo
 {
     histMgr* importedHists;
 public:
-    mcMatchInfo(histMgr* ptr);
+    explicit mcMatchInfo(histMgr* ptr);
     struct truthVal
     {
         std::vector<float> pt;
