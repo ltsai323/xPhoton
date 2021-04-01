@@ -22,17 +22,14 @@ const int BINNING = 100;
 
 
 
-
 const char* ofiletemplate = "outputParHists_%s_%s.root";
 char ofile[200];
 
 bool selectedEvt(readMgr* data, const char* datatype)
 {
-    if ( strcmp(datatype, "data") == 0 ) return true;
-    if ( strcmp(datatype, "mcsig")== 0 )
-        if ( data->Int(var::isMatched == 1 ) )  return true;
-    if ( strcmp(datatype, "mcbkg")== 0 )
-        if ( data->Int(var::isMatched ==-1 ) )  return true;
+    if ( strncmp(datatype, "data", 4) == 0 )                                        return true;
+    if ( strncmp(datatype, "mcsig", 5)== 0 ) if ( data->Int(var::isMatched) == 1 )  return true;
+    if ( strncmp(datatype, "mcbkg", 5)== 0 ) if ( data->Int(var::isMatched) ==-1 )  return true;
     return false;
 }
 
