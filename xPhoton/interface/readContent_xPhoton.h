@@ -4,11 +4,6 @@
 #include <vector>
 
 enum var{
-    jetSubVtxPt   ,
-    jetSubVtxMass ,
-    jetSubVtx3DVal,
-    jetSubVtx3DErr  ,
-    jetSubVtxNtrks,
     run,
     event,
     isData,
@@ -105,15 +100,15 @@ enum var{
     SeedTime,
     SeedEnergy,
     MIPTotEnergy,
+    jetSubVtxPt   ,
+    jetSubVtxMass ,
+    jetSubVtx3DVal,
+    jetSubVtx3DErr  ,
+    jetSubVtxNtrks,
     totVar
 };
 
 std::vector<const char*> varBRANCHES={
-    "jetSubVtxPt"   ,
-    "jetSubVtxMass" ,
-    "jetSubVtx3DVal",
-    "jetSubVtx3DErr"  ,
-    "jetSubVtxNtrks",
     "run",
     "event",
     "isData",
@@ -210,6 +205,11 @@ std::vector<const char*> varBRANCHES={
     "SeedTime",
     "SeedEnergy",
     "MIPTotEnergy",
+    "jetSubVtxPt"   ,
+    "jetSubVtxMass" ,
+    "jetSubVtx3DVal",
+    "jetSubVtx3DErr"  ,
+    "jetSubVtxNtrks",
 };
 
 

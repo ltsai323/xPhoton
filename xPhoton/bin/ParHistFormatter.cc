@@ -26,7 +26,7 @@ const int BINNING = 100;
 const char* ofiletemplate = "outputParHists_%s_%s.root";
 char ofile[200];
 
-bool passedEvt(readMgr* data, const char* datatype)
+bool selectedEvt(readMgr* data, const char* datatype)
 {
     if ( strcmp(datatype, "data") == 0 ) return true;
     if ( strcmp(datatype, "mcsig")== 0 )
@@ -76,9 +76,9 @@ int main( int argc, char* argv[])
     bool checkevt = false;
     for (Long64_t ievt = 0; ievt < data.GetEntriesFast(); ievt++) 
     {
-        if (!passedEvt(&data, argv[1]) ) continue;
+        data.GetEntry(ievt);
+        if (!selectedEvt(&data, argv[1]) ) continue;
         if (!checkevt ) checkevt=true;
-        // checkpassedevt(
         if ( ievt%10000 == 0 ) LOG_DEBUG("At evt %d", ievt);
         data.GetEntry(ievt);
 
@@ -106,7 +106,7 @@ int main( int argc, char* argv[])
     }
     if (!checkevt ) LOG_WARNING("no event filled! Your input arg setting is '%s'. Please check", argv[1] );
 
-    LOG_DEBUG("end of loopgin event, start to fill everything into root file");
+    LOG_DEBUG("end of loopging event, start to fill everything into root file");
     hists.WriteTo(fout);
 
     fout->Write();
