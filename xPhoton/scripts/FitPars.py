@@ -140,17 +140,6 @@ if __name__ == '__main__':
     fitmgr=RooFitFittingMgr(myspace)
 
     obs='mva'
-    '''
-    inputinfo=[
-        ('data' , '/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_data_data_Run2016G_94XReReco_v1.root'),
-        ('mcbkg', '/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_mcbkg_Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root'),
-        ('mcsig', '/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_mcsig_Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root'),
-    ]
-    inputfile=[ ROOT.TFile.Open(p) for t,p in inputinfo ]
-    inputhist=[ f.Get(obs) for f in inputfile ]
-    #varrange=( inputhist[0].GetXaxis().GetXmin(), inputhist[0].GetXaxis().GetXmax() )
-    '''
-
 
     varhist=fitmgr.LoadObjects(
             filepath='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_data_data_Run2016G_94XReReco_v1.root',
@@ -181,11 +170,6 @@ if __name__ == '__main__':
 
     logger.debug('writing to root file')
     myspace.Write('newfile.root')
-    '''
-    for ifile in inputfile:
-        ifile.Close()
-        logger.debug(ifile.GetName() + ' is closed')
-    '''
 
     logger.debug('successfully done')
 
