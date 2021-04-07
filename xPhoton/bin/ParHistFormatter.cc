@@ -27,9 +27,9 @@ char ofile[200];
 
 bool selectedEvt(readMgr* data, const char* datatype)
 {
-    if ( strncmp(datatype, "data", 4) == 0 )                                        return true;
-    if ( strncmp(datatype, "mcsig", 5)== 0 ) if ( data->Int(var::isMatched) == 1 )  return true;
-    if ( strncmp(datatype, "mcbkg", 5)== 0 ) if ( data->Int(var::isMatched) ==-1 )  return true;
+    if ( strncmp(datatype, "data",  4) == 0 )                                        return true;
+    if ( strncmp(datatype, "mcsig", 5) == 0 ) if ( data->Int(var::isMatched) == 1 )  return true;
+    if ( strncmp(datatype, "mcbkg", 5) == 0 ) if ( data->Int(var::isMatched) ==-1 )  return true;
     return false;
 }
 
