@@ -2,16 +2,16 @@
 import ROOT
 from types import MethodType
 import os
-from Managers.LogMgr import GetLogger, LoadLoggerConfig
+from xPhoton.xPhoton.Managers.LogMgr import GetLogger, LoadLoggerConfig
 LoadLoggerConfig('/home/ltsai/local/mylib/data/logger_debug.config')
 logger=GetLogger(__name__)
 FIGTEMPLATE='parfit_{0}.png'
 
 
-from Managers.AdditionalFunctionMgr import ImportAddFunc
-from myfit.RooFitSpaceMgr import RooFitSpaceMgr
-from myfit.RooFitFittingMgr import RooFitFittingMgr
-from myfit.WorkspaceContents import *
+from xPhoton.xPhoton.Managers.AdditionalFunctionMgr import ImportAddFunc
+from xPhoton.xPhoton.myfit.RooFitSpaceMgr import RooFitSpaceMgr
+from xPhoton.xPhoton.myfit.RooFitFittingMgr import RooFitFittingMgr
+from xPhoton.xPhoton.myfit.WorkspaceContents import *
 
 
 factory_extendpdf='ExtendPdf::{name}({pdf},{num})'
@@ -21,21 +21,11 @@ factory_num='{name}({xdef},{xmin},{xmax})'
 factory_addpdf='SUM::{name}({num1}*{pdf1},{num2}*{pdf2})'
 
 
-def AddPdf(spaceMGR, extpdfnames, outname):
-    extpdfs = [ spaceMGR.LoadPdf(pdfname) for pdfname in extpdfnames ]
-    extpdf0=spaceMGR.LoadPdf(extpdfnames[0])
-    extpdf1=spaceMGR.LoadPdf(extpdfnames[1])
-
-    outpdf=ROOT.RooAddPdf(outname,outname,
-            ROOT.RooArgList(*extpdfs)
-            )
-    spaceMGR.ReserveItem(outpdf)
-    return outpdf
 
 
 '''
 def BuildHistPdf(self, spaceMGR, hist, label):
-    return CreateHistPDF(spaceMGR,hist,label,'mva')
+    return CreatePDF_Hist(spaceMGR,hist,label,'mva')
 '''
 
 # input objname_desc_opts is a list contains objname and its description
@@ -46,12 +36,15 @@ def CreateLegend_findObject( rooplot, objname_desc_opts, title=None,p0=(0.60,0.7
         leg.AddEntry(rooplot.findObject(objname),desc,drawopt)
     leg.SetHeader(title,'c')
     leg.SetNColumns(nColumn)
-    leg.SetFillColor(0)
+    leg.SetFillColor(4000)
+    leg.SetFillStyle(4000)
     #leg.SetFillStyle(4000)
+
     leg.SetBorderSize(0)
     return leg
 
 
+'''
 def extractinfo(self): ## refactoring
     datahist=None
     fitpdfs=[]
@@ -64,7 +57,7 @@ def extractinfo(self): ## refactoring
             continue
         print hist.GetName()
         datahist=CreateDataHist( self._workspace, hist, self.GetObservableName(), '_'.join(['datahist', label,self.GetObservableName()]) )
-        pdf=CreateHistPDF(self._workspace, datahist, self.GetObservableName(), '_'.join(['histPDF',label,self.GetObservableName()]))
+        pdf=CreatePDF_Hist(self._workspace, datahist, self.GetObservableName(), '_'.join(['histPDF',label,self.GetObservableName()]))
         fitpdfs.append( (label,pdf) )
     return (datahist,fitpdfs)
 
@@ -75,11 +68,11 @@ def Fit2Comps(self, name):
 
     data_=self.loadinfos[0]['obj']
     totnum=data_.GetEntries()
-    extpdf=AddPdf(self._workspace, fitpdfs, totnum, 'extpdf')
+    extpdf=CreatePDF_Add(self._workspace, fitpdfs, totnum, 'extpdf')
     for label,pdf in fitpdfs:
-        self.AddPDFComponents(label,pdf)
+        self.SetPDF_Components(label,pdf)
 
-    self.AddPDFFit(extpdf)
+    self.SetPDF_Target(extpdf)
     self.PerformFitting()
 
     drawingcontent=self.CalculateDrawingContent()
@@ -110,6 +103,7 @@ def Fit2Comps(self, name):
     if name:
         canv.SaveAs(FIGTEMPLATE.format(name))
     return drawingcontent
+'''
 
 
 
@@ -122,29 +116,30 @@ def Fit2Comps(self, name):
 if __name__ == '__main__':
     from array import array
 
-    space=ROOT.RooWorkspace('space',False)
-    myspace=RooFitSpaceMgr(space)
-    fitmgr=RooFitFittingMgr(myspace)
+    #space=ROOT.RooWorkspace('space',False)
+    myspace=RooFitSpaceMgr('space')
 
     obs='mva'
+    fitmgr=RooFitFittingMgr(myspace)
+
 
     varhist=fitmgr.LoadObjects(
             filepath='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_data_data_Run2016G_94XReReco_v1.root',
-            loadinfo=('data', 'mva'),
+            loadinfo=('data', obs),
             saveANDrenameToworkspace=False
             )
     hfitSources=[]
     hfitSources.append( [ 'mcsig',
             fitmgr.LoadObjects(
                 filepath='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_mcsig_Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root',
-                loadinfo=('mcsig', 'mva'),
+                loadinfo=('mcsig', obs),
                 saveANDrenameToworkspace=True
             )
         ] )
     hfitSources.append( [ 'mcbkg',
             fitmgr.LoadObjects(
                 filepath='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_mcbkg_Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root',
-                loadinfo=('mcbkg', 'mva'),
+                loadinfo=('mcbkg', obs),
                 saveANDrenameToworkspace=True
             )
         ] )
@@ -152,24 +147,23 @@ if __name__ == '__main__':
 
     varrange=( varhist.GetXaxis().GetXmin(), varhist.GetXaxis().GetXmax() )
 
-    roobsv=CreateVar(fitmgr._workspace, obs, varrange)
-    target=CreateDataHist(fitmgr._workspace, varhist, obs, '_'.join(['datahist','data',obs]) )
+    roobsv=fitmgr._workspace.CreateVar( obs, varrange)
+    target=fitmgr._workspace.CreateDataHist( varhist, obs, '_'.join(['datahist','data',obs]) )
     fitmgr.SetFitTarget( target,roobsv )
 
     fitfrags=[]
     for label,histsource in hfitSources:
-        datahist=CreateDataHist( fitmgr._workspace, histsource, obs, '_'.join(['datahist', label, obs]) )
-        histpdf =CreateHistPDF ( fitmgr._workspace, datahist,   obs, '_'.join(['histPDF' , label, obs]) )
-        yieldrange=[0.0, 0.0, varhist.GetEntries() ]
-        yieldrange[0] = (yieldrange[2]-yieldrange[1])*0.8
-        yieldvar=CreateYield   ( fitmgr._workspace, '_'.join(['yield',label,obs]), yieldrange )
-        yname=yieldvar.GetName()
-        extpdf  =CreateExtPDF  ( fitmgr._workspace, histpdf.GetName(), yname , '_'.join(['extPDF'  , label, obs]) )
-        fitmgr.AddPDFComponents( label, extpdf )
-        fitfrags.append(extpdf.GetName())
-    totpdf=AddPdf(fitmgr._workspace, fitfrags, 'totfit')
+        datahist=fitmgr._workspace.CreateDataHist(  histsource, obs, '_'.join(['datahist', label, obs]) )
+        histpdf =fitmgr._workspace.CreatePDF_Hist (  datahist,   obs, '_'.join(['histPDF' , label, obs]) )
 
-    fitmgr.AddPDFFit(totpdf)
+        yieldvar=fitmgr._workspace.CreateVar_Yield   (  '_'.join(['yield',label,obs]), varhist.GetEntries() )
+        yname=yieldvar.GetName()
+        extpdf  =fitmgr._workspace.CreatePDF_Extended  (  histpdf.GetName(), yname , '_'.join(['extPDF'  , label, obs]) )
+        fitmgr.SetPDF_Components( label, extpdf )
+        fitfrags.append(extpdf.GetName())
+    totpdf=fitmgr._workspace.CreatePDF_Add( fitfrags, 'totfit')
+
+    fitmgr.SetPDF_Target(totpdf)
     fitmgr.PerformFitting()
 
     drawingcontent=fitmgr.CalculateDrawingContent()
@@ -197,16 +191,13 @@ if __name__ == '__main__':
     canv=ROOT.TCanvas('c1','c1',1000,1000)
     drawingcontent.Draw()
     leg.Draw()
-    name='test'
-    if name:
-        canv.SaveAs(FIGTEMPLATE.format(name))
+    canv.SaveAs(FIGTEMPLATE.format(obs))
 
-    #fitmgr.exfunc=MethodType(Fit2Comps, fitmgr)
-    #fitmgr.exfunc(name='test')
+
 
 
     logger.debug('writing to root file')
-    myspace.Write('newfile.root')
+    myspace.Write('ParFitFindYield.{0}.root'.format(obs))
 
     logger.debug('successfully done')
 
