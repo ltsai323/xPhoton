@@ -11,14 +11,14 @@ def Naming( *args ):
 
 class RooFitFittingMgr(object):
     def __init__(self, inputworkspace):
-        if not isinstance(inputworkspace, RooFitSpaceMgr):
+        if not isinstance(inputworkspace, (RooFitSpaceMgr,None)):
             logger.error('constructing object failed. Input RooFitSpaceMgr object')
 
         self._workspace=inputworkspace
         self._observ=None
         self._target=None
         self._fitpdf=None # pdf
-        #self._canv=None
+
         self._pdfcomponents=[] # [ (label,pdf) ]
         self._additionalInfo=ImportAddFunc()
 
