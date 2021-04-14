@@ -7,7 +7,7 @@ def findnumber(word):
     return (float(numbers[0]), float(numbers[2]))
 def numberinterpreter(lines):
     if len(lines) < 2:
-        print 'input lines: {0}'.format(lines)
+        mylog.warning( 'input lines: {0}'.format(lines) )
         return None
     return {'xs': lines[0], 'fracofevt': lines[1], 'lumiper1Mevt':lines[2]}
 
