@@ -3,6 +3,38 @@ import json
 
 from xPhoton.xPhoton.Managers.PathMgr import CMSPath
 
+def ExtractDigit(word):
+    digits=[]
+
+    digit=''
+    for i, c in enumerate(word):
+        if c.isdigit():
+            digit+=c
+            if i+1 == len(word) and digit:
+                digits.append(digit)
+                break
+            if not word[i+1].isdigit():
+                digits.append(digit)
+                digit=''
+    return digits
+
+def PatternAnalysis_filename(word):
+    output=[ True, if 'inf' in word.lower() else False ]
+    output.extend(ExtractDigit(word))
+    return output
+def PatternRecognization_filename(word1,word2):
+    pattern1=PatternAnalysis_filename(word1)
+    pattern2=PatternAnalysis_filename(word2)
+    if len(pattern1)<2: return False
+    if len(pattern2)<2: return False
+    # recognize first and second number in filename (Inf is also a number)
+    if pattern1[1] == pattern2[1]:     # 1st number
+        if pattern1[0] == pattern2[0]: # Inf exists
+            return True
+        if pattern1[2] == pattern2[2]: # 2nd number
+            return True
+    return False
+
 class XSconnector(object):
     def __init__(self, jsonname, filelist, primaryatasetlist):
         self._infiles=filelist
@@ -28,13 +60,23 @@ class XSconnector(object):
         if len(self._infiles) != len(self._inpdata):
             raise IOError('length of input files list and input primary datasets list are not the same')
 
+    def ResetInputFiles(self, filelist):
+        if len(filelist) != len(self._infiles):
+            raise IOError('new file list has different length comparing to old file list')
+        for idx in range(len(self._infiles)):
+            oldfile=self._infiles[idx]
+            newfile=filelist[idx]
+            swapable=PatternRecognization_filename(newfile,oldfile)
+            if not swapable:
+                raise ImportError('new imported file cannot be recognized!!!!\n--- Old file : %s\n--- New file : %s' % (oldfile,newfile) )
 
+            self._infiles[idx]=newfile
 
 
 
 
 if __name__ == '__main__':
-
+    print ExtractDigit('asdfk320kldfjto2391lksjie90489')
 
     '''
     bkgpythia=XSconnector(

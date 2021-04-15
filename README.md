@@ -9,6 +9,12 @@ logging
 readMgr
 readgganalysis
 
+histScaler.py : 
+'''
+  connect cross section - lumi per event - ntuple root file information 
+'''
+
 ## ToDo 
-- [ ] Use CMSSW to compile the separated files.
+- [ ] Accomplish histScaler.py and rename it.
+- [x] Use CMSSW to compile the separated files.
 - [ ] Use makefile and shared library to compile separated files. (Postponed...)
