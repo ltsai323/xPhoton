@@ -1,0 +1,80 @@
+19-Mar-2021 19:14:30 CET  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root
+%MSG-w XrdAdaptorInternal:  file_open 19-Mar-2021 19:14:31 CET pre-events
+Failed to open file at URL root://eoscms.cern.ch:1094//eos/cms/store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root.
+%MSG
+%MSG-w XrdAdaptorInternal:  file_open 19-Mar-2021 19:14:31 CET pre-events
+Failed to open file at URL root://eoscms.cern.ch:1094//eos/cms/store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root?tried=.
+%MSG
+19-Mar-2021 19:14:31 CET  Fallback request to file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root
+[2021-03-19 19:14:32.878863 +0100][Error  ][XRootDTransport   ] [xs-302.cr.cnaf.infn.it:1094 #0.0] Authentication with gsi failed: Secgsi: ErrParseBuffer: cannot find certificate: corruption?: kXGC_certreq
+[2021-03-19 19:14:32.878972 +0100][Error  ][XRootDTransport   ] [xs-302.cr.cnaf.infn.it:1094 #0.0] No protocols left to try
+[2021-03-19 19:14:32.878990 +0100][Error  ][AsyncSock         ] [xs-302.cr.cnaf.infn.it:1094 #0.0] Socket error while handshaking: [FATAL] Auth failed
+[2021-03-19 19:14:32.879097 +0100][Error  ][PostMaster        ] [xs-302.cr.cnaf.infn.it:1094 #0] elapsed = 0, pConnectionWindow = 31 seconds.
+[2021-03-19 19:14:33.015308 +0100][Error  ][XRootDTransport   ] [xs-302.cr.cnaf.infn.it:1094 #0.0] Authentication with gsi failed: Secgsi: ErrParseBuffer: cannot find certificate: corruption?: kXGC_certreq
+[2021-03-19 19:14:33.015398 +0100][Error  ][XRootDTransport   ] [xs-302.cr.cnaf.infn.it:1094 #0.0] No protocols left to try
+[2021-03-19 19:14:33.015412 +0100][Error  ][AsyncSock         ] [xs-302.cr.cnaf.infn.it:1094 #0.0] Socket error while handshaking: [FATAL] Auth failed
+[2021-03-19 19:14:33.015495 +0100][Error  ][PostMaster        ] [xs-302.cr.cnaf.infn.it:1094 #0] elapsed = 1, pConnectionWindow = 31 seconds.
+[2021-03-19 19:14:33.015530 +0100][Error  ][PostMaster        ] [xs-302.cr.cnaf.infn.it:1094 #0] Unable to recover: [FATAL] Auth failed.
+[2021-03-19 19:14:33.015546 +0100][Error  ][XRootD            ] [xs-302.cr.cnaf.infn.it:1094] Impossible to send message kXR_open (file: /store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root, mode: 0660, flags: kXR_open_read kXR_async kXR_retstat ). Trying to recover.
+%MSG-w XrdAdaptor:  file_open 19-Mar-2021 19:14:34 CET pre-events
+Data is served from T1_UK_RAL instead of original site infn.it
+%MSG
+19-Mar-2021 19:14:37 CET  Successfully opened file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root
+Begin processing the 1st record. Run 1, Event 11, LumiSection 1 on stream 0 at 19-Mar-2021 19:15:10.940 CET
+      0.256955      0.000035      0.081303             0
+     49.576715      0.006407      0.081303             1
+    278.889877      0.036036      0.081303             2
+    828.088316      0.106998      0.081303             3
+ 
+19-Mar-2021 19:15:20 CET  Closed file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/270000/EAA5B758-F9E9-E811-9BC6-B496910A8098.root
+
+------------------------------------
+GenXsecAnalyzer:
+------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+Overall cross-section summary 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Process		xsec_before [pb]		passed	nposw	nnegw	tried	nposw	nnegw 	xsec_match [pb]			accepted [%]	 event_eff [%]
+0		2.571e-01 +/- 5.618e-05		1	1	0	30	30	0	8.569e-03 +/- 8.425e-03		3.3 +/- 3.3	3.3 +/- 3.3
+1		4.955e+01 +/- 1.016e-02		292	292	0	5340	5340	0	2.709e+00 +/- 1.542e-01		5.5 +/- 0.3	5.5 +/- 0.3
+2		2.790e+02 +/- 5.722e-02		952	952	0	29481	29481	0	9.011e+00 +/- 2.873e-01		3.2 +/- 0.1	3.2 +/- 0.1
+3		8.281e+02 +/- 1.698e-01		8819	8819	0	88097	88097	0	8.289e+01 +/- 8.375e-01		10.0 +/- 0.1	10.0 +/- 0.1
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+Total		1.157e+03 +/- 1.795e-01		10064	10064	0	122948	122948	0	9.470e+01 +/- 9.046e-01		8.2 +/- 0.1	8.2 +/- 0.1
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Before matching: total cross section = 1.157e+03 +- 1.795e-01 pb
+After matching: total cross section = 9.470e+01 +- 9.046e-01 pb
+Matching efficiency = 0.1 +/- 0.0   [TO BE USED IN MCM]
+Filter efficiency (taking into account weights)= (10064) / (10064) = 1.000e+00 +- 0.000e+00
+Filter efficiency (event-level)= (10064) / (10064) = 1.000e+00 +- 0.000e+00    [TO BE USED IN MCM]
+
+After filter: final cross section = 9.470e+01 +- 9.046e-01 pb
+After filter: final fraction of events with negative weights = 0.000e+00 +- 0.000e+00
+After filter: final equivalent lumi for 1M events (1/fb) = 1.056e+01 +- 1.014e-01
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 GenXSecAnalyzer      -w GenXSecAnalyzer:                      18       18
+    2 XrdAdaptor           -w file_open                              1        1
+    3 XrdAdaptorInternal   -w file_open                              2        2
+    4 fileAction           -s file_close                             1        1
+    5 fileAction           -s file_open                              3        3
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 GenXSecAnalyzer      PostGlobalEndRun PostGlobalEndRun PostGlobalEndRun
+    2 XrdAdaptor           pre-events                        
+    3 XrdAdaptorInternal   pre-events       pre-events       
+    4 fileAction           PostGlobalEndRun                  
+    5 fileAction           pre-events       pre-events       pre-events
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+Warning                21                  21
+System                  4                   4
+
+dropped waiting message count 0
