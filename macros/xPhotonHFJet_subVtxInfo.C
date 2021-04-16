@@ -287,6 +287,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
   Float_t jetGenJetPt_, jetGenJetEta_, jetGenJetPhi_, jetGenJetY_, genHT_;
   Float_t jetCSV2BJetTags_, jetDeepCSVTags_b_, jetDeepCSVTags_bb_, jetDeepCSVTags_c_, jetDeepCSVTags_udsg_;
   Int_t jetPartonID_, jetHadFlvr_, jetGenPartonID_;
+  Int_t jetGenPartonMomID_;
 
   Int_t    run;
   Long64_t event;
@@ -402,6 +403,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
   outtree_->Branch("jetPartonID", 	          &jetPartonID_, 	      	      "jetPartonID/I"); 	        
   outtree_->Branch("jetGenPartonID", 	          &jetGenPartonID_, 	      	      "jetGenPartonID/I"); 	        
   outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
+  outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
   }
 
 
@@ -658,12 +660,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Int_t *jetPartonID;
     Int_t *jetGenPartonID;
     Int_t *jetHadFlvr;
+    Int_t *jetGenPartonMomID;
 
     if ( data.HasMC() )
     {
         jetPartonID = data.GetPtrInt("jetPartonID");
         jetGenPartonID = data.GetPtrInt("jetGenPartonID");
         jetHadFlvr = data.GetPtrInt("jetHadFlvr");
+        jetGenPartonMomID = data.GetPtrInt("jetGenPartonMomID");
     }
 
     // Float_t* phoE   = data.GetPtrFloat("phoE");
@@ -1293,12 +1297,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 	  jetGenJetPhi_ = jetGenJetPhi[jet_index];
 	  jetGenJetY_ = jetGenJetP4.Rapidity();
 	  jetGenPartonID_ = jetGenPartonID[jet_index];		
+	  jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
 	  //if(jetGenJetPt_ < 0.) printf("event %d, jet Pt %.2f, jet eta %.2f, jet phi %.2f \n", event, jetPt_, jetEta_, jetPhi_);
 	}else {
 	  jetGenJetPt_ = 0.;
 	  jetGenJetEta_ = 0.;
 	  jetGenJetPhi_ = 0.;
 	  jetGenJetY_ = 0.;
+	  jetGenPartonID_ = 0;
 	  jetGenPartonID_ = 0;
 	}
       }else{
@@ -1312,6 +1318,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 	jetGenJetPhi_ = 0.;
 	jetGenJetY_ = 0.;
 	jetGenPartonID_ = 0;
+	jetGenPartonMomID_ = 0;
       }
 //    LOG_WARNING("119.2\n");
          if (hasSubVtxInfo)
