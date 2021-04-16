@@ -2,16 +2,16 @@
 import ROOT
 from types import MethodType
 import os
-from Managers.LogMgr import GetLogger, LoadLoggerConfig
+from xPhoton.xPhoton.Managers.LogMgr import GetLogger, LoadLoggerConfig
 LoadLoggerConfig('/home/ltsai/local/mylib/data/logger_debug.config')
 logger=GetLogger(__name__)
 FIGTEMPLATE='parfit_{0}.png'
 
 
-from Managers.AdditionalFunctionMgr import ImportAddFunc
-from myfit.RooFitSpaceMgr import RooFitSpaceMgr
-from myfit.RooFitFittingMgr import RooFitFittingMgr
-from myfit.WorkspaceContents import *
+from xPhoton.xPhoton.Managers.AdditionalFunctionMgr import ImportAddFunc
+from xPhoton.xPhoton.myfit.RooFitSpaceMgr import RooFitSpaceMgr
+from xPhoton.xPhoton.myfit.RooFitFittingMgr import RooFitFittingMgr
+from xPhoton.xPhoton.myfit.WorkspaceContents import *
 
 import ROOT
 def drawObservable(obs, sigYield, bkgYield):
@@ -36,7 +36,7 @@ def drawObservable(obs, sigYield, bkgYield):
             } )
         hfitSources.append( { 'label':'mcbkg',
                 'obj':fitmgr.LoadObjects(
-                    filepath='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_mcbkg_Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root',
+                    filepath='/home/ltsai/Work/workspaceGammaPlusJet/storeroot/outputParHists/outputParHists_mcbkg_Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root',
                     loadinfo=('mcbkg', obs),
                     saveANDrenameToworkspace=False
                 )
