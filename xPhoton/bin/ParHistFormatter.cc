@@ -32,6 +32,7 @@ bool selectedEvt(readMgr* data, const char* datatype)
     if ( strncmp(datatype, "mcbkg", 5) == 0 ) if ( data->Int(var::isMatched) ==-1 )  return true;
     return false;
 }
+//bool addPreselection
 
 int main( int argc, char* argv[])
 {
@@ -74,6 +75,13 @@ int main( int argc, char* argv[])
     for (Long64_t ievt = 0; ievt < data.GetEntriesFast(); ievt++) 
     {
         data.GetEntry(ievt);
+
+        // preselection start
+        if ( data.Float(var::recoPt) < 180. ) continue;
+        if ( data.Float(var::recoEta) > 1.4442 || 
+             data.Float(var::recoEta) <-1.4442 ) continue; // choose barrel only
+        // preselection end
+
         if (!selectedEvt(&data, argv[1]) ) continue;
         if (!checkevt ) checkevt=true;
         if ( ievt%10000 == 0 ) LOG_DEBUG("At evt %d", ievt);
