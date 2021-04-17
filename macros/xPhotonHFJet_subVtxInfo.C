@@ -1281,6 +1281,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 //    LOG_WARNING("119\n");
     for (Int_t ii=0; ii<photon_requested; ii++) {            
+        if ( photon_list.empty() ) continue;
 //    LOG_WARNING("119.1\n");
       int ipho = photon_list[ii];
       phoFiredTrgs_ = phoFiredTrgs[ipho];
