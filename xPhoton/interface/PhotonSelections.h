@@ -44,7 +44,7 @@ Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto=kTRUE) {
     if(phoHoverE[ipho] > 0.05) phoID=0;
     //if(phoR9[ipho] < 0.85) phoID=0; //disable this for Zg analysis
   }    
-  return phoID;
+  return phoID; 
 
 }
 
