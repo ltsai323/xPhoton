@@ -1101,10 +1101,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
       if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
       if(isData==1 && JETPD_PHOTONHLT==0 && doWmn==0){
        	if(phoFiredTrgs[i]==0) continue;
-       	if(((phoFiredTrgs[i]>>6)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+        /* completely disable trigger selection
+
+        // in 2016 HLT Table
+       	if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+
        	//if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
-       	else 
-       	  continue;       
+       	//else 
+       	//  continue;       
+        //  */
       }
 //    LOG_WARNING("114\n");
       phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
