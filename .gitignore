@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# root compiled files
+*_ACLiC_*
+
 *.root
 
 *.pyc
