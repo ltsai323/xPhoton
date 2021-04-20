@@ -25,5 +25,5 @@ histScaler.py :
 - [ ] $\sigma_{ieip}$ : why nothing in it?
 - [ ] Need to check result after all modification!!!!!!!!!
 * [ ] Reproduce HsinYei's result to prove my code is workable. (Use exactly same parameter and same plotting method)
-* [ ] Check the reason why all photon catched by xPhoton passes HLT_Photon175.
+* [x] Check the reason why all photon catched by xPhoton passes HLT_Photon175.
 - [ ] MVA fitting : Don't use 100 bins. Use 10 bins only. Too many bins allow barely shape uncertainty.
