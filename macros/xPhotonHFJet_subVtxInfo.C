@@ -263,7 +263,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
   Float_t puwei_=1.;
   Float_t r9Full5x5;
   Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
-  Float_t HoverE,  chIso, phoIso, nhIso, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
+  Float_t HoverE, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
   Float_t rho;
   Int_t phoFiredTrgs_, phohasPixelSeed_;
 
@@ -332,9 +332,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
   outtree_->Branch("eleVeto",      &eleVeto,      "eleVeto/I");
   outtree_->Branch("HoverE",       &HoverE,       "HoverE/F");
 
-  outtree_->Branch("chIso",        &chIso,        "chIso/F");
-  outtree_->Branch("phoIso",       &phoIso,       "phoIso/F");
-  outtree_->Branch("nhIso",        &nhIso,        "nhIso/F");
   outtree_->Branch("chIsoRaw",     &chIsoRaw,     "chIsoRaw/F");
   outtree_->Branch("chWorstRaw",   &chWorstIso,   "chWorstIso/F");
   outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
@@ -472,6 +469,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         HLTIsPrescaled     = 0;
         HLT50ns            = 0;
         HLTIsPrescaled50ns = 0;
+        metFilters=0;
     }
 
 
