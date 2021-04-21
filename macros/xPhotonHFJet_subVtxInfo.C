@@ -15,19 +15,13 @@ using namespace std;
 #include <iostream>
 #include <TProfile.h>
 
-//#include "untuplizer.h"
-//#include "PhotonSelections.h"
-//#include "MuonSelections.h"
-//#include "ElectronSelections.h"
-//#include "puweicalc.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/untuplizer.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/PhotonSelections.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/MuonSelections.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/ElectronSelections.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/puweicalc.h"
-//#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/usefulFuncs.h"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/src/usefulFuncs.cc"
-#include "/home/ltsai/Work/workspaceGammaPlusJet/interface/logger.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/untuplizer.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/PhotonSelections.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/MuonSelections.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/ElectronSelections.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/puweicalc.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/src/usefulFuncs.cc"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/logger.h"
 
 
 Int_t MINITREE=1;
@@ -1275,8 +1269,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     //   phoFilters["hltEG600HEFilter"]   = 12;
     // } HEFilter H/E(EB) < 0.15 and H/E(EE) < 0.1        
 
-    int photon_requested = 1; //only leading photon //photon_list.size();
+    int photon_requested = ONLY_LEADINGPHOTON ? 1 : photon_list.size();
     //int photon_jetID_size = photon_jetID.size();
+
 
 
 //    LOG_WARNING("119\n");
