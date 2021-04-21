@@ -19,6 +19,8 @@
 //   which will get your ouptut as outputParHists_data_hihi.root
 
 const int BINNING = 100;
+// WARNING // HLT BIT needs to be checked at each file.
+const int HLT_PHOTON_BIT=6; // HLT_Photon175
 
 
 
@@ -47,7 +49,7 @@ int main( int argc, char* argv[])
 
     LOG_DEBUG("creating histograms");
     histMgr hists;
-    hists.Create("HoverE"       , BINNING, 0.,    0.15);
+    hists.Create("HoverE"       ,      30, 0.,    0.15);
     hists.Create("sieieFull5x5" , BINNING, 0.,    0.05);
     hists.Create("sieipFull5x5" , BINNING, -0.20, 0.2 );
     hists.Create("phoIsoRaw"    , BINNING, 0.,   30.  );
@@ -80,6 +82,8 @@ int main( int argc, char* argv[])
         if ( data.Float(var::recoPt) < 180. ) continue;
         if ( data.Float(var::recoEta) > 1.4442 || 
              data.Float(var::recoEta) <-1.4442 ) continue; // choose barrel only
+
+        if (!(data.Long64(var::phoFiredTrg)>>HLT_PHOTON_BIT&1) ) continue;
         // preselection end
 
         if (!selectedEvt(&data, argv[1]) ) continue;
