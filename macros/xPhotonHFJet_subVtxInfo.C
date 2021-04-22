@@ -307,7 +307,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
   outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
   outtree_->Branch("HLT50ns",         &HLT50ns,        "HLT50ns/L");
   outtree_->Branch("HLTIsPrescaled50ns",         &HLTIsPrescaled50ns,        "HLTIsPrescaled50ns/L");
-  outtree_->Branch("phoFiredTrg",  &phoFiredTrgs_,"phoFiredTrgs/I");
+  outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
   outtree_->Branch("pthat",        &pthat_,       "pthat/F");
   outtree_->Branch("genHT",        &genHT_,       "genHT/F");
   outtree_->Branch("mcPt",         &mcPt_,        "mcPt/F");
