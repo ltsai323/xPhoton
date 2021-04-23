@@ -800,6 +800,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 	mcPhi_ = 0.;
 	mcCalIso04_=0.;
 	mcTrkIso04_=0.;
+    mcPt_ = mcEta_ = mcPhi_ = mcCalIso04_ = mcTrkIso04_ = -999.;
 	if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
 	for (int jj=0; jj<nnMC; ++jj) {
 	  int k = mcid[jj];
