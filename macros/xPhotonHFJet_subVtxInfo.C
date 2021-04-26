@@ -430,7 +430,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 //    LOG_WARNING("03\n");
   // event loop
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
-      if ( ev == 10000 ) break;
 //    LOG_WARNING("10\n");
     //for (Long64_t ev = 0; ev <10000; ev++) {
   //for (Long64_t ev = 0; ev < data.GetEntriesFast()/2.; ev++) {
