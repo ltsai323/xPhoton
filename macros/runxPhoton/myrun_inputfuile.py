@@ -42,6 +42,10 @@ def execCommand(path, isRemote=False):
         showfile( stripath )
         #print content
         raise RuntimeError(content)
+    else:
+        currentstat=open('running.log','w')
+        currentstat.write(content)
+        currentstat.close()
 def nlines(filepath): return sum( 1 for line in open(filepath,'r') )
 
 
