@@ -278,9 +278,11 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
 
     // read weight files
     if (iBE == 0){
-      tmvaReader[0]->BookMVA("BDT", "/data4/rslu/work/TMVA-v4.1.2_SLC6/spring15/EB_25ns_v2/TMVAnalysis_BDT.weights.xml");
+      // tmvaReader[0]->BookMVA("BDT", "/data4/rslu/work/TMVA-v4.1.2_SLC6/spring15/EB_25ns_v2/TMVAnalysis_BDT.weights.xml");
+      tmvaReader[0]->BookMVA("BDT", "/home/ltsai/Work/workspaceGammaPlusJet/external/spring16_80x_EB_TMVAnalysis_BDT.weights.xml"),
     }else{
-      tmvaReader[1]->BookMVA("BDT", "/data4/rslu/work/TMVA-v4.1.2_SLC6/spring15/EE_25ns_v2/TMVAnalysis_BDT.weights.xml");
+      // tmvaReader[1]->BookMVA("BDT", "/data4/rslu/work/TMVA-v4.1.2_SLC6/spring15/EE_25ns_v2/TMVAnalysis_BDT.weights.xml");
+      tmvaReader[1]->BookMVA("BDT", "/home/ltsai/Work/workspaceGammaPlusJet/external/spring16_80x_EE_TMVAnalysis_BDT.weights.xml"),
     }
   } // one-time initialization
 
