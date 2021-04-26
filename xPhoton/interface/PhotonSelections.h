@@ -6,7 +6,38 @@
 #include <TFile.h>
 #include <TGraph.h>
 using namespace std;
+#include <string>
 
+std::string MVAweightfile(int isEndcap, int year)
+{
+    switch ( year )
+    {
+    case 2015:
+        if ( isEndcap )
+            return "";
+        else
+            return "";
+    case 2016:
+        if ( isEndcap )
+            return "/home/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EE_TMVAnalysis_BDT.weights.xml";
+        else
+            return "/home/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EB_TMVAnalysis_BDT.weights.xml";
+    case 2017:
+        if ( isEndcap )
+            return "";
+        else
+            return "";
+    case 2018:
+        if ( isEndcap )
+            return "";
+        else
+            return "";
+    default:
+        return "";
+    }
+    return "";
+}
+        
 // pre-selection of photon.
 Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto=kTRUE) {
   Int_t phoID=1;
@@ -251,25 +282,25 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
     tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
 
     // add classification variables
-    tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi_);
-    tmvaReader[iBE]->AddVariable("r9", &phoR9_);
-    tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
-    tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
-    tmvaReader[iBE]->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",   &s13Full5x5 );	        
-    tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
-    tmvaReader[iBE]->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",   &s25Full5x5 );	        
-    tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta_);
-    tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE_);
-    tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth_);
-    tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth_);
+    tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi_); // var0
+    tmvaReader[iBE]->AddVariable("r9", &phoR9_); // var1
+    tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );      // var2
+    tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );      // var 3
+    // tmvaReader[iBE]->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",   &s13Full5x5 );	        // abandoned
+    tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       // var 4
+    // tmvaReader[iBE]->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",   &s25Full5x5 );	        // abandoned
+    tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta_); // var 5
+    tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE_); // var 6
+    tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth_); // var 7
+    tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth_); // var 8
     if (iBE == 1) {
-      tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE_);
-      tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR_);
+      tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE_); // EE only : var 9*
+      tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR_); // EE only : var 10*
     }
-    tmvaReader[iBE]->AddVariable("rho", &rho_);
-    tmvaReader[iBE]->AddVariable("phoIsoRaw", &phoPFPhoIso_);
-    tmvaReader[iBE]->AddVariable("chIsoRaw", &phoPFChIso_);
-    tmvaReader[iBE]->AddVariable("chWorstRaw", &phoPFChIsoWorst_);
+    tmvaReader[iBE]->AddVariable("rho", &rho_); // var 9 or var 11*
+    // tmvaReader[iBE]->AddVariable("phoIsoRaw", &phoPFPhoIso_);
+    // tmvaReader[iBE]->AddVariable("chIsoRaw", &phoPFChIso_);
+    // tmvaReader[iBE]->AddVariable("chWorstRaw", &phoPFChIsoWorst_);
 
     //tmvaReader[iBE]->AddVariable("recoPt", &phoEt_);
     // FIXME: why do we need this?
@@ -278,11 +309,13 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
 
     // read weight files
     if (iBE == 0){
-      // tmvaReader[0]->BookMVA("BDT", "/data4/rslu/work/TMVA-v4.1.2_SLC6/spring15/EB_25ns_v2/TMVAnalysis_BDT.weights.xml");
-      tmvaReader[0]->BookMVA("BDT", "/home/ltsai/Work/workspaceGammaPlusJet/external/spring16_80x_EB_TMVAnalysis_BDT.weights.xml");
+        tmvaReader[0]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
+        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
+        // tmvaReader[0]->BookMVA("BDT", "/home/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EB_TMVAnalysis_BDT.weights.xml");
     }else{
-      // tmvaReader[1]->BookMVA("BDT", "/data4/rslu/work/TMVA-v4.1.2_SLC6/spring15/EE_25ns_v2/TMVAnalysis_BDT.weights.xml");
-      tmvaReader[1]->BookMVA("BDT", "/home/ltsai/Work/workspaceGammaPlusJet/external/spring16_80x_EE_TMVAnalysis_BDT.weights.xml");
+        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
+        tmvaReader[1]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
+      // tmvaReader[1]->BookMVA("BDT", "/home/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EE_TMVAnalysis_BDT.weights.xml");
     }
   } // one-time initialization
 
@@ -417,9 +450,11 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
 
     // read weight files
     if (iBE == 0){
-      tmvaReader[0]->BookMVA("BDT", "external/autumn18_EB_TMVAnalysis_BDT.weights.xml");
+        tmvaReader[0]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
+        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
     }else{
-      tmvaReader[1]->BookMVA("BDT", "external/autumn18_EE_TMVAnalysis_BDT.weights.xml");
+        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
+        tmvaReader[1]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
     }
   } // one-time initialization
   
@@ -518,11 +553,11 @@ float select_photon_mva_hgg(TreeReader &data, Int_t i) {
 
     // read weight files
     if (iBE == 0){
-      tmvaReader[0]->BookMVA("BDT", "external/TMVAClassification_Spring15BetaV2_MetaV1_withWeights_GED5x5_diPhoPreSelRun2_pt18-18_Mgg95_50ns_table1_evenEv_BDT700trees_depth3_barrel_BDT.weights.xml");
-      //tmvaReader[0]->BookMVA("BDT", "external/TMVAClassification_Spring15BetaV2_MetaV1_withWeights_GED5x5_diPhoPreSelRun2_pt18-18_Mgg95_25ns_table1_evenEv_BDT1000trees_depth3_barrel_BDT.weights.xml");
+        tmvaReader[0]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
+        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
     }else{
-      tmvaReader[1]->BookMVA("BDT", "external/TMVAClassification_Spring15BetaV2_MetaV1_withWeights_GED5x5_diPhoPreSelRun2_pt18-18_Mgg95_50ns_table1_evenEv_BDT700trees_depth3_endcap_BDT.weights.xml");
-      //tmvaReader[1]->BookMVA("BDT", "external/TMVAClassification_Spring15BetaV2_MetaV1_withWeights_GED5x5_diPhoPreSelRun2_pt18-18_Mgg95_25ns_table1_evenEv_BDT1000trees_depth3_endcap_BDT.weights.xml");
+        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
+        tmvaReader[1]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
     }
   } // one-time initialization
 
