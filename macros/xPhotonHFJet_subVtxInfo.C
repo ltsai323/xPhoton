@@ -440,6 +440,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 	mcPhi_ = 0.;
 	mcCalIso04_=0.;
 	mcTrkIso04_=0.;
+    pthat_=0.;
 //    LOG_WARNING("10\n");
     //for (Long64_t ev = 0; ev <10000; ev++) {
   //for (Long64_t ev = 0; ev < data.GetEntriesFast()/2.; ev++) {
@@ -1162,29 +1163,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 	    }
 	  }
 	}
-//    LOG_WARNING("116\n");
+
       }	
       
       if(pho_presel!=1) continue;
-      // if(photon_list.size()==0){
       if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
       photon_list.push_back(i); 
       if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
-	//skim for TMVA training
-	//int pho_skim_presel = PhotonSkimPreselection(data, i, kTRUE);
-	//if(pho_skim_presel==1) photon_list.push_back(i);
-      // 	break;
-      // }
+
 
     }   
-//    LOG_WARNING("117\n");
     h_npho->Fill(photon_list.size());
     if(photon_list.size() < 1) continue;
-    //if(photon_list.size() > 1) continue;
-    // if(photon_list.size() > 1 ) {
-    //   printf(" ERROR more than one photon registered in event %d \n", event);
-    //   continue;
-    // }
+    
     
     phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
     for(unsigned int j=0; j<eleID.size(); j++){
@@ -1193,20 +1184,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
       tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
       h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
       if(phoP4.DeltaR(tmp_eP4) < 0.3) {
-       	// printf("photon_list reset, pt %.2f, eta %.2f, electron pt %.2f  \n", 
-       	//        phoEt[photon_list[0]], phoEta[photon_list[0]], elePt[eleID[j]]);
        	photon_list.clear(); 
       }
     }
 
     //find one jet in event
     for(int j=0; j<nJet; j++){		         
-      //if( jetPFLooseId[j] && TMath::Abs(jetEta[j])<2.4 && jetPt[j]>30.) {
       float jetjecunc = 1.;
-      //float jetjecunc = 1.-jetJECUnc[j]; //1.;
       if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
-	//if(TMath::Abs(jetEta[j])<3. && jetPt[j]*jetjecunc>0.) {
-	//if( jetPFLooseId[j] ) h_jetID->Fill(1.);	else h_jetID->Fill(0.);
 	if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
 	jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 	
@@ -1229,7 +1214,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 	}    
       }  
     }
-//    LOG_WARNING("118\n");
 
     if(phoEt[photon_list[0]] > 150.) {
       h_njet->Fill(nnjet, xsweight);
@@ -1240,281 +1224,179 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
       }
     }
 
-    //swapping jets for systematics SinglePho_miniAOD_Silver_JET12_JETUNC.root
-    // if(nnjet>1 && jet2_index!=-1){
-    //   float jet1_et = jetPt[jet_index] * (1-jetJECUnc[jet_index]);
-    //   float jet2_et = jetPt[jet2_index] * (1+jetJECUnc[jet2_index]);
-    //   if(jet2_et > jet1_et) jet_index = jet2_index;
-    // }
 
     
     if(photon_jetID.size()==0) photon_jetID.push_back(0);
-    //if(isData==1 && doWmn==0 && nnjet==0) continue;
-
-    //main part of photon tree
-    //HLT decisions V07 04 05 05
-    //https://github.com/cmkuo/ggAnalysis/blob/master/ggNtuplizer/plugins/ggNtuplizer_trigger.cc    
-    // if (phoFilters.size() == 0) {
-    //   phoFilters["hltEG22HEFilter"]    = 0;
-    //   phoFilters["hltEG30HEFilter"]    = 1;
-    //   phoFilters["hltEG36HEFilter"]    = 2;
-    //   phoFilters["hltEG50HEFilter"]    = 3;
-    //   phoFilters["hltEG75HEFilter"]    = 4;
-    //   phoFilters["hltEG90HEFilter"]    = 5;
-    //   phoFilters["hltEG120HEFilter"]   = 6;
-    //   phoFilters["hltEG165HE10Filter"] = 7;
-    //   phoFilters["hltEG175HEFilter"]   = 8;
-    //   phoFilters["hltEG250erEtFilter"] = 9;
-    //   phoFilters["hltEG300erEtFilter"] = 10;
-    //   phoFilters["hltEG500HEFilter"]   = 11;
-    //   phoFilters["hltEG600HEFilter"]   = 12;
-    // } HEFilter H/E(EB) < 0.15 and H/E(EE) < 0.1        
 
     int photon_requested = ONLY_LEADINGPHOTON ? 1 : photon_list.size();
-    //int photon_jetID_size = photon_jetID.size();
 
 
 
-//    LOG_WARNING("119\n");
+
     for (Int_t ii=0; ii<photon_requested; ii++) {            
         if ( photon_list.empty() ) continue;
-//    LOG_WARNING("119.1\n");
 
-      int ipho = photon_list[ii];
-      phoFiredTrgs_ = phoFiredTrgs[ipho];
-      phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
-	  jetGenJetPt_ = 0.;
-	  jetGenJetEta_ = 0.;
-	  jetGenJetPhi_ = 0.;
-	  jetGenJetY_ = 0.;
-	  jetGenPartonID_ = 0;
-	  jetGenPartonID_ = 0;
 
-	jetPt_=0.;
-	jetEta_=0.;
-	jetPhi_=0.;
-	jetY_=0.;
-	jetJECUnc_=0.;
-	jetGenJetPt_ = 0.;
-	jetGenJetEta_ = 0.;
-	jetGenJetPhi_ = 0.;
-	jetGenJetY_ = 0.;
-	jetGenPartonID_ = 0;
-	jetGenPartonMomID_ = 0;
+        int ipho = photon_list[ii];
+        phoFiredTrgs_ = phoFiredTrgs[ipho];
+        phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
+        jetGenJetPt_ = 0.;
+        jetGenJetEta_ = 0.;
+        jetGenJetPhi_ = 0.;
+        jetGenJetY_ = 0.;
+        jetGenPartonID_ = 0;
+        jetGenPartonID_ = 0;
 
-      if(jet_index>=0) {
-	jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
-	//jetP4.SetPtEtaPhiM(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index],0.);
-	jetPt_ = jetPt[jet_index];
-	jetEta_ = jetEta[jet_index];
-	jetPhi_ = jetPhi[jet_index];
-	jetY_ = jetP4.Rapidity();
-	jetJECUnc_ = jetJECUnc[jet_index];
-	if(isData!=1) {
-	  TLorentzVector jetGenJetP4;
-	  jetGenJetP4.SetPtEtaPhiE(jetGenJetPt[jet_index], jetGenJetEta[jet_index], jetGenJetPhi[jet_index], jetGenJetEn[jet_index]);   
-	  jetGenJetPt_ = jetGenJetPt[jet_index];
-	  jetGenJetEta_ = jetGenJetEta[jet_index];
-	  jetGenJetPhi_ = jetGenJetPhi[jet_index];
-	  jetGenJetY_ = jetGenJetP4.Rapidity();
-	  jetGenPartonID_ = jetGenPartonID[jet_index];		
-	  jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
-	  //if(jetGenJetPt_ < 0.) printf("event %d, jet Pt %.2f, jet eta %.2f, jet phi %.2f \n", event, jetPt_, jetEta_, jetPhi_);
-	}else {
-	}
-      }else{
-      }
-//    LOG_WARNING("119.2\n");
-         if (hasSubVtxInfo)
-         {
-//    LOG_WARNING("119.20.0\n");
+        jetPt_=0.;
+        jetEta_=0.;
+        jetPhi_=0.;
+        jetY_=0.;
+        jetJECUnc_=0.;
+        jetGenJetPt_ = 0.;
+        jetGenJetEta_ = 0.;
+        jetGenJetPhi_ = 0.;
+        jetGenJetY_ = 0.;
+        jetGenPartonID_ = 0;
+        jetGenPartonMomID_ = 0;
+
+        if(jet_index>=0) {
+            jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
+
+            jetPt_ = jetPt[jet_index];
+            jetEta_ = jetEta[jet_index];
+            jetPhi_ = jetPhi[jet_index];
+            jetY_ = jetP4.Rapidity();
+            jetJECUnc_ = jetJECUnc[jet_index];
+            if(isData!=1) {
+                TLorentzVector jetGenJetP4;
+                jetGenJetP4.SetPtEtaPhiE(jetGenJetPt[jet_index], jetGenJetEta[jet_index], jetGenJetPhi[jet_index], jetGenJetEn[jet_index]);   
+                jetGenJetPt_ = jetGenJetPt[jet_index];
+                jetGenJetEta_ = jetGenJetEta[jet_index];
+                jetGenJetPhi_ = jetGenJetPhi[jet_index];
+                jetGenJetY_ = jetGenJetP4.Rapidity();
+                jetGenPartonID_ = jetGenPartonID[jet_index];		
+                jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
+            }else {
+            }
+        }else{
+        }
+        if (hasSubVtxInfo)
+        {
             jetSubVtxPt_    = jetSubVtxPt   [jet_index];
-//    LOG_WARNING("119.20.1\n");
             jetSubVtxMass_  = jetSubVtxMass [jet_index];
-//    LOG_WARNING("119.20.2\n");
             jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
-//    LOG_WARNING("119.20.3\n");
             jetSubVtx3DErr_ = jetSubVtx3DErr[jet_index];
-//    LOG_WARNING("119.20\n");
             jetSubVtxNtrks_ = jetSubVtxNtrks[jet_index];
-//    LOG_WARNING("119.21\n");
             h_subVtxPt   ->Fill(jetSubVtxPt_   );
             h_subVtxMass ->Fill(jetSubVtxMass_ );
             h_subVtx3DVal->Fill(jetSubVtx3DVal_);
             h_subVtx3DErr->Fill(jetSubVtx3DErr_);
-//    LOG_WARNING("119.22\n");
             h_subVtxNtrks->Fill(jetSubVtxNtrks_);
-//    LOG_WARNING("119.23\n");
-         }
-//    LOG_WARNING("119.3\n");
+        }
 
-      jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
-      jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
-      jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
-      jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
-      jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
-      // jetJetProbabilityBJetTags_ = jetJetProbabilityBJetTags[jet_index];
-      // jetpfCombinedMVAV2BJetTags_ = jetpfCombinedMVAV2BJetTags[jet_index];
+        jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
+        jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
+        jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
+        jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
+        jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
 
 
-      if (data.HasMC() )
-      {
-          jetPartonID_ = jetPartonID[jet_index];
-          jetHadFlvr_ = jetHadFlvr[jet_index];
-      }
-      else { jetPartonID_= jetHadFlvr_ = 0.; }
+        if (data.HasMC() )
+        {
+            jetPartonID_ = jetPartonID[jet_index];
+            jetHadFlvr_ = jetHadFlvr[jet_index];
+        }
+        else { jetPartonID_= jetHadFlvr_ = 0.; }
+        idLoose      = -1;
+        idMedium     = -1;
+        idTight      = -1;
 
-//    LOG_WARNING("119.4\n");
+        if(!isData){
+            isMatched = match[ipho];
+            isMatchedEle = match_ele[ipho];
+            isConverted = converted[ipho];
 
-      /*
-      //for Z+jet events
-      if((doZmm==1 && nLep_m>=2) || (doZee==1 && nLep_e>=2)) {
-       	if(phoP4.DeltaR(lepP4[0]) < 0.3) continue;
-       	if(phoP4.DeltaR(lepP4[1]) < 0.3) continue;
-	if(phoP4.DeltaR(electronP4)>0.3) continue;
-      }
-      */
-//    LOG_WARNING("119.5\n");
+            pthat_    = pthat;
+            mcPt_     = mcpt[ipho];
+            mcEta_    = mceta[ipho];
+            mcPhi_    = mcphi[ipho];
+            mcCalIso04_ = mcCalIso04[ipho];
+            mcTrkIso04_ = mcTrkIso04[ipho];
+            genHT_ = genHT;
 
-      /*
-      deta_wg=dphi_wg=0;
-      if(doWmn==1) {
-	if(isData==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-	else if(match[ipho]==1) hdR_pho_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
-	else hdR_fake_lep->Fill(phoP4.DeltaR(lepP4[0]),xsweight*genWeight);
+            h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
+            h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
 
-	//trying other option
-	//if(phoP4.DeltaR(lepP4[0]) > 0.3) continue; //normal for Wgamma Wjets
-	//
-	//if(phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
-	//if(TMath::Abs(phoSCEta[ipho]>1.556) && phoP4.DeltaR(lepP4[0]) < 0.3) continue; //normal for Wgamma Wjets
-	
-        //if(phoP4.DeltaR(lepP4[0]) < 0.4) continue; // <<-- for e* 
-	//if(phoP4.DeltaR(lepP4[0]) <1.0) continue; // <<-- for HZg
+        }else{
+            isMatched = 1;
+            isMatchedEle = 0;
+            isConverted = 0;
+        }
 
-	deta_wg = lepP4[0].Eta() - phoEta[ipho];
-	dphi_wg = deltaPhi(lepP4[0].Phi(), phoPhi[ipho]);
-//    LOG_WARNING("119.6\n");
-      }
-      */
-            
-      idLoose      = -1;
-      idMedium     = -1;
-      idTight      = -1;
+        h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
+        h2_mcPID_mcPt->Fill( phoEt[ipho], 10.09, xsweight);
 
-      if(!isData){
-	isMatched = match[ipho];
-	isMatchedEle = match_ele[ipho];
-	isConverted = converted[ipho];
-	if(verbose){
-	  if (isMatched == 1)
-	    cout<<isMatched<<" "<<isMatchedEle<<" "<<endl;
-	}
-	pthat_    = pthat;
-	mcPt_     = mcpt[ipho];
-	mcEta_    = mceta[ipho];
-	mcPhi_    = mcphi[ipho];
-	mcCalIso04_ = mcCalIso04[ipho];
-	mcTrkIso04_ = mcTrkIso04[ipho];
-	genHT_ = genHT;
+        recoPt    = phoEt[ipho];
+        recoEta   = phoEta[ipho];
+        recoPhi   = phoPhi[ipho];
+        recoSCEta = phoSCEta[ipho];
+        r9        = phoR9[ipho];
+        eleVeto   = phoEleVeto[ipho];
+        HoverE    = phoHoverE[ipho];
 
-	h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
-	h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
-
-      }else{
-	isMatched = 1;
-	isMatchedEle = 0;
-	isConverted = 0;
-      }
-//    LOG_WARNING("119.7\n");
-
-      h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
-      h2_mcPID_mcPt->Fill( phoEt[ipho], 10.09, xsweight);
-	
-      recoPt    = phoEt[ipho];
-      recoEta   = phoEta[ipho];
-      recoPhi   = phoPhi[ipho];
-      recoSCEta = phoSCEta[ipho];
-      r9        = phoR9[ipho];
-      eleVeto   = phoEleVeto[ipho];
-      HoverE    = phoHoverE[ipho];
-
-      phohasPixelSeed_ = phohasPixelSeed[ipho];
-      chIsoRaw   = phoPFChIso[ipho];
-      phoIsoRaw  = phoPFPhoIso[ipho];
-      nhIsoRaw   = phoPFNeuIso[ipho];
+        phohasPixelSeed_ = phohasPixelSeed[ipho];
+        chIsoRaw   = phoPFChIso[ipho];
+        phoIsoRaw  = phoPFPhoIso[ipho];
+        nhIsoRaw   = phoPFNeuIso[ipho];
 
 
-      rawE       = phoSCRawE[ipho];
-      scEtaWidth = phoSCEtaWidth[ipho];
-      scPhiWidth = phoSCPhiWidth[ipho];
-      esRR       = phoESEffSigmaRR[ipho];
-      esEn       = phoESEnP1[ipho] +phoESEnP2[ipho];//      esEn       = phoESEn[ipho];
-      chWorstIso = phoPFChWorstIso[ipho];
+        rawE       = phoSCRawE[ipho];
+        scEtaWidth = phoSCEtaWidth[ipho];
+        scPhiWidth = phoSCPhiWidth[ipho];
+        esRR       = phoESEffSigmaRR[ipho];
+        esEn       = phoESEnP1[ipho] +phoESEnP2[ipho];//      esEn       = phoESEn[ipho];
+        chWorstIso = phoPFChWorstIso[ipho];
 
-      sieieFull5x5     = phoSigmaIEtaIEtaFull5x5[ipho];
-      sieipFull5x5     = phoSigmaIEtaIPhiFull5x5[ipho];
-      sipipFull5x5     = phoSigmaIPhiIPhiFull5x5[ipho];
-      r9Full5x5        = phoR9Full5x5[ipho];
-      e2x2Full5x5       = phoE2x2Full5x5[ipho];
-      e5x5Full5x5       = phoE5x5Full5x5[ipho];
-      photon_jetID_ = photon_jetID[ii];
-
-      
-      if(isData==1){
-	 	SeedTime_ = phoSeedTime[ipho];
-      	SeedEnergy_ = phoSeedEnergy[ipho];
-	 	MIPTotEnergy_ = phoMIPTotEnergy[ipho];
-      }
-      else { SeedTime_=SeedEnergy_=MIPTotEnergy_=0;}
-      phoIDbit_ = phoIDbit[ipho];
-
-      HggPresel = 0.;
-      mva = -99.;
-
-      // HggPresel= HggPreselection(data, ipho, kTRUE);
-      // if(TMath::Abs(phoSCEta[ipho])<1.5)  	mva = select_photon_mva(data, ipho, tgr);
-      // else mva = phoIDMVA[ipho];
-
-      mva = select_photon_mvanoIso(data, ipho, tgr);
+        sieieFull5x5     = phoSigmaIEtaIEtaFull5x5[ipho];
+        sieipFull5x5     = phoSigmaIEtaIPhiFull5x5[ipho];
+        sipipFull5x5     = phoSigmaIPhiIPhiFull5x5[ipho];
+        r9Full5x5        = phoR9Full5x5[ipho];
+        e2x2Full5x5       = phoE2x2Full5x5[ipho];
+        e5x5Full5x5       = phoE5x5Full5x5[ipho];
+        photon_jetID_ = photon_jetID[ii];
 
 
-      photonIDmva = phoIDMVA[ipho];
+        if(isData==1){
+            SeedTime_ = phoSeedTime[ipho];
+            SeedEnergy_ = phoSeedEnergy[ipho];
+            MIPTotEnergy_ = phoMIPTotEnergy[ipho];
+        }
+        else { SeedTime_=SeedEnergy_=MIPTotEnergy_=0;}
+        phoIDbit_ = phoIDbit[ipho];
 
-      //mva_hgg=0.;
-      //mva_hgg = select_photon_mva_hgg(data, ipho);
+        HggPresel = 0.;
+        mva = -99.;
 
-      if(isMatched==1){
-	if(TMath::Abs(phoEta[ipho])<1.5) h_EB_bdt->Fill(mva);
-	else h_EE_bdt->Fill(mva);
-      }
-      
-      /*
-      if(isData==1 && doWmn==0 && qstar==1 && photonIDmva>0.4 && eleVeto==1 && TMath::Abs(phoSCEta[ipho])<1.4442 ){
-       	//loop jets for photon+jet invarient mass
-       	h_phoEt->Fill(phoEt[ipho]);	
-       	TLorentzVector pjP4;
-      
-       	pjP4 = phoP4;
-       	pjP4 += jetP4;
-      
-       	h_jetPt->Fill(jetP4.Pt());
-       	h_pjmass->Fill(pjP4.M());
-       	npj++;
-      }
-      */
 
-      if(MINITREE==1 ) 	{
-	outtree_->Fill();
-      }
-       
+        mva = select_photon_mvanoIso(data, ipho, tgr);
+
+
+        photonIDmva = phoIDMVA[ipho];
+
+
+        if(isMatched==1){
+            if(TMath::Abs(phoEta[ipho])<1.5) h_EB_bdt->Fill(mva);
+            else h_EE_bdt->Fill(mva);
+        }
+
+
+        if(MINITREE==1 ) 	{
+            outtree_->Fill();
+        }
+
     }
 
     h_nphoFiredTrgs->Fill(nphofiredtrgs);
-    /*
-    h_npj->Fill(npj);
-    h_npp->Fill(npp);
-    */
 
   }
   
