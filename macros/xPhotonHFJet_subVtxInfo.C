@@ -59,7 +59,6 @@ Double_t deltaR(Double_t eta1, Double_t phi1, Double_t eta2, Double_t phi2) {
 }
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    //void xPhotonHFJet(Char_t fname[200], Char_t oname[200]){
     //    LOG_WARNING("01\n");
 
     // vector <string> pathes;
@@ -72,8 +71,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     TTree *outtree_;
 
-    //float ptcut[30] = {22, 30, 36, 50, 75, 90, 105,  120, 135, 150, 165, 175, 185,
-    //float ptcut[30] = {15, 20, 40, 60, 75, 90, 105,  120, 135, 150, 165, 175, 185,
     float ptcut[30] = {15, 20, 40, 60, 75, 90, 105,  120, 135, 150, 160, 170, 180,
         190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000}; //22 bins
     //                  13   14   15   16   17   18   19   20   21    22    23    24    25     26
@@ -441,9 +438,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         mcCalIso04_=0.;
         mcTrkIso04_=0.;
         pthat_=0.;
-        //    LOG_WARNING("10\n");
-        //for (Long64_t ev = 0; ev <10000; ev++) {
-        //for (Long64_t ev = 0; ev < data.GetEntriesFast()/2.; ev++) {
 
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
@@ -481,7 +475,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         if(isData==1 && doWmn==1){
-            //if(doWmn==1){
             Long64_t HLTelemu = data.GetLong64("HLTEleMuX");
             //if( ((HLTelemu>>31)&1)!=1 && ((HLTelemu>>32)&1)!=1 ) continue;
             if( ((HLTelemu>>31)&1)!=1 ) continue;
@@ -771,14 +764,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     nneleMC++;
                 }
             }
-            // //to get quark id and pt
-            // for (Int_t k=0; k<nMC; ++k) {
-            // 	if( (fabs(mcPID[k])<7 || mcPID[k]==21) && mcStatus[k]==0 && mcMomPID[k] > -100) {
-            // 	  h2_mcPID_mcPt->Fill(mcPt[k], fabs(mcPID[k])+0.01, xsweight);
-            // 	  continue;
-            // 	}
-            // }
-            // if(nnMC>0)h2_mcPID_mcPt->Fill(mcPt[mcid[0]], 22.01, xsweight);
 
             //h_truepho->Fill((float)nmatch/(float)nPho);
             h_truepho->Fill(nnMC+0.001);
@@ -1058,7 +1043,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         for (Int_t i=0; i<nPho; ++i) {      
-            //for (Int_t i=0; i<1; ++i) {      
             if(phoEt[i]<15.) continue;       
             //if(phoEt[i]<100.) continue;
             if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
@@ -1367,126 +1351,126 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         h_nphoFiredTrgs->Fill(nphofiredtrgs);
 
-        }
+    }
 
-        fout_->cd();
-        outtree_->Write();
-        h_subVtxPt   ->Write();
-        h_subVtxMass ->Write();
-        h_subVtx3DVal->Write();
-        h_subVtx3DErr->Write();
-        h_subVtxNtrks->Write();
+    fout_->cd();
+    outtree_->Write();
+    h_subVtxPt   ->Write();
+    h_subVtxMass ->Write();
+    h_subVtx3DVal->Write();
+    h_subVtx3DErr->Write();
+    h_subVtxNtrks->Write();
 
-        h_hasGoodVtx->Write();
-        hpthat->Write();
-        hpthat_wide->Write();
+    h_hasGoodVtx->Write();
+    hpthat->Write();
+    hpthat_wide->Write();
 
-        hdR->Write();
-        hdpt->Write();
-        hdR_ele->Write();
-        hdpt_ele->Write();
-        hdR_genjet->Write();
-        hmcCalIso->Write();
-        hmcGenIso->Write();
-        hmcpartonIso->Write();
-        h_truepho->Write();
-        h_convpho->Write();
-        h_ngenpho->Write();
-        h_npho->Write();
-        h_nele->Write();
-        h_nphoFiredTrgs->Write();
+    hdR->Write();
+    hdpt->Write();
+    hdR_ele->Write();
+    hdpt_ele->Write();
+    hdR_genjet->Write();
+    hmcCalIso->Write();
+    hmcGenIso->Write();
+    hmcpartonIso->Write();
+    h_truepho->Write();
+    h_convpho->Write();
+    h_ngenpho->Write();
+    h_npho->Write();
+    h_nele->Write();
+    h_nphoFiredTrgs->Write();
 
-        hgenphoEB_pt->Write();
-        hgenphoEB_pt_vbin->Write();
-        hgenphoEB_eta->Write();
-        hgenphoEE_pt->Write();
-        hgenphoEE_pt_vbin->Write();
-        hgenphoEE_eta->Write();
-        hgenpho_eta_phi->Write();
-        hgenpho_eta_pt->Write();
+    hgenphoEB_pt->Write();
+    hgenphoEB_pt_vbin->Write();
+    hgenphoEB_eta->Write();
+    hgenphoEE_pt->Write();
+    hgenphoEE_pt_vbin->Write();
+    hgenphoEE_eta->Write();
+    hgenpho_eta_phi->Write();
+    hgenpho_eta_pt->Write();
 
-        hgenphoEBEE0_pt_vbin->Write();
-        hgenphoEBEE1_pt_vbin->Write();
-        hgenphoEBEE2_pt_vbin->Write();
-        hgenphoEBEE3_pt_vbin->Write();
+    hgenphoEBEE0_pt_vbin->Write();
+    hgenphoEBEE1_pt_vbin->Write();
+    hgenphoEBEE2_pt_vbin->Write();
+    hgenphoEBEE3_pt_vbin->Write();
 
-        h_EB_bdt->Write();
-        h_EE_bdt->Write();
+    h_EB_bdt->Write();
+    h_EE_bdt->Write();
 
-        h_phoEt->Write();
-        h_npj->Write();
-        h_jetPt->Write();
-        h_pjmass->Write();
-        h_npp->Write();
-        h_pho2Pt->Write();
-        h_ppmass->Write();
-        h_ppmass_zoom->Write();
+    h_phoEt->Write();
+    h_npj->Write();
+    h_jetPt->Write();
+    h_pjmass->Write();
+    h_npp->Write();
+    h_pho2Pt->Write();
+    h_ppmass->Write();
+    h_ppmass_zoom->Write();
 
-        h_njet->Write();
-        h_nrecojet->Write();
-        h_ngenjet->Write();
-        h_detadpt_jet12->Write();
-        h_dR_phojet->Write();
-        h_dR_phoele->Write();
-        h_dpt_phojet->Write();
+    h_njet->Write();
+    h_nrecojet->Write();
+    h_ngenjet->Write();
+    h_detadpt_jet12->Write();
+    h_dR_phojet->Write();
+    h_dR_phoele->Write();
+    h_dpt_phojet->Write();
 
-        h_dphi_recoil->Write();
-        h_dpt_recoil->Write();
+    h_dphi_recoil->Write();
+    h_dpt_recoil->Write();
 
-        tp_rho->Write();
-        tp_rho_EB->Write();
-        tp_rho_EE->Write();
-        h2_nVtx_rho->Write();
-        h2_nVtx_iso->Write();
-        for(int ii=0; ii<7; ii++){
-            tp_chIso[ii]->Write();
-            tp_phIso[ii]->Write();
-            tp_nhIso[ii]->Write();
+    tp_rho->Write();
+    tp_rho_EB->Write();
+    tp_rho_EE->Write();
+    h2_nVtx_rho->Write();
+    h2_nVtx_iso->Write();
+    for(int ii=0; ii<7; ii++){
+        tp_chIso[ii]->Write();
+        tp_phIso[ii]->Write();
+        tp_nhIso[ii]->Write();
 
-            tp_chIso_rho[ii]->Write();
-            tp_phIso_rho[ii]->Write();
-            tp_nhIso_rho[ii]->Write();
-        }
+        tp_chIso_rho[ii]->Write();
+        tp_phIso_rho[ii]->Write();
+        tp_nhIso_rho[ii]->Write();
+    }
 
-        h_Zee_mass->Write();
-        h_Zee_mass_csev->Write();
-        h_phoPt_eta_Z_all->Write();
-        h_phoPt_eta_Z_csev->Write();
+    h_Zee_mass->Write();
+    h_Zee_mass_csev->Write();
+    h_phoPt_eta_Z_all->Write();
+    h_phoPt_eta_Z_csev->Write();
 
-        h_Zmm_mass->Write();
-        h_MET->Write();
-        h_Wen_mt->Write();
-        h_Wmn_mt->Write();
+    h_Zmm_mass->Write();
+    h_MET->Write();
+    h_Wen_mt->Write();
+    h_Wmn_mt->Write();
 
-        hist_measured->Write();
-        hist_reco->Write();  
+    hist_measured->Write();
+    hist_reco->Write();  
 
-        h_jetID->Write();
-        h_jetIDv->Write();
-        hdR_pho_lep->Write();
-        hdR_fake_lep->Write();
+    h_jetID->Write();
+    h_jetIDv->Write();
+    hdR_pho_lep->Write();
+    hdR_fake_lep->Write();
 
-        hphoEB_pt_presel_nocsev->Write();
-        hphoEB_pt_presel_csev->Write();
-        hphoEE_pt_presel_nocsev->Write();
-        hphoEE_pt_presel_csev->Write();
+    hphoEB_pt_presel_nocsev->Write();
+    hphoEB_pt_presel_csev->Write();
+    hphoEE_pt_presel_nocsev->Write();
+    hphoEE_pt_presel_csev->Write();
 
-        hphoEB_pt_presel_den->Write();
-        hphoEB_pt_presel_num->Write();
-        hphoEE_pt_presel_den->Write();
-        hphoEE_pt_presel_num->Write();
-        h_EBSeedTime->Write();
-        h_EESeedTime->Write();
-        h_EBSeedTimeW->Write();
-        h_EESeedTimeW->Write();
+    hphoEB_pt_presel_den->Write();
+    hphoEB_pt_presel_num->Write();
+    hphoEE_pt_presel_den->Write();
+    hphoEE_pt_presel_num->Write();
+    h_EBSeedTime->Write();
+    h_EESeedTime->Write();
+    h_EBSeedTimeW->Write();
+    h_EESeedTimeW->Write();
 
-        h2_mcPID_mcPt->Write();
+    h2_mcPID_mcPt->Write();
 
-        fout_->Close();
+    fout_->Close();
 
-        fprintf(stderr, "Processed all events\n");
+    fprintf(stderr, "Processed all events\n");
 
-        }
+}
 
 
 /*
