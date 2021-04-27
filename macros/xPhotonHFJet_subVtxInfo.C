@@ -754,247 +754,247 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     int ntruephoton=0;
 
     if(!isData){
-      vector<int> mcid;
-      int nnMC=0;
-      for (Int_t k=0; k<nMC; ++k) {
-	//if(verbose) printf(" mc particle code %d, mom code %d , pt %.2f, eta %.2f, phi %.2f \n", mcPID[k],mcMomPID[k], mcPt[k], mcEta[k], mcPhi[k]);
-	//if (mcPID[k] == 22 && mcPt[k]>15.){
-	if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
-	  if(verbose) printf("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
-	  mcid.push_back(k);
-	  nnMC++;
-	}
-      }
-      vector<int> muonmcid;
-      int nnmuonMC=0;
-      for (Int_t k=0; k<nMC; ++k) {
-	if (fabs(mcPID[k])==13 && mcPt[k]>20.){
-	  muonmcid.push_back(k);
-	  nnmuonMC++;
-	}
-      }
-      vector<int> elemcid;
-      int nneleMC=0;
-      for (Int_t k=0; k<nMC; ++k) {
-	if (fabs(mcPID[k]) == 11 ){
-	  elemcid.push_back(k);
-	  nneleMC++;
-	}
-      }
-      // //to get quark id and pt
-      // for (Int_t k=0; k<nMC; ++k) {
-      // 	if( (fabs(mcPID[k])<7 || mcPID[k]==21) && mcStatus[k]==0 && mcMomPID[k] > -100) {
-      // 	  h2_mcPID_mcPt->Fill(mcPt[k], fabs(mcPID[k])+0.01, xsweight);
-      // 	  continue;
-      // 	}
-      // }
-      // if(nnMC>0)h2_mcPID_mcPt->Fill(mcPt[mcid[0]], 22.01, xsweight);
+        vector<int> mcid;
+        int nnMC=0;
+        for (Int_t k=0; k<nMC; ++k) {
+            //if(verbose) printf(" mc particle code %d, mom code %d , pt %.2f, eta %.2f, phi %.2f \n", mcPID[k],mcMomPID[k], mcPt[k], mcEta[k], mcPhi[k]);
+            //if (mcPID[k] == 22 && mcPt[k]>15.){
+            if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
+                if(verbose) printf("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
+                mcid.push_back(k);
+                nnMC++;
+            }
+        }
+        vector<int> muonmcid;
+        int nnmuonMC=0;
+        for (Int_t k=0; k<nMC; ++k) {
+            if (fabs(mcPID[k])==13 && mcPt[k]>20.){
+                muonmcid.push_back(k);
+                nnmuonMC++;
+            }
+        }
+        vector<int> elemcid;
+        int nneleMC=0;
+        for (Int_t k=0; k<nMC; ++k) {
+            if (fabs(mcPID[k]) == 11 ){
+                elemcid.push_back(k);
+                nneleMC++;
+            }
+        }
+        // //to get quark id and pt
+        // for (Int_t k=0; k<nMC; ++k) {
+        // 	if( (fabs(mcPID[k])<7 || mcPID[k]==21) && mcStatus[k]==0 && mcMomPID[k] > -100) {
+        // 	  h2_mcPID_mcPt->Fill(mcPt[k], fabs(mcPID[k])+0.01, xsweight);
+        // 	  continue;
+        // 	}
+        // }
+        // if(nnMC>0)h2_mcPID_mcPt->Fill(mcPt[mcid[0]], 22.01, xsweight);
 
-      //h_truepho->Fill((float)nmatch/(float)nPho);
-      h_truepho->Fill(nnMC+0.001);
-      h_convpho->Fill(nneleMC/2. + 0.001);
-      ntruephoton= nnMC + nneleMC/2.;
+        //h_truepho->Fill((float)nmatch/(float)nPho);
+        h_truepho->Fill(nnMC+0.001);
+        h_convpho->Fill(nneleMC/2. + 0.001);
+        ntruephoton= nnMC + nneleMC/2.;
 
-      //printf(" nMC photon %d, nME electron %d \n", nnMC, nneleMC);
-      for (Int_t i=0; i<nPho; ++i) {
-	if(phoEt[i]<15.) continue;
-	isMatched    = -1;
-	isMatchedEle = -1;
-	isConverted = -1;
+        //printf(" nMC photon %d, nME electron %d \n", nnMC, nneleMC);
+        for (Int_t i=0; i<nPho; ++i) {
+            if(phoEt[i]<15.) continue;
+            isMatched    = -1;
+            isMatchedEle = -1;
+            isConverted = -1;
 
-	mcPt_ = 0.;
-	mcEta_ = 0.;
-	mcPhi_ = 0.;
-	mcCalIso04_=0.;
-	mcTrkIso04_=0.;
-    mcPt_ = mcEta_ = mcPhi_ = mcCalIso04_ = mcTrkIso04_ = -999.;
-	if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
-	for (int jj=0; jj<nnMC; ++jj) {
-	  int k = mcid[jj];
-	  float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
-	  float dpt = fabs((phoEt[i] - mcPt[k])/mcPt[k]);
-	  if(dpt<0.2)hdR->Fill(dr);
-	  if(dr<0.2)hdpt->Fill(dpt);
-	  hmcCalIso->Fill(mcCalIsoDR04[k]); 
+            mcPt_ = 0.;
+            mcEta_ = 0.;
+            mcPhi_ = 0.;
+            mcCalIso04_=0.;
+            mcTrkIso04_=0.;
+            mcPt_ = mcEta_ = mcPhi_ = mcCalIso04_ = mcTrkIso04_ = -999.;
+            if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
+            for (int jj=0; jj<nnMC; ++jj) {
+                int k = mcid[jj];
+                float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
+                float dpt = fabs((phoEt[i] - mcPt[k])/mcPt[k]);
+                if(dpt<0.2)hdR->Fill(dr);
+                if(dr<0.2)hdpt->Fill(dpt);
+                hmcCalIso->Fill(mcCalIsoDR04[k]); 
 
-	  if(verbose)printf("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
-	  if(verbose) printf("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
-	  if (dr < 0.2 && dpt < 0.2){
-	    float GENISO=0.;
-	    for (Int_t nn=0; nn<nMC; ++nn) {
-	      if(nn == k ) continue;
-	      if(fabs(mcPID[nn])>22 || mcStatus[nn]>3) continue;	      
-	      float dr = deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
-	      if( dr < 0.4) GENISO += mcPt[nn];
-	    }
-	    if(dr < 0.2 && dpt < 0.2 && mcCalIsoDR04[k]<5.0 ){ //for gammajet photon pythia	      
-	      isMatched = 1;
-	      mcPt_  = mcPt[k];
-	      mcEta_ = mcEta[k];
-	      mcPhi_ = mcPhi[k];
-	      mcCalIso04_ = mcCalIsoDR04[k];
-	      mcTrkIso04_ = mcTrkIsoDR04[k];
-	      if(verbose) printf("  mc matched !!! \n");	    
-	      break;
-	    }
-	    
-	  }
-	}
-	
-//    LOG_WARNING("16\n");
-	for (int jj=0; jj<nneleMC; ++jj) {	   
-	  int k = elemcid[jj];	  
-	  if(fabs(mcPID[k]) == 11){
-	    if (deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]) < 0.2) {
-	      if (fabs((phoEt[i] -mcPt[k])/mcPt[k]) < 0.2) {
-		isMatchedEle = 1;
-	      }
-	    }
-	  }
-	  if (fabs(mcPID[k]) == 11 && mcMomPID[k] == 22) {	    
-	    float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
-	    float dpt = fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]);
-	    hdR_ele->Fill(dr);
-	    hdpt_ele->Fill(dpt);
-	    if (dr < 0.2 && dpt < 0.2 && ((mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 || doWmn==1) ){
-	      isConverted = 1;
-	      mcPt_  = mcMomPt[k];
-	      mcEta_ = mcMomEta[k];
-	      mcPhi_ = mcMomPhi[k];	      
-	      mcCalIso04_ = mcCalIsoDR04[k];
-	      mcTrkIso04_ = mcTrkIsoDR04[k];
-	    }
-	  }
-	}
-	if(isMatched==1) {
-	  nmatch++;
-	  if(TMath::Abs(phoSCEta[i])<=1.4442) nmatch_EB++;
-	  if(TMath::Abs(phoSCEta[i])>=1.566 && TMath::Abs(phoSCEta[i])<2.5) nmatch_EE++;
-	}else{
-	  if(isConverted==1){
-	    nconv++;
-	    //printf(" event %d, photon Et %.2f,  isConverted \n", event, phoEt[i]);
-	  }
-	}
-	
-//    LOG_WARNING("17\n");
-	mcpt.push_back(mcPt_);
-	mceta.push_back(mcEta_);
-	mcphi.push_back(mcPhi_);
-	mcCalIso04.push_back(mcCalIso04_);
-	mcTrkIso04.push_back(mcTrkIso04_);
-	match.push_back(isMatched);
-	match_ele.push_back(isMatchedEle);
-	converted.push_back(isConverted);
-      }
+                if(verbose)printf("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
+                if(verbose) printf("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
+                if (dr < 0.2 && dpt < 0.2){
+                    float GENISO=0.;
+                    for (Int_t nn=0; nn<nMC; ++nn) {
+                        if(nn == k ) continue;
+                        if(fabs(mcPID[nn])>22 || mcStatus[nn]>3) continue;	      
+                        float dr = deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
+                        if( dr < 0.4) GENISO += mcPt[nn];
+                    }
+                    if(dr < 0.2 && dpt < 0.2 && mcCalIsoDR04[k]<5.0 ){ //for gammajet photon pythia	      
+                        isMatched = 1;
+                        mcPt_  = mcPt[k];
+                        mcEta_ = mcEta[k];
+                        mcPhi_ = mcPhi[k];
+                        mcCalIso04_ = mcCalIsoDR04[k];
+                        mcTrkIso04_ = mcTrkIsoDR04[k];
+                        if(verbose) printf("  mc matched !!! \n");	    
+                        break;
+                    }
 
-      if(gjet15to6000 == 0) {
-	//h_truepho->Fill((float)nmatch/(float)nPho);
-	h_truepho->Fill(nmatch+0.001);
-	h_convpho->Fill(nconv+0.001);
-      }
-      //ask for only one mc true photon
-      //if(nmatch < 1) continue;
-    }
+                }
+            }
 
-//    LOG_WARNING("18\n");
-    // if(gjet15to6000==1 	&& ntruephoton!=1) continue;
-    // if(gjet15to6000==1 	&& nmatch<1) continue;
+            //    LOG_WARNING("16\n");
+            for (int jj=0; jj<nneleMC; ++jj) {	   
+                int k = elemcid[jj];	  
+                if(fabs(mcPID[k]) == 11){
+                    if (deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]) < 0.2) {
+                        if (fabs((phoEt[i] -mcPt[k])/mcPt[k]) < 0.2) {
+                            isMatchedEle = 1;
+                        }
+                    }
+                }
+                if (fabs(mcPID[k]) == 11 && mcMomPID[k] == 22) {	    
+                    float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
+                    float dpt = fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]);
+                    hdR_ele->Fill(dr);
+                    hdpt_ele->Fill(dpt);
+                    if (dr < 0.2 && dpt < 0.2 && ((mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 || doWmn==1) ){
+                        isConverted = 1;
+                        mcPt_  = mcMomPt[k];
+                        mcEta_ = mcMomEta[k];
+                        mcPhi_ = mcMomPhi[k];	      
+                        mcCalIso04_ = mcCalIsoDR04[k];
+                        mcTrkIso04_ = mcTrkIsoDR04[k];
+                    }
+                }
+            }
+            if(isMatched==1) {
+                nmatch++;
+                if(TMath::Abs(phoSCEta[i])<=1.4442) nmatch_EB++;
+                if(TMath::Abs(phoSCEta[i])>=1.566 && TMath::Abs(phoSCEta[i])<2.5) nmatch_EE++;
+            }else{
+                if(isConverted==1){
+                    nconv++;
+                    //printf(" event %d, photon Et %.2f,  isConverted \n", event, phoEt[i]);
+                }
+            }
 
-    int npj=0;
-    int npp=0;
-    tp_rho->Fill(nVtx, rho, xsweight);
-    h2_nVtx_rho->Fill(nVtx,rho,xsweight);
-    if(!isData){
-      if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx, rho, xsweight);
-      if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx, rho, xsweight);
-    }
-    int nphofiredtrgs=0;
-    //look for 2nd photon back of HLT matched photon
+            //    LOG_WARNING("17\n");
+            mcpt.push_back(mcPt_);
+            mceta.push_back(mcEta_);
+            mcphi.push_back(mcPhi_);
+            mcCalIso04.push_back(mcCalIso04_);
+            mcTrkIso04.push_back(mcTrkIso04_);
+            match.push_back(isMatched);
+            match_ele.push_back(isMatchedEle);
+            converted.push_back(isConverted);
+        }
 
-    float* elePt  = data.GetPtrFloat("elePt");
-    float* eleEta = data.GetPtrFloat("eleEta");
-    float* elePhi = data.GetPtrFloat("elePhi");    
+        if(gjet15to6000 == 0) {
+            //h_truepho->Fill((float)nmatch/(float)nPho);
+            h_truepho->Fill(nmatch+0.001);
+            h_convpho->Fill(nconv+0.001);
+        }
+        //ask for only one mc true photon
+        //if(nmatch < 1) continue;
+        }
 
-    //check if there is Z    
-    Int_t nLep_e = 0;    
-    Int_t nLep_m = 0;        
-    vector<int> eleID;
-    vector<int> muID;
-    ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
-//    LOG_WARNING("19\n");
-    h_nele->Fill(eleID.size());
-    if(doZee==1){
-      //ElectronIDCutBased2015(data, 2, eleID);
-      if (eleID.size() <2) continue;
-      if (elePt[eleID[0]] >= 20) {
-	for (Int_t i=0; i< 2; ++i) { //save electron
-	  lepP4[i].SetPtEtaPhiM(elePt[eleID[i]], eleEta[eleID[i]], elePhi[eleID[i]], 0.511*0.001);
-	  nLep_e++;
-	}
-      }    
-    } 
-    if(doZmm==1){
-      TightMuons2015(data, muID);
-      if (muID.size() < 2) continue;
-      float* muPt  = data.GetPtrFloat("muPt");
-      float* muEta = data.GetPtrFloat("muEta");
-      float* muPhi = data.GetPtrFloat("muPhi");      
-      if (muPt[muID[0]] >= 20 && muID.size() >=2) {    
-	for (Int_t i=0; i< 2; ++i) {
-	  lepP4[i].SetPtEtaPhiM(muPt[muID[i]], muEta[muID[i]], muPhi[muID[i]], 105.658*0.001);
-	  nLep_m++;
-	}
-      }
-    }
-    //check if there is W->l neu
-    if(doWen==1){
-      //ElectronIDCutBased2015(data, 2, eleID);
-      if (eleID.size() !=1) continue;
-      if (elePt[eleID[0]] >= 20) {
-	lepP4[0].SetPtEtaPhiM(elePt[eleID[0]], eleEta[eleID[0]], elePhi[eleID[0]], 0.511*0.001);
-	nLep_e++;
-      }
-    }    
+        //    LOG_WARNING("18\n");
+        // if(gjet15to6000==1 	&& ntruephoton!=1) continue;
+        // if(gjet15to6000==1 	&& nmatch<1) continue;
+
+        int npj=0;
+        int npp=0;
+        tp_rho->Fill(nVtx, rho, xsweight);
+        h2_nVtx_rho->Fill(nVtx,rho,xsweight);
+        if(!isData){
+            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx, rho, xsweight);
+            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx, rho, xsweight);
+        }
+        int nphofiredtrgs=0;
+        //look for 2nd photon back of HLT matched photon
+
+        float* elePt  = data.GetPtrFloat("elePt");
+        float* eleEta = data.GetPtrFloat("eleEta");
+        float* elePhi = data.GetPtrFloat("elePhi");    
+
+        //check if there is Z    
+        Int_t nLep_e = 0;    
+        Int_t nLep_m = 0;        
+        vector<int> eleID;
+        vector<int> muID;
+        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
+        //    LOG_WARNING("19\n");
+        h_nele->Fill(eleID.size());
+        if(doZee==1){
+            //ElectronIDCutBased2015(data, 2, eleID);
+            if (eleID.size() <2) continue;
+            if (elePt[eleID[0]] >= 20) {
+                for (Int_t i=0; i< 2; ++i) { //save electron
+                    lepP4[i].SetPtEtaPhiM(elePt[eleID[i]], eleEta[eleID[i]], elePhi[eleID[i]], 0.511*0.001);
+                    nLep_e++;
+                }
+            }    
+        } 
+        if(doZmm==1){
+            TightMuons2015(data, muID);
+            if (muID.size() < 2) continue;
+            float* muPt  = data.GetPtrFloat("muPt");
+            float* muEta = data.GetPtrFloat("muEta");
+            float* muPhi = data.GetPtrFloat("muPhi");      
+            if (muPt[muID[0]] >= 20 && muID.size() >=2) {    
+                for (Int_t i=0; i< 2; ++i) {
+                    lepP4[i].SetPtEtaPhiM(muPt[muID[i]], muEta[muID[i]], muPhi[muID[i]], 105.658*0.001);
+                    nLep_m++;
+                }
+            }
+        }
+        //check if there is W->l neu
+        if(doWen==1){
+            //ElectronIDCutBased2015(data, 2, eleID);
+            if (eleID.size() !=1) continue;
+            if (elePt[eleID[0]] >= 20) {
+                lepP4[0].SetPtEtaPhiM(elePt[eleID[0]], eleEta[eleID[0]], elePhi[eleID[0]], 0.511*0.001);
+                nLep_e++;
+            }
+        }    
     if(doWmn==1){
-      TightMuons2015(data, muID);
-      if (muID.size() !=1 ) continue;
-      float* muPt  = data.GetPtrFloat("muPt");
-      float* muEta = data.GetPtrFloat("muEta");
-      float* muPhi = data.GetPtrFloat("muPhi");      
-      if (muPt[muID[0]] >= 30){
-	lepP4[0].SetPtEtaPhiM(muPt[muID[0]], muEta[muID[0]], muPhi[muID[0]], 105.658*0.001);
-	nLep_m++;
-      }
+        TightMuons2015(data, muID);
+        if (muID.size() !=1 ) continue;
+        float* muPt  = data.GetPtrFloat("muPt");
+        float* muEta = data.GetPtrFloat("muEta");
+        float* muPhi = data.GetPtrFloat("muPhi");      
+        if (muPt[muID[0]] >= 30){
+            lepP4[0].SetPtEtaPhiM(muPt[muID[0]], muEta[muID[0]], muPhi[muID[0]], 105.658*0.001);
+            nLep_m++;
+        }
     }
     
     
     Mmm=Mee=0;
     if(doZee==1 && nLep_e>=2) {
-      zllP4   = lepP4[0] + lepP4[1];
-      //h_Zee_mass->Fill(zllP4.M());
-      Mee=zllP4.M();
+        zllP4   = lepP4[0] + lepP4[1];
+        //h_Zee_mass->Fill(zllP4.M());
+        Mee=zllP4.M();
     }
     if(doZmm==1 && nLep_m>=2){
-      zllP4   = lepP4[0] + lepP4[1];
-      h_Zmm_mass->Fill(zllP4.M());      
-      Mmm=zllP4.M();
+        zllP4   = lepP4[0] + lepP4[1];
+        h_Zmm_mass->Fill(zllP4.M());      
+        Mmm=zllP4.M();
     }
     float mt=0.;
     MTm=MTe=0;
     if(doWen==1 && nLep_e == 1){
-      nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
-      wlnP4 = lepP4[0] + nueP4;
-      mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
-      if(pfMET >30) h_Wen_mt->Fill(mt);
-      MTe = mt;
+        nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
+        wlnP4 = lepP4[0] + nueP4;
+        mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
+        if(pfMET >30) h_Wen_mt->Fill(mt);
+        MTe = mt;
     }
     if(doWmn==1 && nLep_m == 1){
-      nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
-      wlnP4 = lepP4[0] + nueP4;
-      mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
-      if(pfMET >30) h_Wmn_mt->Fill(mt,xsweight*genWeight);
-      MTm = mt;
+        nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
+        wlnP4 = lepP4[0] + nueP4;
+        mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
+        if(pfMET >30) h_Wmn_mt->Fill(mt,xsweight*genWeight);
+        MTm = mt;
     }
     //continue; //for wmass only
 //    LOG_WARNING("110\n");
@@ -1011,25 +1011,24 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     
     int ecandidate=0;
     for(int iele=0; iele<nEle; iele++){
-      TLorentzVector tmp_eP4;
-      tmp_eP4.SetPtEtaPhiM(elePt[iele], eleEta[iele], elePhi[iele],  0.511*0.001);
-      if(doZee==1  && TMath::Abs(tmp_eP4.DeltaPhi(zllP4)) > 1.){ 
-       	electronP4 = tmp_eP4;
-	ecandidate++;
-       	break;
-      }
-      else if(doWen==1 &&TMath::Abs(tmp_eP4.DeltaPhi(wlnP4)) > 1.5){ 
- 	electronP4 = tmp_eP4;
-	ecandidate++;
-	break;
-      }
-      else {
- 	electronP4 = tmp_eP4;
-	ecandidate++;
-	break;
-      }	      
+        TLorentzVector tmp_eP4;
+        tmp_eP4.SetPtEtaPhiM(elePt[iele], eleEta[iele], elePhi[iele],  0.511*0.001);
+        if(doZee==1  && TMath::Abs(tmp_eP4.DeltaPhi(zllP4)) > 1.){ 
+            electronP4 = tmp_eP4;
+            ecandidate++;
+            break;
+        }
+        else if(doWen==1 &&TMath::Abs(tmp_eP4.DeltaPhi(wlnP4)) > 1.5){ 
+            electronP4 = tmp_eP4;
+            ecandidate++;
+            break;
+        }
+        else {
+            electronP4 = tmp_eP4;
+            ecandidate++;
+            break;
+        }	      
     }
-    // if((doZee==1 || doZmm==1 || doWen==1 || doWmn==1) && ecandidate==0) continue;
     if((doZee==1 || doZmm==1 ) && ecandidate==0) continue;
 
     vector <int> photon_list;
@@ -1040,192 +1039,174 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     //JETPD find leading jets fired trigger
     if(JETPD_PHOTONHLT==1){
-      for(int ijet=0; ijet<nJet; ijet++){
-     	if(jetFiredTrgs!=0){
-     	  trigger_jetP4.SetPtEtaPhiE(jetPt[ijet], jetEta[ijet], jetPhi[ijet], jetEn[ijet]);
-     	  jet_index= ijet;
-     	  break;
-     	}
-      }
+        for(int ijet=0; ijet<nJet; ijet++){
+            if(jetFiredTrgs!=0){
+                trigger_jetP4.SetPtEtaPhiE(jetPt[ijet], jetEta[ijet], jetPhi[ijet], jetEn[ijet]);
+                jet_index= ijet;
+                break;
+            }
+        }
     }
     int nnjet=0;
     int jet2_index=-1;
     if(isData==1){
-      for (Int_t i=0; i<nPho; ++i) {  
-	if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
-	if(PhotonPreselection(data, i, kFALSE) !=1) continue;
-//    LOG_WARNING("112\n");
+        for (Int_t i=0; i<nPho; ++i) {  
+            if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
+            if(PhotonPreselection(data, i, kFALSE) !=1) continue;
 
-	// if(phoEt[i]>150. && isData==1){
-	//   if(TMath::Abs(phoSCEta[i])<1.5) h_EBSeedTimeW->Fill(phoSeedTime[i]);
-	//   else h_EESeedTimeW->Fill(phoSeedTime[i]);
-	// }
-
-	for (Int_t j=i+1; j<nPho; ++j) {  
-	  if(PhotonPreselection(data, j, kFALSE) !=1) continue;	  
-	  phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);	  
-	  TLorentzVector jphoP4;
-	  jphoP4.SetPtEtaPhiM(phoEt[j], phoEta[j], phoPhi[j], 0.);
-	  TLorentzVector ppP4;
-	  ppP4 = phoP4;	  ppP4 += jphoP4;
-	  h_ppmass->Fill(ppP4.M());
-	  h_ppmass_zoom->Fill(ppP4.M());
-	  // if(ppP4.M()>70 && ppP4.M()<110) {
-	  //   if(phoEt[i]>150. && isData==1){
-	  //     if(TMath::Abs(phoSCEta[i])<1.5) h_EBSeedTime->Fill(phoSeedTime[i]);
-	  //     else h_EESeedTime->Fill(phoSeedTime[i]);
-	  //   }
-	  //   if(phoEt[j]>150. && isData==1){
-	  //     if(TMath::Abs(phoSCEta[j])<1.5) h_EBSeedTime->Fill(phoSeedTime[j]);
-	  //     else h_EESeedTime->Fill(phoSeedTime[j]);
-	  //   }
-	  //   break;
-	  // }
-	}
-	
-      }
+            for (Int_t j=i+1; j<nPho; ++j) {  
+                if(PhotonPreselection(data, j, kFALSE) !=1) continue;	  
+                phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);	  
+                TLorentzVector jphoP4;
+                jphoP4.SetPtEtaPhiM(phoEt[j], phoEta[j], phoPhi[j], 0.);
+                TLorentzVector ppP4;
+                ppP4 = phoP4;	  ppP4 += jphoP4;
+                h_ppmass->Fill(ppP4.M());
+                h_ppmass_zoom->Fill(ppP4.M());
+            }
+        }
     }
 //    LOG_WARNING("113\n");
 	  
 
     for (Int_t i=0; i<nPho; ++i) {      
-      //for (Int_t i=0; i<1; ++i) {      
-       if(phoEt[i]<15.) continue;       
-      //if(phoEt[i]<100.) continue;
-      if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
-      if(TMath::Abs(phoSCEta[i])>2.5) continue;
-      if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
-      if(isData==1 && JETPD_PHOTONHLT==0 && doWmn==0){
-       	if(phoFiredTrgs[i]==0) continue;
-        /* completely disable trigger selection
+        //for (Int_t i=0; i<1; ++i) {      
+        if(phoEt[i]<15.) continue;       
+        //if(phoEt[i]<100.) continue;
+        if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
+        if(TMath::Abs(phoSCEta[i])>2.5) continue;
+        if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
+        if(isData==1 && JETPD_PHOTONHLT==0 && doWmn==0){
+            if(phoFiredTrgs[i]==0) continue;
+            /* completely disable trigger selection
 
-        // in 2016 HLT Table
-       	if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+            // in 2016 HLT Table
+            if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
 
-       	//if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
-       	//else 
-       	//  continue;       
-        //  */
-      }
-//    LOG_WARNING("114\n");
-      phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
-      int pho_presel = 0;
-      // if(doWmn==1) pho_presel = PhotonPreselection(data, i, kFALSE);
-      // else pho_presel = PhotonPreselection(data, i, kTRUE);
-      pho_presel = PhotonPreselection(data, i, kTRUE);
-      //check CSEV eff vs pt
-      if(isData==0) {
-	if(i==0 && match[i]==1){
-	  
-	  if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_den->Fill(phoEt[i]);
-	  else hphoEE_pt_presel_den->Fill(phoEt[i]);	
-	  if(pho_presel == 1){
-	    if(TMath::Abs(phoSCEta[i])<1.5) {
-	      if(phoPFChIso[i]<2.) hphoEB_pt_presel_num->Fill(phoEt[i]);
-	    }else {
-	      if(phoPFChIso[i]<1.5) hphoEE_pt_presel_num->Fill(phoEt[i]);
-	    }
-	  }
-	  
-	  if( PhotonPreselection(data, i, kFALSE) ==1){
-	    if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
-	    else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
-	    
-	    if(pho_presel == 1){
-	      if(TMath::Abs(phoSCEta[i])<1.5) {
-		hphoEB_pt_presel_csev->Fill(phoEt[i]);
-	      }else {
-		hphoEE_pt_presel_csev->Fill(phoEt[i]);
-	      }
-	    }
-	    
-	  }
-	}
-      }
-      
-//    LOG_WARNING("115\n");
-      //get e-pho mass from Z
-      if( PhotonPreselection(data, i, kFALSE) ==1){
-	for(unsigned int jj=0; jj<eleID.size(); jj++){
-	  TLorentzVector tmp_eP4;
-	  tmp_eP4.SetPtEtaPhiM(elePt[eleID[jj]], eleEta[eleID[jj]], elePhi[eleID[jj]],  0.511*0.001);
-	  if(phoP4.DeltaR(tmp_eP4) > 0.5) {
-	    TLorentzVector tmp_phoele_P4;
-	    tmp_phoele_P4 = phoP4;
-	    tmp_phoele_P4 += tmp_eP4;
-	    h_Zee_mass->Fill(tmp_phoele_P4.M());
-	    if(tmp_phoele_P4.M()>70. && tmp_phoele_P4.M()<110.) 
-	      h_phoPt_eta_Z_all->Fill(phoEt[i], TMath::Abs(phoSCEta[i]));
-	    if(PhotonPreselection(data, i, kTRUE) ==1){
-	      h_Zee_mass_csev->Fill(tmp_phoele_P4.M());	   
-	      if(tmp_phoele_P4.M()>70. && tmp_phoele_P4.M()<110.) 
-		h_phoPt_eta_Z_csev->Fill(phoEt[i], TMath::Abs(phoSCEta[i]));
-	    }
-	  }
-	}
+            //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
+            //else 
+            //  continue;       
+            //  */
+        }
 
-      }	
-      
-      if(pho_presel!=1) continue;
-      if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
-      photon_list.push_back(i); 
-      if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
+        phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
+        int pho_presel = 0;
+        // if(doWmn==1) pho_presel = PhotonPreselection(data, i, kFALSE);
+        // else pho_presel = PhotonPreselection(data, i, kTRUE);
+        pho_presel = PhotonPreselection(data, i, kTRUE);
+        //check CSEV eff vs pt
+        if(isData==0) {
+            if(i==0 && match[i]==1){
+
+                if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_den->Fill(phoEt[i]);
+                else hphoEE_pt_presel_den->Fill(phoEt[i]);	
+                if(pho_presel == 1){
+                    if(TMath::Abs(phoSCEta[i])<1.5) {
+                        if(phoPFChIso[i]<2.) hphoEB_pt_presel_num->Fill(phoEt[i]);
+                    }else {
+                        if(phoPFChIso[i]<1.5) hphoEE_pt_presel_num->Fill(phoEt[i]);
+                    }
+                }
+
+                if( PhotonPreselection(data, i, kFALSE) ==1){
+                    if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
+                    else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
+
+                    if(pho_presel == 1){
+                        if(TMath::Abs(phoSCEta[i])<1.5) {
+                            hphoEB_pt_presel_csev->Fill(phoEt[i]);
+                        }else {
+                            hphoEE_pt_presel_csev->Fill(phoEt[i]);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        //    LOG_WARNING("115\n");
+        //get e-pho mass from Z
+        if( PhotonPreselection(data, i, kFALSE) ==1){
+            for(unsigned int jj=0; jj<eleID.size(); jj++){
+                TLorentzVector tmp_eP4;
+                tmp_eP4.SetPtEtaPhiM(elePt[eleID[jj]], eleEta[eleID[jj]], elePhi[eleID[jj]],  0.511*0.001);
+                if(phoP4.DeltaR(tmp_eP4) > 0.5) {
+                    TLorentzVector tmp_phoele_P4;
+                    tmp_phoele_P4 = phoP4;
+                    tmp_phoele_P4 += tmp_eP4;
+                    h_Zee_mass->Fill(tmp_phoele_P4.M());
+                    if(tmp_phoele_P4.M()>70. && tmp_phoele_P4.M()<110.) 
+                        h_phoPt_eta_Z_all->Fill(phoEt[i], TMath::Abs(phoSCEta[i]));
+                    if(PhotonPreselection(data, i, kTRUE) ==1){
+                        h_Zee_mass_csev->Fill(tmp_phoele_P4.M());	   
+                        if(tmp_phoele_P4.M()>70. && tmp_phoele_P4.M()<110.) 
+                            h_phoPt_eta_Z_csev->Fill(phoEt[i], TMath::Abs(phoSCEta[i]));
+                    }
+                }
+            }
+
+        }	
+
+        if(pho_presel!=1) continue;
+        if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
+        photon_list.push_back(i); 
+        if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
 
 
     }   
     h_npho->Fill(photon_list.size());
     if(photon_list.size() < 1) continue;
-    
-    
+
+
     phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
     for(unsigned int j=0; j<eleID.size(); j++){
-      if(elePt[eleID[j]]<100) continue;
-      TLorentzVector tmp_eP4;
-      tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-      h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
-      if(phoP4.DeltaR(tmp_eP4) < 0.3) {
-       	photon_list.clear(); 
-      }
+        if(elePt[eleID[j]]<100) continue;
+        TLorentzVector tmp_eP4;
+        tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
+        h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
+        if(phoP4.DeltaR(tmp_eP4) < 0.3) {
+            photon_list.clear(); 
+        }
     }
 
     //find one jet in event
     for(int j=0; j<nJet; j++){		         
-      float jetjecunc = 1.;
-      if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
-	if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
-	jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
-	
-	if(phoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
-	  float dphojetpt = jetPt[j] / phoP4.Pt();
-	  h_dpt_phojet->Fill(dphojetpt);
-	  if( dphojetpt>0.5 || dphojetpt<2.) {
-	    if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
-	    else photon_jetID.push_back(0.);
-	  }
-	}
+        float jetjecunc = 1.;
+        if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
+            if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
+            jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-	if( jetId[j] ) {	  
-	  h_dR_phojet->Fill(phoP4.DeltaR(jetP4));
-	  if(phoP4.DeltaR(jetP4)>0.4){
-	    if(jet_index<0) jet_index = j;
-	    nnjet++;
-	    if(nnjet==2) jet2_index = j;
-	  }	    
-	}    
-      }  
+            if(phoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
+                float dphojetpt = jetPt[j] / phoP4.Pt();
+                h_dpt_phojet->Fill(dphojetpt);
+                if( dphojetpt>0.5 || dphojetpt<2.) {
+                    if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
+                    else photon_jetID.push_back(0.);
+                }
+            }
+
+            if( jetId[j] ) {	  
+                h_dR_phojet->Fill(phoP4.DeltaR(jetP4));
+                if(phoP4.DeltaR(jetP4)>0.4){
+                    if(jet_index<0) jet_index = j;
+                    nnjet++;
+                    if(nnjet==2) jet2_index = j;
+                }	    
+            }    
+        }  
     }
 
     if(phoEt[photon_list[0]] > 150.) {
-      h_njet->Fill(nnjet, xsweight);
-      if(nnjet>1){
-	int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-	int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-	h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
-      }
+        h_njet->Fill(nnjet, xsweight);
+        if(nnjet>1){
+            int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
+            int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
+            h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
+        }
     }
 
 
-    
+
     if(photon_jetID.size()==0) photon_jetID.push_back(0);
 
     int photon_requested = ONLY_LEADINGPHOTON ? 1 : photon_list.size();
@@ -1398,7 +1379,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     h_nphoFiredTrgs->Fill(nphofiredtrgs);
 
-  }
+    }
   
   fout_->cd();
   outtree_->Write();
