@@ -1180,15 +1180,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         if(photon_jetID.size()==0) photon_jetID.push_back(0);
 
-        int photon_requested = ONLY_LEADINGPHOTON ? 1 : photon_list.size();
 
 
 
 
-        for (Int_t ii=0; ii<photon_requested; ii++) {            
-            if ( photon_list.empty() ) continue;
-
-
+        for (Int_t ii=0; ii<photon_list.size(); ii++) {            
             int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
             phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
@@ -1341,6 +1337,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             if(MINITREE==1 ) 	{
                 outtree_->Fill();
+                if ( ONLY_LEADINGPHOTON ) break;
             }
 
         }
