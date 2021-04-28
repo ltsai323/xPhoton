@@ -29,13 +29,7 @@ Double_t XS=1.;
 Bool_t verbose=false;
 Int_t JETPD_PHOTONHLT=0;
 Int_t ONLY_LEADINGPHOTON=1;
-//flag for w/z tags
-/*
-Int_t doZee=0;
-Int_t doZmm=0;
-Int_t doWen=0;
-Int_t doWmn=0;
-*/
+
 Int_t isMC=0;
 Int_t data25ns=1;
 Int_t data50ns=0;
@@ -61,22 +55,27 @@ Double_t deltaR(Double_t eta1, Double_t phi1, Double_t eta2, Double_t phi2) {
 }
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    //    LOG_WARNING("01\n");
 
     // vector <string> pathes;
     // pathes.push_back(fname);
     TreeReader data(pathes);
-    //printf(" reading file %s \n", fname);
 
     TFile *fout_;
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_;
 
-    float ptcut[30] = {15, 20, 40, 60, 75, 90, 105,  120, 135, 150, 160, 170, 180,
-        190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000}; //22 bins
-    //                  13   14   15   16   17   18   19   20   21    22    23    24    25     26
-    float etabin[10] = {0., 0.8, 1.5, 2.1, 2.5};
+    float ptcut[] = {
+           15,    20,    40,    60,    75, // 0
+           90,   105,   120,   135,   150, // 5
+
+          160,   170,   180,   190,   200, //10
+          220,   250,   300,   350,   400, //15
+
+          500,   750,  1000,  1500,  2000, //20
+         3000, 10000}; //22 bins
+
+    float etabin[] = {0., 0.8, 1.5, 2.1, 2.5};
 
     TH1F* h_subVtxPt    = new TH1F("subVtxPt"   , "pt distribution of secondary vertex in bJet", 70, 0., 350. );
     TH1F* h_subVtxMass  = new TH1F("subVtxMass" , "mass spectrum of secondary vertex in bJet", 88, 0., 22. );
