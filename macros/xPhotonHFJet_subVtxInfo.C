@@ -30,10 +30,12 @@ Bool_t verbose=false;
 Int_t JETPD_PHOTONHLT=0;
 Int_t ONLY_LEADINGPHOTON=1;
 //flag for w/z tags
+/*
 Int_t doZee=0;
 Int_t doZmm=0;
 Int_t doWen=0;
 Int_t doWmn=0;
+*/
 Int_t isMC=0;
 Int_t data25ns=1;
 Int_t data50ns=0;
@@ -271,7 +273,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     //Float_t mcCalIso04, mcTrkIso04;
     Float_t xsweight=XS;
     Long64_t HLT, HLTIsPrescaled, HLT50ns, HLTIsPrescaled50ns;
-    Float_t Mmm, Mee, MET, MTm, MTe, METPhi;
+    Float_t  MET,   METPhi;
     Int_t metFilters;
     Float_t jetPt_, jetEta_, jetPhi_, jetY_, jetJECUnc_;
     Float_t jetGenJetPt_, jetGenJetEta_, jetGenJetPhi_, jetGenJetY_, genHT_;
@@ -343,14 +345,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
     // outtree_->Branch("mva_hgg",      &mva_hgg,      "mva_hgg/F");   // abandoned
-    outtree_->Branch("Mmm",    &Mmm,    "Mmm/F");  
-    outtree_->Branch("Mee",    &Mee,    "Mee/F");  
+    //outtree_->Branch("Mmm",    &Mmm,    "Mmm/F");  
+    //outtree_->Branch("Mee",    &Mee,    "Mee/F");  
     outtree_->Branch("MET",    &MET,    "MET/F");  
     outtree_->Branch("metFilters",    &metFilters,    "metFilters/I");  
     outtree_->Branch("METPhi",    &METPhi,    "METPhi/F");  
     outtree_->Branch("phohasPixelSeed", &phohasPixelSeed_, "phohasPixelSeed/I");
-    outtree_->Branch("MTm",    &MTm,    "MTm/F");  
-    outtree_->Branch("MTe",    &MTe,    "MTe/F");  
     //outtree_->Branch("deta_wg",    &deta_wg,    "deta_wg/F");  
     //outtree_->Branch("dphi_wg",    &dphi_wg,    "dphi_wg/F");  
 
@@ -472,11 +472,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         }
 
 
+        /*
         if(isData==1 && doWmn==1){
             Long64_t HLTelemu = data.GetLong64("HLTEleMuX");
             //if( ((HLTelemu>>31)&1)!=1 && ((HLTelemu>>32)&1)!=1 ) continue;
             if( ((HLTelemu>>31)&1)!=1 ) continue;
         }
+        */
 
         //if(gjetSignal==0 &&  nPho==0) continue;  //skip entry if no recoPhoton
 
@@ -829,7 +831,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         float dpt = fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]);
                         hdR_ele->Fill(dr);
                         hdpt_ele->Fill(dpt);
-                        if (dr < 0.2 && dpt < 0.2 && ((mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 || doWmn==1) ){
+                        if (dr < 0.2 && dpt < 0.2 && (mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 ){
+                        //if (dr < 0.2 && dpt < 0.2 && ((mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 || doWmn==1) ){
                             isConverted = 1;
                             mcPt_  = mcMomPt[k];
                             mcEta_ = mcMomEta[k];
@@ -890,117 +893,117 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         float* elePhi = data.GetPtrFloat("elePhi");    
 
         //check if there is Z    
-        Int_t nLep_e = 0;    
-        Int_t nLep_m = 0;        
+        //Int_t nLep_e = 0;    
+        //Int_t nLep_m = 0;        
         vector<int> eleID;
-        vector<int> muID;
+        // vector<int> muID;
         ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
         //    LOG_WARNING("19\n");
         h_nele->Fill(eleID.size());
-        if(doZee==1){
-            //ElectronIDCutBased2015(data, 2, eleID);
-            if (eleID.size() <2) continue;
-            if (elePt[eleID[0]] >= 20) {
-                for (Int_t i=0; i< 2; ++i) { //save electron
-                    lepP4[i].SetPtEtaPhiM(elePt[eleID[i]], eleEta[eleID[i]], elePhi[eleID[i]], 0.511*0.001);
-                    nLep_e++;
-                }
-            }    
-        } 
-        if(doZmm==1){
-            TightMuons2015(data, muID);
-            if (muID.size() < 2) continue;
-            float* muPt  = data.GetPtrFloat("muPt");
-            float* muEta = data.GetPtrFloat("muEta");
-            float* muPhi = data.GetPtrFloat("muPhi");      
-            if (muPt[muID[0]] >= 20 && muID.size() >=2) {    
-                for (Int_t i=0; i< 2; ++i) {
-                    lepP4[i].SetPtEtaPhiM(muPt[muID[i]], muEta[muID[i]], muPhi[muID[i]], 105.658*0.001);
-                    nLep_m++;
-                }
-            }
-        }
-        //check if there is W->l neu
-        if(doWen==1){
-            //ElectronIDCutBased2015(data, 2, eleID);
-            if (eleID.size() !=1) continue;
-            if (elePt[eleID[0]] >= 20) {
-                lepP4[0].SetPtEtaPhiM(elePt[eleID[0]], eleEta[eleID[0]], elePhi[eleID[0]], 0.511*0.001);
-                nLep_e++;
-            }
-        }    
-        if(doWmn==1){
-            TightMuons2015(data, muID);
-            if (muID.size() !=1 ) continue;
-            float* muPt  = data.GetPtrFloat("muPt");
-            float* muEta = data.GetPtrFloat("muEta");
-            float* muPhi = data.GetPtrFloat("muPhi");      
-            if (muPt[muID[0]] >= 30){
-                lepP4[0].SetPtEtaPhiM(muPt[muID[0]], muEta[muID[0]], muPhi[muID[0]], 105.658*0.001);
-                nLep_m++;
-            }
-        }
+
+        //if(doZee==1){
+        //    //ElectronIDCutBased2015(data, 2, eleID);
+        //    if (eleID.size() <2) continue;
+        //    if (elePt[eleID[0]] >= 20) {
+        //        for (Int_t i=0; i< 2; ++i) { //save electron
+        //            lepP4[i].SetPtEtaPhiM(elePt[eleID[i]], eleEta[eleID[i]], elePhi[eleID[i]], 0.511*0.001);
+        //            nLep_e++;
+        //        }
+        //    }    
+        //} 
+        //if(doZmm==1){
+        //    TightMuons2015(data, muID);
+        //    if (muID.size() < 2) continue;
+        //    float* muPt  = data.GetPtrFloat("muPt");
+        //    float* muEta = data.GetPtrFloat("muEta");
+        //    float* muPhi = data.GetPtrFloat("muPhi");      
+        //    if (muPt[muID[0]] >= 20 && muID.size() >=2) {    
+        //        for (Int_t i=0; i< 2; ++i) {
+        //            lepP4[i].SetPtEtaPhiM(muPt[muID[i]], muEta[muID[i]], muPhi[muID[i]], 105.658*0.001);
+        //            nLep_m++;
+        //        }
+        //    }
+        //}
+        ////check if there is W->l neu
+        //if(doWen==1){
+        //    //ElectronIDCutBased2015(data, 2, eleID);
+        //    if (eleID.size() !=1) continue;
+        //    if (elePt[eleID[0]] >= 20) {
+        //        lepP4[0].SetPtEtaPhiM(elePt[eleID[0]], eleEta[eleID[0]], elePhi[eleID[0]], 0.511*0.001);
+        //        nLep_e++;
+        //    }
+        //}    
+        //if(doWmn==1){
+        //    TightMuons2015(data, muID);
+        //    if (muID.size() !=1 ) continue;
+        //    float* muPt  = data.GetPtrFloat("muPt");
+        //    float* muEta = data.GetPtrFloat("muEta");
+        //    float* muPhi = data.GetPtrFloat("muPhi");      
+        //    if (muPt[muID[0]] >= 30){
+        //        lepP4[0].SetPtEtaPhiM(muPt[muID[0]], muEta[muID[0]], muPhi[muID[0]], 105.658*0.001);
+        //        nLep_m++;
+        //    }
+        //}
 
 
-        Mmm=Mee=0;
-        if(doZee==1 && nLep_e>=2) {
-            zllP4   = lepP4[0] + lepP4[1];
-            //h_Zee_mass->Fill(zllP4.M());
-            Mee=zllP4.M();
-        }
-        if(doZmm==1 && nLep_m>=2){
-            zllP4   = lepP4[0] + lepP4[1];
-            h_Zmm_mass->Fill(zllP4.M());      
-            Mmm=zllP4.M();
-        }
-        float mt=0.;
-        MTm=MTe=0;
-        if(doWen==1 && nLep_e == 1){
-            nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
-            wlnP4 = lepP4[0] + nueP4;
-            mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
-            if(pfMET >30) h_Wen_mt->Fill(mt);
-            MTe = mt;
-        }
-        if(doWmn==1 && nLep_m == 1){
-            nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
-            wlnP4 = lepP4[0] + nueP4;
-            mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
-            if(pfMET >30) h_Wmn_mt->Fill(mt,xsweight*genWeight);
-            MTm = mt;
-        }
-
-        if( doWmn==1 && nLep_m!=1) continue;
-        if( doWen==1 && nLep_e!=1) continue;
-        if(( doZee==1 || doZmm==1) && (zllP4.M()<50 || zllP4.M()>110.)) continue;
+        //Mmm=Mee=0;
+        //if(doZee==1 && nLep_e>=2) {
+        //    zllP4   = lepP4[0] + lepP4[1];
+        //    //h_Zee_mass->Fill(zllP4.M());
+        //    Mee=zllP4.M();
+        //}
+        //if(doZmm==1 && nLep_m>=2){
+        //    zllP4   = lepP4[0] + lepP4[1];
+        //    h_Zmm_mass->Fill(zllP4.M());      
+        //    Mmm=zllP4.M();
+        //}
         MET = pfMET;
         METPhi = pfMETPhi;
         h_MET->Fill(MET);
-        if((doZee==1 || doZmm==1) && MET>20.) continue;    
-        if((doWen==1 || doWmn==1) && MET<30 ) continue;
-        if((doWen==1 || doWmn==1) && (mt<40 || mt>110)) continue;
+        //if(doWen==1 && nLep_e == 1){
+        //    nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
+        //    wlnP4 = lepP4[0] + nueP4;
+        //    mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
+        //    if(pfMET >30) h_Wen_mt->Fill(mt);
+        //    MTe = mt;
+        //}
+        //if(doWmn==1 && nLep_m == 1){
+        //    nueP4.SetPtEtaPhiM(pfMET, 0., pfMETPhi, 0.);
+        //    wlnP4 = lepP4[0] + nueP4;
+        //    mt = TMath::Sqrt(2*lepP4[0].Pt()*pfMET*(1-TMath::Cos(lepP4[0].Phi()-pfMETPhi)));
+        //    if(pfMET >30) h_Wmn_mt->Fill(mt,xsweight*genWeight);
+        //    MTm = mt;
+        //}
+        //if( doWmn==1 && nLep_m!=1) continue;
+        //if( doWen==1 && nLep_e!=1) continue;
+        //if(( doZee==1 || doZmm==1) && (zllP4.M()<50 || zllP4.M()>110.)) continue;
+        //if((doZee==1 || doZmm==1) && MET>20.) continue;    
+        //if((doWen==1 || doWmn==1) && MET<30 ) continue;
+        //if((doWen==1 || doWmn==1) && (mt<40 || mt>110)) continue;
 
-        int ecandidate=0;
-        for(int iele=0; iele<nEle; iele++){
-            TLorentzVector tmp_eP4;
-            tmp_eP4.SetPtEtaPhiM(elePt[iele], eleEta[iele], elePhi[iele],  0.511*0.001);
-            if(doZee==1  && TMath::Abs(tmp_eP4.DeltaPhi(zllP4)) > 1.){ 
-                electronP4 = tmp_eP4;
-                ecandidate++;
-                break;
-            }
-            else if(doWen==1 &&TMath::Abs(tmp_eP4.DeltaPhi(wlnP4)) > 1.5){ 
-                electronP4 = tmp_eP4;
-                ecandidate++;
-                break;
-            }
-            else {
-                electronP4 = tmp_eP4;
-                ecandidate++;
-                break;
-            }	      
-        }
-        if((doZee==1 || doZmm==1 ) && ecandidate==0) continue;
+        
+        //int ecandidate=0;
+        //for(int iele=0; iele<nEle; iele++){
+        //    TLorentzVector tmp_eP4;
+        //    tmp_eP4.SetPtEtaPhiM(elePt[iele], eleEta[iele], elePhi[iele],  0.511*0.001);
+        //    if(doZee==1  && TMath::Abs(tmp_eP4.DeltaPhi(zllP4)) > 1.){ 
+        //        electronP4 = tmp_eP4;
+        //        ecandidate++;
+        //        break;
+        //    }
+        //    else if(doWen==1 &&TMath::Abs(tmp_eP4.DeltaPhi(wlnP4)) > 1.5){ 
+        //        electronP4 = tmp_eP4;
+        //        ecandidate++;
+        //        break;
+        //    }
+        //    else {
+        //        electronP4 = tmp_eP4;
+        //        ecandidate++;
+        //        break;
+        //    }	      
+        //}
+        //if((doZee==1 || doZmm==1 ) && ecandidate==0) continue;
+
 
         vector <int> photon_list;
         vector <int> photon_jetID;
@@ -1124,11 +1127,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
 
 
-        }   
+        }
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
 
 
+        // find photon overlaps to electron
         phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
         for(unsigned int j=0; j<eleID.size(); j++){
             if(elePt[eleID[j]]<100) continue;
@@ -1214,6 +1218,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             isMatchedEle = -99;
             isConverted = -99;
             mva = -99.;
+            genHT_ = 0.;
+            pthat_      = 0.;
+            mcPt_       = 0.;
+            mcEta_      = 0.;
+            mcPhi_      = 0.;
+            mcCalIso04_ = 0.;
+            mcTrkIso04_ = 0.;
 
             if(jet_index>=0) {
                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
@@ -1490,7 +1501,7 @@ void xPhotonHFJet(Int_t dataset = 0) {
 */
 
 void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection=1., int dowmnoption=0){
-  doWmn = dowmnoption;
+  //doWmn = dowmnoption;
   isMC=1;
   vector <string> pathes;
   pathes.push_back(fname);
