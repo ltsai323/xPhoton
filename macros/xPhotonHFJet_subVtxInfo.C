@@ -265,7 +265,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Int_t phoFiredTrgs_, phohasPixelSeed_;
 
     Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva,  photonIDmva;
-    Int_t HggPresel;
     Float_t sieieFull5x5, sipipFull5x5, sieipFull5x5, e2x2Full5x5,  e5x5Full5x5;
     Int_t isConverted;
 
@@ -344,7 +343,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
     // outtree_->Branch("mva_hgg",      &mva_hgg,      "mva_hgg/F");   // abandoned
-    outtree_->Branch("HggPresel",    &HggPresel,    "HggPresel/I");  
     outtree_->Branch("Mmm",    &Mmm,    "Mmm/F");  
     outtree_->Branch("Mee",    &Mee,    "Mee/F");  
     outtree_->Branch("MET",    &MET,    "MET/F");  
@@ -1048,7 +1046,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
             if(TMath::Abs(phoSCEta[i])>2.5) continue;
             if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
-            if(isData==1 && JETPD_PHOTONHLT==0 && doWmn==0){
+            if(isData==1 && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
                 /* completely disable trigger selection
 
@@ -1096,6 +1094,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
             }
 
+            /*    asdf
             //    LOG_WARNING("115\n");
             //get e-pho mass from Z
             if( PhotonPreselection(data, i, kFALSE) ==1){
@@ -1117,7 +1116,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-            }	
+            }	*/
 
             if(pho_presel!=1) continue;
             if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
@@ -1211,6 +1210,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetGenJetY_ = 0.;
             jetGenPartonID_ = 0;
             jetGenPartonMomID_ = 0;
+            jetPartonID_= jetHadFlvr_ = 0.;
+            idLoose      = -1;
+            idMedium     = -1;
+            idTight      = -1;
+            isMatched = -99;
+            isMatchedEle = -99;
+            isConverted = -99;
+            mva = -99.;
 
             if(jet_index>=0) {
                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
@@ -1229,10 +1236,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetGenJetY_ = jetGenJetP4.Rapidity();
                     jetGenPartonID_ = jetGenPartonID[jet_index];		
                     jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
-                }else {
                 }
-            }else{
+
             }
+
             if (hasSubVtxInfo)
             {
                 jetSubVtxPt_    = jetSubVtxPt   [jet_index];
@@ -1259,10 +1266,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 jetPartonID_ = jetPartonID[jet_index];
                 jetHadFlvr_ = jetHadFlvr[jet_index];
             }
-            else { jetPartonID_= jetHadFlvr_ = 0.; }
-            idLoose      = -1;
-            idMedium     = -1;
-            idTight      = -1;
 
             if(!isData){
                 isMatched = match[ipho];
@@ -1280,11 +1283,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
 
-            }else{
-                isMatched = 1;
-                isMatchedEle = 0;
-                isConverted = 0;
             }
+
 
             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
             h2_mcPID_mcPt->Fill( phoEt[ipho], 10.09, xsweight);
@@ -1327,13 +1327,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             else { SeedTime_=SeedEnergy_=MIPTotEnergy_=0;}
             phoIDbit_ = phoIDbit[ipho];
 
-            HggPresel = 0.;
-            mva = -99.;
 
 
             mva = select_photon_mvanoIso(data, ipho, tgr);
-
-
             photonIDmva = phoIDMVA[ipho];
 
 
