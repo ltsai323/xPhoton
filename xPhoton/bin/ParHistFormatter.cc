@@ -30,15 +30,15 @@ char ofile[200];
 bool selectedEvt(readMgr* data, const char* datatype)
 {
     if ( strncmp(datatype, "data",  4) == 0 )                                        return true;
-    if ( strncmp(datatype, "mcsig", 5) == 0 ) if ( data->Int(var::isMatched) == 1 )  return true;
-    if ( strncmp(datatype, "mcbkg", 5) == 0 ) if ( data->Int(var::isMatched) ==-1 )  return true;
+    if ( strncmp(datatype, "sigmc", 5) == 0 ) if ( data->Int(var::isMatched) == 1 )  return true;
+    if ( strncmp(datatype, "bkgmc", 5) == 0 ) if ( data->Int(var::isMatched) ==-1 )  return true;
     return false;
 }
 //bool addPreselection
 
 int main( int argc, char* argv[])
 {
-    if ( argc<3 ) LOG_FATAL("This program needs to have 2 arguments. First allows 'data'/'mcsig'/'mcbkg'. And second is input file path. Third one is output filename");
+    if ( argc<3 ) LOG_FATAL("This program needs to have 2 arguments. First allows 'data'/'sigmc'/'bkgmc'. And second is input file path. Third one is output filename");
 
     const char* ifile = argv[2];
     if ( argc==4 ) sprintf( ofile, ofiletemplate, argv[1], argv[3] );
@@ -66,7 +66,7 @@ int main( int argc, char* argv[])
     hists.Create("SCetaWidth"   , BINNING, 0.,    0.10);
     hists.Create("SCphiWidth"   , BINNING, 0.,    0.10);
     hists.Create("rho"          , BINNING, 0.,   50.  );
-    hists.Create("mva"          , BINNING,-1.,    1.  );
+    hists.Create("mva"          ,      10,-1.,    1.  );
 
 
     hists.Create("MET_ptOVERphi", BINNING, -3.14, 3.14, BINNING, 0., 2.);
@@ -80,10 +80,16 @@ int main( int argc, char* argv[])
 
         // preselection start
         if ( data.Float(var::recoPt) < 180. ) continue;
-        if ( data.Float(var::recoEta) > 1.4442 || 
-             data.Float(var::recoEta) <-1.4442 ) continue; // choose barrel only
+        if ( data.Float(var::recoEta) > 1.4442 ) continue;
+        if ( data.Float(var::recoEta) <-1.4442 ) continue; // choose barrel only
 
-        if (!(data.Long64(var::phoFiredTrg)>>HLT_PHOTON_BIT&1) ) continue;
+        if ( data.GetBool("isData") )
+            if (!(data.GetInt("phoFiredTrgs")>>HLT_PHOTON_BIT&1) ) continue;
+        float pt=data.Float(var::recoPt);
+        if ( !(pt > 185. && pt < 190.) ) continue;
+
+
+
         // preselection end
 
         if (!selectedEvt(&data, argv[1]) ) continue;
