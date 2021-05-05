@@ -1,5 +1,6 @@
 ifile=$1
 idx=`echo $ifile|rev|cut -d'_' -f1|cut -d'.' -f2|rev`
+echo $ifile
 echo $idx
 
 root -b <<EOF
