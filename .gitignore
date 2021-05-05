@@ -46,3 +46,6 @@
 */.*.swo
 .*.swp
 .*.swo
+
+# system running file
+*/.nfs*
