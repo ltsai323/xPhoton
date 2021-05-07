@@ -20,7 +20,7 @@
 
 const int BINNING = 100;
 // WARNING // HLT BIT needs to be checked at each file.
-const int HLT_PHOTON_BIT=6; // HLT_Photon175
+const int HLT_PHOTON_BIT=7; // HLT_Photon175
 
 
 
@@ -79,13 +79,13 @@ int main( int argc, char* argv[])
         data.GetEntry(ievt);
 
         // preselection start
-        if ( data.Float(var::recoPt) < 180. ) continue;
         if ( data.Float(var::recoEta) > 1.4442 ) continue;
         if ( data.Float(var::recoEta) <-1.4442 ) continue; // choose barrel only
 
         if ( data.GetBool("isData") )
             if (!(data.GetInt("phoFiredTrgs")>>HLT_PHOTON_BIT&1) ) continue;
         float pt=data.Float(var::recoPt);
+        hists.Fill("pt", pt);
         if ( !(pt > 185. && pt < 190.) ) continue;
 
 
@@ -101,7 +101,6 @@ int main( int argc, char* argv[])
         hists.Fill("sieieFull5x5", data.Float(var::sieieFull5x5      ));
         hists.Fill("sieipFull5x5", data.Float(var::sieipFull5x5      ));
         hists.Fill("phoIsoRaw"   , data.Float(var::phoIsoRaw         ));
-        hists.Fill("pt"          , data.Float(var::recoPt            ));
         hists.Fill("phi"         , data.Float(var::recoPhi           ));
         hists.Fill("eta"         , data.Float(var::recoEta           ));
         hists.Fill("chIsoRaw"    , data.Float(var::chIsoRaw          ));
