@@ -17,7 +17,7 @@ def getTree_(tfile):
     t=tfile.Get('t') # for xphoton
     # t=tfile.Get('EventTree') # for ggtree
     return t
-outfignametemplate='hltcompare_{0}over{1}.png'
+outfignametemplate='storefig/hltcompare_{0}over{1}'
 
 
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     hltbit_base=int(sys.argv[1])
     print hltbit_goal
     print hltbit_base
-    outfigname=outfignametemplate.format(hltbit_goal,hltbit_base)
+    outfigname=outfignametemplate.format(hltbit_goal,hltbit_base) + '.png'
 
 
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     hlt_ratio.SetMinimum(-0.1)
     hlt_ratio.SetMaximum( 1.2)
     #hlt_ratio.SetGridx(True)
-    hlt_ratio.SetMarkerSize(2)
+    hlt_ratio.SetMarkerSize(5)
     hlt_ratio.SetMarkerStyle(33)
     hlt_ratio.SetMarkerColor(46)
     hlt_ratio.Draw('P')
@@ -86,3 +86,15 @@ if __name__ == '__main__':
 
     canv.SaveAs(outfigname)
 
+    canv.Clear()
+    canv.cd()
+    hlt_ratio.Draw('P')
+
+    text=ROOT.TPaveText(0.2,0.11,0.89,0.6,"NDC")
+    text.AddText('goal : %s'% triggers[hltbit_goal])
+    text.AddText('base : %s'% triggers[hltbit_base])
+    text.SetFillColor(4000)
+    text.SetFillStyle(4000)
+    text.SetBorderSize(0)
+    text.Draw()
+    canv.SaveAs(outfignametemplate.format(hltbit_goal,hltbit_base) + '_summary.png' )
