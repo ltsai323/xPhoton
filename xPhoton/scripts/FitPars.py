@@ -132,11 +132,17 @@ if __name__ == '__main__':
             nColumn=1
             )
 
-    canv=ROOT.TCanvas('c1','c1',1000,1000)
+    from xPhoton.xPhoton.Managers.PlotMgr import MyCanvas
+    canv=MyCanvas(smallsize=True)
+    canv.SetOutputFormats('pdf')
+    canv.SetOutputFolder('storefig')
+
+    #canv=ROOT.TCanvas('c1','c1',1000,1000)
     drawingcontent.Draw()
     leg.Draw()
-    canv.SaveAs(FIGTEMPLATE.format(name_obs))
-    myspace.AdditionalWrite(canv)
+    #canv.SaveAs(FIGTEMPLATE.format(name_obs))
+    canv.SaveAs('parfit_'+name_obs)
+    myspace.AdditionalWrite(canv.GetCanvas())
 
 
 
