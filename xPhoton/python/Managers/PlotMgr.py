@@ -5,8 +5,14 @@ from types import MethodType
 import os
 from xPhoton.xPhoton.Managers.LogMgr import GetLogger
 from xPhoton.xPhoton.Managers.AdditionalFunctionMgr import ImportAddFunc
+from xPhoton.analysis.RootObjFormatMgr import RootObjFormatMgr
 logging=GetLogger(__name__)
 LEN=96.38
+
+DEFAULT_WindowW=2400
+DEFAULT_WindowH=2000
+SMALL_WindowW=600
+SMALL_WindowH=500
 
 def ClearWorkspace(NeedToClean, directory='storefig'):
     if NeedToClean:
@@ -15,6 +21,52 @@ def ClearWorkspace(NeedToClean, directory='storefig'):
             os.system('/bin/rm %s/*'%(directory))
         else:
             print 'You have a clean workspace'
+
+class MyCanvas(object):
+    def __init__(self,batchmode=True, smallsize=False):
+        ROOT.gROOT.SetBatch(batchmode)
+        self._tmpfile=ROOT.TFile('/tmp/tmp.root', 'recreate')
+        self._tmpfile.cd()
+        w_=SMALL_WindowW if smallsize else DEFAULT_WindowW
+        h_=SMALL_WindowH if smallsize else DEFAULT_WindowH
+        self._canv=ROOT.TCanvas('mycanv','',w_,h_)
+        RootObjFormatMgr.CanvasStyler(self._canv)
+
+        self._outputformats=[]
+        self._savingFolder='.'
+    def __del__(self):
+        self._tmpfile.Close()
+    def SaveAs(self, name, filetype=None, logscale=False):
+        self._canv.SetLogy(logscale)
+        self._canv.Update()
+        if filetype:
+            self.savesinglefile(name,filetype)
+        elif len(self._outputformats):
+            for otype in self._outputformats:
+                self.savesinglefile(name, otype)
+        else:
+            print 'WARNING : NOTHING SAVED! Use "SetOutputFormats" to assert output format'
+        self._canv.SetLogy(False)
+
+    def savesinglefile(self, name, filetype):
+        folder=self._savingFolder+'/'
+        if len(self._outputformats) > 1:
+            folder=folder+filetype+'/'
+            if not os.path.isdir(folder): os.mkdir(folder)
+
+        self._canv.SaveAs( folder + name + '.' + filetype )
+
+    def SetOutputFormats(self, *args):
+        for arg in args:
+            if not isinstance(arg, str): raise ValueError('output formats are string only')
+        self._outputformats=args
+    def SetOutputFolder(self, folder):
+        if not os.path.isdir(folder):
+            raise IOError('no such folder found!')
+        self._savingFolder=folder
+    def GetCanvas(self):
+        return self._canv
+
 class DrawingMgr(object):
     def __init__(self, width=1000, height=1000):
         self._tmpTFile=ROOT.TFile('tmp.root','recreate')
