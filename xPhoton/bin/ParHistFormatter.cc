@@ -87,6 +87,7 @@ int main( int argc, char* argv[])
         float pt=data.Float(var::recoPt);
         hists.Fill("pt", pt);
         if ( !(pt > 185. && pt < 190.) ) continue;
+        if ( data.Float(var::chIsoRaw) > 2 ) continue;
 
 
 
