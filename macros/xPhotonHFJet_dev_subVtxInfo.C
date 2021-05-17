@@ -33,7 +33,7 @@ Int_t ONLY_LEADINGPHOTON=1;
 Int_t isMC=0;
 Int_t data25ns=1;
 Int_t data50ns=0;
-
+Int_t qstar=1;
 Int_t gjet15to6000=0;
 Int_t genHTcut=0;
 Int_t gjetSignal=0;
@@ -165,7 +165,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     TH1F *h_nele = new TH1F("h_nele","n ele", 20, 0., 20);
     TH1F *h_nphoFiredTrgs = new TH1F("h_nphoFiredTrgs","n pho", 20, 0., 20);
     TH1F *h_truepho = new TH1F("h_truepho","true pho", 10, 0., 10.);
-    //TH1F *h_convpho = new TH1F("h_convpho","converted pho", 10, 0., 10.);
+    TH1F *h_convpho = new TH1F("h_convpho","converted pho", 10, 0., 10.);
     TH1F *h_phoEt = new TH1F("h_phoEt","pho Et", 200, 0., 1000);
     TH1F *h_jetPt = new TH1F("h_jetPt","jet Pt", 200, 0., 1000);
     TH1F *h_npj = new TH1F("h_npj","n pho jet comb", 20, 0., 20.);
@@ -260,14 +260,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t mcCalIso04_, mcTrkIso04_;
     Float_t puwei_=1.;
     Float_t r9Full5x5;
-    Int_t   isMatched,  idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
+    Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
     Float_t HoverE, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
     Float_t rho;
     Int_t phoFiredTrgs_, phohasPixelSeed_;
 
     Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva,  photonIDmva;
     Float_t sieieFull5x5, sipipFull5x5, sieipFull5x5, e2x2Full5x5,  e5x5Full5x5;
-    //Int_t isMatchedEle, isConverted;
+    Int_t isConverted;
 
     //Float_t mcCalIso04, mcTrkIso04;
     Float_t xsweight=XS;
@@ -318,8 +318,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
     outtree_->Branch("r9",           &r9,           "r9/F");
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
-    //outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
-    //outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
+    outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
+    outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
     outtree_->Branch("idLoose",      &idLoose,      "idLoose/I");
     outtree_->Branch("idMedium",     &idMedium,     "idMedium/I");
     outtree_->Branch("idTight",      &idTight,      "idTight/I");
@@ -419,8 +419,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
         nPU=0;
         isMatched    = -1;
-        //isMatchedEle = -1;
-        //isConverted = -1;
+        isMatchedEle = -1;
+        isConverted = -1;
 
         mcPt_ = 0.;
         mcEta_ = 0.;
@@ -747,15 +747,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
             h_truepho->Fill(nnMC+0.001);
-            //h_convpho->Fill(nneleMC/2. + 0.001);
+            h_convpho->Fill(nneleMC/2. + 0.001);
             ntruephoton= nnMC + nneleMC/2.;
 
 
             for (Int_t i=0; i<nPho; ++i) {
                 if(phoEt[i]<15.) continue;
                 isMatched    = -1;
-                //isMatchedEle = -1;
-                //isConverted = -1;
+                isMatchedEle = -1;
+                isConverted = -1;
 
                 mcPt_ = 0.;
                 mcEta_ = 0.;
@@ -796,7 +796,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-                /*
                 //    LOG_WARNING("16\n");
                 for (int jj=0; jj<nneleMC; ++jj) {	   
                     int k = elemcid[jj];	  
@@ -822,20 +821,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         }
                     }
                 }
-                */
                 if(isMatched==1) {
                     nmatch++;
                     if(TMath::Abs(phoSCEta[i])<=1.4442) nmatch_EB++;
                     if(TMath::Abs(phoSCEta[i])>=1.566 && TMath::Abs(phoSCEta[i])<2.5) nmatch_EE++;
-                }
-                /*
-                else{
+                }else{
                     if(isConverted==1){
                         nconv++;
                         //printf(" event %d, photon Et %.2f,  isConverted \n", event, phoEt[i]);
                     }
                 }
-                */
 
                 //    LOG_WARNING("17\n");
                 mcpt.push_back(mcPt_);
@@ -844,16 +839,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 mcCalIso04.push_back(mcCalIso04_);
                 mcTrkIso04.push_back(mcTrkIso04_);
                 match.push_back(isMatched);
-                /*
                 match_ele.push_back(isMatchedEle);
                 converted.push_back(isConverted);
-                */
             }
 
             if(gjet15to6000 == 0) {
                 //h_truepho->Fill((float)nmatch/(float)nPho);
                 h_truepho->Fill(nmatch+0.001);
-                //h_convpho->Fill(nconv+0.001);
+                h_convpho->Fill(nconv+0.001);
             }
             //ask for only one mc true photon
             //if(nmatch < 1) continue;
@@ -1047,20 +1040,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
             phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
-            jetGenPartonID_ = 0;
-            jetGenPartonMomID_ = 0;
-            isMatched = -99;
-            //isMatchedEle = -99;
-            //isConverted = -99;
-            mva = -99.;
-            idLoose      = -1;
-            idMedium     = -1;
-            idTight      = -1;
-
             jetGenJetPt_ = 0.;
             jetGenJetEta_ = 0.;
             jetGenJetPhi_ = 0.;
             jetGenJetY_ = 0.;
+            jetGenPartonID_ = 0;
+            jetGenPartonID_ = 0;
 
             jetPt_=0.;
             jetEta_=0.;
@@ -1071,7 +1056,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetGenJetEta_ = 0.;
             jetGenJetPhi_ = 0.;
             jetGenJetY_ = 0.;
+            jetGenPartonID_ = 0;
+            jetGenPartonMomID_ = 0;
             jetPartonID_= jetHadFlvr_ = 0.;
+            idLoose      = -1;
+            idMedium     = -1;
+            idTight      = -1;
+            isMatched = -99;
+            isMatchedEle = -99;
+            isConverted = -99;
+            mva = -99.;
             genHT_ = 0.;
             pthat_      = 0.;
             mcPt_       = 0.;
@@ -1088,14 +1082,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 jetPhi_ = jetPhi[jet_index];
                 jetY_ = jetP4.Rapidity();
                 jetJECUnc_ = jetJECUnc[jet_index];
-                if(!isData ) {
+                if(isData!=1) {
                     TLorentzVector jetGenJetP4;
-                    jetGenJetP4.SetPtEtaPhiE(
-                            jetGenJetPt[jet_index],
-                            jetGenJetEta[jet_index],
-                            jetGenJetPhi[jet_index],
-                            jetGenJetEn[jet_index]);   
-
+                    jetGenJetP4.SetPtEtaPhiE(jetGenJetPt[jet_index], jetGenJetEta[jet_index], jetGenJetPhi[jet_index], jetGenJetEn[jet_index]);   
                     jetGenJetPt_ = jetGenJetPt[jet_index];
                     jetGenJetEta_ = jetGenJetEta[jet_index];
                     jetGenJetPhi_ = jetGenJetPhi[jet_index];
@@ -1133,10 +1122,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 jetHadFlvr_ = jetHadFlvr[jet_index];
             }
 
-            if(data.HasMC()){
+            if(!isData){
                 isMatched = match[ipho];
-                //isMatchedEle = match_ele[ipho];
-                //isConverted = converted[ipho];
+                isMatchedEle = match_ele[ipho];
+                isConverted = converted[ipho];
 
                 pthat_    = pthat;
                 mcPt_     = mcpt[ipho];
@@ -1237,7 +1226,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     hmcGenIso->Write();
     hmcpartonIso->Write();
     h_truepho->Write();
-    //h_convpho->Write();
+    h_convpho->Write();
     h_ngenpho->Write();
     h_npho->Write();
     h_nele->Write();

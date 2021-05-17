@@ -31,7 +31,7 @@ allexecfile=bin/exe.ParHistFormatter
 
 
 all: $(allexecfile)
-	@echo $<
+	@echo $(allexecfile)
 	@echo '---- compile completed! ---'
 	
 

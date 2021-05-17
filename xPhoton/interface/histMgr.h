@@ -27,10 +27,4 @@ public:
     void WriteTo(TDirectory* dir=nullptr);
     void DeleteAll();
 };
-
-
-
-
-
-
 #endif
