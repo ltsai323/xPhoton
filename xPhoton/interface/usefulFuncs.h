@@ -17,5 +17,7 @@ namespace usefulFuncs
    void PrintBoolIntStatus(int intBool);
    void StoreBoolInfoToHist( TH1* hist, int intBool );
 
+   bool isBarrel( float val );
+   bool isEndCap( float val );
 };
 #endif
