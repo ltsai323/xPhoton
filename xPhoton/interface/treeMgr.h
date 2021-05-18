@@ -6,7 +6,7 @@
 
 #include "xPhoton/xPhoton/interface/readMgr.h"
 
-#include "xPhoton/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 // note before tree content update
 
 

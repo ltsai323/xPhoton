@@ -1,7 +1,7 @@
 #include "xPhoton/xPhoton/interface/readContent_gganalysis.h"
 #include "xPhoton/xPhoton/interface/mcMatchInfo.h"
 #include "TMath.h"
-#include "xPhoton/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 mcMatchInfo::mcMatchInfo(histMgr* ptr): importedHists(ptr)
 {}
 

@@ -3,7 +3,7 @@
 #include "xPhoton/xPhoton/interface/readContent_gganalysis.h"
 #include "xPhoton/xPhoton/interface/readMgr.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
-#include "xPhoton/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
 
 #include <TLorentzVector.h>

@@ -12,7 +12,7 @@
 #include "xPhoton/xPhoton/interface/ElectronSelections.h"
 #include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
-#include "xPhoton/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 
 static Int_t MINITREE=1;
 static Double_t XS=1.;
