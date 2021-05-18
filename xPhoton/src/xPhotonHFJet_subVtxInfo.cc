@@ -24,7 +24,6 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/logger.h"
 
-
 Double_t deltaPhi(Double_t phi1, Double_t phi2) {
   Double_t dPhi = phi1 - phi2;
   if (dPhi > TMath::Pi()) dPhi -= 2.*TMath::Pi();

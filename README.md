@@ -1,3 +1,6 @@
+This repository is ready for CMSSW and makefile. Eigher CMSSW or make are able to compile and run code in this repository.
+Also, the shell scripts stored in subrepository/bin folder inform you how to use the exeutables compiled in this repository.
+
 # xPhoton
 inherited from RS's xPhoton_HFJet.C
 

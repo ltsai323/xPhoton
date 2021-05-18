@@ -27,9 +27,8 @@ objfile_src=$(sources_src:src/%.cc=obj/%.o)
 objfile_bin=$(sources_bin:bin/%.cc=obj/%.o)
 #libfile_src=$(sources_src:src/%.cc=lib/%.so)
 #libfile_bin=$(sources_bin:bin/%.cc=lib/%.so)
-#allexecfile=$(sources_bin:bin/%.cc=bin/exe.%)
-allexecfile=bin/exe.ParHistFormatter
-allexecfile=
+allexecfile=$(sources_bin:bin/%.cc=bin/exe.%)
+#allexecfile=bin/exe.ParHistFormatter
 
 
 all: $(allexecfile)
