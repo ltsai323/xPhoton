@@ -1,6 +1,7 @@
 - [x] this repository is CMSSW ready.
 - [x] This repository is building for makefile.
-- [ ] Check what's the reason that too much .o makes multiple definition in g++ compiling
+- [x] Check what's the reason that too much .o makes multiple definition in g++ compiling
+- [ ] (Posponed) Build shared library
 
 ## makefile linking procedure
 ``` bash
