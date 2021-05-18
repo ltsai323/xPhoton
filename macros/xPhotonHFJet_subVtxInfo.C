@@ -21,7 +21,7 @@ using namespace std;
 #include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/ElectronSelections.h"
 #include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/puweicalc.h"
 #include "/home/ltsai/Work/github/xPhoton/xPhoton/src/usefulFuncs.cc"
-#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/logger.h"
+#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/LogMgr.h"
 
 
 Int_t MINITREE=1;
