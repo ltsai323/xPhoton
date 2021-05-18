@@ -4,5 +4,5 @@
 <use name="xPhoton/xPhoton"/>
 
 <export>
-    <bin name="exec.xPhotonRunner"          file="xPhotonRunner.cc"/>
+    <bin name="exec_parhistformatter"       file="ParHistFormatter.cc"/>
 </export>
