@@ -4,11 +4,12 @@
 MAINCOMPILER=g++
 USEROOT=`root-config --libs --cflags`
 USEROOFIT=-lRooFitCore -lRooFit -lMinuit
+USETMVA=-lTMVA
 MYLIB=../../
 
 RootCOMPILER=$(MAINCOMPILER) $(USEROOT) -I$(MYLIB)
 RooFitCOMPILER=$(MAINCOMPILER) $(USEROOFIT) -I$(MYLIB)
-Compiler=$(RootCOMPILER)
+Compiler=$(RootCOMPILER) $(USETMVA)
 
 
 
