@@ -412,7 +412,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         mcCalIso04_=0.;
         mcTrkIso04_=0.;
         pthat_=0.;
-        SeedTime_=SeedEnergy_=MIPTotEnergy_=0;
 
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
@@ -1064,6 +1063,38 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetDeepCSVTags_bb_ = 0.;
             jetDeepCSVTags_c_ = 0.;
             jetDeepCSVTags_udsg_ = 0.;
+        SeedTime_=SeedEnergy_=MIPTotEnergy_=0;
+            recoPt    =0.;          
+            recoEta   =0.;          
+            recoPhi   =0.;          
+            recoSCEta =0.;          
+            r9        =0.;          
+            eleVeto   =0.;          
+            HoverE    =0.;          
+
+            phohasPixelSeed_ =0.;   
+            chIsoRaw   =0.;         
+            phoIsoRaw  =0.;         
+            nhIsoRaw   =0.;         
+
+
+            rawE       =0.;         
+            scEtaWidth =0.;         
+            scPhiWidth =0.;         
+            esRR       =0.;         
+            esEn       =0.;         
+            chWorstIso =0.;         
+
+            sieieFull5x5     =0.;   
+            sieipFull5x5     =0.;   
+            sipipFull5x5     =0.;   
+            r9Full5x5        =0.;   
+            e2x2Full5x5       =0.;  
+            e5x5Full5x5       =0.;  
+            photon_jetID_ =0.;      
+
+            phoIDbit_ =0.;          
+            photonIDmva = -999.;
 
             if(jet_index>=0) {
                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
@@ -1090,6 +1121,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
+                    h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
                 } else {
                 }
 
@@ -1124,7 +1156,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 mcTrkIso04_ = mcTrkIso04[ipho];
                 genHT_ = genHT;
 
-                h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
             }
 
