@@ -2,13 +2,13 @@ This repository is ready for CMSSW and makefile. Eigher CMSSW or make are able t
 Also, the shell scripts stored in subrepository/bin folder inform you how to use the exeutables compiled in this repository.
 
 # Installation
-'''bash
+```bash
 git clone https://github.com/ltsai323/xPhoton
 cd xPhoton/
 source envsetup.sh
 cd xPhoton/
 make all
-'''
+```
 
 # xPhoton
 inherited from RS's xPhoton_HFJet.C
