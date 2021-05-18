@@ -31,14 +31,29 @@ static Int_t gjetSignal=0;
 static bool hasSubVtxInfo = false;
 
 
-Double_t deltaPhi(Double_t phi1, Double_t phi2);
-Double_t deltaR(Double_t eta1, Double_t phi1, Double_t eta2, Double_t phi2);
+Double_t deltaPhi(
+        Double_t phi1,
+        Double_t phi2);
+Double_t deltaR(
+        Double_t eta1,
+        Double_t phi1,
+        Double_t eta2,
+        Double_t phi2);
 
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200]);
+void xPhotonHFJet(
+        vector<string> pathes,
+        Char_t oname[200]);
 
 
-void xPhotonHFJet(Int_t dataset = 0);
-void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection=1., int dowmnoption=0);
+void xPhotonHFJet(
+        Int_t dataset = 0);
+void xPhotonHFJet(
+        Char_t fname[200],
+        Char_t oname[200],
+        Double_t crosssection=1.,
+        int dowmnoption=0);
 
-void xPhotonHFJet(std::string ipath, int outID);
+void xPhotonHFJet(
+        std::string ipath,
+        int outID);
 #endif
