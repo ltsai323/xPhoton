@@ -35,9 +35,13 @@ all: $(allexecfile)
 	@echo '---- compile completed! ---'
 	
 
+################ Main Targets Here #########################3
 bin/exe.ParHistFormatter: obj/ParHistFormatter.o $(objfile_src)
-	$(Compiler) -o $@ $< obj/histMgr.o
+	$(Compiler) -o $@ $< $(objfile_src)
+bin/exe.RooFit_ParFit_Pythia: obj/RooFit_ParFit_Pythia.o $(objfile_src)
+	$(Compiler) -o $@ $< $(objfile_src)
 
+################ Main Targets Ends #########################3
 
 
 $(dirobj)/%.o: $(dirsrc)/%.cc
