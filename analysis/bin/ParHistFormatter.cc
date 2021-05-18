@@ -3,7 +3,7 @@
 #include <string>
 //#include "/home/ltsai/Work/github/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/untuplizer.h"
-#include "xPhoton/xPhoton/interface/logger.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/histMgr.h"
 #include "xPhoton/xPhoton/interface/readMgr.h"
 #include "xPhoton/xPhoton/interface/readContent_xPhoton.h"
