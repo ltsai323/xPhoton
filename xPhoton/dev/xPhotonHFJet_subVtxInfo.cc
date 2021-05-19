@@ -398,15 +398,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         mcPt_ = 0.;
         mcEta_ = 0.;
         mcPhi_ = 0.;
+        run=0;
+        event=0;
+        nVtx=0;
+        isData = false;
 
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
 
-        run     = data.GetInt("run"); //kk //mv
-        event   = data.GetLong64("event");  //kk //mv
-        isData = data.GetBool("isData"); //kk //mv
-        nVtx = data.GetInt("nVtx");     //kk
+        run     = data.GetInt("run");
+        event   = data.GetLong64("event");
+        isData = data.GetBool("isData");
+        nVtx = data.GetInt("nVtx");
         Int_t    nPho     = data.GetInt("nPho");
         Int_t nJet = data.GetInt("nJet");
         h_nrecojet->Fill(nJet);	  
@@ -718,11 +722,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             for (Int_t i=0; i<nPho; ++i) {
                 if(phoEt[i]<15.) continue;
-                isMatched    = -1;
-                isMatchedEle = -1;
-                isConverted = -1;
+                int tmp_isMatched = -99;
+                int tmp_isMatchedEle = -99;
+                int tmp_isConverted = -99;
 
-                mcPt_ = mcEta_ = mcPhi_ = mcCalIso04_ = mcTrkIso04_ = -999.;
+                double tmp_mcPt_ = -999.;
+                double tmp_mcEta_ = -999.;
+                double tmp_mcPhi_ = -999.;
+                double tmp_mcCalIso04_ = -999.;
+                double tmp_mcTrkIso04_ = -999.;
+ 
                 if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
                 for (int jj=0; jj<nnMC; ++jj) {
                     int k = mcid[jj];
@@ -743,12 +752,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                             if( dr < 0.4) GENISO += mcPt[nn];
                         }
                         if(dr < 0.2 && dpt < 0.2 && mcCalIsoDR04[k]<5.0 ){ //for gammajet photon pythia	      
-                            isMatched = 1;
-                            mcPt_  = mcPt[k];
-                            mcEta_ = mcEta[k];
-                            mcPhi_ = mcPhi[k];
-                            mcCalIso04_ = mcCalIsoDR04[k];
-                            mcTrkIso04_ = mcTrkIsoDR04[k];
+                            tmp_isMatched = 1;
+                            tmp_mcPt_  = mcPt[k];
+                            tmp_mcEta_ = mcEta[k];
+                            tmp_mcPhi_ = mcPhi[k];
+                            tmp_mcCalIso04_ = mcCalIsoDR04[k];
+                            tmp_mcTrkIso04_ = mcTrkIsoDR04[k];
                             if(verbose) printf("  mc matched !!! \n");	    
                             break;
                         }
@@ -762,7 +771,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     if(fabs(mcPID[k]) == 11){
                         if (usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]) < 0.2) {
                             if (fabs((phoEt[i] -mcPt[k])/mcPt[k]) < 0.2) {
-                                isMatchedEle = 1;
+                                tmp_isMatchedEle = 1;
                             }
                         }
                     }
@@ -772,35 +781,35 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         hdR_ele->Fill(dr);
                         hdpt_ele->Fill(dpt);
                         if (dr < 0.2 && dpt < 0.2 && (mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 ){
-                            isConverted = 1;
-                            mcPt_  = mcMomPt[k];
-                            mcEta_ = mcMomEta[k];
-                            mcPhi_ = mcMomPhi[k];	      
-                            mcCalIso04_ = mcCalIsoDR04[k];
-                            mcTrkIso04_ = mcTrkIsoDR04[k];
+                            tmp_isConverted = 1;
+                            tmp_mcPt_  = mcMomPt[k];
+                            tmp_mcEta_ = mcMomEta[k];
+                            tmp_mcPhi_ = mcMomPhi[k];	      
+                            tmp_mcCalIso04_ = mcCalIsoDR04[k];
+                            tmp_mcTrkIso04_ = mcTrkIsoDR04[k];
                         }
                     }
                 }
-                if(isMatched==1) {
+                if(tmp_isMatched==1) {
                     nmatch++;
                     if(TMath::Abs(phoSCEta[i])<=1.4442) nmatch_EB++;
                     if(TMath::Abs(phoSCEta[i])>=1.566 && TMath::Abs(phoSCEta[i])<2.5) nmatch_EE++;
                 }else{
-                    if(isConverted==1){
+                    if(tmp_isConverted==1){
                         nconv++;
-                        //printf(" event %d, photon Et %.2f,  isConverted \n", event, phoEt[i]);
+                        //printf(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
                     }
                 }
 
                 //    LOG_WARNING("17\n");
-                mcpt.push_back(mcPt_);
-                mceta.push_back(mcEta_);
-                mcphi.push_back(mcPhi_);
-                mcCalIso04.push_back(mcCalIso04_);
-                mcTrkIso04.push_back(mcTrkIso04_);
-                match.push_back(isMatched);
-                match_ele.push_back(isMatchedEle);
-                converted.push_back(isConverted);
+                mcpt.push_back(tmp_mcPt_);
+                mceta.push_back(tmp_mcEta_);
+                mcphi.push_back(tmp_mcPhi_);
+                mcCalIso04.push_back(tmp_mcCalIso04_);
+                mcTrkIso04.push_back(tmp_mcTrkIso04_);
+                match.push_back(tmp_isMatched);
+                match_ele.push_back(tmp_isMatchedEle);
+                converted.push_back(tmp_isConverted);
             }
 
             if(gjet15to6000 == 0) {
@@ -1013,9 +1022,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetGenJetEta_ = 0.;
             jetGenPartonMomID_ = 0; //ch
             jetPartonID_= jetHadFlvr_ = 0.; //ch
-            //idLoose      = -1;//rm
-            //idMedium     = -1;//rm
-            //idTight      = -1;//rm
             isMatched = -99; //need
             isMatchedEle = -99; //need
             isConverted = -99; //need
@@ -1386,15 +1392,4 @@ mcEta_    //need
 mcPhi_    //need
 mcCalIso04_ //need
 mcTrkIso04_ //need
-run     = data.GetInt("run"); //kk //mv
-event   = data.GetLong64("event");  //kk //mv
-isData = data.GetBool("isData"); //kk //mv
-nVtx = data.GetInt("nVtx");     //kk
-            HLT50ns            = 0; //rm //mv
-            HLTIsPrescaled50ns = 0; //rm //mv
-            HLT = data.GetLong64("HLTPho"); //mv
-            HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled"); //mv
-            idLoose      = -1;//rm
-            idMedium     = -1;//rm
-            idTight      = -1;//rm
             */
