@@ -34,8 +34,9 @@ allexecfile=$(sources_bin:bin/%.cc=bin/exe.%)
 ###### declare test     ###########
 dirdev=dev
 sources_dev=$(wildcard    $(dirdev)/*.cc)
-objfile_dev=$(sources_dev:$(dirdev)/%.cc=obj/%.o)
+objfile_dev=$(sources_dev:$(dirdev)/%.cc=$(dirobj)/test_%.o)
 test: dev/exe.test.xPhotonRunner
+	echo $(objfile_dev)
 dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
 	$(Compiler) -o $@ $< $(objfile_dev) \
     obj/ElectronSelections.o \
@@ -75,7 +76,7 @@ $(dirobj)/%.o: $(dirsrc)/%.cc
 $(dirobj)/%.o: $(dirbin)/%.cc
 	@mkdir -p $(dir $@)
 	$(Compiler) -o $@ -c $<
-$(dirdev)/%.o: $(dirdev)/%.cc
+$(dirobj)/test_%.o: $(dirdev)/%.cc
 	@mkdir -p $(dir $@)
 	$(Compiler) -o $@ -c $<
 
