@@ -31,12 +31,34 @@ allexecfile=$(sources_bin:bin/%.cc=bin/exe.%)
 #allexecfile=bin/exe.xPhotonRunner
 
 
+###### declare test     ###########
+dirdev=dev
+sources_dev=$(wildcard    $(dirdev)/*.cc)
+objfile_dev=$(sources_dev:$(dirdev)/%.cc=obj/%.o)
+test: dev/exe.test.xPhotonRunner
+dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
+	$(Compiler) -o $@ $< $(objfile_dev) \
+    obj/ElectronSelections.o \
+    obj/MuonSelections.o \
+    obj/PhotonSelections.o \
+    obj/PreselectionMgr.o \
+    obj/histMgr.o \
+    obj/mcMatchInfo.o \
+    obj/puweicalc.o \
+    obj/readMgr.o \
+    obj/treeMgr.o \
+    obj/untuplizer.o \
+    obj/usefulFuncs.o
+	@echo "--- Successfully compiled " $@ " ---"
+###### declare test end ###########
+
+
 all: $(allexecfile)
 	@echo $(allexecfile)
 	@echo '---- compile completed! ---'
-	
 
 ################ Main Targets Here #########################3
+
 bin/exe.ParHistFormatter: obj/ParHistFormatter.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
 bin/exe.RooFit_ParFit_Pythia: obj/RooFit_ParFit_Pythia.o $(objfile_src)
@@ -51,6 +73,9 @@ $(dirobj)/%.o: $(dirsrc)/%.cc
 	@mkdir -p $(dir $@)
 	$(Compiler) -o $@ -c $<
 $(dirobj)/%.o: $(dirbin)/%.cc
+	@mkdir -p $(dir $@)
+	$(Compiler) -o $@ -c $<
+$(dirdev)/%.o: $(dirdev)/%.cc
 	@mkdir -p $(dir $@)
 	$(Compiler) -o $@ -c $<
 

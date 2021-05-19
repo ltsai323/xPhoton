@@ -1,4 +1,4 @@
-#include "xPhoton/xPhoton/interface/xPhotonHFJet_subVtxInfo.h"
+#include "xPhoton/xPhoton/dev/xPhotonHFJet_subVtxInfo.h"
 #include <vector>
 #include <TH1D.h>
 #include <TLorentzVector.h>
@@ -1384,3 +1384,30 @@ void xPhotonHFJet(std::string ipath, int outID)
    xPhotonHFJet(pathes, oname);
 
 }
+/*
+metFilters //mv
+xsweight //???
+MET//???
+METPhi//???
+rho //???
+puwei_ //???
+isConverted // need to separate task of it.
+isMatched // need to separate task
+isMatchedEle // need to separate task
+mcPt_     //need
+mcEta_    //need
+mcPhi_    //need
+mcCalIso04_ //need
+mcTrkIso04_ //need
+run     = data.GetInt("run"); //kk //mv
+event   = data.GetLong64("event");  //kk //mv
+isData = data.GetBool("isData"); //kk //mv
+nVtx = data.GetInt("nVtx");     //kk
+            HLT50ns            = 0; //rm //mv
+            HLTIsPrescaled50ns = 0; //rm //mv
+            HLT = data.GetLong64("HLTPho"); //mv
+            HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled"); //mv
+            idLoose      = -1;//rm
+            idMedium     = -1;//rm
+            idTight      = -1;//rm
+            */
