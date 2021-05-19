@@ -24,19 +24,6 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 
-Double_t deltaPhi(Double_t phi1, Double_t phi2) {
-  Double_t dPhi = phi1 - phi2;
-  if (dPhi > TMath::Pi()) dPhi -= 2.*TMath::Pi();
-  if (dPhi < -TMath::Pi()) dPhi += 2.*TMath::Pi();
-  return dPhi;
-}
-
-Double_t deltaR(Double_t eta1, Double_t phi1, Double_t eta2, Double_t phi2) {
-  Double_t dEta, dPhi ;
-  dEta = eta1 - eta2;
-  dPhi = deltaPhi(phi1, phi2);
-  return sqrt(dEta*dEta+dPhi*dPhi);
-}
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
@@ -533,7 +520,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     for (Int_t nn=0; nn<nMC; ++nn) {
                         if(nn == k ) continue;
                         if(fabs(mcPID[nn])>22 || mcStatus[nn]>3) continue;
-                        float dr = deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
+                        float dr = usefulFuncs::deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
                         if( dr < 0.4) GENISO += mcPt[nn];
                     }
                     if(mcPt[k]>150.) hmcpartonIso->Fill(GENISO);
@@ -739,7 +726,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
                 for (int jj=0; jj<nnMC; ++jj) {
                     int k = mcid[jj];
-                    float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
+                    float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
                     float dpt = fabs((phoEt[i] - mcPt[k])/mcPt[k]);
                     if(dpt<0.2)hdR->Fill(dr);
                     if(dr<0.2)hdpt->Fill(dpt);
@@ -752,7 +739,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         for (Int_t nn=0; nn<nMC; ++nn) {
                             if(nn == k ) continue;
                             if(fabs(mcPID[nn])>22 || mcStatus[nn]>3) continue;	      
-                            float dr = deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
+                            float dr = usefulFuncs::deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
                             if( dr < 0.4) GENISO += mcPt[nn];
                         }
                         if(dr < 0.2 && dpt < 0.2 && mcCalIsoDR04[k]<5.0 ){ //for gammajet photon pythia	      
@@ -773,14 +760,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 for (int jj=0; jj<nneleMC; ++jj) {	   
                     int k = elemcid[jj];	  
                     if(fabs(mcPID[k]) == 11){
-                        if (deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]) < 0.2) {
+                        if (usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]) < 0.2) {
                             if (fabs((phoEt[i] -mcPt[k])/mcPt[k]) < 0.2) {
                                 isMatchedEle = 1;
                             }
                         }
                     }
                     if (fabs(mcPID[k]) == 11 && mcMomPID[k] == 22) {	    
-                        float dr = deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
+                        float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
                         float dpt = fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]);
                         hdR_ele->Fill(dr);
                         hdpt_ele->Fill(dpt);

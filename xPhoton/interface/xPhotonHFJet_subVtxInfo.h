@@ -31,14 +31,6 @@ static Int_t gjetSignal=0;
 static bool hasSubVtxInfo = false;
 
 
-Double_t deltaPhi(
-        Double_t phi1,
-        Double_t phi2);
-Double_t deltaR(
-        Double_t eta1,
-        Double_t phi1,
-        Double_t eta2,
-        Double_t phi2);
 
 void xPhotonHFJet(
         vector<string> pathes,

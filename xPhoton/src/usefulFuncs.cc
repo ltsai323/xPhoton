@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
+#include <cmath>
 
 int usefulFuncs::recordEventSizeWithSeparator( int listSize, int sep )
 { return (listSize<<2)+sep; }
@@ -24,3 +25,17 @@ bool usefulFuncs::isBarrel( float val )
 { return fabs(val) < 1.4442; }
 bool usefulFuncs::isEndCap( float val )
 { return fabs(val) > 1.566 && fabs(val) < 2.5; }
+
+double usefulFuncs::deltaPhi(double phi1, double phi2) {
+  double dPhi = phi1 - phi2;
+  if (dPhi >  M_PI) dPhi -= 2.*M_PI;
+  if (dPhi < -M_PI) dPhi += 2.*M_PI;
+  return dPhi;
+}
+
+double usefulFuncs::deltaR(double eta1, double phi1, double eta2, double phi2) {
+  double dEta, dPhi ;
+  dEta = eta1 - eta2;
+  dPhi = deltaPhi(phi1, phi2);
+  return sqrt(dEta*dEta+dPhi*dPhi);
+}

@@ -19,5 +19,13 @@ namespace usefulFuncs
 
    bool isBarrel( float val );
    bool isEndCap( float val );
+   double deltaPhi(
+       double phi1,
+       double phi2);
+   double deltaR(
+       double eta1,
+       double phi1,
+       double eta2,
+       double phi2);
 };
 #endif

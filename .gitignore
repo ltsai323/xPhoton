@@ -33,6 +33,7 @@
 *.out
 *.app
 */bin/exe.*
+*/dev/exe.*
 
 # root compiled files
 *_ACLiC_*
