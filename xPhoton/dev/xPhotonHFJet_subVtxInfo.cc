@@ -231,7 +231,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t mcCalIso04_, mcTrkIso04_;
     Float_t puwei_=1.;
     Float_t r9Full5x5;
-    Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
+    //Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
+    Int_t   isMatched, isMatchedEle,  nVtx, eleVeto, nPU;
     Float_t HoverE, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
     Float_t rho;
     Int_t phoFiredTrgs_, phohasPixelSeed_;
@@ -242,7 +243,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     //Float_t mcCalIso04, mcTrkIso04;
     Float_t xsweight=XS;
-    Long64_t HLT, HLTIsPrescaled, HLT50ns, HLTIsPrescaled50ns;
+    //Long64_t HLT, HLTIsPrescaled, HLT50ns, HLTIsPrescaled50ns;
+    Long64_t HLT, HLTIsPrescaled;// HLT50ns, HLTIsPrescaled50ns;
     Float_t  MET,   METPhi;
     Int_t metFilters;
     Float_t jetPt_, jetEta_, jetPhi_, jetY_, jetJECUnc_;
@@ -273,8 +275,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("isData",         &isData,        "isData/O");
     outtree_->Branch("HLT",         &HLT,        "HLT/L");
     outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
-    outtree_->Branch("HLT50ns",         &HLT50ns,        "HLT50ns/L");
-    outtree_->Branch("HLTIsPrescaled50ns",         &HLTIsPrescaled50ns,        "HLTIsPrescaled50ns/L"); //rm
+    //outtree_->Branch("HLT50ns",         &HLT50ns,        "HLT50ns/L");
+    //outtree_->Branch("HLTIsPrescaled50ns",         &HLTIsPrescaled50ns,        "HLTIsPrescaled50ns/L"); //rm
     outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
     outtree_->Branch("pthat",        &pthat_,       "pthat/F");
     outtree_->Branch("genHT",        &genHT_,       "genHT/F");
@@ -291,9 +293,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
     outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
     outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
-    outtree_->Branch("idLoose",      &idLoose,      "idLoose/I"); //removable
-    outtree_->Branch("idMedium",     &idMedium,     "idMedium/I"); //removable
-    outtree_->Branch("idTight",      &idTight,      "idTight/I"); //removable
+    //outtree_->Branch("idLoose",      &idLoose,      "idLoose/I"); //removable
+    //outtree_->Branch("idMedium",     &idMedium,     "idMedium/I"); //removable
+    //outtree_->Branch("idTight",      &idTight,      "idTight/I"); //removable
     outtree_->Branch("nVtx",         &nVtx,         "nVtx/I");
     outtree_->Branch("nPU",          &nPU,          "nPU/I");
     outtree_->Branch("puwei",        &puwei_,        "puwei/F");
@@ -389,6 +391,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
         nPU=0; //ch
+        HLT                = 0;
+        HLTIsPrescaled     = 0;
+        metFilters=0;
 
         mcPt_ = 0.;
         mcEta_ = 0.;
@@ -407,9 +412,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         h_nrecojet->Fill(nJet);	  
         if(nJet <1 ) continue;
 
-        if(isData==1){    //25ns
-            HLT50ns            = 0; //rm //mv
-            HLTIsPrescaled50ns = 0; //rm //mv
+        if(!data.HasMC())
+        //if(isData==1)    //25ns
+        {
+            //HLT50ns            = 0; //rm //mv
+            //HLTIsPrescaled50ns = 0; //rm //mv
             HLT = data.GetLong64("HLTPho"); //mv
             HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled"); //mv
             Int_t hasGoodVtx;
@@ -419,13 +426,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(!hasGoodVtx) continue;
             metFilters = data.GetInt("metFilters");
             if(metFilters != 0 ) continue;
-        }
-        else { 
-            HLT                = 0; //mv
-            HLTIsPrescaled     = 0; //mv
-            HLT50ns            = 0; //rm //mv
-            HLTIsPrescaled50ns = 0; //rm //mv
-            metFilters=0; //mv
         }
 
 
@@ -1013,9 +1013,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetGenJetEta_ = 0.;
             jetGenPartonMomID_ = 0; //ch
             jetPartonID_= jetHadFlvr_ = 0.; //ch
-            idLoose      = -1;//rm
-            idMedium     = -1;//rm
-            idTight      = -1;//rm
+            //idLoose      = -1;//rm
+            //idMedium     = -1;//rm
+            //idTight      = -1;//rm
             isMatched = -99; //need
             isMatchedEle = -99; //need
             isConverted = -99; //need

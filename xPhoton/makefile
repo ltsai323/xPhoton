@@ -1,4 +1,4 @@
-.PHONY: all clean check
+.PHONY: all clean check test
 
 # compiler setting
 MAINCOMPILER=g++
@@ -13,7 +13,7 @@ Compiler=$(RootCOMPILER) $(USETMVA)
 
 
 
-# input files dependency
+###### default compiling files setting #####
 dirobj=obj
 dirbin=bin
 dirsrc=src
@@ -21,14 +21,17 @@ dirsrc=src
 sources_src=$(wildcard src/*.cc)
 sources_bin=$(wildcard bin/*.cc)
 
-
-
 objfile_src=$(sources_src:src/%.cc=obj/%.o)
 objfile_bin=$(sources_bin:bin/%.cc=obj/%.o)
 #libfile_src=$(sources_src:src/%.cc=lib/%.so)
 #libfile_bin=$(sources_bin:bin/%.cc=lib/%.so)
 allexecfile=$(sources_bin:bin/%.cc=bin/exe.%)
 #allexecfile=bin/exe.xPhotonRunner
+### default compiling files setting end #####
+
+all: $(allexecfile)
+	@echo $(allexecfile)
+	@echo '---- compile completed! ---'
 
 
 ###### declare test     ###########
@@ -36,7 +39,7 @@ dirdev=dev
 sources_dev=$(wildcard    $(dirdev)/*.cc)
 objfile_dev=$(sources_dev:$(dirdev)/%.cc=$(dirobj)/test_%.o)
 test: dev/exe.test.xPhotonRunner
-	echo $(objfile_dev)
+
 dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
 	$(Compiler) -o $@ $< $(objfile_dev) \
     obj/ElectronSelections.o \
@@ -54,9 +57,6 @@ dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
 ###### declare test end ###########
 
 
-all: $(allexecfile)
-	@echo $(allexecfile)
-	@echo '---- compile completed! ---'
 
 ################ Main Targets Here #########################3
 
