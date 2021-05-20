@@ -1,4 +1,4 @@
-#include "xPhoton/xPhoton/dev/xPhotonHFJet_subVtxInfo.h"
+#include "xPhoton/xPhoton/interface/xPhotonHFJet_subVtxInfo.h"
 #include <vector>
 #include <TH1D.h>
 #include <TLorentzVector.h>
