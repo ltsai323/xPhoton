@@ -23,6 +23,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
+#include "xPhoton/xPhoton/interface/readInfo.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
@@ -227,7 +228,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetSubVtxPt_, jetSubVtxMass_, jetSubVtx3DVal_, jetSubVtx3DErr_;
     Int_t jetSubVtxNtrks_;
     Bool_t isData;
-    Float_t pthat_, mcPt_, mcEta_, mcPhi_, recoPt, recoEta, recoPhi, recoSCEta, r9;
+    Float_t pthat_, mcPt_, mcEta_, mcPhi_, recoPt, recoPtCalib, recoEta, recoPhi, recoSCEta, r9;
     Float_t mcCalIso04_, mcTrkIso04_;
     Float_t puwei_=1.;
     Float_t r9Full5x5;
@@ -286,6 +287,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("mcCalIso04",   &mcCalIso04_,   "mcCalIso04/F");
     outtree_->Branch("mcTrkIso04",   &mcTrkIso04_,   "mcTrkIso04/F");
     outtree_->Branch("recoPt",       &recoPt,       "recoPt/F");
+    outtree_->Branch("recoPtCalib",  &recoPtCalib,  "recoPtCalib/F");
     outtree_->Branch("recoEta",      &recoEta,      "recoEta/F");
     outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
@@ -617,7 +619,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         // Float_t* phoE   = data.GetPtrFloat("phoE");
         Float_t* phoEta   = data.GetPtrFloat("phoEta");
         Float_t* phoPhi   = data.GetPtrFloat("phoPhi");
-        //Float_t* phoEt    = data.GetPtrFloat("phoCalibEt");
+        Float_t* phoEtCalib    = data.GetPtrFloat("phoCalibEt");
         Float_t* phoEt    = data.GetPtrFloat("phoEt");
         Float_t* phoR9    = data.GetPtrFloat("phoR9");
         Float_t* phoSCEta = data.GetPtrFloat("phoSCEta");
@@ -850,6 +852,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         vector <int> photon_list;
         vector <int> photon_jetID;
+        vector<TLorentzDATA> photons;
         int jet_index=-1;
 
 
@@ -872,11 +875,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
                 for (Int_t j=i+1; j<nPho; ++j) {  
                     if(PhotonPreselection(data, j, kFALSE) !=1) continue;	  
-                    phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);	  
-                    TLorentzVector jphoP4;
+                    TLorentzVector iphoP4, jphoP4;
+                    iphoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);	  
                     jphoP4.SetPtEtaPhiM(phoEt[j], phoEta[j], phoPhi[j], 0.);
                     TLorentzVector ppP4;
-                    ppP4 = phoP4;	  ppP4 += jphoP4;
+                    ppP4 = iphoP4;	  ppP4 += jphoP4;
                     h_ppmass->Fill(ppP4.M());
                     h_ppmass_zoom->Fill(ppP4.M());
                 }
@@ -962,7 +965,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         }
 
         //find one jet in event
-        for(int j=0; j<nJet; j++){		         
+        for(int j=0; j<nJet; j++){
             float jetjecunc = 1.;
             if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
@@ -1047,6 +1050,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             SeedEnergy_=0; //ch
             MIPTotEnergy_=0; //ch
             recoPt    =0.;          //ch
+            recoPtCalib    =0.;          //ch
             recoEta   =0.;          //ch
             recoPhi   =0.;          //ch
             recoSCEta =0.;          //ch
@@ -1107,7 +1111,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
-                } else {
                 }
 
                 if (hasSubVtxInfo) {
@@ -1143,7 +1146,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
             }
-
             if (!data.HasMC() ) {
                 SeedTime_ = phoSeedTime[ipho];
                 SeedEnergy_ = phoSeedEnergy[ipho];
@@ -1153,6 +1155,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
             recoPt    = phoEt[ipho];
+            recoPtCalib    = phoEtCalib[ipho];
             recoEta   = phoEta[ipho];
             recoPhi   = phoPhi[ipho];
             recoSCEta = phoSCEta[ipho];
