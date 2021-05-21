@@ -5,4 +5,5 @@
 
 <export>
     <bin name="exec_ParHistFormatter"       file="ParHistFormatter.cc"/>
+    <bin name="exec_ParHistFormatter_2015"  file="ParHistFormatter_2015.cc"/>
 </export>
