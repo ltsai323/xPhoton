@@ -377,7 +377,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         puCalc.Init("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
     }
 
-    TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
+    // TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
+    TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root");
     TGraph *tgr[6];
     tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
     tgr[1] = (TGraph*) f->Get("transfS4EB");
@@ -411,8 +412,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         run     = data.GetInt("run");
         event   = data.GetLong64("event");
-        isData = data.GetBool("isData");
-        nVtx = data.GetInt("nVtx");
+        isData  = data.GetBool("isData");
+        nVtx    = data.GetInt("nVtx");
+
         Int_t    nPho     = data.GetInt("nPho");
         Int_t nJet = data.GetInt("nJet");
         h_nrecojet->Fill(nJet);	  
@@ -630,7 +632,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t* phoPFPhoIso         = data.GetPtrFloat("phoPFPhoIso");
         Int_t* phohasPixelSeed     = data.GetPtrInt("phohasPixelSeed");
 
-        rho                 = data.GetFloat("rho"); //kk
+        Float_t rho_                = data.GetFloat("rho"); //kk
 
         Float_t* phoSCRawE         = data.GetPtrFloat("phoSCRawE");
         Float_t* phoSCEtaWidth     = data.GetPtrFloat("phoSCEtaWidth");
@@ -824,11 +826,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         int npj=0;
         int npp=0;
-        tp_rho->Fill(nVtx, rho, xsweight);
-        h2_nVtx_rho->Fill(nVtx,rho,xsweight);
+        tp_rho->Fill(nVtx, rho_, xsweight);
+        h2_nVtx_rho->Fill(nVtx,rho_,xsweight);
         if(!isData){
-            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx, rho, xsweight);
-            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx, rho, xsweight);
+            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx, rho_, xsweight);
+            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx, rho_, xsweight);
         }
         int nphofiredtrgs=0;
         //look for 2nd photon back of HLT matched photon
@@ -841,9 +843,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
         h_nele->Fill(eleID.size());
 
-        MET = pfMET;
-        METPhi = pfMETPhi;
-        h_MET->Fill(MET);
+        h_MET->Fill(pfMET);
 
 
         vector <int> photon_list;
@@ -1077,6 +1077,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
+            rho = data.GetFloat("rho"); //kk
+            MET = pfMET;
+            METPhi = pfMETPhi;
 
             int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
@@ -1201,11 +1204,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if ( ONLY_LEADINGPHOTON ) break;
             }
 
-        }
+        } // fill tree end
 
         h_nphoFiredTrgs->Fill(nphofiredtrgs);
 
-    }
+    } // event loop end
 
     fout_->cd();
     outtree_->Write();
@@ -1379,16 +1382,8 @@ void xPhotonHFJet(std::string ipath, int outID)
 /*
 metFilters //mv
 xsweight //???
-MET//???
-METPhi//???
-rho //???
+//MET//???
+//METPhi//???
+//rho //???
 puwei_ //???
-isConverted // need to separate task of it.
-isMatched // need to separate task
-isMatchedEle // need to separate task
-mcPt_     //need
-mcEta_    //need
-mcPhi_    //need
-mcCalIso04_ //need
-mcTrkIso04_ //need
             */
