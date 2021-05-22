@@ -23,7 +23,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
-#include "xPhoton/xPhoton/interface/readInfo.h"
+#include "xPhoton/xPhoton/interface/recoInfo.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
@@ -374,10 +374,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
     if(isMC==1)   {
-        puCalc.Init("external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
+        puCalc.Init("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
     }
 
-    TFile* f = TFile::Open("external/transformation_76X_v2.root");
+    TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
     TGraph *tgr[6];
     tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
     tgr[1] = (TGraph*) f->Get("transfS4EB");
@@ -462,7 +462,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t* jetGenJetPhi = 0;
 
         Float_t      genWeight =1.;
-        //    LOG_WARNING("13\n");
         if(!isData){
             pthat     = data.GetFloat("pthat");
             hpthat->Fill(pthat,xsweight);
@@ -563,7 +562,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
             h_ngenpho->Fill(ngenpho);
         } // isdata end
-        //    LOG_WARNING("14\n");
 
 
         if(nPho==0) continue; //skip entry if no recoPhoton
@@ -767,7 +765,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-                //    LOG_WARNING("16\n");
                 for (int jj=0; jj<nneleMC; ++jj) {	   
                     int k = elemcid[jj];	  
                     if(fabs(mcPID[k]) == 11){
@@ -803,7 +800,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-                //    LOG_WARNING("17\n");
                 mcpt.push_back(tmp_mcPt_);
                 mceta.push_back(tmp_mcEta_);
                 mcphi.push_back(tmp_mcPhi_);
