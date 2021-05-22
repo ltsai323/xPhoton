@@ -372,10 +372,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
     if(isMC==1)   {
-        puCalc.Init("external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
+        puCalc.Init("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
     }
 
-    TFile* f = TFile::Open("external/transformation_76X_v2.root");
+    TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
     TGraph *tgr[6];
     tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
     tgr[1] = (TGraph*) f->Get("transfS4EB");
