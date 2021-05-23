@@ -1,14 +1,8 @@
 {
    TTree *t = (TTree*)_file0->Get("t");
 
-   Float_t JetPt, RecoPt, JetEta, JetPhi, JetY, JetSubVtxPt, JetSubVtx3DVal, JetSubVtx3DErr, JetSubVtxMass, JetDeepCSVTags_b, JetDeepCSVTags_bb, JetDeepCSVTags_c, JetDeepCSVTags_udsg, PhotonIDmva,  Xsweight, JetCSV2BJetTags;
-   Int_t JetSubVtxNtrks, JetHadFlvr, phoFiredTrgs;
-
-   Float_t btagger, CvsL, CvsB;
-   
-
+   Int_t phoFiredTrgs;
    Float_t jetPt, recoPt, jetEta, jetPhi, jetY, jetSubVtxPt, jetSubVtx3DVal, jetSubVtx3DErr, jetSubVtxMass, jetDeepCSVTags_b, jetDeepCSVTags_bb, jetDeepCSVTags_c, jetDeepCSVTags_udsg, photonIDmva, jetCSV2BJetTags, chIsoRaw, mva;  
-
    Int_t jetSubVtxNtrks, flavour, files, isMatched;
 
    TH1F *h_btag_b[20];
@@ -62,11 +56,7 @@
    t->SetBranchAddress("jetCSV2BJetTags",&jetCSV2BJetTags);
    t->SetBranchAddress("photonIDmva",&photonIDmva);
    t->SetBranchAddress("flavour",&flavour); //
-   //t->SetBranchAddress("weight",&weight);  
-   t->SetBranchAddress("btagger",&btagger);
    t->SetBranchAddress("phoFiredTrgs",&phoFiredTrgs);
-   t->SetBranchAddress("CvsL",&CvsL);
-   t->SetBranchAddress("CvsB",&CvsB);
    t->SetBranchAddress("chIsoRaw",&chIsoRaw);
    t->SetBranchAddress("mva",&mva);
    t->SetBranchAddress("files",&files);
@@ -78,19 +68,14 @@
    
    Int_t buff=300000000;
    Float_t Lumi[10]={1.073e-01, 1.092e-01, 4.305e-01, 4.322e-01, 3.590e+00, 3.680e+00, 4.771e-02, 4.910e-02, 1.065e+01, 1.056e+01};
-   Float_t size[10]={3480023, 3592694, 5978516, 5815190, 1274485, 1276271, 4067116, 3741619, 1251989, 1178579};
    Float_t weight[10];
    Int_t FiredTrgs[15]={0,1,2,3,3,4,5,5,6,6,6,7,7,7,7};
 
    for(int i=0;i<10;i++){
-	//weight[i] = 1./((size[i]/1000000.)*Lumi[i]);
 	weight[i] = 1./Lumi[i];
-	//weight[i] = 1.;
 	printf("%f\n", weight[i]);
    }
 
-
-TCanvas *c1 = new TCanvas("c1"); 
 
 
 for(int i = 0 ; i < t->GetEntries() ; i++){
@@ -100,8 +85,6 @@ for(int i = 0 ; i < t->GetEntries() ; i++){
 
   for(int j = 0 ; j < 15; j++){
 
-
-//if(recoPt>LBin[j] && recoPt<=HBin[j] && chIsoRaw < 2.0 && ((phoFiredTrgs>>FiredTrgs[j])&1)==1  ){
 
 	if(recoPt>LBin[j] && recoPt<=HBin[j] && chIsoRaw < 2.0 && jetPt != 0 ){
 	
@@ -125,7 +108,6 @@ for(int j = 0 ; j < 15; j++){
 	h_btag_l[j]->Scale(1./h_btag_l[j]->Integral());
 	h_btag_c[j]->Scale(1./h_btag_c[j]->Integral());
 	h_btag_b[j]->Scale(1./h_btag_b[j]->Integral());
-
 }
 
 
