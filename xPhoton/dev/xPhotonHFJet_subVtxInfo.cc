@@ -410,10 +410,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         data.GetEntry(ev);
 
-        run     = data.GetInt("run");
-        event   = data.GetLong64("event");
-        isData  = data.GetBool("isData");
-        nVtx    = data.GetInt("nVtx");
+        Int_t run_     = data.GetInt("run");
+        Long64_t event_   = data.GetLong64("event");
+        Int_t nVtx_    = data.GetInt("nVtx");
 
         Int_t    nPho     = data.GetInt("nPho");
         Int_t nJet = data.GetInt("nJet");
@@ -421,14 +420,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         if(nJet <1 ) continue;
 
         if(!data.HasMC())
-        //if(isData==1)    //25ns
         {
-            //HLT50ns            = 0; //rm //mv
-            //HLTIsPrescaled50ns = 0; //rm //mv
-            HLT = data.GetLong64("HLTPho"); //mv
-            HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled"); //mv
-            Int_t hasGoodVtx;
-            hasGoodVtx = data.GetInt("nGoodVtx");
+            Int_t hasGoodVtx = data.GetInt("nGoodVtx");
             if(hasGoodVtx) h_hasGoodVtx->Fill(1.1);
             else h_hasGoodVtx->Fill(0.1);
             if(!hasGoodVtx) continue;
@@ -464,7 +457,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t* jetGenJetPhi = 0;
 
         Float_t      genWeight =1.;
-        if(!isData){
+        if( data.HasMC()) { 
             pthat     = data.GetFloat("pthat");
             hpthat->Fill(pthat,xsweight);
             hpthat_wide->Fill(pthat,xsweight);
@@ -501,7 +494,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             mcCalIsoDR04 = data.GetPtrFloat("mcCalIsoDR04");
             mcTrkIsoDR04 = data.GetPtrFloat("mcTrkIsoDR04");
             puwei_ = 1.;//
-            puwei_ = (float) puCalc.GetWeight(run, puTrue[1]); // in-time PU
+            puwei_ = (float) puCalc.GetWeight(run_, puTrue[1]); // in-time PU
 
             genWeight = data.GetFloat("genWeight");      
             if(genWeight>0.) xsweight=XS;
@@ -656,7 +649,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t * phoSeedTime = 0;
         Float_t * phoSeedEnergy = 0;
         Float_t * phoMIPTotEnergy= 0;
-        if(isData==1){
+        if(!data.HasMC()) { 
             phoSeedTime = data.GetPtrFloat("phoSeedTime");
             phoSeedEnergy = data.GetPtrFloat("phoSeedEnergy");
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
@@ -683,13 +676,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         if(verbose) {
             printf("-----------------------------------------------------------------------\n");
-            printf("event %lli, npho %d, nMC %d\n", event, nPho, nMC);
+            printf("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
         }
 
         //count number of true photon
         int ntruephoton=0;
 
-        if(!isData){
+        if( data.HasMC()) { 
             vector<int> mcid;
             int nnMC=0;
             for (Int_t k=0; k<nMC; ++k) {
@@ -826,11 +819,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         int npj=0;
         int npp=0;
-        tp_rho->Fill(nVtx, rho_, xsweight);
-        h2_nVtx_rho->Fill(nVtx,rho_,xsweight);
-        if(!isData){
-            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx, rho_, xsweight);
-            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx, rho_, xsweight);
+        tp_rho->Fill(nVtx_, rho_, xsweight);
+        h2_nVtx_rho->Fill(nVtx_,rho_,xsweight);
+        if( data.HasMC()) { 
+            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx_, rho_, xsweight);
+            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx_, rho_, xsweight);
         }
         int nphofiredtrgs=0;
         //look for 2nd photon back of HLT matched photon
@@ -864,7 +857,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         }
         int nnjet=0;
         int jet2_index=-1;
-        if(isData==1){
+        if(!data.HasMC()) { 
             for (Int_t i=0; i<nPho; ++i) {  
                 if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
                 if(PhotonPreselection(data, i, kFALSE) !=1) continue;
@@ -888,8 +881,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             //if(phoEt[i]<100.) continue;
             if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
             if(TMath::Abs(phoSCEta[i])>2.5) continue;
-            if(isData==1 && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
-            if(isData==1 && JETPD_PHOTONHLT==0 ){
+            if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
+            if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
                 /* completely disable trigger selection
 
@@ -906,7 +899,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             int pho_presel = 0;
             pho_presel = PhotonPreselection(data, i, kTRUE);
             //check CSEV eff vs pt
-            if(isData==0) {
+            if( data.HasMC()) { 
                 if(i==0 && match[i]==1){
 
                     if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_den->Fill(phoEt[i]);
@@ -1080,6 +1073,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
+            run     = data.GetInt("run");
+            event   = data.GetLong64("event");
+            isData  = data.GetBool("isData");
+            nVtx    = data.GetInt("nVtx");
 
             int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
@@ -1149,6 +1146,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 SeedTime_ = phoSeedTime[ipho];
                 SeedEnergy_ = phoSeedEnergy[ipho];
                 MIPTotEnergy_ = phoMIPTotEnergy[ipho];
+                HLT = data.GetLong64("HLTPho");
+                HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
             }
 
 
@@ -1382,8 +1381,5 @@ void xPhotonHFJet(std::string ipath, int outID)
 /*
 metFilters //mv
 xsweight //???
-//MET//???
-//METPhi//???
-//rho //???
 puwei_ //???
             */
