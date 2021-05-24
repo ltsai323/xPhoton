@@ -7,14 +7,6 @@
 class readMgr : public TreeReader
 {
 public:
-    /*
-    explicit readMgr( const std::vector<std::string>& pathes, const std::vector<const char*>& sourcebranches) : TreeReader(pathes), bnames(sourcebranches)
-    {}
-    explicit readMgr( const char* filepath, const char* treename, const std::vector<const char*>& sourcebranches) : TreeReader(filepath, treename), bnames(sourcebranches)
-    {}
-
-    virtual ~readMgr() {}
-    */
     explicit readMgr(
             const std::vector<std::string>& pathes,
             const std::vector<const char*>& sourcebranches);
@@ -47,7 +39,6 @@ public:
     Float_t  Float (int varId);
     Double_t Double(int varId);
 private:
-    //std::map<int, const char*> bnames;
     std::vector<const char*> bnames;
 };
 

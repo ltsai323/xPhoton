@@ -1,4 +1,5 @@
 #include "xPhoton/xPhoton/interface/untuplizer.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -108,7 +109,7 @@ std::vector<std::string> find_files(const char* patt)
       while ( true )
       {
          fname = gSystem->GetDirEntry(dir);
-         if ( !fname ) continue;
+         if ( !fname ) break;
          gErrorIgnoreLevel = lvl;
 
          TString path = dirpath + fname;

@@ -1,4 +1,4 @@
-.PHONY: all clean check
+.PHONY: all clean check test
 
 # compiler setting
 MAINCOMPILER=g++
@@ -13,7 +13,7 @@ Compiler=$(RootCOMPILER) $(USETMVA)
 
 
 
-# input files dependency
+###### default compiling files setting #####
 dirobj=obj
 dirbin=bin
 dirsrc=src
@@ -21,22 +21,45 @@ dirsrc=src
 sources_src=$(wildcard src/*.cc)
 sources_bin=$(wildcard bin/*.cc)
 
-
-
 objfile_src=$(sources_src:src/%.cc=obj/%.o)
 objfile_bin=$(sources_bin:bin/%.cc=obj/%.o)
 #libfile_src=$(sources_src:src/%.cc=lib/%.so)
 #libfile_bin=$(sources_bin:bin/%.cc=lib/%.so)
 allexecfile=$(sources_bin:bin/%.cc=bin/exe.%)
 #allexecfile=bin/exe.xPhotonRunner
-
+### default compiling files setting end #####
 
 all: $(allexecfile)
 	@echo $(allexecfile)
 	@echo '---- compile completed! ---'
-	
+
+
+###### declare test     ###########
+dirdev=dev
+sources_dev=$(wildcard    $(dirdev)/*.cc)
+objfile_dev=$(sources_dev:$(dirdev)/%.cc=$(dirobj)/test_%.o)
+test: dev/exe.test.xPhotonRunner
+
+dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
+	$(Compiler) -o $@ $< $(objfile_dev) \
+    obj/ElectronSelections.o \
+    obj/MuonSelections.o \
+    obj/PhotonSelections.o \
+    obj/PreselectionMgr.o \
+    obj/histMgr.o \
+    obj/mcMatchInfo.o \
+    obj/puweicalc.o \
+    obj/readMgr.o \
+    obj/treeMgr.o \
+    obj/untuplizer.o \
+    obj/usefulFuncs.o
+	@echo "--- Successfully compiled " $@ " ---"
+###### declare test end ###########
+
+
 
 ################ Main Targets Here #########################3
+
 bin/exe.ParHistFormatter: obj/ParHistFormatter.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
 bin/exe.RooFit_ParFit_Pythia: obj/RooFit_ParFit_Pythia.o $(objfile_src)
@@ -51,6 +74,9 @@ $(dirobj)/%.o: $(dirsrc)/%.cc
 	@mkdir -p $(dir $@)
 	$(Compiler) -o $@ -c $<
 $(dirobj)/%.o: $(dirbin)/%.cc
+	@mkdir -p $(dir $@)
+	$(Compiler) -o $@ -c $<
+$(dirobj)/test_%.o: $(dirdev)/%.cc
 	@mkdir -p $(dir $@)
 	$(Compiler) -o $@ -c $<
 

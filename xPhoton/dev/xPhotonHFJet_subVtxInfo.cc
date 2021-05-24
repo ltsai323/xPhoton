@@ -394,17 +394,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
         nPU=0; //ch
-        HLT                = 0;
-        HLTIsPrescaled     = 0;
-        metFilters=0;
 
-        mcPt_ = 0.;
-        mcEta_ = 0.;
-        mcPhi_ = 0.;
-        run=0;
-        event=0;
-        nVtx=0;
-        isData = false;
 
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
@@ -425,8 +415,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(hasGoodVtx) h_hasGoodVtx->Fill(1.1);
             else h_hasGoodVtx->Fill(0.1);
             if(!hasGoodVtx) continue;
-            metFilters = data.GetInt("metFilters");
-            if(metFilters != 0 ) continue;
+            int metFilters_ = data.GetInt("metFilters");
+            if(metFilters_ != 0 ) continue;
         }
 
 
@@ -832,9 +822,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         float* eleEta = data.GetPtrFloat("eleEta");
         float* elePhi = data.GetPtrFloat("elePhi");    
 
-        vector<int> eleID;
-        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
-        h_nele->Fill(eleID.size());
 
         h_MET->Fill(pfMET);
 
@@ -940,6 +927,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
 
+        vector<int> eleID;
+        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
+        h_nele->Fill(eleID.size());
 
         // find photon overlaps to electron
         phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
@@ -998,6 +988,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
+        HLT                = 0;
+        HLTIsPrescaled     = 0;
+        metFilters=0;
+        isData = false;
             phoFiredTrgs_ = 0; //ch
             jetGenJetPt_ = 0.; //ch
             jetGenJetEta_ = 0.; //ch
@@ -1020,11 +1014,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             mva = -99.; //ch
             genHT_ = 0.; //ch
             pthat_      = 0.; //ch
-            mcPt_       = 0.; //need
-            mcEta_      = 0.; //need
-            mcPhi_      = 0.; //need
-            mcCalIso04_ = 0.; //need
-            mcTrkIso04_ = 0.; //need
+            mcPt_       = 0.;
+            mcEta_      = 0.;
+            mcPhi_      = 0.;
+            mcCalIso04_ = 0.;
+            mcTrkIso04_ = 0.;
             jetSubVtxPt_    = 0.;
             jetSubVtxMass_  = 0.;
             jetSubVtx3DVal_ = 0.;
@@ -1148,6 +1142,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 MIPTotEnergy_ = phoMIPTotEnergy[ipho];
                 HLT = data.GetLong64("HLTPho");
                 HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
+                metFilters = data.GetInt("metFilters");
             }
 
 
