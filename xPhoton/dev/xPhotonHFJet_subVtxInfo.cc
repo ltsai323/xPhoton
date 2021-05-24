@@ -393,9 +393,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
-        nPU=0; //ch
-
-
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
@@ -447,6 +444,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t* jetGenJetPhi = 0;
 
         Float_t      genWeight =1.;
+        int nPU_ = 0;
         if( data.HasMC()) { 
             pthat     = data.GetFloat("pthat");
             hpthat->Fill(pthat,xsweight);
@@ -478,8 +476,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             nPUInfo = data.GetInt("nPUInfo");
             puBX    = data.GetPtrInt("puBX");
             puTrue  = data.GetPtrFloat("puTrue");
+
             for (Int_t i=0; i<nPUInfo; ++i) {
-                if (puBX[i] == 0) nPU = puTrue[i];
+                if (puBX[i] == 0) nPU_ = puTrue[i];
             }      
             mcCalIsoDR04 = data.GetPtrFloat("mcCalIsoDR04");
             mcTrkIsoDR04 = data.GetPtrFloat("mcTrkIsoDR04");
@@ -988,10 +987,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
-        HLT                = 0;
-        HLTIsPrescaled     = 0;
-        metFilters=0;
-        isData = false;
+            nPU=0; //ch
+            HLT                = 0;
+            HLTIsPrescaled     = 0;
+            metFilters=0;
+            isData = false;
             phoFiredTrgs_ = 0; //ch
             jetGenJetPt_ = 0.; //ch
             jetGenJetEta_ = 0.; //ch
@@ -1067,6 +1067,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
+            nPU=nPU_;
             run     = data.GetInt("run");
             event   = data.GetLong64("event");
             isData  = data.GetBool("isData");
