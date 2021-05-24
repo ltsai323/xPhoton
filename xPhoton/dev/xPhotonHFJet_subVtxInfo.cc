@@ -1187,7 +1187,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
             mva = select_photon_mvanoIso(data, ipho, tgr);
-            mva = select_photon_mvanoIso(data, ipho, nullptr);
+            mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
             photonIDmva = phoIDMVA[ipho];
 
             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);

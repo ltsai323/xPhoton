@@ -238,7 +238,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t rho;
     Int_t phoFiredTrgs_, phohasPixelSeed_;
 
-    Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva,  photonIDmva;
+    Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva, mva_nocorr,  photonIDmva;
     Float_t sieieFull5x5, sipipFull5x5, sieipFull5x5, e2x2Full5x5,  e5x5Full5x5;
     Int_t isConverted;
 
@@ -316,6 +316,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("esRR",         &esRR,         "esRR/F");   
     outtree_->Branch("esEn",         &esEn,         "esEn/F");   
     outtree_->Branch("mva",          &mva,          "mva/F");  
+    outtree_->Branch("mva_nocorr",   &mva_nocorr,   "mva_nocorr/F");  
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
     outtree_->Branch("MET",    &MET,    "MET/F");  
@@ -379,6 +380,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
     TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root");
+    LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
+
     TGraph *tgr[6];
     tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
     tgr[1] = (TGraph*) f->Get("transfS4EB");
@@ -1012,6 +1015,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             isMatchedEle = -99; //need
             isConverted = -99; //need
             mva = -99.; //ch
+            mva_nocorr = -99.; //ch
             genHT_ = 0.; //ch
             pthat_      = 0.; //ch
             mcPt_       = 0.;
@@ -1183,6 +1187,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
             mva = select_photon_mvanoIso(data, ipho, tgr);
+            mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
             photonIDmva = phoIDMVA[ipho];
 
             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
