@@ -476,16 +476,18 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   s4Full5x5 = phoE2x2Full5x5[i]/phoE5x5Full5x5[i];
   
   if(isData!=1){
-    if(TMath::Abs(phoSCEta[i])<1.5) {
-      phoSCEtaWidth_	= tgr[0]->Eval(phoSCEtaWidth_);
-      s4Full5x5         = tgr[1]->Eval(s4Full5x5);
-      phoR9_		= tgr[2]->Eval(phoR9_);
-    }else{
-      phoSCEtaWidth_	= tgr[3]->Eval(phoSCEtaWidth_);
-      s4Full5x5         = tgr[4]->Eval(s4Full5x5);
-      phoR9_		= tgr[5]->Eval(phoR9_);
+    if ( tgr ) {
+      if(TMath::Abs(phoSCEta[i])<1.5) {
+        phoSCEtaWidth_	= tgr[0]->Eval(phoSCEtaWidth_);
+        s4Full5x5         = tgr[1]->Eval(s4Full5x5);
+        phoR9_		= tgr[2]->Eval(phoR9_);
+      } else {
+        phoSCEtaWidth_	= tgr[3]->Eval(phoSCEtaWidth_);
+        s4Full5x5         = tgr[4]->Eval(s4Full5x5);
+        phoR9_		= tgr[5]->Eval(phoR9_);
 
-    }      
+      }      
+    }
   }
 
   return tmvaReader[iBE]->EvaluateMVA("BDT");
