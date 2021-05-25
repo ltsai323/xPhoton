@@ -66,6 +66,8 @@ bin/exe.RooFit_ParFit_Pythia: obj/RooFit_ParFit_Pythia.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
 bin/exe.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
+bin/exe.AppendXSWeightToxPhoton: obj/AppendXSWeightToxPhoton.o
+	$(Compiler) -o $@ $<
 
 ################ Main Targets Ends #########################3
 
