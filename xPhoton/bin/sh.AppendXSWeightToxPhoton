@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-exec_AppendXSWeightToxPhoton input.root output.root 3.14e5
+./exe.AppendXSWeightToxPhoton input.root output.root 3.14e5
