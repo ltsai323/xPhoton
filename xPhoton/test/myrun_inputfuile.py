@@ -16,7 +16,8 @@ lines=[
 ]
 
 #commandCONTENT  = 'root -b -q xPhoton/macros/run.C\(\\\"%s\\\",%d\)'
-commandCONTENT  = 'sh runxPhoton/myrun_singlefile.sh %s %d' # second argument is useless
+#commandCONTENT  = 'sh runxPhoton/myrun_singlefile.sh %s %d' # second argument is useless
+commandCONTENT  = 'exec_xPhotonRunner %s %d' # second argument is useless
 nchcPrefix='root://se01.grid.nchc.org.tw/'
 def fileID(rootpath): return int(rootpath.split('_')[-1].split('.')[0])
 def nameonly(fullfilepath): return fullfilepath.strip().split('/')[-1].split('.')[0]
@@ -52,6 +53,7 @@ def nlines(filepath): return sum( 1 for line in open(filepath,'r') )
 if __name__ == '__main__':
     filename = checkarg(argv)
     if filename:
+        print 'input file used : ' + filename
         with open(filename, 'r') as ifile:
             tot=nlines(filename)
             for i, remoteDir in enumerate( ifile.readlines() ):
@@ -60,5 +62,6 @@ if __name__ == '__main__':
         os.system('hadd storeroot/%s.root output*.root' % (nameonly(filename)) )
         cleanworkspace()
     else:
+        print 'no input file detected. Use internal example'
         for rootFile in lines:
             execCommand( rootFile )
