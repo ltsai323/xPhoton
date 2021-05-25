@@ -4,5 +4,6 @@
 <use name="xPhoton/xPhoton"/>
 
 <export>
-    <bin name="exec_xPhotonRunner"          file="xPhotonRunner.cc"/>
+    <bin name="exec_xPhotonRunner"           file="xPhotonRunner.cc"/>
+    <bin name="exec_AppendXSWeightToxPhoton" file="AppendXSWeightToxPhoton.cc"/>
 </export>
