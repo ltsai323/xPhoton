@@ -45,16 +45,16 @@ dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
     obj/ElectronSelections.o \
     obj/MuonSelections.o \
     obj/PhotonSelections.o \
-    obj/PreselectionMgr.o \
     obj/histMgr.o \
-    obj/mcMatchInfo.o \
     obj/puweicalc.o \
     obj/readMgr.o \
-    obj/treeMgr.o \
     obj/untuplizer.o \
     obj/usefulFuncs.o
 	@echo "--- Successfully compiled " $@ " ---"
 ###### declare test end ###########
+#obj/PreselectionMgr.o \
+#obj/mcMatchInfo.o \
+#obj/treeMgr.o \
 
 
 

@@ -1,5 +1,4 @@
 #include "xPhoton/xPhoton/interface/recoInfo.h"
-//#include "xPhoton/xPhoton/interface/readContent_gganalysis.h"
 #include "xPhoton/xPhoton/interface/readMgr.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
