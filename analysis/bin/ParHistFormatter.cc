@@ -85,9 +85,10 @@ int main( int argc, char* argv[])
         if ( data.GetBool("isData") )
             if (!(data.GetInt("phoFiredTrgs")>>HLT_PHOTON_BIT&1) ) continue;
         float pt=data.Float(var::recoPt);
+        float ptcalib=data.GetFloat("recoPtCalib");
         hists.Fill("pt", pt);
-        if ( !(pt > 185. && pt < 190.) ) continue;
-        if ( data.Float(var::chIsoRaw) > 2 ) continue;
+        if ( !(ptcalib > 185. && ptcalib < 190.) ) continue;
+        //if ( data.Float(var::chIsoRaw) > 2 ) continue;
 
 
 
