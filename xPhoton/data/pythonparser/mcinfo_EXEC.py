@@ -3,10 +3,29 @@ from xPhoton.xPhoton.Managers.LogMgr import GetLogger, LoadLoggerConfig
 LoadLoggerConfig(confPath='/home/ltsai/local/mylib/data/logger_debug.config',fromCurrentDir=False)
 mylog=GetLogger(__name__)
 
-from mcinfo_extractMCInfo import ExtractMCInfo
-from mcinfo_primarydatasetMatching import PrimaryDataseatMatching
+from extractMCInfo import ExtractMCInfo
+from primarydatasetMatching import PrimaryDataseatMatching
 import os
 import json
+
+class keyinfo(object):
+    def __init__(self, pd, isext):
+        self.pd=pd
+        self.isext=isext
+    def GetKey(self):
+        if self.isext == True:
+            return self.pd + '_' + 'extended'
+        return self.pd
+
+def assertinfo(collector, pd, info, printWarning=False):
+    if pd in collector.keys():
+        if printWarning:
+            print '--- Warning --- Ignoring duplicated information. Primary dataset {0} duplicated!'.format(pd)
+    else:
+        collector.update( {pd:info} )
+
+
+
 
 if __name__ == '__main__':
 
@@ -19,15 +38,20 @@ if __name__ == '__main__':
             ]
 
     for inputlabel, crabfile in crabfiles:
-        print 'processing file '+crabfile
-        datacollector=[]
-        for primarydataset, filename_mcinfo in PrimaryDataseatMatching(crabfile):
+        print ' -> processing file '+crabfile
+        datacollector={}
+        for primarydataset, filename_mcinfo, isext in PrimaryDataseatMatching(crabfile):
             if not os.path.isfile(filename_mcinfo):
                 raise IOError( '!!! file %s not found !!!' %filename_mcinfo )
 
-            outinfo=ExtractMCInfo(filename_mcinfo, primarydataset)
-            if outinfo:
-                datacollector.append(ExtractMCInfo(filename_mcinfo, primarydataset))
+            pd,info=ExtractMCInfo(filename_mcinfo, primarydataset)
+            if info:
+                assertinfo(datacollector, pd, info)
+
+        '''
+        for key,val in datacollector.iteritems():
+            print key +' '+ repr(val)
+        '''
 
         fout=open('../mcInformation/summary_%s.json'%inputlabel,'w')
         json.dump(datacollector, fout)
