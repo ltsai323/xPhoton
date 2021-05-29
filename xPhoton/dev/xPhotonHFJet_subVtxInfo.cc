@@ -374,22 +374,22 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    if(isMC==1)   {
+    TGraph *tgr[6];
+    if(data.HasMC())   {
         puCalc.Init("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
+        // TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
+        TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root");
+        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
+
+        tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
+        tgr[1] = (TGraph*) f->Get("transfS4EB");
+        tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
+
+        tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
+        tgr[4] = (TGraph*) f->Get("transfS4EE");
+        tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
     }
 
-    // TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
-    TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root");
-    LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
-
-    TGraph *tgr[6];
-    tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
-    tgr[1] = (TGraph*) f->Get("transfS4EB");
-    tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
-
-    tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
-    tgr[4] = (TGraph*) f->Get("transfS4EE");
-    tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
 
 
     printf(" processing entries %lli \n", data.GetEntriesFast());

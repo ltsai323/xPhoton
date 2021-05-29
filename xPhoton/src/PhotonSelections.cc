@@ -224,7 +224,7 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
    * data = handle providing access to an input event;
    * i = index of a photon candidate to consider.
    */
-  Bool_t isData              = data.GetBool("isData");
+  //Bool_t isData              = data.GetBool("isData");
   // load necessary tree branches
   Float_t* phoEt             = data.GetPtrFloat("phoEt");
   Float_t* phoEta            = data.GetPtrFloat("phoEta");
@@ -347,7 +347,8 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   s4Full5x5 = phoE2x2Full5x5[i]/phoE5x5Full5x5[i];
   s25Full5x5 = phoE2x5MaxFull5x5[i]/phoE5x5Full5x5[i];
   
-  if(isData!=1 && TMath::Abs(phoSCEta[i])<1.5) {
+  //if(isData!=1 && TMath::Abs(phoSCEta[i])<1.5) {
+  if(data.HasMC() && TMath::Abs(phoSCEta[i])<1.5) {
     phoSCEtaWidth_ = tgr[0]->Eval(phoSCEtaWidth[i]);
     s4Full5x5 = tgr[1]->Eval(phoE2x2[i]/phoE5x5[i]);
     phoR9_ = tgr[2]->Eval(phoR9[i]);
@@ -475,7 +476,8 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   sieipFull5x5 = phoSigmaIEtaIPhiFull5x5[i];
   s4Full5x5 = phoE2x2Full5x5[i]/phoE5x5Full5x5[i];
   
-  if(isData!=1){
+  //if(isData!=1){
+  if(data.HasMC()) {
     if ( tgr ) {
       if(TMath::Abs(phoSCEta[i])<1.5) {
         phoSCEtaWidth_	= tgr[0]->Eval(phoSCEtaWidth_);

@@ -19,3 +19,6 @@ python        : python library can be imported<br/>
 scripts       : Some bash or python scripts can be directly executed.<br/>
 test          : test region. Do anything in this.<br/>
 dev           : developing codes. Compile by makefile only<br/>
+
+# data/pythonparser
+Use it to analyze the log file of getXsec.py.
