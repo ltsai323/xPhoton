@@ -48,6 +48,7 @@ dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
     obj/histMgr.o \
     obj/puweicalc.o \
     obj/readMgr.o \
+    obj/ExternalFilesMgr.o \
     obj/untuplizer.o \
     obj/usefulFuncs.o
 	@echo "--- Successfully compiled " $@ " ---"

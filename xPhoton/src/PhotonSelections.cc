@@ -1,40 +1,11 @@
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
+#include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include <TMath.h>
 #include <TMVA/Reader.h>
 #include <TFile.h>
 #include <TGraph.h>
 #include <string>
 
-std::string MVAweightfile(int isEndcap, int year)
-{
-    switch ( year )
-    {
-    case 2015:
-        if ( isEndcap )
-            return "";
-        else
-            return "";
-    case 2016:
-        if ( isEndcap )
-            return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EE_TMVAnalysis_BDT.weights.xml";
-        else
-            return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EB_TMVAnalysis_BDT.weights.xml";
-    case 2017:
-        if ( isEndcap )
-            return "";
-        else
-            return "";
-    case 2018:
-        if ( isEndcap )
-            return "";
-        else
-            return "";
-    default:
-        return "";
-    }
-    return "";
-}
-        
 // pre-selection of photon.
 Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
   Int_t phoID=1;
@@ -224,7 +195,6 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
    * data = handle providing access to an input event;
    * i = index of a photon candidate to consider.
    */
-  //Bool_t isData              = data.GetBool("isData");
   // load necessary tree branches
   Float_t* phoEt             = data.GetPtrFloat("phoEt");
   Float_t* phoEta            = data.GetPtrFloat("phoEta");
@@ -306,15 +276,9 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
     tmvaReader[iBE]->AddSpectator("recoEta", &phoEta_);
 
     // read weight files
-    if (iBE == 0){
-        tmvaReader[0]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
-        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
-        // tmvaReader[0]->BookMVA("BDT", "/home/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EB_TMVAnalysis_BDT.weights.xml");
-    }else{
-        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
-        tmvaReader[1]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
-      // tmvaReader[1]->BookMVA("BDT", "/home/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/spring16_80x_EE_TMVAnalysis_BDT.weights.xml");
-    }
+    const char* xmlFile_MVAweight(int isEndcap, int year);
+    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) << std::endl;
+    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) );
   } // one-time initialization
 
   //get etawidth, s4, R9  reweighting for 76x
@@ -347,7 +311,6 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   s4Full5x5 = phoE2x2Full5x5[i]/phoE5x5Full5x5[i];
   s25Full5x5 = phoE2x5MaxFull5x5[i]/phoE5x5Full5x5[i];
   
-  //if(isData!=1 && TMath::Abs(phoSCEta[i])<1.5) {
   if(data.HasMC() && TMath::Abs(phoSCEta[i])<1.5) {
     phoSCEtaWidth_ = tgr[0]->Eval(phoSCEtaWidth[i]);
     s4Full5x5 = tgr[1]->Eval(phoE2x2[i]/phoE5x5[i]);
@@ -377,7 +340,6 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
    * data = handle providing access to an input event;
    * i = index of a photon candidate to consider.
    */
-  Bool_t isData              = data.GetBool("isData");
   Int_t run                  = data.GetInt("run");
   // load necessary tree branches
   Float_t* phoEt             = data.GetPtrFloat("phoEt");
@@ -447,14 +409,8 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
     //tmvaReader[iBE]->AddSpectator("recoPt", &phoEt_);
     //tmvaReader[iBE]->AddSpectator("recoEta", &phoEta_);
 
-    // read weight files
-    if (iBE == 0){
-        tmvaReader[0]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
-        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
-    }else{
-        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
-        tmvaReader[1]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
-    }
+    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) << std::endl;
+    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) );
   } // one-time initialization
   
   //get etawidth, s4, R9  reweighting for 76x
@@ -476,7 +432,6 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   sieipFull5x5 = phoSigmaIEtaIPhiFull5x5[i];
   s4Full5x5 = phoE2x2Full5x5[i]/phoE5x5Full5x5[i];
   
-  //if(isData!=1){
   if(data.HasMC()) {
     if ( tgr ) {
       if(TMath::Abs(phoSCEta[i])<1.5) {
@@ -553,14 +508,8 @@ float select_photon_mva_hgg(TreeReader &data, Int_t i) {
       tmvaReader[iBE]->AddVariable("esEffSigmaRR", &phoESEffSigmaRR_);
     }
 
-    // read weight files
-    if (iBE == 0){
-        tmvaReader[0]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
-        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
-    }else{
-        std::cerr << MVAweightfile(iBE, 2016).c_str() << std::endl;
-        tmvaReader[1]->BookMVA("BDT", MVAweightfile(iBE, 2016).c_str() );
-    }
+    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) << std::endl;
+    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) );
   } // one-time initialization
 
   // set MVA variables

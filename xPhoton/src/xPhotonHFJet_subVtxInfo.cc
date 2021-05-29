@@ -24,9 +24,11 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
+#include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
+    std::cout << "testing : " << ExternalFilesMgr::testchar() << std::endl;
 
     // vector <string> pathes;
     // pathes.push_back(fname);
@@ -375,10 +377,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
     TGraph *tgr[6];
-    if(data.HasMC())   {
-        puCalc.Init("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
-        // TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
-        TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root");
+    if(data.HasMC())
+    {
+        puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
         LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
 
         tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
