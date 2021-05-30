@@ -8,7 +8,6 @@
 #include <string>
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 
-std::string MVAweightfile(int isEndcap, int year);
         
 // pre-selection of photon.
 Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto=kTRUE);

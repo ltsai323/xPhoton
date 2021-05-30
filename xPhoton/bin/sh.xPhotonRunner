@@ -1,1 +1,2 @@
+#!/usr/bin/env sh
 exe.xPhotonRunner input.root 3

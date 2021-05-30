@@ -24,9 +24,11 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
+#include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
+    std::cout << "testing : " << ExternalFilesMgr::testchar() << std::endl;
 
     // vector <string> pathes;
     // pathes.push_back(fname);
@@ -238,7 +240,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t rho;
     Int_t phoFiredTrgs_, phohasPixelSeed_;
 
-    Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva,  photonIDmva;
+    Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva, mva_nocorr,  photonIDmva;
     Float_t sieieFull5x5, sipipFull5x5, sieipFull5x5, e2x2Full5x5,  e5x5Full5x5;
     Int_t isConverted;
 
@@ -316,6 +318,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("esRR",         &esRR,         "esRR/F");   
     outtree_->Branch("esEn",         &esEn,         "esEn/F");   
     outtree_->Branch("mva",          &mva,          "mva/F");  
+    outtree_->Branch("mva_nocorr",   &mva_nocorr,   "mva_nocorr/F");  
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
     outtree_->Branch("MET",    &MET,    "MET/F");  
@@ -373,39 +376,28 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    if(isMC==1)   {
-        puCalc.Init("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root");
+    TGraph *tgr[6];
+    if(data.HasMC())
+    {
+        puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
+
+        tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
+        tgr[1] = (TGraph*) f->Get("transfS4EB");
+        tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
+
+        tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
+        tgr[4] = (TGraph*) f->Get("transfS4EE");
+        tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
     }
 
-    // TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root");
-    TFile* f = TFile::Open("/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root");
-    TGraph *tgr[6];
-    tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
-    tgr[1] = (TGraph*) f->Get("transfS4EB");
-    tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
-
-    tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
-    tgr[4] = (TGraph*) f->Get("transfS4EE");
-    tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
 
 
     printf(" processing entries %lli \n", data.GetEntriesFast());
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
-        nPU=0; //ch
-        HLT                = 0;
-        HLTIsPrescaled     = 0;
-        metFilters=0;
-
-        mcPt_ = 0.;
-        mcEta_ = 0.;
-        mcPhi_ = 0.;
-        run=0;
-        event=0;
-        nVtx=0;
-        isData = false;
-
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
@@ -425,8 +417,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(hasGoodVtx) h_hasGoodVtx->Fill(1.1);
             else h_hasGoodVtx->Fill(0.1);
             if(!hasGoodVtx) continue;
-            metFilters = data.GetInt("metFilters");
-            if(metFilters != 0 ) continue;
+            int metFilters_ = data.GetInt("metFilters");
+            if(metFilters_ != 0 ) continue;
         }
 
 
@@ -457,6 +449,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t* jetGenJetPhi = 0;
 
         Float_t      genWeight =1.;
+        int nPU_ = 0;
         if( data.HasMC()) { 
             pthat     = data.GetFloat("pthat");
             hpthat->Fill(pthat,xsweight);
@@ -488,8 +481,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             nPUInfo = data.GetInt("nPUInfo");
             puBX    = data.GetPtrInt("puBX");
             puTrue  = data.GetPtrFloat("puTrue");
+
             for (Int_t i=0; i<nPUInfo; ++i) {
-                if (puBX[i] == 0) nPU = puTrue[i];
+                if (puBX[i] == 0) nPU_ = puTrue[i];
             }      
             mcCalIsoDR04 = data.GetPtrFloat("mcCalIsoDR04");
             mcTrkIsoDR04 = data.GetPtrFloat("mcTrkIsoDR04");
@@ -832,9 +826,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         float* eleEta = data.GetPtrFloat("eleEta");
         float* elePhi = data.GetPtrFloat("elePhi");    
 
-        vector<int> eleID;
-        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
-        h_nele->Fill(eleID.size());
 
         h_MET->Fill(pfMET);
 
@@ -940,6 +931,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
 
+        vector<int> eleID;
+        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
+        h_nele->Fill(eleID.size());
 
         // find photon overlaps to electron
         phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
@@ -998,6 +992,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
+            nPU=0; //ch
+            HLT                = 0;
+            HLTIsPrescaled     = 0;
+            metFilters=0;
+            isData = false;
             phoFiredTrgs_ = 0; //ch
             jetGenJetPt_ = 0.; //ch
             jetGenJetEta_ = 0.; //ch
@@ -1018,13 +1017,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             isMatchedEle = -99; //need
             isConverted = -99; //need
             mva = -99.; //ch
+            mva_nocorr = -99.; //ch
             genHT_ = 0.; //ch
             pthat_      = 0.; //ch
-            mcPt_       = 0.; //need
-            mcEta_      = 0.; //need
-            mcPhi_      = 0.; //need
-            mcCalIso04_ = 0.; //need
-            mcTrkIso04_ = 0.; //need
+            mcPt_       = 0.;
+            mcEta_      = 0.;
+            mcPhi_      = 0.;
+            mcCalIso04_ = 0.;
+            mcTrkIso04_ = 0.;
             jetSubVtxPt_    = 0.;
             jetSubVtxMass_  = 0.;
             jetSubVtx3DVal_ = 0.;
@@ -1073,6 +1073,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
+            nPU=nPU_;
             run     = data.GetInt("run");
             event   = data.GetLong64("event");
             isData  = data.GetBool("isData");
@@ -1148,6 +1149,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 MIPTotEnergy_ = phoMIPTotEnergy[ipho];
                 HLT = data.GetLong64("HLTPho");
                 HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
+                metFilters = data.GetInt("metFilters");
             }
 
 
@@ -1187,6 +1189,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
             mva = select_photon_mvanoIso(data, ipho, tgr);
+            mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
             photonIDmva = phoIDMVA[ipho];
 
             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);

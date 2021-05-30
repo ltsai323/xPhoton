@@ -1,7 +1,8 @@
-This folder is used to handle words.
-Read words and output to formatted information to be further used.
+# Manual
 
-Current executables : 
 * mcinfo_EXEC.py
-- Read crab sending python scripts and the output stream of genXsec.py. Tidy up the cross section information and related primary dataset.
-
+executable.
+* mcinfo_primarydatasetMatching.py
+Used to connect primary dataset and genXsec output file.
+* mcinfo_extractMCInfo.py
+Input a primary dataset and genXsec output file, output a dict recording MCinfo associated with primary dataset
