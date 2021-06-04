@@ -374,7 +374,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
    fChain->SetBranchAddress("HLT50ns", &HLT50ns, &b_HLT50ns);
    fChain->SetBranchAddress("HLTIsPrescaled50ns", &HLTIsPrescaled50ns, &b_HLTIsPrescaled50ns);
-   fChain->SetBranchAddress("phoFiredTrg", &phoFiredTrg, &b_phoFiredTrgs);
+   fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrg, &b_phoFiredTrgs);
    fChain->SetBranchAddress("pthat", &pthat, &b_pthat);
    fChain->SetBranchAddress("genHT", &genHT, &b_genHT);
    fChain->SetBranchAddress("mcPt", &mcPt, &b_mcPt);
