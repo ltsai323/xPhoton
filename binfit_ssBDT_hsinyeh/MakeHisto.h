@@ -220,6 +220,7 @@ public :
    TBranch        *b_MIPTotEnergy;   //!
 
    MakeHisto(Int_t option=1);
+   MakeHisto(const char* fname);
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -306,6 +307,22 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
 
 
   OPTION = option;
+  Init(tc);
+}
+MakeHisto::MakeHisto(const char* fname) : fChain(0)
+{
+  HLTOPTION = 0;
+
+  /* Init(tree); */
+  TChain *tc = new TChain("t");
+  tc->Add(fname);
+
+  TFile *fout;
+
+
+  fout = new TFile("output_makehists.root","recreate");
+
+
   Init(tc);
 }
 
