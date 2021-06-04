@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+# emacs tmp file
+*~
 
 # Compiled Object files
 *.slo
