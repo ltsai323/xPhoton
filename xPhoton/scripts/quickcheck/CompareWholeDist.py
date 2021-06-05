@@ -10,6 +10,7 @@ t1=f1.Get('t')
 
 h0=ROOT.TH1F('h0','',10,-1.,1.)
 h1=ROOT.TH1F('h1','',10,-1.,1.)
+h2=ROOT.TH1F('h2','',10,-1.,1.)
 
 
 canv=ROOT.TCanvas('c1','',800,800)
@@ -18,21 +19,24 @@ canv.SetFillStyle(4000)
 
 t0.Draw('mva>>h0')
 t1.Draw('mva>>h1')
+t1.Draw('mva_nocorr>>h2')
 
 h0.SetFillColor(40)
-
-h1.SetFillColor(30)
+h1.SetFillColor(36)
+h2.SetFillColor(30)
 
 
 hs=ROOT.THStack('hs','BDT output')
 hs.Add(h0)
 hs.Add(h1)
+hs.Add(h2)
 
 hs.Draw('nostackb')
 
 leg=ROOT.TLegend(0.2,0.6,0.65,0.80)
 leg.AddEntry(h0,'2015 Correction','f')
 leg.AddEntry(h1,'2016 legacy Correction (for test)','f')
+leg.AddEntry(h2,'no Correction','f')
 leg.Draw()
 
 

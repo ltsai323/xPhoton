@@ -21,8 +21,25 @@ def LoadLoggerConfig(confPath='../data/logger.config',fromCurrentDir=True):
     logPath=confPath
     #logPath=confPath if fromCurrentDir else
     logging.config.fileConfig(os.path.join(logPath))
-def GetLogger(logname='default logger'):
+def GetLogger(logname=__name__):
     return logging.getLogger(logname)
+
+def translatelevel(LEvEL):
+    level=LEvEL.lower()
+    if level == 'debug'    : return logging.DEBUG
+    if level == 'info'     : return logging.INFO
+    if level == 'warning'  : return logging.WARNING
+    if level == 'error'    : return logging.ERROR
+    if level == 'critical' : return logging.CRITICAL
+
+def InitLogger(file=None, level='info'):
+    logging.basicConfig(
+            level=translatelevel(level),
+            format='[%(levelname)-8s] - %(name)s: %(message)s',
+            handlers=logging.FileHandler(file,'w') if file else logging.StreamHandler()
+            )
+def InitFileLogger(file='log', level='debug'):
+    InitLogger(file,level)
 
 
 
