@@ -38,7 +38,7 @@ void MakeHisto::Loop()
   TRandom3 *trd = new TRandom3();
 
 
-  TFile *fout = new TFile("output.root","recreate");
+  //TFile *fout = new TFile("output.root","recreate");
 
   TH1F *h_BDT_all[2][3][30][2]; //ebee, jetbin, ptbin, true/fake;
   TH1F *h_BDT[2][3][30][2];
@@ -182,6 +182,7 @@ void MakeHisto::Loop()
 
   Long64_t nentries = fChain->GetEntriesFast();   
 
+  std::cout << "entries : " << fChain->GetEntries() << "   ---   " << fChain->GetEntriesFast() << std::endl;
   printf("Loading %lli events \n", fChain->GetEntriesFast() );
   printf("HLT option %d \n", HLTOPTION);
 
@@ -484,7 +485,6 @@ void MakeHisto::Loop()
     }
   }
 
-  fout->Close();
 
 }
 
