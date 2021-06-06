@@ -275,10 +275,8 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
     // tc->Add("../fall17_V09_04_13_04_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root");
 
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/GJet_pythia/Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root");
-      /*
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/GJet_pythia/Pt20toInf_DoubleEMEnriched_MGG40to80_TuneCUETP8M1_13TeV_pythia8.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/GJet_pythia/Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.root");
-    */
 
     fout = new TFile("output_mc.root","recreate");
   };
@@ -297,14 +295,12 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
  // tc->Add("../job_SinglePho_Run2017E_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017F_MarReminiAOD.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016B_94XReReco_ver2v1.root");
-    /*
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016C_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016D_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016E_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016F_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016G_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016H_94XReReco_v1.root");
-    */
 
     fout = new TFile("output_data.root","recreate");
   }

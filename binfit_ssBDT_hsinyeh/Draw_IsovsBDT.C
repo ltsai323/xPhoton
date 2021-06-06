@@ -1,6 +1,6 @@
 #include <TH1.h>
 #include <TH2.h>
-void Draw_IsovsBDT(char EBEE[10]="EB", int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+void Draw_IsovsBDT(const char* EBEE="EB", int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
   
   TFile *fqcd = new TFile("mc_QCD.root");
   //TFile *fgjet = new TFile("mc_gjet6000.root");
