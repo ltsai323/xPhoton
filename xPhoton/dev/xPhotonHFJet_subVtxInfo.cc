@@ -875,15 +875,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
-                /* completely disable trigger selection
 
-                // in 2016 HLT Table
-                if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
-
-                //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
-                //else 
-                //  continue;       
-                //  */
+                if ( PASSHLT )
+                {
+                    // in 2016 HLT Table
+                    if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+                    //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
+                    else 
+                        continue;       
+                }
             }
 
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
@@ -937,13 +937,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         // find photon overlaps to electron
         phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
-        for(unsigned int j=0; j<eleID.size(); j++){
-            if(elePt[eleID[j]]<100) continue;
-            TLorentzVector tmp_eP4;
-            tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-            h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
-            if(phoP4.DeltaR(tmp_eP4) < 0.3) {
-                photon_list.clear(); 
+        if ( ELECTRONVETO ) {
+            for(unsigned int j=0; j<eleID.size(); j++){
+                if(elePt[eleID[j]]<100) continue;
+                TLorentzVector tmp_eP4;
+                tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
+                h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
+                if(phoP4.DeltaR(tmp_eP4) < 0.3) {
+                    photon_list.clear(); 
+                }
             }
         }
 
@@ -985,7 +987,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
 
-        if(photon_jetID.size()==0) photon_jetID.push_back(0);
+        if(photon_jetID.size()==0) { photon_jetID.push_back(0); std::cerr<<"no jet passed event, use leading jet\n"; }
 
 
 

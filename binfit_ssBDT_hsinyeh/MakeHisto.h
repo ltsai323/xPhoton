@@ -282,18 +282,19 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
   };
 
   if(option ==2){
- //    tc->Add("../job_SinglePho_Run2016B_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016C_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016D_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016E_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016F_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016G_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016H_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016B_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016C_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016D_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016E_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016F_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016G_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016H_Legacy.root");
  // // tc->Add("../job_SinglePho_Run2017B_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017C_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017D_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017E_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017F_MarReminiAOD.root");
+    /*
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016B_94XReReco_ver2v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016C_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016D_94XReReco_v1.root");
@@ -301,6 +302,7 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016F_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016G_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016H_94XReReco_v1.root");
+    */
 
     fout = new TFile("output_data.root","recreate");
   }
