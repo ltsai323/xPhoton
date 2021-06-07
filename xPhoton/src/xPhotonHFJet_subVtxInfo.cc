@@ -876,7 +876,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
 
-                if ( PASSHLT )
+                if ( USEHLT )
                 {
                     // in 2016 HLT Table
                     if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.

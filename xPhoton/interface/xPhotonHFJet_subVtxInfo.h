@@ -30,7 +30,7 @@ static Int_t gjetSignal=0;
 
 static bool hasSubVtxInfo = true;
 static bool ELECTRONVETO = false;
-static bool PASSHLT = false;
+static bool USEHLT = false;
 
 
 void xPhotonHFJet(

@@ -876,10 +876,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
 
-                if ( PASSHLT )
+                if ( USEHLT )
                 {
                     // in 2016 HLT Table
-                    if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+                    if((phoFiredTrgs[i]>>7)&1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
                     //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
                     else 
                         continue;       
@@ -931,13 +931,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
 
-        vector<int> eleID;
-        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
-        h_nele->Fill(eleID.size());
 
         // find photon overlaps to electron
         phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
         if ( ELECTRONVETO ) {
+            vector<int> eleID;
+            ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
+            h_nele->Fill(eleID.size());
             for(unsigned int j=0; j<eleID.size(); j++){
                 if(elePt[eleID[j]]<100) continue;
                 TLorentzVector tmp_eP4;
