@@ -394,7 +394,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
 
-    printf(" processing entries %lli \n", data.GetEntriesFast());
+    LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
@@ -669,8 +669,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         int nconv=0;
 
         if(verbose) {
-            printf("-----------------------------------------------------------------------\n");
-            printf("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
+            LOG_DEBUG("-----------------------------------------------------------------------\n");
+            LOG_DEBUG("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
         }
 
         //count number of true photon
@@ -681,7 +681,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             int nnMC=0;
             for (Int_t k=0; k<nMC; ++k) {
                 if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
-                    if(verbose) printf("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
+                    if(verbose) LOG_DEBUG("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
                     mcid.push_back(k);
                     nnMC++;
                 }
@@ -721,7 +721,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 double tmp_mcCalIso04_ = -999.;
                 double tmp_mcTrkIso04_ = -999.;
  
-                if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
+                if(verbose) LOG_DEBUG("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
                 for (int jj=0; jj<nnMC; ++jj) {
                     int k = mcid[jj];
                     float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
@@ -730,8 +730,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     if(dr<0.2)hdpt->Fill(dpt);
                     hmcCalIso->Fill(mcCalIsoDR04[k]); 
 
-                    if(verbose)printf("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
-                    if(verbose) printf("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
+                    if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
+                    if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
                     if (dr < 0.2 && dpt < 0.2){
                         float GENISO=0.;
                         for (Int_t nn=0; nn<nMC; ++nn) {
@@ -747,7 +747,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                             tmp_mcPhi_ = mcPhi[k];
                             tmp_mcCalIso04_ = mcCalIsoDR04[k];
                             tmp_mcTrkIso04_ = mcTrkIsoDR04[k];
-                            if(verbose) printf("  mc matched !!! \n");	    
+                            if(verbose) LOG_DEBUG("  mc matched !!! \n");	    
                             break;
                         }
 
@@ -785,7 +785,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }else{
                     if(tmp_isConverted==1){
                         nconv++;
-                        //printf(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
+                        //LOG_DEBUG(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
                     }
                 }
 
@@ -800,16 +800,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
 
             if(gjet15to6000 == 0) {
-                //h_truepho->Fill((float)nmatch/(float)nPho);
                 h_truepho->Fill(nmatch+0.001);
                 h_convpho->Fill(nconv+0.001);
             }
-            //ask for only one mc true photon
-            //if(nmatch < 1) continue;
         }
 
-        // if(gjet15to6000==1 	&& ntruephoton!=1) continue;
-        // if(gjet15to6000==1 	&& nmatch<1) continue;
 
         int npj=0;
         int npp=0;
@@ -875,7 +870,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
-
                 if ( USEHLT )
                 {
                     // in 2016 HLT Table
@@ -987,7 +981,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
 
-        if(photon_jetID.size()==0) { photon_jetID.push_back(0); std::cerr<<"no jet passed event, use leading jet\n"; }
+        if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
 
 
 

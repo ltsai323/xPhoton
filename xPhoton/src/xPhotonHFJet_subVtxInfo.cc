@@ -874,10 +874,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(TMath::Abs(phoSCEta[i])>2.5) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
-                if(phoFiredTrgs[i]==0) continue;
-
                 if ( USEHLT )
                 {
+                if(phoFiredTrgs[i]==0) continue;
                     // in 2016 HLT Table
                     if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
                     //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
@@ -987,7 +986,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
 
-        if(photon_jetID.size()==0) { photon_jetID.push_back(0); std::cerr<<"no jet passed event, use leading jet\n"; }
+        if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
 
 
 
