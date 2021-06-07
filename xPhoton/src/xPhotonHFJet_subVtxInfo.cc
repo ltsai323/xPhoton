@@ -15,6 +15,7 @@
 using namespace std;
 #include <iostream>
 #include <TProfile.h>
+#include <map>
 
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
@@ -394,7 +395,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
 
-    printf(" processing entries %lli \n", data.GetEntriesFast());
+    LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
@@ -649,6 +650,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
+        /*
         vector<int> match;
         vector<int> converted;
         vector<int> match_ele;
@@ -657,6 +659,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         vector<float> mcphi;
         vector<float> mcCalIso04;
         vector<float> mcTrkIso04;
+        */
+
+        std::map<int,int> match;
+        std::map<int,int> converted;
+        std::map<int,int> match_ele;
+        std::map<int,float> mcpt;
+        std::map<int,float> mceta;
+        std::map<int,float> mcphi;
+        std::map<int,float> mcCalIso04;
+        std::map<int,float> mcTrkIso04;
 
         mcpt.clear();
         mceta.clear();
@@ -669,8 +681,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         int nconv=0;
 
         if(verbose) {
-            printf("-----------------------------------------------------------------------\n");
-            printf("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
+            LOG_DEBUG("-----------------------------------------------------------------------\n");
+            LOG_DEBUG("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
         }
 
         //count number of true photon
@@ -681,7 +693,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             int nnMC=0;
             for (Int_t k=0; k<nMC; ++k) {
                 if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
-                    if(verbose) printf("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
+                    if(verbose) LOG_DEBUG("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
                     mcid.push_back(k);
                     nnMC++;
                 }
@@ -721,7 +733,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 double tmp_mcCalIso04_ = -999.;
                 double tmp_mcTrkIso04_ = -999.;
  
-                if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
+                if(verbose) LOG_DEBUG("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
                 for (int jj=0; jj<nnMC; ++jj) {
                     int k = mcid[jj];
                     float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
@@ -730,8 +742,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     if(dr<0.2)hdpt->Fill(dpt);
                     hmcCalIso->Fill(mcCalIsoDR04[k]); 
 
-                    if(verbose)printf("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
-                    if(verbose) printf("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
+                    if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
+                    if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
                     if (dr < 0.2 && dpt < 0.2){
                         float GENISO=0.;
                         for (Int_t nn=0; nn<nMC; ++nn) {
@@ -747,7 +759,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                             tmp_mcPhi_ = mcPhi[k];
                             tmp_mcCalIso04_ = mcCalIsoDR04[k];
                             tmp_mcTrkIso04_ = mcTrkIsoDR04[k];
-                            if(verbose) printf("  mc matched !!! \n");	    
+                            if(verbose) LOG_DEBUG("  mc matched !!! \n");	    
                             break;
                         }
 
@@ -785,10 +797,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }else{
                     if(tmp_isConverted==1){
                         nconv++;
-                        //printf(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
+                        //LOG_DEBUG(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
                     }
                 }
 
+                /*
                 mcpt.push_back(tmp_mcPt_);
                 mceta.push_back(tmp_mcEta_);
                 mcphi.push_back(tmp_mcPhi_);
@@ -797,19 +810,24 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 match.push_back(tmp_isMatched);
                 match_ele.push_back(tmp_isMatchedEle);
                 converted.push_back(tmp_isConverted);
+                */
+
+                mcpt[i]=tmp_mcPt_;
+                mceta[i]=tmp_mcEta_;
+                mcphi[i]=tmp_mcPhi_;
+                mcCalIso04[i]=tmp_mcCalIso04_;
+                mcTrkIso04[i]=tmp_mcTrkIso04_;
+                match[i]=tmp_isMatched;
+                match_ele[i]=tmp_isMatchedEle;
+                converted[i]=tmp_isConverted;
             }
 
             if(gjet15to6000 == 0) {
-                //h_truepho->Fill((float)nmatch/(float)nPho);
                 h_truepho->Fill(nmatch+0.001);
                 h_convpho->Fill(nconv+0.001);
             }
-            //ask for only one mc true photon
-            //if(nmatch < 1) continue;
         }
 
-        // if(gjet15to6000==1 	&& ntruephoton!=1) continue;
-        // if(gjet15to6000==1 	&& nmatch<1) continue;
 
         int npj=0;
         int npp=0;
@@ -847,7 +865,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
         }
         int nnjet=0;
-        int jet2_index=-1;
+        //int jet2_index=-1;
         if(!data.HasMC()) { 
             for (Int_t i=0; i<nPho; ++i) {  
                 if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
@@ -874,11 +892,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(TMath::Abs(phoSCEta[i])>2.5) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
+                if(phoFiredTrgs[i]==0) continue;
                 if ( USEHLT )
                 {
-                if(phoFiredTrgs[i]==0) continue;
                     // in 2016 HLT Table
-                    if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+                    if((phoFiredTrgs[i]>>7)&1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
                     //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
                     else 
                         continue;       
@@ -913,7 +931,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                                 hphoEE_pt_presel_csev->Fill(phoEt[i]);
                             }
                         }
-
                     }
                 }
             }
@@ -930,19 +947,20 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
 
-        vector<int> eleID;
-        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
-        h_nele->Fill(eleID.size());
 
         // find photon overlaps to electron
-        phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
+        TLorentzVector leadingPhoP4;
+        leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
         if ( ELECTRONVETO ) {
+            vector<int> eleID;
+            ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
+            h_nele->Fill(eleID.size());
             for(unsigned int j=0; j<eleID.size(); j++){
                 if(elePt[eleID[j]]<100) continue;
                 TLorentzVector tmp_eP4;
                 tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-                h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
-                if(phoP4.DeltaR(tmp_eP4) < 0.3) {
+                h_dR_phoele->Fill(leadingPhoP4.DeltaR(tmp_eP4));
+                if(leadingPhoP4.DeltaR(tmp_eP4) < 0.3) {
                     photon_list.clear(); 
                 }
             }
@@ -955,8 +973,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                if(phoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
-                    float dphojetpt = jetPt[j] / phoP4.Pt();
+                if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
+                    float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
                     h_dpt_phojet->Fill(dphojetpt);
                     if( dphojetpt>0.5 || dphojetpt<2.) {
                         if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
@@ -965,11 +983,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
 
                 if( jetId[j] ) {	  
-                    h_dR_phojet->Fill(phoP4.DeltaR(jetP4));
-                    if(phoP4.DeltaR(jetP4)>0.4){
+                    h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
+                    if(leadingPhoP4.DeltaR(jetP4)>0.4){
                         if(jet_index<0) jet_index = j;
+                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
                         nnjet++;
-                        if(nnjet==2) jet2_index = j;
+                        //if(nnjet==2) jet2_index = j;
                     }	    
                 }    
             }  
@@ -979,8 +998,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             h_njet->Fill(nnjet, xsweight);
             if(nnjet>1){
                 int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-                int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-                h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
+                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
+                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
             }
         }
 

@@ -865,7 +865,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
         }
         int nnjet=0;
-        int jet2_index=-1;
+        //int jet2_index=-1;
         if(!data.HasMC()) { 
             for (Int_t i=0; i<nPho; ++i) {  
                 if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
@@ -986,8 +986,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
                         if(jet_index<0) jet_index = j;
+                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
                         nnjet++;
-                        if(nnjet==2) jet2_index = j;
+                        //if(nnjet==2) jet2_index = j;
                     }	    
                 }    
             }  
@@ -997,8 +998,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             h_njet->Fill(nnjet, xsweight);
             if(nnjet>1){
                 int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-                int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-                h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
+                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
+                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
             }
         }
 
