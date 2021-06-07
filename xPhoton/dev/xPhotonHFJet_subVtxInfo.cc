@@ -931,7 +931,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                                 hphoEE_pt_presel_csev->Fill(phoEt[i]);
                             }
                         }
-
                     }
                 }
             }
@@ -950,7 +949,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         // find photon overlaps to electron
-        phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
+        TLorentzVector leadingPhoP4;
+        leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
         if ( ELECTRONVETO ) {
             vector<int> eleID;
             ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
@@ -959,8 +959,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if(elePt[eleID[j]]<100) continue;
                 TLorentzVector tmp_eP4;
                 tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-                h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
-                if(phoP4.DeltaR(tmp_eP4) < 0.3) {
+                h_dR_phoele->Fill(leadingPhoP4.DeltaR(tmp_eP4));
+                if(leadingPhoP4.DeltaR(tmp_eP4) < 0.3) {
                     photon_list.clear(); 
                 }
             }
@@ -973,8 +973,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                if(phoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
-                    float dphojetpt = jetPt[j] / phoP4.Pt();
+                if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
+                    float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
                     h_dpt_phojet->Fill(dphojetpt);
                     if( dphojetpt>0.5 || dphojetpt<2.) {
                         if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
@@ -983,8 +983,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
 
                 if( jetId[j] ) {	  
-                    h_dR_phojet->Fill(phoP4.DeltaR(jetP4));
-                    if(phoP4.DeltaR(jetP4)>0.4){
+                    h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
+                    if(leadingPhoP4.DeltaR(jetP4)>0.4){
                         if(jet_index<0) jet_index = j;
                         nnjet++;
                         if(nnjet==2) jet2_index = j;
