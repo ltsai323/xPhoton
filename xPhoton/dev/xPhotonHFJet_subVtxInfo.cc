@@ -15,6 +15,7 @@
 using namespace std;
 #include <iostream>
 #include <TProfile.h>
+#include <map>
 
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
@@ -649,6 +650,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
+        /*
         vector<int> match;
         vector<int> converted;
         vector<int> match_ele;
@@ -657,6 +659,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         vector<float> mcphi;
         vector<float> mcCalIso04;
         vector<float> mcTrkIso04;
+        */
+
+        std::map<int,int> match;
+        std::map<int,int> converted;
+        std::map<int,int> match_ele;
+        std::map<int,float> mcpt;
+        std::map<int,float> mceta;
+        std::map<int,float> mcphi;
+        std::map<int,float> mcCalIso04;
+        std::map<int,float> mcTrkIso04;
 
         mcpt.clear();
         mceta.clear();
@@ -789,6 +801,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
+                /*
                 mcpt.push_back(tmp_mcPt_);
                 mceta.push_back(tmp_mcEta_);
                 mcphi.push_back(tmp_mcPhi_);
@@ -797,6 +810,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 match.push_back(tmp_isMatched);
                 match_ele.push_back(tmp_isMatchedEle);
                 converted.push_back(tmp_isConverted);
+                */
+
+                mcpt[i]=tmp_mcPt_;
+                mceta[i]=tmp_mcEta_;
+                mcphi[i]=tmp_mcPhi_;
+                mcCalIso04[i]=tmp_mcCalIso04_;
+                mcTrkIso04[i]=tmp_mcTrkIso04_;
+                match[i]=tmp_isMatched;
+                match_ele[i]=tmp_isMatchedEle;
+                converted[i]=tmp_isConverted;
             }
 
             if(gjet15to6000 == 0) {
