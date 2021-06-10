@@ -11,17 +11,17 @@ void PrintHelp()
     printf("---------------------------------------------\n");
     printf("------ Used to update cross section. --------\n");
     printf("------ Arguments :                   --------\n");
-    printf("------ 1. input root file            --------\n");
-    printf("------ 2. output root file           --------\n");
-    printf("-------3. cross section value of MC  --------\n");
+    printf("------ 1. cross section value of MC  --------\n");
+    printf("------ 2. input root file            --------\n");
+    printf("------ 3. output root file           --------\n");
     printf("---------------------------------------------\n");
 }
 float GetWeight(const char* argv[])
-{ return atof(argv[3]); }
+{ return atof(argv[1]); }
 const char* GetInputFile(const char* argv[])
-{ return argv[1]; }
-const char* GetOutputFile(const char* argv[])
 { return argv[2]; }
+const char* GetOutputFile(const char* argv[])
+{ return argv[3]; }
 void CheckArgs(int argc, const char* argv[])
 {
     if ( argc != 4 )
@@ -54,7 +54,8 @@ int main(int argc, const char* argv[])
     xsweight = new_xsweight;
     
     
-    for ( unsigned int ievt = 0; ievt <= iT->GetEntries(); ++iT )
+    unsigned int nevt = iT->GetEntries();
+    for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     { iT->GetEntry(ievt); oT->Fill(); }
 
     oT->Write();
