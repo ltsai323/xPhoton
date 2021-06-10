@@ -5,4 +5,4 @@ root -b  <<EOF
 Draw_yield_treeeff("EB",0)
 EOF
 
-root -q yy.C
+#root -q yy.C

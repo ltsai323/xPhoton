@@ -282,6 +282,7 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
   };
 
   if(option ==2){
+      /*
     tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016B_Legacy.root");
     tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016C_Legacy.root");
     tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016D_Legacy.root");
@@ -289,6 +290,14 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
     tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016F_Legacy.root");
     tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016G_Legacy.root");
     tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016H_Legacy.root");
+    */
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016B_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016C_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016D_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016E_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016F_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016G_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016H_Legacy.root");
  // // tc->Add("../job_SinglePho_Run2017B_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017C_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017D_MarReminiAOD.root");

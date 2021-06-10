@@ -360,7 +360,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
-    outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
+    //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
 
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
     outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
@@ -849,7 +849,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         vector <int> photon_list;
-        vector <int> photon_jetID;
+        //vector <int> photon_jetID;
         vector<TLorentzDATA> photons;
         int jet_index=-1;
 
@@ -973,6 +973,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
+                /*
                 if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
                     float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
                     h_dpt_phojet->Fill(dphojetpt);
@@ -981,19 +982,21 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         else photon_jetID.push_back(0.);
                     }
                 }
+                */
 
                 if( jetId[j] ) {	  
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
+                        ++nnjet;
                         if(jet_index<0) jet_index = j;
-                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
-                        nnjet++;
+                        else LOG_INFO("more than 1 jet pass the selection (currently %d). Is it Okay?\n", nnjet);
                         //if(nnjet==2) jet2_index = j;
                     }	    
                 }    
             }  
         }
 
+        /*
         if(phoEt[photon_list[0]] > 150.) {
             h_njet->Fill(nnjet, xsweight);
             if(nnjet>1){
@@ -1002,16 +1005,18 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
             }
         }
+        */
 
 
 
-        if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
+        //if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
 
 
 
 
 
-        for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
+        //for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
+        for (Int_t ipho : photon_list ) {
             nPU=0; //ch
             HLT                = 0;
             HLTIsPrescaled     = 0;
@@ -1099,7 +1104,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             isData  = data.GetBool("isData");
             nVtx    = data.GetInt("nVtx");
 
-            int ipho = photon_list[ii];
+            //int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
             phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
             if(jet_index>=0) {
@@ -1202,7 +1207,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             r9Full5x5        = phoR9Full5x5[ipho];
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
-            photon_jetID_ = photon_jetID[ii];
+            //photon_jetID_ = photon_jetID[ii];
 
             phoIDbit_ = phoIDbit[ipho];
 
