@@ -377,7 +377,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    TGraph *tgr[6];
+    TGraph *tgr[8];
     if(data.HasMC())
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
@@ -387,10 +387,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
         tgr[1] = (TGraph*) f->Get("transfS4EB");
         tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
+        tgr[3] = (TGraph*) f->Get("transffull5x5sieieEB");
 
-        tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
-        tgr[4] = (TGraph*) f->Get("transfS4EE");
-        tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
+        tgr[4] = (TGraph*) f->Get("transfEtaWidthEE");
+        tgr[5] = (TGraph*) f->Get("transfS4EE");
+        tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
+        tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
     }
 
 

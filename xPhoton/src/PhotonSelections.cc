@@ -186,15 +186,16 @@ void select_photon(Int_t iWP, TreeReader &data, std::vector<int>& accepted) {
 
 }
 
+/*
 float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
-  /* Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
-   *
-   * Documentation:
-   * https://indico.cern.ch/getFile.py/access?contribId=3&resId=0&materialId=slides&confId=298231
-   *
-   * data = handle providing access to an input event;
-   * i = index of a photon candidate to consider.
-   */
+  // Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
+  //
+  // Documentation:
+  // https://indico.cern.ch/getFile.py/access?contribId=3&resId=0&materialId=slides&confId=298231
+  //
+  // data = handle providing access to an input event;
+  // i = index of a photon candidate to consider.
+
   // load necessary tree branches
   Float_t* phoEt             = data.GetPtrFloat("phoEt");
   Float_t* phoEta            = data.GetPtrFloat("phoEta");
@@ -330,6 +331,7 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   return tmvaReader[iBE]->EvaluateMVA("BDT");
 
 }
+*/
 
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   /* Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
@@ -436,12 +438,14 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
     if ( tgr ) {
       if(TMath::Abs(phoSCEta[i])<1.5) {
         phoSCEtaWidth_	= tgr[0]->Eval(phoSCEtaWidth_);
-        s4Full5x5         = tgr[1]->Eval(s4Full5x5);
-        phoR9_		= tgr[2]->Eval(phoR9_);
+        s4Full5x5       = tgr[1]->Eval(s4Full5x5);
+        phoR9_		    = tgr[2]->Eval(phoR9_);
+        sieieFull5x5    = tgr[3]->Eval(sieieFull5x5);
       } else {
-        phoSCEtaWidth_	= tgr[3]->Eval(phoSCEtaWidth_);
-        s4Full5x5         = tgr[4]->Eval(s4Full5x5);
-        phoR9_		= tgr[5]->Eval(phoR9_);
+        phoSCEtaWidth_	= tgr[4]->Eval(phoSCEtaWidth_);
+        s4Full5x5       = tgr[5]->Eval(s4Full5x5);
+        phoR9_		    = tgr[6]->Eval(phoR9_);
+        sieieFull5x5    = tgr[7]->Eval(sieieFull5x5);
 
       }      
     }
@@ -452,6 +456,7 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
 }
 
 
+/*
 float select_photon_mva_hgg(TreeReader &data, Int_t i) {
 
   // load necessary tree branches
@@ -530,3 +535,4 @@ float select_photon_mva_hgg(TreeReader &data, Int_t i) {
   return tmvaReader[iBE]->EvaluateMVA("BDT");
 
 }
+*/
