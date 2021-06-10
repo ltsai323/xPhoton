@@ -11,12 +11,13 @@ import commands
 # usage :
 #    ./this.py filepath.txt
 #    ./this.py filepath.txt path.txt
-bashcommand='xrdcp %s /tmp/running.root; exec_xPhotonRunner /tmp/running.root %d' # download file first
+bashcommand='xrdcp -f %s /tmp/running.root && exec_xPhotonRunner /tmp/running.root %d' # download file first.
 fileprefix='root://se01.grid.nchc.org.tw/'
 
 #bashcommand='exec_xPhotonRunner %s %d'
 
 
+mylog=LogMgr.GetLogger(__name__)
 def checkarg(inputArg):
     if len(inputArg) < 2:               raise IOError('Input a text path!')
     if '.root' == inputArg[1][-5:]:     raise IOError('Wrong input : root file is not supported')
@@ -42,6 +43,9 @@ def ExecByInputPath(execmgr,pathmgr, textpath):
             fullpath=pathcontroller.GetPath(remoteDir)
             fileid=pathcontroller.GetFileID(remoteDir)
             cmd.execCommand( fullpath, fileid )
+        outputrootfilename='%s.root' % FileNameConverter.ExtractName(textpath)
+        if os.path.exists(outputrootfilename): mylog.warning('output file : {%s} already exists.' % outputrootfilename)
+        os.system('hadd -f %s output_job_PhotonHLJet*.root >/dev/null 2>&1' % outputrootfilename )
         cmd.CleanWorkspace(
                 target='output_job_PhotonHFJet_1.root',
                 allfiles='output_job_PhotonHFJet*.root')

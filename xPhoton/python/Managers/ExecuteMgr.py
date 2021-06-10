@@ -14,13 +14,11 @@ class ExecMgr(object):
     def SetGeneralCommand(self, cmd):
         self._cmd=cmd
     def execCommand(self, *cmdArgs):
-        status, content = commands.getstatusoutput( self._cmd % cmdArgs )
-        if status:
-            print 'Job failed : %s' % (self._cmd % cmdArgs)
-            raise RuntimeError(content)
+        status, mesg = commands.getstatusoutput( self._cmd % cmdArgs )
+        if status: raise RuntimeError('Job failed : %s\n%s' % (self._cmd % cmdArgs, mesg)
         else:
             logfile=open('running.log','w')
-            logfile.write(content)
+            logfile.write(mesg)
             logfile.close()
     @staticmethod
     def CleanWorkspace(target='output_job_PhotonHFJet_1.root', allfiles='output_job_PhotonHFJet*.root'):
