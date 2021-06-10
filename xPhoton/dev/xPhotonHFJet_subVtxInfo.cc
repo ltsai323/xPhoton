@@ -29,10 +29,6 @@ using namespace std;
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    std::cout << "testing : " << ExternalFilesMgr::testchar() << std::endl;
-
-    // vector <string> pathes;
-    // pathes.push_back(fname);
     TreeReader data(pathes);
 
     TFile *fout_;
@@ -650,16 +646,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
-        /*
-        vector<int> match;
-        vector<int> converted;
-        vector<int> match_ele;
-        vector<float> mcpt;
-        vector<float> mceta;
-        vector<float> mcphi;
-        vector<float> mcCalIso04;
-        vector<float> mcTrkIso04;
-        */
 
         std::map<int,int> match;
         std::map<int,int> converted;
@@ -801,16 +787,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-                /*
-                mcpt.push_back(tmp_mcPt_);
-                mceta.push_back(tmp_mcEta_);
-                mcphi.push_back(tmp_mcPhi_);
-                mcCalIso04.push_back(tmp_mcCalIso04_);
-                mcTrkIso04.push_back(tmp_mcTrkIso04_);
-                match.push_back(tmp_isMatched);
-                match_ele.push_back(tmp_isMatchedEle);
-                converted.push_back(tmp_isConverted);
-                */
 
                 mcpt[i]=tmp_mcPt_;
                 mceta[i]=tmp_mcEta_;
@@ -973,7 +949,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                /*
+                /* identify photon comes from jet or not.
                 if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
                     float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
                     h_dpt_phojet->Fill(dphojetpt);
@@ -996,16 +972,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }  
         }
 
-        /*
-        if(phoEt[photon_list[0]] > 150.) {
-            h_njet->Fill(nnjet, xsweight);
-            if(nnjet>1){
-                int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
-            }
-        }
-        */
 
 
 
