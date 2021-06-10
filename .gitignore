@@ -55,3 +55,4 @@
 
 # system running file
 */.nfs*
+*/*/.nfs*
