@@ -75,5 +75,5 @@ if __name__ == '__main__':
 
     if needToClean:
         os.system('hadd %s.root output_job_PhotonHLJet*.root' % (FileNameConverter.ExtractName(txtpath)) )
-        ExecuteMgr.CleanWorkspace(
+        ExecMgr.CleanWorkspace(
                 target='output_job_PhotonHFJet_1.root',allfiles='output_job_PhotonHLJet*.root')

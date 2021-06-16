@@ -316,14 +316,14 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
     phoSCEtaWidth_ = tgr[0]->Eval(phoSCEtaWidth[i]);
     s4Full5x5 = tgr[1]->Eval(phoE2x2[i]/phoE5x5[i]);
     phoR9_ = tgr[2]->Eval(phoR9[i]);
-    /* phoR9_		= tgr[1]->Eval(phoR9_); */
-    /* s13Full5x5          = tgr[2]->Eval(s13Full5x5); */
-    /* s4Full5x5           = tgr[3]->Eval(s4Full5x5); */
-    /* s25Full5x5          = tgr[4]->Eval(s25Full5x5); */
-    /* sieieFull5x5        = tgr[5]->Eval(sieieFull5x5); */
-    /* sieipFull5x5        = tgr[6]->Eval(sieipFull5x5); */
-    /* phoSCEtaWidth_	= tgr[9]->Eval(phoSCEtaWidth_); */
-    /* phoSCPhiWidth_	= tgr[10]->Eval(phoSCPhiWidth_);    */
+    // phoR9_		= tgr[1]->Eval(phoR9_);
+    // s13Full5x5          = tgr[2]->Eval(s13Full5x5);
+    // s4Full5x5           = tgr[3]->Eval(s4Full5x5);
+    // s25Full5x5          = tgr[4]->Eval(s25Full5x5);
+    // sieieFull5x5        = tgr[5]->Eval(sieieFull5x5);
+    // sieipFull5x5        = tgr[6]->Eval(sieipFull5x5);
+    // phoSCEtaWidth_	= tgr[9]->Eval(phoSCEtaWidth_);
+    // phoSCPhiWidth_	= tgr[10]->Eval(phoSCPhiWidth_);
 
   }
 

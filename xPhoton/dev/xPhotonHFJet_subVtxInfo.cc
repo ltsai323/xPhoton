@@ -29,6 +29,10 @@ using namespace std;
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
+    std::cout << "testing : " << ExternalFilesMgr::testchar() << std::endl;
+
+    // vector <string> pathes;
+    // pathes.push_back(fname);
     TreeReader data(pathes);
 
     TFile *fout_;
@@ -373,7 +377,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    TGraph *tgr[6];
+    TGraph *tgr[8];
     if(data.HasMC())
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
@@ -383,10 +387,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
         tgr[1] = (TGraph*) f->Get("transfS4EB");
         tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
+        tgr[3] = (TGraph*) f->Get("transffull5x5sieieEB");
 
-        tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
-        tgr[4] = (TGraph*) f->Get("transfS4EE");
-        tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
+        tgr[4] = (TGraph*) f->Get("transfEtaWidthEE");
+        tgr[5] = (TGraph*) f->Get("transfS4EE");
+        tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
+        tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
     }
 
 
@@ -561,7 +567,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
-            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            //jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DSig");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
         }
 
@@ -646,6 +653,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
+        /*
+        vector<int> match;
+        vector<int> converted;
+        vector<int> match_ele;
+        vector<float> mcpt;
+        vector<float> mceta;
+        vector<float> mcphi;
+        vector<float> mcCalIso04;
+        vector<float> mcTrkIso04;
+        */
 
         std::map<int,int> match;
         std::map<int,int> converted;
@@ -787,6 +804,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
+                /*
+                mcpt.push_back(tmp_mcPt_);
+                mceta.push_back(tmp_mcEta_);
+                mcphi.push_back(tmp_mcPhi_);
+                mcCalIso04.push_back(tmp_mcCalIso04_);
+                mcTrkIso04.push_back(tmp_mcTrkIso04_);
+                match.push_back(tmp_isMatched);
+                match_ele.push_back(tmp_isMatchedEle);
+                converted.push_back(tmp_isConverted);
+                */
 
                 mcpt[i]=tmp_mcPt_;
                 mceta[i]=tmp_mcEta_;
@@ -840,7 +867,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
             }
         }
-        int nnjet=0;
+        //int nnjet=0;
         //int jet2_index=-1;
         if(!data.HasMC()) { 
             for (Int_t i=0; i<nPho; ++i) {  
@@ -949,7 +976,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                /* identify photon comes from jet or not.
+                /*
                 if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
                     float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
                     h_dpt_phojet->Fill(dphojetpt);
@@ -963,15 +990,25 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) {	  
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
-                        ++nnjet;
                         if(jet_index<0) jet_index = j;
-                        else LOG_INFO("more than 1 jet pass the selection (currently %d). Is it Okay?\n", nnjet);
+                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
+                        //nnjet++;
                         //if(nnjet==2) jet2_index = j;
                     }	    
                 }    
             }  
         }
 
+        /*
+        if(phoEt[photon_list[0]] > 150.) {
+            h_njet->Fill(nnjet, xsweight);
+            if(nnjet>1){
+                int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
+                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
+                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
+            }
+        }
+        */
 
 
 

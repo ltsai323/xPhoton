@@ -15,7 +15,8 @@ class ExecMgr(object):
         self._cmd=cmd
     def execCommand(self, *cmdArgs):
         status, mesg = commands.getstatusoutput( self._cmd % cmdArgs )
-        if status: raise RuntimeError('Job failed : %s\n%s' % (self._cmd % cmdArgs, mesg)
+        if status:
+            raise RuntimeError('Job failed : %s\n%s' % (self._cmd % cmdArgs, mesg))
         else:
             logfile=open('running.log','w')
             logfile.write(mesg)

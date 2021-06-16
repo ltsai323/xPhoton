@@ -567,7 +567,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
-            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            //jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DSig");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
         }
 

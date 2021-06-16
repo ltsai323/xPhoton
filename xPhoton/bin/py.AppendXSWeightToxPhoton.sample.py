@@ -9,9 +9,11 @@ if __name__ == '__main__':
     newdir='updated'
     if not os.path.exists(newdir) or not os.path.isdir(newdir):
         os.mkdir(newdir)
-    # ShowPD(summaryfile)
+    ShowPD(summaryfile)
+    '''
     for fileinfo in fileList:
         os.system('echo ./exe.AppendXSWeightToxPhoton %.10f %s %s/%s' %(
             GetXS(fileinfo['pd'], SummaryFile=summaryfile),
             fileinfo['path'],
             newdir, nodir(fileinfo['path']) ))
+    '''

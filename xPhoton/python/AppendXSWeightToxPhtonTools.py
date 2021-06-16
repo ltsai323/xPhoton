@@ -27,10 +27,10 @@ def nodir(path):
     return path.split('/')[-1]
 def ShowPD(SummaryFile):
     with open(SummaryFile,'r') as f:
-        database=json.load(f)
-        for db in database:
-            #print db['pd']
-            print db
+        for db in json.load(f): print db['pd']
+def ShowDetail(SummaryFile):
+    with open(SummaryFile,'r') as f:
+        for db in json.load(f): print db
 
 if __name__ == '__main__':
     for fileinfo in fileList:
