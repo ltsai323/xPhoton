@@ -1,4 +1,4 @@
-#include "BTagCalibrationStandalone.h"
+#include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
 #include <iostream>
 #include <exception>
 #include <algorithm>
@@ -434,7 +434,8 @@ std::cerr << "ERROR in BTagCalibration: "
             << ost;
 throw std::exception();
     }
-    otherSysTypeReaders_[ost] = std::auto_ptr<BTagCalibrationReaderImpl>(
+    //otherSysTypeReaders_[ost] = std::auto_ptr<BTagCalibrationReaderImpl>(
+    otherSysTypeReaders_[ost] = std::shared_ptr<BTagCalibrationReaderImpl>(
         new BTagCalibrationReaderImpl(op, ost)
     );
   }

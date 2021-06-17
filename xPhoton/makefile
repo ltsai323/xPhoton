@@ -50,7 +50,8 @@ dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
     obj/readMgr.o \
     obj/ExternalFilesMgr.o \
     obj/untuplizer.o \
-    obj/usefulFuncs.o
+    obj/usefulFuncs.o \
+	obj/BTagCalibrationStandalone.o
 	@echo "--- Successfully compiled " $@ " ---"
 ###### declare test end ###########
 #obj/PreselectionMgr.o \
