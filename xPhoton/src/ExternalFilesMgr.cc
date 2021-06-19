@@ -48,3 +48,11 @@ const char* ExternalFilesMgr::testchar()
     return tmpstr;
 }
 
+const char* ExternalFilesMgr::csvFile_BTagCalib_CSVv2()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/CSVv2_94XSF_V2_B_F.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalib_DeepCSV()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepCSV_94XSF_V5_B_F.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F_JESreduced.csv"; }
