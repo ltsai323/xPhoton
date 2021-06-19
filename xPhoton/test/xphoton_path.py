@@ -13,10 +13,10 @@ import commands
 #    ./this.py filepath.txt path.txt
 '''
 bashcommand='xrdcp -f %s running.root && exec_xPhotonRunner running.root %d' # download file first
-fileprefix='root://se01.grid.nchc.org.tw/'
+fromNCHC=True
 '''
 bashcommand='/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/bin/exe.xPhotonRunner %s %d'
-fileprefix='file://'
+fromNCHC=False
 
 #bashcommand='exec_xPhotonRunner %s %d'
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     cmd=ExecMgr()
     cmd.SetGeneralCommand(bashcommand)
-    pathcontroller=FileNameConverter(fileprefix)
+    pathcontroller=FileNameConverter(fromNCHC)
 
     if txtpath:
         ExecByInputPath(cmd, pathcontroller, txtpath)

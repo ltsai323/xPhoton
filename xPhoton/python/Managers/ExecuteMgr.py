@@ -5,8 +5,8 @@ mylogger=LogMgr.GetLogger(__name__)
 
 
 prefix_nchc='root://se01.grid.nchc.org.tw/'
-prefix_local='file:'
-prefix_localabs='file://'
+#prefix_local='file:'
+#prefix_localabs='file://'
 
 class ExecMgr(object):
     def __init__(self, cmd='echo "welcome to use ExecMgr. Please put some bash command"'):
@@ -30,8 +30,9 @@ class ExecMgr(object):
             print 'You have a clean workspace'
 
 class FileNameConverter(object):
-    def __init__(self, prefix):
-        self.SetPrefix(prefix)
+    def __init__(self, isRemote=False,remoteprefix=prefix_nchc):
+        self._prefix=''
+        if isRemote: self.SetPrefix(remoteprefix)
     def GetPath(self, inpath):
         p1=inpath.strip()
         p2=FileNameConverter.homerecognize(p1)
