@@ -8,6 +8,10 @@ namespace ExternalFilesMgr
     const char* RooFile_PileUp();
     const char* RooFile_ShowerShapeCorrection();
     const char* testchar();
+    const char* csvFile_BTagCalib_CSVv2();
+    const char* csvFile_BTagCalib_DeepCSV();
+    const char* csvFile_BTagCalib_DeepFlavour();
+    const char* csvFile_BTagCalib_DeepFlavour_JESreduced();
 };
 
 #endif
