@@ -256,6 +256,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetCSV2BJetTags_, jetDeepCSVTags_b_, jetDeepCSVTags_bb_, jetDeepCSVTags_c_, jetDeepCSVTags_udsg_;
     Int_t jetPartonID_, jetHadFlvr_, jetGenPartonID_;
     Int_t jetGenPartonMomID_;
+    Float_t jetDeepFlavourTags_b_;
+    Float_t jetDeepFlavourTags_c_;
+    Float_t jetDeepFlavourTags_g_;
+    Float_t jetDeepFlavourTags_lepb_;
+    Float_t jetDeepFlavourTags_bb_;
+    Float_t jetDeepFlavourTags_uds_;
+    Float_t jetDeepCSVDiscriminatorTags_BvsAll_;
+    Float_t jetDeepCSVDiscriminatorTags_CvsB_;
+    Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
     Int_t    run;
     Long64_t event;
@@ -349,6 +358,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVTags_bb",           &jetDeepCSVTags_bb_,        "jetDeepCSVTags_bb/F");
     outtree_->Branch("jetDeepCSVTags_c",            &jetDeepCSVTags_c_,         "jetDeepCSVTags_c/F");
     outtree_->Branch("jetDeepCSVTags_udsg",         &jetDeepCSVTags_udsg_,      "jetDeepCSVTags_udsg/F");
+    outtree_->Branch("jetDeepFlavourTags_b", &jetDeepFlavourTags_b_, "jetDeepFlavourTags_b");
+    outtree_->Branch("jetDeepFlavourTags_c", &jetDeepFlavourTags_c_, "jetDeepFlavourTags_c");
+    outtree_->Branch("jetDeepFlavourTags_g", &jetDeepFlavourTags_g_, "jetDeepFlavourTags_g");
+    outtree_->Branch("jetDeepFlavourTags_lepb", &jetDeepFlavourTags_lepb_, "jetDeepFlavourTags_lepb");
+    outtree_->Branch("jetDeepFlavourTags_bb", &jetDeepFlavourTags_bb_, "jetDeepFlavourTags_bb");
+    outtree_->Branch("jetDeepFlavourTags_uds", &jetDeepFlavourTags_uds_, "jetDeepFlavourTags_uds");
+    outtree_->Branch("jetDeepCSVDiscriminatorTags_BvsAll", &jetDeepCSVDiscriminatorTags_BvsAll_, "jetDeepCSVDiscriminatorTags_BvsAll");
+    outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
+    outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
 
     if ( data.HasMC() )
     {
@@ -592,6 +610,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t *jetDeepCSVTags_bb = data.GetPtrFloat("jetDeepCSVTags_bb");
         Float_t *jetDeepCSVTags_c = data.GetPtrFloat("jetDeepCSVTags_c");
         Float_t *jetDeepCSVTags_udsg = data.GetPtrFloat("jetDeepCSVTags_udsg");
+        Float_t *jetDeepFlavourTags_b = data.GetPtrFloat("jetDeepFlavourTags_b");
+        Float_t *jetDeepFlavourTags_c = data.GetPtrFloat("jetDeepFlavourTags_c");
+        Float_t *jetDeepFlavourTags_g = data.GetPtrFloat("jetDeepFlavourTags_g");
+        Float_t *jetDeepFlavourTags_lepb = data.GetPtrFloat("jetDeepFlavourTags_lepb");
+        Float_t *jetDeepFlavourTags_bb = data.GetPtrFloat("jetDeepFlavourTags_bb");
+        Float_t *jetDeepFlavourTags_uds = data.GetPtrFloat("jetDeepFlavourTags_uds");
+        Float_t *jetDeepCSVDiscriminatorTags_BvsAll = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_BvsAll");
+        Float_t *jetDeepCSVDiscriminatorTags_CvsB = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsB");
+        Float_t *jetDeepCSVDiscriminatorTags_CvsL = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsL");
 
 
         Int_t *jetPartonID = nullptr;
@@ -1063,6 +1090,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetDeepCSVTags_bb_ = 0.; //ch
             jetDeepCSVTags_c_ = 0.; //ch
             jetDeepCSVTags_udsg_ = 0.; //ch
+            jetDeepFlavourTags_b_ = 0.;
+            jetDeepFlavourTags_c_ = 0.;
+            jetDeepFlavourTags_g_ = 0.;
+            jetDeepFlavourTags_lepb_ = 0.;
+            jetDeepFlavourTags_bb_ = 0.;
+            jetDeepFlavourTags_uds_ = 0.;
+            jetDeepCSVDiscriminatorTags_BvsAll_ = 0.;
+            jetDeepCSVDiscriminatorTags_CvsB_ = 0.;
+            jetDeepCSVDiscriminatorTags_CvsL_ = 0.;
             SeedTime_=0; //ch
             SeedEnergy_=0; //ch
             MIPTotEnergy_=0; //ch
@@ -1123,6 +1159,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
                 jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
                 jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
+                jetDeepFlavourTags_b_ = jetDeepFlavourTags_b[jet_index];
+                jetDeepFlavourTags_c_ = jetDeepFlavourTags_c[jet_index];
+                jetDeepFlavourTags_g_ = jetDeepFlavourTags_g[jet_index];
+                jetDeepFlavourTags_lepb_ = jetDeepFlavourTags_lepb[jet_index];
+                jetDeepFlavourTags_bb_ = jetDeepFlavourTags_bb[jet_index];
+                jetDeepFlavourTags_uds_ = jetDeepFlavourTags_uds[jet_index];
+                jetDeepCSVDiscriminatorTags_BvsAll_ = jetDeepCSVDiscriminatorTags_BvsAll[jet_index];
+                jetDeepCSVDiscriminatorTags_CvsB_ = jetDeepCSVDiscriminatorTags_CvsB[jet_index];
+                jetDeepCSVDiscriminatorTags_CvsL_ = jetDeepCSVDiscriminatorTags_CvsL[jet_index];
+
 
                 if( data.HasMC() ) {
                     TLorentzVector jetGenJetP4;
