@@ -56,3 +56,5 @@ const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour()
 { return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F.csv"; }
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced()
 { return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F_JESreduced.csv"; }
+std::string ExternalFilesMgr::csvFile_testing()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/CSVv2_94XSF_V2_B_F.csv"; }
