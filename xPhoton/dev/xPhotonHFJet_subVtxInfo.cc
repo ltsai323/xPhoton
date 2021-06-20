@@ -28,42 +28,255 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
 
+std::vector<std::string> sysTypeVar_CSVv2 = {
+"central",
+"down_cferr1",
+"down_cferr2",
+"down_hf",
+"down_hfstats1",
+"down_hfstats2",
+"down_jes",
+"down_lf",
+"down_lfstats1",
+"down_lfstats2",
+"up_cferr1",
+"up_cferr2",
+"up_hf",
+"up_hfstats1",
+"up_hfstats2",
+"up_jes",
+"up_lf",
+"up_lfstats1",
+"up_lfstats2" };
+std::vector<std::string> sysTypeVar_DeepCSV = {
+"central",
+"down_cferr1",
+"down_cferr2",
+"down_hf",
+"down_hfstats1",
+"down_hfstats2",
+"down_jes",
+"down_jesAbsoluteMPFBias",
+"down_jesAbsoluteScale",
+"down_jesAbsoluteStat",
+"down_jesFlavorQCD",
+"down_jesFragmentation",
+"down_jesPileUpDataMC",
+"down_jesPileUpPtBB",
+"down_jesPileUpPtEC1",
+"down_jesPileUpPtEC2",
+"down_jesPileUpPtHF",
+"down_jesPileUpPtRef",
+"down_jesRelativeBal",
+"down_jesRelativeFSR",
+"down_jesRelativeJEREC1",
+"down_jesRelativeJEREC2",
+"down_jesRelativeJERHF",
+"down_jesRelativePtBB",
+"down_jesRelativePtEC1",
+"down_jesRelativePtEC2",
+"down_jesRelativePtHF",
+"down_jesRelativeStatEC",
+"down_jesRelativeStatFSR",
+"down_jesRelativeStatHF",
+"down_jesSinglePionECAL",
+"down_jesSinglePionHCAL",
+"down_jesTimePtEta",
+"down_lf",
+"down_lfstats1",
+"down_lfstats2",
+"up_cferr1",
+"up_cferr2",
+"up_hf",
+"up_hfstats1",
+"up_hfstats2",
+"up_jes",
+"up_jesAbsoluteMPFBias",
+"up_jesAbsoluteScale",
+"up_jesAbsoluteStat",
+"up_jesFlavorQCD",
+"up_jesFragmentation",
+"up_jesPileUpDataMC",
+"up_jesPileUpPtBB",
+"up_jesPileUpPtEC1",
+"up_jesPileUpPtEC2",
+"up_jesPileUpPtHF",
+"up_jesPileUpPtRef",
+"up_jesRelativeBal",
+"up_jesRelativeFSR",
+"up_jesRelativeJEREC1",
+"up_jesRelativeJEREC2",
+"up_jesRelativeJERHF",
+"up_jesRelativePtBB",
+"up_jesRelativePtEC1",
+"up_jesRelativePtEC2",
+"up_jesRelativePtHF",
+"up_jesRelativeStatEC",
+"up_jesRelativeStatFSR",
+"up_jesRelativeStatHF",
+"up_jesSinglePionECAL",
+"up_jesSinglePionHCAL",
+"up_jesTimePtEta",
+"up_lf",
+"up_lfstats1",
+"up_lfstats2" };
+std::vector<std::string> sysTypeVar_DeepFlavour = {
+"down_cferr1",
+"down_cferr2",
+"down_hf",
+"down_hfstats1",
+"down_hfstats2",
+"down_jes",
+"down_jesAbsoluteMPFBias",
+"down_jesAbsoluteScale",
+"down_jesAbsoluteStat",
+"down_jesFlavorQCD",
+"down_jesFragmentation",
+"down_jesPileUpDataMC",
+"down_jesPileUpPtBB",
+"down_jesPileUpPtEC1",
+"down_jesPileUpPtEC2",
+"down_jesPileUpPtHF",
+"down_jesPileUpPtRef",
+"down_jesRelativeBal",
+"down_jesRelativeFSR",
+"down_jesRelativeJEREC1",
+"down_jesRelativeJEREC2",
+"down_jesRelativeJERHF",
+"down_jesRelativePtBB",
+"down_jesRelativePtEC1",
+"down_jesRelativePtEC2",
+"down_jesRelativePtHF",
+"down_jesRelativeStatEC",
+"down_jesRelativeStatFSR",
+"down_jesRelativeStatHF",
+"down_jesSinglePionECAL",
+"down_jesSinglePionHCAL",
+"down_jesTimePtEta",
+"down_lf",
+"down_lfstats1",
+"down_lfstats2",
+"up_cferr1",
+"up_cferr2",
+"up_hf",
+"up_hfstats1",
+"up_hfstats2",
+"up_jes",
+"up_jesAbsoluteMPFBias",
+"up_jesAbsoluteScale",
+"up_jesAbsoluteStat",
+"up_jesFlavorQCD",
+"up_jesFragmentation",
+"up_jesPileUpDataMC",
+"up_jesPileUpPtBB",
+"up_jesPileUpPtEC1",
+"up_jesPileUpPtEC2",
+"up_jesPileUpPtHF",
+"up_jesPileUpPtRef",
+"up_jesRelativeBal",
+"up_jesRelativeFSR",
+"up_jesRelativeJEREC1",
+"up_jesRelativeJEREC2",
+"up_jesRelativeJERHF",
+"up_jesRelativePtBB",
+"up_jesRelativePtEC1",
+"up_jesRelativePtEC2",
+"up_jesRelativePtHF",
+"up_jesRelativeStatEC",
+"up_jesRelativeStatFSR",
+"up_jesRelativeStatHF",
+"up_jesSinglePionECAL",
+"up_jesSinglePionHCAL",
+"up_jesTimePtEta",
+"up_lf",
+"up_lfstats1",
+"up_lfstats2" };
+std::vector<std::string> sysTypeVar_DeepFlavour_JESReduced = {
+"down_cferr1",
+"down_cferr2",
+"down_hf",
+"down_hfstats1",
+"down_hfstats2",
+"down_jes",
+"down_jesAbsolute",
+"down_jesAbsolute_2017",
+"down_jesBBEC1",
+"down_jesBBEC1_2017",
+"down_jesEC2",
+"down_jesEC2_2017",
+"down_jesFlavorQCD",
+"down_jesHF",
+"down_jesHF_2017",
+"down_jesRelativeBal",
+"down_jesRelativeSample_2017",
+"down_lf",
+"down_lfstats1",
+"down_lfstats2",
+"up_cferr1",
+"up_cferr2",
+"up_hf",
+"up_hfstats1",
+"up_hfstats2",
+"up_jes",
+"up_jesAbsolute",
+"up_jesAbsolute_2017",
+"up_jesBBEC1",
+"up_jesBBEC1_2017",
+"up_jesEC2",
+"up_jesEC2_2017",
+"up_jesFlavorQCD",
+"up_jesHF",
+"up_jesHF_2017",
+"up_jesRelativeBal",
+"up_jesRelativeSample_2017",
+"up_lf",
+"up_lfstats1",
+"up_lfstats2"
+};
+std::vector<std::string> flavorNames = { "Bquark", "Cquark", "Lightquark" };
+const int maxNSyst=72;
+const int totFlavs=3; // 0:B 1:C 2:light
+int calibReaderIdx(int ifile, int iflav) { return totFlavs * ifile + iflav; }
+int jetWeightIdx  (int ifile, int iflav, int isyst) { return maxNSyst*totFlavs* ifile + maxNSyst*iflav + isyst; }
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    BTagCalibration calib( "csvv1", ExternalFilesMgr::csvFile_BTagCalib() );
-    BTagCalibration calib( "deepcsv", ExternalFilesMgr::csvFile_BTagCalib() );
-    BTagCalibration calib( "deepflv", ExternalFilesMgr::csvFile_BTagCalib() );
-    BTagCalibration calib( "deepflv_JESreduced", ExternalFilesMgr::csvFile_BTagCalib() );
+    std::cout << "hii\n";
+    std::vector<BTagCalibration> calibs;
+    std::vector<std::vector<std::string>> systematicTypes = {
+        sysTypeVar_CSVv2,
+        sysTypeVar_CSVv2,
+        sysTypeVar_CSVv2
+/*
+        sysTypeVar_CSVv2,
+        sysTypeVar_DeepCSV,
+        sysTypeVar_DeepFlavour,
+        sysTypeVar_DeepFlavour_JESReduced
+*/
+    };
+    calibs.reserve(3);
+    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
+    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
+    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
+/*
+    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
+    calibs.emplace_back( "deepcsv"           , ExternalFilesMgr::csvFile_BTagCalib_DeepCSV() );
+    calibs.emplace_back( "deepflv"           , ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour() );
+    calibs.emplace_back( "deepflv_JESreduced", ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced() );
+*/
 
-    BTagCalibrationReader calibReader_loadB_loose    ( BTagEntry::OP_LOOSE    , "central", {"up", "down"});
+    std::map<int,BTagCalibrationReader> calibReaders;
+    for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
+    {
+        const std::vector<std::string>& systematicType = systematicTypes[cIdx];
+        for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
+        { calibReaders[ calibReaderIdx(cIdx,fIdx) ] = BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central", systematicType); }
+        calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_B   ) ].load(calibs[cIdx], BTagEntry::FLAV_B   , "iterativefit");
+        calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_C   ) ].load(calibs[cIdx], BTagEntry::FLAV_C   , "iterativefit");
+        calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_UDSG) ].load(calibs[cIdx], BTagEntry::FLAV_UDSG, "iterativefit");
+    };
 
 
 
-
-    BTagCalibrationReader calibReader_loadB_loose    ( BTagEntry::OP_LOOSE    , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadB_medium   ( BTagEntry::OP_MEDIUM   , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadB_tight    ( BTagEntry::OP_TIGHT    , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadB_reshaping( BTagEntry::OP_RESHAPING, "central", {"up", "down"});
-    calibReader_loadB_loose    .load(calib, BTagEntry::FLAV_B    , "comb");
-    calibReader_loadB_medium   .load(calib, BTagEntry::FLAV_B    , "comb");
-    calibReader_loadB_tight    .load(calib, BTagEntry::FLAV_B    , "comb");
-    calibReader_loadB_reshaping.load(calib, BTagEntry::FLAV_B    , "comb");
-    BTagCalibrationReader calibReader_loadC_loose    ( BTagEntry::OP_LOOSE    , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadC_medium   ( BTagEntry::OP_MEDIUM   , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadC_tight    ( BTagEntry::OP_TIGHT    , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadC_reshaping( BTagEntry::OP_RESHAPING, "central", {"up", "down"});
-    calibReader_loadC_loose    .load(calib, BTagEntry::FLAV_C    , "comb");
-    calibReader_loadC_medium   .load(calib, BTagEntry::FLAV_C    , "comb");
-    calibReader_loadC_tight    .load(calib, BTagEntry::FLAV_C    , "comb");
-    calibReader_loadC_reshaping.load(calib, BTagEntry::FLAV_C    , "comb");
-    BTagCalibrationReader calibReader_loadL_loose    ( BTagEntry::OP_LOOSE    , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadL_medium   ( BTagEntry::OP_MEDIUM   , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadL_tight    ( BTagEntry::OP_TIGHT    , "central", {"up", "down"});
-    BTagCalibrationReader calibReader_loadL_reshaping( BTagEntry::OP_RESHAPING, "central", {"up", "down"});
-    calibReader_loadL_loose    .load(calib, BTagEntry::FLAV_UDSG , "comb");
-    calibReader_loadL_medium   .load(calib, BTagEntry::FLAV_UDSG , "comb");
-    calibReader_loadL_tight    .load(calib, BTagEntry::FLAV_UDSG , "comb");
-    calibReader_loadL_reshaping.load(calib, BTagEntry::FLAV_UDSG , "comb");
 
     // vector <string> pathes;
     // pathes.push_back(fname);
@@ -305,44 +518,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     Int_t photon_jetID_;
     Int_t phoIDbit_;
-    Float_t jetSF_LoadB_LOOSE_UP,
-            jetSF_LoadB_MEDIUM_UP,
-            jetSF_LoadB_TIGHT_UP,
-            jetSF_LoadB_RESHAPING_UP;
-    Float_t jetSF_LoadB_LOOSE_CENTRAL,
-            jetSF_LoadB_MEDIUM_CENTRAL,
-            jetSF_LoadB_TIGHT_CENTRAL,
-            jetSF_LoadB_RESHAPING_CENTRAL;
-    Float_t jetSF_LoadB_LOOSE_DN,
-            jetSF_LoadB_MEDIUM_DN,
-            jetSF_LoadB_TIGHT_DN,
-            jetSF_LoadB_RESHAPING_DN;
-
-    Float_t jetSF_LoadC_LOOSE_UP,
-            jetSF_LoadC_MEDIUM_UP,
-            jetSF_LoadC_TIGHT_UP,
-            jetSF_LoadC_RESHAPING_UP;
-    Float_t jetSF_LoadC_LOOSE_CENTRAL,
-            jetSF_LoadC_MEDIUM_CENTRAL,
-            jetSF_LoadC_TIGHT_CENTRAL,
-            jetSF_LoadC_RESHAPING_CENTRAL;
-    Float_t jetSF_LoadC_LOOSE_DN,
-            jetSF_LoadC_MEDIUM_DN,
-            jetSF_LoadC_TIGHT_DN,
-            jetSF_LoadC_RESHAPING_DN;
-
-    Float_t jetSF_LoadL_LOOSE_UP,
-            jetSF_LoadL_MEDIUM_UP,
-            jetSF_LoadL_TIGHT_UP,
-            jetSF_LoadL_RESHAPING_UP;
-    Float_t jetSF_LoadL_LOOSE_CENTRAL,
-            jetSF_LoadL_MEDIUM_CENTRAL,
-            jetSF_LoadL_TIGHT_CENTRAL,
-            jetSF_LoadL_RESHAPING_CENTRAL;
-    Float_t jetSF_LoadL_LOOSE_DN,
-            jetSF_LoadL_MEDIUM_DN,
-            jetSF_LoadL_TIGHT_DN,
-            jetSF_LoadL_RESHAPING_DN;
+    std::map<int, Float_t> jetWeight;
+    for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
+        for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
+            for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
+                jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ] = 0.;
 
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
@@ -440,6 +620,25 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
 
+    for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
+    {
+        char jetweight_branchname[200];
+        char jetweight_branchname_f[200];
+        for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
+        {
+            for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
+            {
+                sprintf(jetweight_branchname, "jetWeight_%s_%s_%s",
+                        flavorNames[fIdx].c_str(),
+                        calibs[cIdx].tagger().c_str(),
+                        systematicTypes[cIdx][sIdx].c_str()
+                       );
+                sprintf(jetweight_branchname_f, "%s/F", jetweight_branchname);
+                outtree_->Branch(jetweight_branchname, &jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ], jetweight_branchname_f);
+            }
+        }
+    }
+
     if ( data.HasMC() )
     {
         outtree_->Branch("jetPartonID", 	          &jetPartonID_, 	      	      "jetPartonID/I"); 	        
@@ -447,6 +646,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
     }
+    /*
     outtree_->Branch("jetSF.looseBFlavor.up"         , &jetsF_LoadB_LOOSE_UP         ,"jetSF.looseBFlavor.up/F");
     outtree_->Branch("jetSF.looseBFlavor.central"    , &jetsF_LoadB_LOOSE_CENTRAL    ,"jetSF.looseBFlavor.central/F");
     outtree_->Branch("jetSF.looseBFlavor.down"       , &jetsF_LoadB_LOOSE_DOWN       ,"jetSF.looseBFlavor.down/F");
@@ -485,6 +685,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetSF.reshapingLFlavor.up"     , &jetsF_LoadL_RESHAPING_UP     ,"jetSF.reshapingLFlavor.up/F");
     outtree_->Branch("jetSF.reshapingLFlavor.central", &jetsF_LoadL_RESHAPING_CENTRAL,"jetSF.reshapingLFlavor.central/F");
     outtree_->Branch("jetSF.reshapingLFlavor.down"   , &jetsF_LoadL_RESHAPING_DOWN   ,"jetSF.reshapingLFlavor.down/F");
+    */
 
 
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
@@ -1244,6 +1445,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
+            /*
             jetSF_LoadB_LOOSE_UP=0;
             jetSF_LoadB_MEDIUM_UP=0;
             jetSF_LoadB_TIGHT_UP=0;
@@ -1282,6 +1484,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetSF_LoadL_MEDIUM_DN=0;
             jetSF_LoadL_TIGHT_DN=0;
             jetSF_LoadL_RESHAPING_DN=0;
+            */
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
@@ -1346,6 +1549,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
 
                 
+                /*
 jetsF_LoadB_LOOSE_UP         = calibReader_loadB_loose    .eval_auto_bonds("up"     , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
 jetsF_LoadB_LOOSE_CENTRAL    = calibReader_loadB_loose    .eval_auto_bonds("central", BTagEntry::FLAV_B   ,jetPt_,jetEta_);
 jetsF_LoadB_LOOSE_DOWN       = calibReader_loadB_loose    .eval_auto_bonds("down"   , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
@@ -1384,6 +1588,7 @@ jetsF_LoadL_TIGHT_DOWN       = calibReader_loadL_tight    .eval_auto_bonds("down
 jetsF_LoadL_RESHAPING_UP     = calibReader_loadL_reshaping.eval_auto_bonds("up"     , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
 jetsF_LoadL_RESHAPING_CENTRAL= calibReader_loadL_reshaping.eval_auto_bonds("central", BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
 jetsF_LoadL_RESHAPING_DOWN   = calibReader_loadL_reshaping.eval_auto_bonds("down"   , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
+*/
             } // has jet end
 
 
