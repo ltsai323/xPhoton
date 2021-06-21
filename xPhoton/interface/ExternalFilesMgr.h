@@ -12,6 +12,7 @@ namespace ExternalFilesMgr
     const char* csvFile_BTagCalib_DeepCSV();
     const char* csvFile_BTagCalib_DeepFlavour();
     const char* csvFile_BTagCalib_DeepFlavour_JESreduced();
+    const char* csvFile_BTagCalibs(std::string name);
     std::string csvFile_testing();
 };
 
