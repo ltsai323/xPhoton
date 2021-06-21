@@ -27,6 +27,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
+#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 
 std::vector<std::string> sysTypeVar_CSVv2 = {
 "central",
@@ -240,7 +241,14 @@ int calibReaderIdx(int ifile, int iflav) { return totFlavs * ifile + iflav; }
 int jetWeightIdx  (int ifile, int iflav, int isyst) { return maxNSyst*totFlavs* ifile + maxNSyst*iflav + isyst; }
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    std::cout << "hii\n";
+    BTaggingMgr btagCalibs;
+    btagCalibs.UseAlgorithm( "CSVv2" );
+    //btagCalibs.UseAlgorithm( "alskdjfalskdjfCSVv2" ); // only for failed test
+    //btagCalibs.UseAlgorithm( "DeepCSV" );
+    //btagCalibs.UseAlgorithm( "DeepFlavour" );
+    //btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
+    btagCalibs.RegisterSystTypes();
+    exit(1);
     std::vector<BTagCalibration> calibs;
     std::vector<std::vector<std::string>> systematicTypes = {
         sysTypeVar_CSVv2,
