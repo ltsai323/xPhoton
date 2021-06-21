@@ -428,6 +428,7 @@ BTagCalibrationReader::BTagCalibrationReaderImpl::BTagCalibrationReaderImpl(
   useAbsEta_(3, true)
 {
   for (const std::string & ost : otherSysTypes) {
+      if ( ost == sysType_ ) continue; // prevent major sys type merged in otherSysTypes
     if (otherSysTypeReaders_.count(ost)) {
 std::cerr << "ERROR in BTagCalibration: "
             << "Every otherSysType should only be given once. Duplicate: "
