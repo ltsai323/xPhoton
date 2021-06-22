@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdexcept>
+#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 // usage :
 //   ./exec_thisfile input.root outfile.root 3.283
 void PrintHelp()
@@ -14,6 +15,11 @@ void PrintHelp()
     printf("------ 1. cross section value of MC  --------\n");
     printf("------ 2. input root file            --------\n");
     printf("------ 3. output root file           --------\n");
+    printf("---------------------------------------------\n");
+    printf("------ Feature : 1. Add Xsec info    --------\n");
+    printf("------           2. Scale Factor of  --------\n");
+    printf("------              jet to calibrate --------\n");
+    printf("------              BTagging.        --------\n");
     printf("---------------------------------------------\n");
 }
 float GetWeight(const char* argv[])
@@ -47,16 +53,33 @@ int main(int argc, const char* argv[])
     TFile* oF = new TFile(oFile,"recreate");
     oF->cd();
     TTree* oT = (TTree*) iT->CloneTree(0);
+    BTaggingMgr btagCalibs;
+    btagCalibs.UseAlgorithm( "CSVv2" );
+    btagCalibs.UseAlgorithm( "DeepCSV" );
+    btagCalibs.UseAlgorithm( "DeepFlavour" );
+    btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
+    btagCalibs.RegisterSystTypes();
 
     float xsweight;
     oT->SetBranchStatus("xsweight", 0);
     oT->Branch("xsweight", &xsweight, "xsweight/F");
+
+    float jetPt, jetEta;
+    oT->SetBranchAddress("recoPt" , &jetPt);
+    oT->SetBranchAddress("recoEta", &jetEta);
+    btagCalibs.RegBranch(oT);
+
     xsweight = new_xsweight;
-    
     
     unsigned int nevt = iT->GetEntries();
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
-    { iT->GetEntry(ievt); oT->Fill(); }
+    {
+        btagCalibs.InitVars();
+        iT->GetEntry(ievt);
+        btagCalibs.FillWeightToEvt(jetPt,jetEta);
+        
+        oT->Fill();
+    }
 
     oT->Write();
     oF->Close();

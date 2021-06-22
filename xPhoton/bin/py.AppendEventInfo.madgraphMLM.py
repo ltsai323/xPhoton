@@ -5,7 +5,7 @@ fileList=[
 
 summaryfile='../data/mcInformation/summary_sigMC_madgraph.json'
 import os
-from xPhoton.xPhoton.AppendXSWeightToxPhtonTools import GetXS, nodir, ShowPD, ShowDetail
+from xPhoton.xPhoton.AppendEventInfo import GetXS, nodir, ShowPD, ShowDetail
 if __name__ == '__main__':
     newdir='updated'
     if not os.path.exists(newdir) or not os.path.isdir(newdir):

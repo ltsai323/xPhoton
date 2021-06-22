@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+./exe.AppendEventInfo 3.14e5 input.root output.root
