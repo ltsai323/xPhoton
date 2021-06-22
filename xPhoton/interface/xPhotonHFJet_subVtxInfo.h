@@ -28,7 +28,7 @@ static Int_t gjet15to6000=0;
 static Int_t genHTcut=0;
 static Int_t gjetSignal=0;
 
-static bool hasSubVtxInfo = false;
+static bool hasSubVtxInfo = true;
 static bool ELECTRONVETO = false;
 static bool USEHLT = false;
 

@@ -29,257 +29,17 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 
-std::vector<std::string> sysTypeVar_CSVv2 = {
-"central",
-"down_cferr1",
-"down_cferr2",
-"down_hf",
-"down_hfstats1",
-"down_hfstats2",
-"down_jes",
-"down_lf",
-"down_lfstats1",
-"down_lfstats2",
-"up_cferr1",
-"up_cferr2",
-"up_hf",
-"up_hfstats1",
-"up_hfstats2",
-"up_jes",
-"up_lf",
-"up_lfstats1",
-"up_lfstats2" };
-std::vector<std::string> sysTypeVar_DeepCSV = {
-"central",
-"down_cferr1",
-"down_cferr2",
-"down_hf",
-"down_hfstats1",
-"down_hfstats2",
-"down_jes",
-"down_jesAbsoluteMPFBias",
-"down_jesAbsoluteScale",
-"down_jesAbsoluteStat",
-"down_jesFlavorQCD",
-"down_jesFragmentation",
-"down_jesPileUpDataMC",
-"down_jesPileUpPtBB",
-"down_jesPileUpPtEC1",
-"down_jesPileUpPtEC2",
-"down_jesPileUpPtHF",
-"down_jesPileUpPtRef",
-"down_jesRelativeBal",
-"down_jesRelativeFSR",
-"down_jesRelativeJEREC1",
-"down_jesRelativeJEREC2",
-"down_jesRelativeJERHF",
-"down_jesRelativePtBB",
-"down_jesRelativePtEC1",
-"down_jesRelativePtEC2",
-"down_jesRelativePtHF",
-"down_jesRelativeStatEC",
-"down_jesRelativeStatFSR",
-"down_jesRelativeStatHF",
-"down_jesSinglePionECAL",
-"down_jesSinglePionHCAL",
-"down_jesTimePtEta",
-"down_lf",
-"down_lfstats1",
-"down_lfstats2",
-"up_cferr1",
-"up_cferr2",
-"up_hf",
-"up_hfstats1",
-"up_hfstats2",
-"up_jes",
-"up_jesAbsoluteMPFBias",
-"up_jesAbsoluteScale",
-"up_jesAbsoluteStat",
-"up_jesFlavorQCD",
-"up_jesFragmentation",
-"up_jesPileUpDataMC",
-"up_jesPileUpPtBB",
-"up_jesPileUpPtEC1",
-"up_jesPileUpPtEC2",
-"up_jesPileUpPtHF",
-"up_jesPileUpPtRef",
-"up_jesRelativeBal",
-"up_jesRelativeFSR",
-"up_jesRelativeJEREC1",
-"up_jesRelativeJEREC2",
-"up_jesRelativeJERHF",
-"up_jesRelativePtBB",
-"up_jesRelativePtEC1",
-"up_jesRelativePtEC2",
-"up_jesRelativePtHF",
-"up_jesRelativeStatEC",
-"up_jesRelativeStatFSR",
-"up_jesRelativeStatHF",
-"up_jesSinglePionECAL",
-"up_jesSinglePionHCAL",
-"up_jesTimePtEta",
-"up_lf",
-"up_lfstats1",
-"up_lfstats2" };
-std::vector<std::string> sysTypeVar_DeepFlavour = {
-"down_cferr1",
-"down_cferr2",
-"down_hf",
-"down_hfstats1",
-"down_hfstats2",
-"down_jes",
-"down_jesAbsoluteMPFBias",
-"down_jesAbsoluteScale",
-"down_jesAbsoluteStat",
-"down_jesFlavorQCD",
-"down_jesFragmentation",
-"down_jesPileUpDataMC",
-"down_jesPileUpPtBB",
-"down_jesPileUpPtEC1",
-"down_jesPileUpPtEC2",
-"down_jesPileUpPtHF",
-"down_jesPileUpPtRef",
-"down_jesRelativeBal",
-"down_jesRelativeFSR",
-"down_jesRelativeJEREC1",
-"down_jesRelativeJEREC2",
-"down_jesRelativeJERHF",
-"down_jesRelativePtBB",
-"down_jesRelativePtEC1",
-"down_jesRelativePtEC2",
-"down_jesRelativePtHF",
-"down_jesRelativeStatEC",
-"down_jesRelativeStatFSR",
-"down_jesRelativeStatHF",
-"down_jesSinglePionECAL",
-"down_jesSinglePionHCAL",
-"down_jesTimePtEta",
-"down_lf",
-"down_lfstats1",
-"down_lfstats2",
-"up_cferr1",
-"up_cferr2",
-"up_hf",
-"up_hfstats1",
-"up_hfstats2",
-"up_jes",
-"up_jesAbsoluteMPFBias",
-"up_jesAbsoluteScale",
-"up_jesAbsoluteStat",
-"up_jesFlavorQCD",
-"up_jesFragmentation",
-"up_jesPileUpDataMC",
-"up_jesPileUpPtBB",
-"up_jesPileUpPtEC1",
-"up_jesPileUpPtEC2",
-"up_jesPileUpPtHF",
-"up_jesPileUpPtRef",
-"up_jesRelativeBal",
-"up_jesRelativeFSR",
-"up_jesRelativeJEREC1",
-"up_jesRelativeJEREC2",
-"up_jesRelativeJERHF",
-"up_jesRelativePtBB",
-"up_jesRelativePtEC1",
-"up_jesRelativePtEC2",
-"up_jesRelativePtHF",
-"up_jesRelativeStatEC",
-"up_jesRelativeStatFSR",
-"up_jesRelativeStatHF",
-"up_jesSinglePionECAL",
-"up_jesSinglePionHCAL",
-"up_jesTimePtEta",
-"up_lf",
-"up_lfstats1",
-"up_lfstats2" };
-std::vector<std::string> sysTypeVar_DeepFlavour_JESReduced = {
-"down_cferr1",
-"down_cferr2",
-"down_hf",
-"down_hfstats1",
-"down_hfstats2",
-"down_jes",
-"down_jesAbsolute",
-"down_jesAbsolute_2017",
-"down_jesBBEC1",
-"down_jesBBEC1_2017",
-"down_jesEC2",
-"down_jesEC2_2017",
-"down_jesFlavorQCD",
-"down_jesHF",
-"down_jesHF_2017",
-"down_jesRelativeBal",
-"down_jesRelativeSample_2017",
-"down_lf",
-"down_lfstats1",
-"down_lfstats2",
-"up_cferr1",
-"up_cferr2",
-"up_hf",
-"up_hfstats1",
-"up_hfstats2",
-"up_jes",
-"up_jesAbsolute",
-"up_jesAbsolute_2017",
-"up_jesBBEC1",
-"up_jesBBEC1_2017",
-"up_jesEC2",
-"up_jesEC2_2017",
-"up_jesFlavorQCD",
-"up_jesHF",
-"up_jesHF_2017",
-"up_jesRelativeBal",
-"up_jesRelativeSample_2017",
-"up_lf",
-"up_lfstats1",
-"up_lfstats2"
-};
-std::vector<std::string> flavorNames = { "Bquark", "Cquark", "Lightquark" };
-const int maxNSyst=72;
-const int totFlavs=3; // 0:B 1:C 2:light
-int calibReaderIdx(int ifile, int iflav) { return totFlavs * ifile + iflav; }
-int jetWeightIdx  (int ifile, int iflav, int isyst) { return maxNSyst*totFlavs* ifile + maxNSyst*iflav + isyst; }
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     BTaggingMgr btagCalibs;
     btagCalibs.UseAlgorithm( "CSVv2" );
     //btagCalibs.UseAlgorithm( "alskdjfalskdjfCSVv2" ); // only for failed test
-    //btagCalibs.UseAlgorithm( "DeepCSV" );
-    //btagCalibs.UseAlgorithm( "DeepFlavour" );
-    //btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
+    btagCalibs.UseAlgorithm( "DeepCSV" );
+    btagCalibs.UseAlgorithm( "DeepFlavour" );
+    btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
     btagCalibs.RegisterSystTypes();
     //btagCalibs.LoopVar(btagCalibs.SayHi);
     
-    /*
-    std::vector<BTagCalibration> calibs;
-    std::vector<std::vector<std::string>> systematicTypes = {
-    };
-    calibs.reserve(3);
-    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
-    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
-    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
-    calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
-    calibs.emplace_back( "deepcsv"           , ExternalFilesMgr::csvFile_BTagCalib_DeepCSV() );
-    calibs.emplace_back( "deepflv"           , ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour() );
-    calibs.emplace_back( "deepflv_JESreduced", ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced() );
-
-    std::map<int,BTagCalibrationReader> calibReaders;
-    for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
-    {
-        const std::vector<std::string>& systematicType = systematicTypes[cIdx];
-        for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
-        { calibReaders[ calibReaderIdx(cIdx,fIdx) ] = BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central", systematicType); }
-        calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_B   ) ].load(calibs[cIdx], BTagEntry::FLAV_B   , "iterativefit");
-        calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_C   ) ].load(calibs[cIdx], BTagEntry::FLAV_C   , "iterativefit");
-        calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_UDSG) ].load(calibs[cIdx], BTagEntry::FLAV_UDSG, "iterativefit");
-    };
-    */
-
-
-
-
-    // vector <string> pathes;
-    // pathes.push_back(fname);
     TreeReader data(pathes);
 
     TFile *fout_;
@@ -624,26 +384,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     btagCalibs.RegBranch(outtree_);
 
-    /*
-    for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
-    {
-        char jetweight_branchname[200];
-        char jetweight_branchname_f[200];
-        for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
-        {
-            for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
-            {
-                sprintf(jetweight_branchname, "jetWeight_%s_%s_%s",
-                        flavorNames[fIdx].c_str(),
-                        calibs[cIdx].tagger().c_str(),
-                        systematicTypes[cIdx][sIdx].c_str()
-                       );
-                sprintf(jetweight_branchname_f, "%s/F", jetweight_branchname);
-                outtree_->Branch(jetweight_branchname, &jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ], jetweight_branchname_f);
-            }
-        }
-    }
-    */
 
     if ( data.HasMC() )
     {
@@ -652,46 +392,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
     }
-    /*
-    outtree_->Branch("jetSF.looseBFlavor.up"         , &jetsF_LoadB_LOOSE_UP         ,"jetSF.looseBFlavor.up/F");
-    outtree_->Branch("jetSF.looseBFlavor.central"    , &jetsF_LoadB_LOOSE_CENTRAL    ,"jetSF.looseBFlavor.central/F");
-    outtree_->Branch("jetSF.looseBFlavor.down"       , &jetsF_LoadB_LOOSE_DOWN       ,"jetSF.looseBFlavor.down/F");
-    outtree_->Branch("jetSF.mediumBFlavor.up"        , &jetsF_LoadB_MEDIUM_UP        ,"jetSF.mediumBFlavor.up/F");
-    outtree_->Branch("jetSF.mediumBFlavor.central"   , &jetsF_LoadB_MEDIUM_CENTRAL   ,"jetSF.mediumBFlavor.central/F");
-    outtree_->Branch("jetSF.mediumBFlavor.down"      , &jetsF_LoadB_MEDIUM_DOWN      ,"jetSF.mediumBFlavor.down/F");
-    outtree_->Branch("jetSF.tightBFlavor.up"         , &jetsF_LoadB_TIGHT_UP         ,"jetSF.tightBFlavor.up/F");
-    outtree_->Branch("jetSF.tightBFlavor.central"    , &jetsF_LoadB_TIGHT_CENTRAL    ,"jetSF.tightBFlavor.central/F");
-    outtree_->Branch("jetSF.tightBFlavor.down"       , &jetsF_LoadB_TIGHT_DOWN       ,"jetSF.tightBFlavor.down/F");
-    outtree_->Branch("jetSF.reshapingBFlavor.up"     , &jetsF_LoadB_RESHAPING_UP     ,"jetSF.reshapingBFlavor.up/F");
-    outtree_->Branch("jetSF.reshapingBFlavor.central", &jetsF_LoadB_RESHAPING_CENTRAL,"jetSF.reshapingBFlavor.central/F");
-    outtree_->Branch("jetSF.reshapingBFlavor.down"   , &jetsF_LoadB_RESHAPING_DOWN   ,"jetSF.reshapingBFlavor.down/F");
-
-    outtree_->Branch("jetSF.looseCFlavor.up"         , &jetsF_LoadC_LOOSE_UP         ,"jetSF.looseCFlavor.up/F");
-    outtree_->Branch("jetSF.looseCFlavor.central"    , &jetsF_LoadC_LOOSE_CENTRAL    ,"jetSF.looseCFlavor.central/F");
-    outtree_->Branch("jetSF.looseCFlavor.down"       , &jetsF_LoadC_LOOSE_DOWN       ,"jetSF.looseCFlavor.down/F");
-    outtree_->Branch("jetSF.mediumCFlavor.up"        , &jetsF_LoadC_MEDIUM_UP        ,"jetSF.mediumCFlavor.up/F");
-    outtree_->Branch("jetSF.mediumCFlavor.central"   , &jetsF_LoadC_MEDIUM_CENTRAL   ,"jetSF.mediumCFlavor.central/F");
-    outtree_->Branch("jetSF.mediumCFlavor.down"      , &jetsF_LoadC_MEDIUM_DOWN      ,"jetSF.mediumCFlavor.down/F");
-    outtree_->Branch("jetSF.tightCFlavor.up"         , &jetsF_LoadC_TIGHT_UP         ,"jetSF.tightCFlavor.up/F");
-    outtree_->Branch("jetSF.tightCFlavor.central"    , &jetsF_LoadC_TIGHT_CENTRAL    ,"jetSF.tightCFlavor.central/F");
-    outtree_->Branch("jetSF.tightCFlavor.down"       , &jetsF_LoadC_TIGHT_DOWN       ,"jetSF.tightCFlavor.down/F");
-    outtree_->Branch("jetSF.reshapingCFlavor.up"     , &jetsF_LoadC_RESHAPING_UP     ,"jetSF.reshapingCFlavor.up/F");
-    outtree_->Branch("jetSF.reshapingCFlavor.central", &jetsF_LoadC_RESHAPING_CENTRAL,"jetSF.reshapingCFlavor.central/F");
-    outtree_->Branch("jetSF.reshapingCFlavor.down"   , &jetsF_LoadC_RESHAPING_DOWN   ,"jetSF.reshapingCFlavor.down/F");
-
-    outtree_->Branch("jetSF.looseLFlavor.up"         , &jetsF_LoadL_LOOSE_UP         ,"jetSF.looseLFlavor.up/F");
-    outtree_->Branch("jetSF.looseLFlavor.central"    , &jetsF_LoadL_LOOSE_CENTRAL    ,"jetSF.looseLFlavor.central/F");
-    outtree_->Branch("jetSF.looseLFlavor.down"       , &jetsF_LoadL_LOOSE_DOWN       ,"jetSF.looseLFlavor.down/F");
-    outtree_->Branch("jetSF.mediumLFlavor.up"        , &jetsF_LoadL_MEDIUM_UP        ,"jetSF.mediumLFlavor.up/F");
-    outtree_->Branch("jetSF.mediumLFlavor.central"   , &jetsF_LoadL_MEDIUM_CENTRAL   ,"jetSF.mediumLFlavor.central/F");
-    outtree_->Branch("jetSF.mediumLFlavor.down"      , &jetsF_LoadL_MEDIUM_DOWN      ,"jetSF.mediumLFlavor.down/F");
-    outtree_->Branch("jetSF.tightLFlavor.up"         , &jetsF_LoadL_TIGHT_UP         ,"jetSF.tightLFlavor.up/F");
-    outtree_->Branch("jetSF.tightLFlavor.central"    , &jetsF_LoadL_TIGHT_CENTRAL    ,"jetSF.tightLFlavor.central/F");
-    outtree_->Branch("jetSF.tightLFlavor.down"       , &jetsF_LoadL_TIGHT_DOWN       ,"jetSF.tightLFlavor.down/F");
-    outtree_->Branch("jetSF.reshapingLFlavor.up"     , &jetsF_LoadL_RESHAPING_UP     ,"jetSF.reshapingLFlavor.up/F");
-    outtree_->Branch("jetSF.reshapingLFlavor.central", &jetsF_LoadL_RESHAPING_CENTRAL,"jetSF.reshapingLFlavor.central/F");
-    outtree_->Branch("jetSF.reshapingLFlavor.down"   , &jetsF_LoadL_RESHAPING_DOWN   ,"jetSF.reshapingLFlavor.down/F");
-    */
 
 
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
@@ -736,7 +436,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
-        break;
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
@@ -998,16 +697,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
-        /*
-        vector<int> match;
-        vector<int> converted;
-        vector<int> match_ele;
-        vector<float> mcpt;
-        vector<float> mceta;
-        vector<float> mcphi;
-        vector<float> mcCalIso04;
-        vector<float> mcTrkIso04;
-        */
 
         std::map<int,int> match;
         std::map<int,int> converted;
@@ -1149,16 +838,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-                /*
-                mcpt.push_back(tmp_mcPt_);
-                mceta.push_back(tmp_mcEta_);
-                mcphi.push_back(tmp_mcPhi_);
-                mcCalIso04.push_back(tmp_mcCalIso04_);
-                mcTrkIso04.push_back(tmp_mcTrkIso04_);
-                match.push_back(tmp_isMatched);
-                match_ele.push_back(tmp_isMatchedEle);
-                converted.push_back(tmp_isConverted);
-                */
 
                 mcpt[i]=tmp_mcPt_;
                 mceta[i]=tmp_mcEta_;
@@ -1321,16 +1000,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                /*
-                if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
-                    float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
-                    h_dpt_phojet->Fill(dphojetpt);
-                    if( dphojetpt>0.5 || dphojetpt<2.) {
-                        if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
-                        else photon_jetID.push_back(0.);
-                    }
-                }
-                */
 
                 if( jetId[j] ) {	  
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
@@ -1344,20 +1013,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }  
         }
 
-        /*
-        if(phoEt[photon_list[0]] > 150.) {
-            h_njet->Fill(nnjet, xsweight);
-            if(nnjet>1){
-                int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
-            }
-        }
-        */
 
-
-
-        //if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
 
 
 
@@ -1453,46 +1109,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
             btagCalibs.InitVars();
-            /*
-            jetSF_LoadB_LOOSE_UP=0;
-            jetSF_LoadB_MEDIUM_UP=0;
-            jetSF_LoadB_TIGHT_UP=0;
-            jetSF_LoadB_RESHAPING_UP=0;
-            jetSF_LoadB_LOOSE_CENTRAL=0;
-            jetSF_LoadB_MEDIUM_CENTRAL=0;
-            jetSF_LoadB_TIGHT_CENTRAL=0;
-            jetSF_LoadB_RESHAPING_CENTRAL=0;
-            jetSF_LoadB_LOOSE_DN=0;
-            jetSF_LoadB_MEDIUM_DN=0;
-            jetSF_LoadB_TIGHT_DN=0;
-            jetSF_LoadB_RESHAPING_DN=0;
-
-            jetSF_LoadC_LOOSE_UP=0;
-            jetSF_LoadC_MEDIUM_UP=0;
-            jetSF_LoadC_TIGHT_UP=0;
-            jetSF_LoadC_RESHAPING_UP=0;
-            jetSF_LoadC_LOOSE_CENTRAL=0;
-            jetSF_LoadC_MEDIUM_CENTRAL=0;
-            jetSF_LoadC_TIGHT_CENTRAL=0;
-            jetSF_LoadC_RESHAPING_CENTRAL=0;
-            jetSF_LoadC_LOOSE_DN=0;
-            jetSF_LoadC_MEDIUM_DN=0;
-            jetSF_LoadC_TIGHT_DN=0;
-            jetSF_LoadC_RESHAPING_DN=0;
-
-            jetSF_LoadL_LOOSE_UP=0;
-            jetSF_LoadL_MEDIUM_UP=0;
-            jetSF_LoadL_TIGHT_UP=0;
-            jetSF_LoadL_RESHAPING_UP=0;
-            jetSF_LoadL_LOOSE_CENTRAL=0;
-            jetSF_LoadL_MEDIUM_CENTRAL=0;
-            jetSF_LoadL_TIGHT_CENTRAL=0;
-            jetSF_LoadL_RESHAPING_CENTRAL=0;
-            jetSF_LoadL_LOOSE_DN=0;
-            jetSF_LoadL_MEDIUM_DN=0;
-            jetSF_LoadL_TIGHT_DN=0;
-            jetSF_LoadL_RESHAPING_DN=0;
-            */
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
@@ -1557,46 +1173,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
 
                 btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
-                /*
-jetsF_LoadB_LOOSE_UP         = calibReader_loadB_loose    .eval_auto_bonds("up"     , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_LOOSE_CENTRAL    = calibReader_loadB_loose    .eval_auto_bonds("central", BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_LOOSE_DOWN       = calibReader_loadB_loose    .eval_auto_bonds("down"   , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_MEDIUM_UP        = calibReader_loadB_medium   .eval_auto_bonds("up"     , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_MEDIUM_CENTRAL   = calibReader_loadB_medium   .eval_auto_bonds("central", BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_MEDIUM_DOWN      = calibReader_loadB_medium   .eval_auto_bonds("down"   , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_TIGHT_UP         = calibReader_loadB_tight    .eval_auto_bonds("up"     , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_TIGHT_CENTRAL    = calibReader_loadB_tight    .eval_auto_bonds("central", BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_TIGHT_DOWN       = calibReader_loadB_tight    .eval_auto_bonds("down"   , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_RESHAPING_UP     = calibReader_loadB_reshaping.eval_auto_bonds("up"     , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_RESHAPING_CENTRAL= calibReader_loadB_reshaping.eval_auto_bonds("central", BTagEntry::FLAV_B   ,jetPt_,jetEta_);
-jetsF_LoadB_RESHAPING_DOWN   = calibReader_loadB_reshaping.eval_auto_bonds("down"   , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
 
-jetsF_LoadC_LOOSE_UP         = calibReader_loadC_loose    .eval_auto_bonds("up"     , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_LOOSE_CENTRAL    = calibReader_loadC_loose    .eval_auto_bonds("central", BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_LOOSE_DOWN       = calibReader_loadC_loose    .eval_auto_bonds("down"   , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_MEDIUM_UP        = calibReader_loadC_medium   .eval_auto_bonds("up"     , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_MEDIUM_CENTRAL   = calibReader_loadC_medium   .eval_auto_bonds("central", BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_MEDIUM_DOWN      = calibReader_loadC_medium   .eval_auto_bonds("down"   , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_TIGHT_UP         = calibReader_loadC_tight    .eval_auto_bonds("up"     , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_TIGHT_CENTRAL    = calibReader_loadC_tight    .eval_auto_bonds("central", BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_TIGHT_DOWN       = calibReader_loadC_tight    .eval_auto_bonds("down"   , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_RESHAPING_UP     = calibReader_loadC_reshaping.eval_auto_bonds("up"     , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_RESHAPING_CENTRAL= calibReader_loadC_reshaping.eval_auto_bonds("central", BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-jetsF_LoadC_RESHAPING_DOWN   = calibReader_loadC_reshaping.eval_auto_bonds("down"   , BTagEntry::FLAV_C   ,jetPt_,jetEta_);
-
-jetsF_LoadL_LOOSE_UP         = calibReader_loadL_loose    .eval_auto_bonds("up"     , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_LOOSE_CENTRAL    = calibReader_loadL_loose    .eval_auto_bonds("central", BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_LOOSE_DOWN       = calibReader_loadL_loose    .eval_auto_bonds("down"   , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_MEDIUM_UP        = calibReader_loadL_medium   .eval_auto_bonds("up"     , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_MEDIUM_CENTRAL   = calibReader_loadL_medium   .eval_auto_bonds("central", BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_MEDIUM_DOWN      = calibReader_loadL_medium   .eval_auto_bonds("down"   , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_TIGHT_UP         = calibReader_loadL_tight    .eval_auto_bonds("up"     , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_TIGHT_CENTRAL    = calibReader_loadL_tight    .eval_auto_bonds("central", BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_TIGHT_DOWN       = calibReader_loadL_tight    .eval_auto_bonds("down"   , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_RESHAPING_UP     = calibReader_loadL_reshaping.eval_auto_bonds("up"     , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_RESHAPING_CENTRAL= calibReader_loadL_reshaping.eval_auto_bonds("central", BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-jetsF_LoadL_RESHAPING_DOWN   = calibReader_loadL_reshaping.eval_auto_bonds("down"   , BTagEntry::FLAV_UDSG,jetPt_,jetEta_);
-*/
             } // has jet end
 
 
@@ -1856,8 +1433,3 @@ void xPhotonHFJet(std::string ipath, int outID)
    xPhotonHFJet(pathes, oname);
 
 }
-/*
-metFilters //mv
-xsweight //???
-puwei_ //???
-            */

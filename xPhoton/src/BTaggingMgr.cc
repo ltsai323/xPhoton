@@ -10,12 +10,16 @@ namespace t
     // use std::string due to a equal sign is needed. first : algorithm, second : systType
     //std::map<std::string, std::vector<const char*> > systTypeCollection;
     std::map<std::string, std::vector<std::string> > systTypeCollection;
+    std::map<std::string, BTagEntry::JetFlavor> fCol;
     std::vector<const char*> flavourCollection;
     void SetContent(){
         if ( systTypeCollection.size() != 0 )  return;
         flavourCollection.push_back("Bquark");
         flavourCollection.push_back("Cquark");
         flavourCollection.push_back("Lights");
+        fCol["Bquark"] = BTagEntry::JetFlavor::FLAV_B;
+        fCol["Cquark"] = BTagEntry::JetFlavor::FLAV_C;
+        fCol["Lights"] = BTagEntry::JetFlavor::FLAV_UDSG;
 
         systTypeCollection["CSVv2"] = {
             "central",
@@ -280,9 +284,10 @@ void BTaggingMgr::InitVars()
         LOG_FATAL("You need to execute function RegisterSystTypes() before initialize variables.");
 
     if ( systVars.size() == 0 ) // create new variables
-        for ( int iFlav = 0; iFlav < t::flavourCollection.size(); ++iFlav )
-        {
-            const char* flavourName = t::flavourCollection[iFlav];
+    for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
+    {
+        const std::string& flavour = iter->first;
+        BTagEntry::JetFlavor iFlav = iter->second;
             for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
             {
                 const std::string algoName = _usedAlgorithmNames[iAlgo];
@@ -300,19 +305,34 @@ void BTaggingMgr::RegBranch(TTree* t)
         LOG_FATAL("You need to execute function RegisterSystTypes() before register branch into tree.");
     char bname[200], bnameF[200];
     if ( t == nullptr || t->IsZombie() ) LOG_FATAL("input tree is invalid");
-    for ( int iFlav = 0; iFlav < t::flavourCollection.size(); ++iFlav )
+
+    for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
     {
-        const char* flavourName = t::flavourCollection[iFlav];
+        const std::string& flavour = iter->first;
+        BTagEntry::JetFlavor iFlav = iter->second;
         for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
         {
             const std::string algorithm = _usedAlgorithmNames[iAlgo];
             for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
             {
                 const std::string systType = _usedSystTypes[algorithm][iSyst];
-                sprintf(bname , "weightJetSF.%s.%s.%s"  , flavourName, algorithm.c_str(), systType.c_str());
-                sprintf(bnameF, "weightJetSF.%s.%s.%s/F", flavourName, algorithm.c_str(), systType.c_str());
+                sprintf(bname , "weightJetSF.%s.%s.%s"  , flavour.c_str(), algorithm.c_str(), systType.c_str());
+                sprintf(bnameF, "weightJetSF.%s.%s.%s/F", flavour.c_str(), algorithm.c_str(), systType.c_str());
                 t->Branch(bname, &systVars[ systVarIdx(iFlav,iAlgo,iSyst) ], bnameF);
             }
+        }
+    }
+}
+void BTaggingMgr::FillWeightToEvt(float pt_, float eta_)
+{
+    for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
+    {
+        BTagEntry::JetFlavor iFlav = iter->second;
+        for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
+        {
+            const std::string algorithm = _usedAlgorithmNames[iAlgo];
+            for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
+                systVars[ systVarIdx(iFlav,iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], iFlav,pt_,eta_);
         }
     }
 }
@@ -321,6 +341,10 @@ void BTaggingMgr::RegBranch(TTree* t)
 /*
 void BTaggingMgr::LoopVar(funcptr__ func)
 {
+    for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
+    {
+
+        BTagEntry::JetFlavor iFlav = iter->second;
         for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
         {
             const std::string algoName = _usedAlgorithmNames[iAlgo];

@@ -21,7 +21,7 @@ public:
     void RegisterSystTypes();
     void InitVars();
     void RegBranch(TTree* t);
-    void FillWeightToEvt(float eta, float phi);
+    void FillWeightToEvt(float pt_, float eta_);
     /*
     void LoopVar(funcptr__ func);
     */
