@@ -4,33 +4,50 @@
 #include <string>
 #include <vector>
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
+#include <memory>
+#include <map>
+#include <TTree.h>
 
 
-#define MAXSYSTS 100
+#define MAXNSYST 100
+using funcptr__ = void(*)(int,int);
 
 
 class BTaggingMgr
 {
-    public:
-        BTaggingMgr();
-        void UseAlgorithm(std::string algorithmName);
-        void RegisterSystTypes();
+public:
+    BTaggingMgr();
+    void UseAlgorithm(std::string algorithmName);
+    void RegisterSystTypes();
+    void InitVars();
+    void RegBranch(TTree* t);
+    void FillWeightToEvt(float eta, float phi);
+    /*
+    void LoopVar(funcptr__ func);
+    */
 
 
-    enum quarkFlavors
-    { flav_b = 0, flav_c, flav_l, totFlavs };
     
     std::vector< std::vector<std::string> > systematicTypes;
-    std::vector< std::string > flavourNames;
-    int calibReaderIdx( int ifile, int iflav ) const { return totFlavs * ifile + iflav; }
-    int calibReaderIdx2( int ifile, int iflav ) const { return totFlavs * ifile + iflav; }
+    //std::vector< std::string > flavourNames;
+    int systVarIdx( int iFlav, int iAlgo, int iSyst ) const { return _usedAlgorithmNames.size() * MAXNSYST * iFlav + MAXNSYST * iAlgo + iSyst; }
 
-    private:
+private:
     std::vector<std::string> _usedAlgorithmNames;
-    std::map<std::string, std::vector<const char*>> _usedSystTypes;
+    std::map<std::string, std::vector<std::string>> _usedSystTypes;
     bool _systTypeRegisted;
-    std::vector<BTagCalibration> calibs;
+    std::vector< std::shared_ptr<BTagCalibration> > calibPTRs;
+    std::vector< std::shared_ptr<BTagCalibrationReader> > calibReaderPTRs;
+    std::map<int, float> systVars;
 
+    /*
+    void initvar(int i, int j);
+    */
+
+    /*
+    static int   GetIAlgo( int varIdx ) const { return varIdx / MAXNSYST; }
+    static int   GetISyst( int varIdx ) const { return varIdx % MAXNSYST; }
+    */
 };
 #endif
 

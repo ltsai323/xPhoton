@@ -248,29 +248,20 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     //btagCalibs.UseAlgorithm( "DeepFlavour" );
     //btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
     btagCalibs.RegisterSystTypes();
-    exit(1);
+    //btagCalibs.LoopVar(btagCalibs.SayHi);
+    
+    /*
     std::vector<BTagCalibration> calibs;
     std::vector<std::vector<std::string>> systematicTypes = {
-        sysTypeVar_CSVv2,
-        sysTypeVar_CSVv2,
-        sysTypeVar_CSVv2
-/*
-        sysTypeVar_CSVv2,
-        sysTypeVar_DeepCSV,
-        sysTypeVar_DeepFlavour,
-        sysTypeVar_DeepFlavour_JESReduced
-*/
     };
     calibs.reserve(3);
     calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
     calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
     calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
-/*
     calibs.emplace_back( "csvv2"             , ExternalFilesMgr::csvFile_BTagCalib_CSVv2() );
     calibs.emplace_back( "deepcsv"           , ExternalFilesMgr::csvFile_BTagCalib_DeepCSV() );
     calibs.emplace_back( "deepflv"           , ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour() );
     calibs.emplace_back( "deepflv_JESreduced", ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced() );
-*/
 
     std::map<int,BTagCalibrationReader> calibReaders;
     for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
@@ -282,6 +273,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_C   ) ].load(calibs[cIdx], BTagEntry::FLAV_C   , "iterativefit");
         calibReaders[ calibReaderIdx(cIdx,BTagEntry::FLAV_UDSG) ].load(calibs[cIdx], BTagEntry::FLAV_UDSG, "iterativefit");
     };
+    */
 
 
 
@@ -526,11 +518,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     Int_t photon_jetID_;
     Int_t phoIDbit_;
+    /*
     std::map<int, Float_t> jetWeight;
     for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
         for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
             for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
                 jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ] = 0.;
+                */
 
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
@@ -628,6 +622,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
 
+    btagCalibs.RegBranch(outtree_);
+
+    /*
     for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
     {
         char jetweight_branchname[200];
@@ -646,6 +643,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
         }
     }
+    */
 
     if ( data.HasMC() )
     {
@@ -738,6 +736,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
+        break;
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
@@ -1453,6 +1452,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
+            btagCalibs.InitVars();
             /*
             jetSF_LoadB_LOOSE_UP=0;
             jetSF_LoadB_MEDIUM_UP=0;
@@ -1556,7 +1556,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 }
 
-                
+                btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
                 /*
 jetsF_LoadB_LOOSE_UP         = calibReader_loadB_loose    .eval_auto_bonds("up"     , BTagEntry::FLAV_B   ,jetPt_,jetEta_);
 jetsF_LoadB_LOOSE_CENTRAL    = calibReader_loadB_loose    .eval_auto_bonds("central", BTagEntry::FLAV_B   ,jetPt_,jetEta_);
