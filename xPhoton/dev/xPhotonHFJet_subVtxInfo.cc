@@ -32,14 +32,23 @@ using namespace std;
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     BTaggingMgr btagCalibs;
+    /*
     btagCalibs.UseAlgorithm( "CSVv2" );
     //btagCalibs.UseAlgorithm( "alskdjfalskdjfCSVv2" ); // only for failed test
     btagCalibs.UseAlgorithm( "DeepCSV" );
     btagCalibs.UseAlgorithm( "DeepFlavour" );
     btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
     btagCalibs.RegisterSystTypes();
+    */
     //btagCalibs.LoopVar(btagCalibs.SayHi);
+    BTagCalibration calib("csvv1", ExternalFilesMgr::csvFile_BTagCalib_CSVv2());
+    BTagCalibrationReader cReader(
+            BTagEntry::OP_LOOSE,
+            "central", {} );
+    cReader.load(calib, BTagEntry::FLAV_B, "comb");
+    LOG_INFO("end of loading csv file");
     
+
     TreeReader data(pathes);
 
     TFile *fout_;
@@ -1251,6 +1260,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if(TMath::Abs(phoEta[ipho])<1.5) h_EB_bdt->Fill(mva);
                 else h_EE_bdt->Fill(mva);
             }
+
+            double jetSF = cReader.eval_auto_bounds(
+                    "central", BTagEntry::FLAV_B,
+                    recoEta,
+                    recoPt);
+            if ( jetSF != 1 ) LOG_WARNING(" jet SF found! %.4f", jetSF);
+
 
 
             if(MINITREE==1 ) 	{

@@ -1,4 +1,5 @@
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include <iostream>
 #include <exception>
 #include <algorithm>
@@ -498,6 +499,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
   bool use_discr = (op_ == BTagEntry::OP_RESHAPING);
   if (useAbsEta_[jf] && eta < 0) {
     eta = -eta;
+    LOG_DEBUG("eval : useAbsEta!");
   }
 
   // search linearly through eta, pt and discr ranges and eval
@@ -511,6 +513,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     ){
       if (use_discr) {                                    // discr. reshaping?
         if (e.discrMin <= discr && discr < e.discrMax) {  // check discr
+            LOG_DEBUG("jet scale factor is sucessfully calculated!");
           return e.func.Eval(discr);
         }
       } else {
@@ -519,6 +522,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     }
   }
 
+  LOG_DEBUG("return default jetSF");
   return 0.;  // default value
 }
 
@@ -538,6 +542,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
   }
    
   if (eta_is_out_of_bounds) {
+      LOG_WARNING(" eta is out of bounds! please check");
     return 1.;
   }
 
