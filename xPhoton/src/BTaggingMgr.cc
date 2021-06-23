@@ -333,7 +333,7 @@ void BTaggingMgr::FillWeightToEvt(float pt_, float eta_)
             const std::string algorithm = _usedAlgorithmNames[iAlgo];
             for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
             {
-                systVars[ systVarIdx(iFlav,iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], iFlav,pt_,eta_);
+                systVars[ systVarIdx(iFlav,iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], iFlav,eta_,pt_);
                 if ( systVars[ systVarIdx(iFlav,iAlgo,iSyst) ] != 1 )
                     LOG_DEBUG(" additional value : %.6f", systVars[ systVarIdx(iFlav,iAlgo,iSyst) ]);
             }
