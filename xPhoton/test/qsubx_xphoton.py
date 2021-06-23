@@ -1,5 +1,10 @@
 #!/usr/bin/env python2
-command='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_path.py {file} true"'
+mesg='Process local files'
+command='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_path.py {file} false"'
+'''
+mesg='Download 1 root file from T2 first and process it'
+command='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_path.py {file} false"'
+'''
 import os
 dataflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016B_94X.txt',
@@ -55,6 +60,7 @@ qcdflist=[
 ]
 
 if __name__ == '__main__':
+    print mesg
     flist=qcdflist
     for f in flist:
         folder=f.split('/')[-1].split('.')[0]

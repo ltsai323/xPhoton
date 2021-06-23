@@ -30,27 +30,30 @@ class ExecMgr(object):
             print 'You have a clean workspace'
 
 class FileNameConverter(object):
+    def __init__(self, prefix=''):
+        self._prefix=prefix
+        '''
     def __init__(self, isRemote=False,remoteprefix=prefix_nchc):
         self._prefix=''
         if isRemote: self.SetPrefix(remoteprefix)
+        '''
     def GetPath(self, inpath):
         p1=inpath.strip()
-        p2=FileNameConverter.homerecognize(p1)
+        p2=FileNameConverter.convertifHOMEused(p1)
         p3=self.fullpath(p2)
         return p3
-    def SetPrefix(self,prefix):
-        self._prefix=prefix
     def fullpath(self, p):
-        return self._prefix+p if self._prefix else p
+        return self._prefix+p
 
     @staticmethod
     def GetFileID(inpath):
         try:
             return int(inpath.split('_')[-1].split('.')[0])
         except ValueError:
+            mylogger.warning('No number included in input root file, force output number to ZERO.')
             return 0
     @staticmethod
-    def homerecognize(oldname):
+    def convertifHOMEused(oldname):
         if '~' in oldname:
             seps=oldname.split('~')
             if len(seps) > 2:
