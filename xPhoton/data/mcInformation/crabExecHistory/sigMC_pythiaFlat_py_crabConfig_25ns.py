@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 myArgs=[
-        # { 'reqName':'sigMC_Pt-15To6000_Flat_pythia8_20M_sub01', 'dataset':'/GJet_Pt-15To6000_TuneCUETP8M1-Flat_13TeV_pythia8_20M/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM'},
+        # { 'reqName':'sigMC_Pt-15To6000_Flat_pythia8_20M', 'dataset':'/GJet_Pt-15To6000_TuneCUETP8M1-Flat_13TeV_pythia8_20M/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM'},
 ]
 if __name__ == '__main__':
 
