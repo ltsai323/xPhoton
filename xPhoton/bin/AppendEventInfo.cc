@@ -65,8 +65,8 @@ int main(int argc, const char* argv[])
     oT->Branch("xsweight", &xsweight, "xsweight/F");
 
     float jetPt, jetEta;
-    oT->SetBranchAddress("recoPt" , &jetPt);
-    oT->SetBranchAddress("recoEta", &jetEta);
+    iT->SetBranchAddress("recoPt" , &jetPt);
+    iT->SetBranchAddress("recoEta", &jetEta);
     btagCalibs.RegBranch(oT);
 
     xsweight = new_xsweight;
