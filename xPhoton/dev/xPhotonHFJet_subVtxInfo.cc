@@ -31,7 +31,7 @@ using namespace std;
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    BTaggingMgr btagCalibs;
+    //BTaggingMgr btagCalibs;
     /*
     btagCalibs.UseAlgorithm( "CSVv2" );
     //btagCalibs.UseAlgorithm( "alskdjfalskdjfCSVv2" ); // only for failed test
@@ -391,7 +391,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
 
-    btagCalibs.RegBranch(outtree_);
+    //btagCalibs.RegBranch(outtree_);
 
 
     if ( data.HasMC() )
@@ -1117,7 +1117,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
-            btagCalibs.InitVars();
+            //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
@@ -1181,7 +1181,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 }
 
-                btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
+                //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
 
             } // has jet end
 
