@@ -15,6 +15,7 @@
 using namespace std;
 #include <iostream>
 #include <TProfile.h>
+#include <map>
 
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
@@ -255,6 +256,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetCSV2BJetTags_, jetDeepCSVTags_b_, jetDeepCSVTags_bb_, jetDeepCSVTags_c_, jetDeepCSVTags_udsg_;
     Int_t jetPartonID_, jetHadFlvr_, jetGenPartonID_;
     Int_t jetGenPartonMomID_;
+    Float_t jetDeepFlavourTags_b_;
+    Float_t jetDeepFlavourTags_c_;
+    Float_t jetDeepFlavourTags_g_;
+    Float_t jetDeepFlavourTags_lepb_;
+    Float_t jetDeepFlavourTags_bb_;
+    Float_t jetDeepFlavourTags_uds_;
+    Float_t jetDeepCSVDiscriminatorTags_BvsAll_;
+    Float_t jetDeepCSVDiscriminatorTags_CvsB_;
+    Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
     Int_t    run;
     Long64_t event;
@@ -348,6 +358,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVTags_bb",           &jetDeepCSVTags_bb_,        "jetDeepCSVTags_bb/F");
     outtree_->Branch("jetDeepCSVTags_c",            &jetDeepCSVTags_c_,         "jetDeepCSVTags_c/F");
     outtree_->Branch("jetDeepCSVTags_udsg",         &jetDeepCSVTags_udsg_,      "jetDeepCSVTags_udsg/F");
+    outtree_->Branch("jetDeepFlavourTags_b", &jetDeepFlavourTags_b_, "jetDeepFlavourTags_b");
+    outtree_->Branch("jetDeepFlavourTags_c", &jetDeepFlavourTags_c_, "jetDeepFlavourTags_c");
+    outtree_->Branch("jetDeepFlavourTags_g", &jetDeepFlavourTags_g_, "jetDeepFlavourTags_g");
+    outtree_->Branch("jetDeepFlavourTags_lepb", &jetDeepFlavourTags_lepb_, "jetDeepFlavourTags_lepb");
+    outtree_->Branch("jetDeepFlavourTags_bb", &jetDeepFlavourTags_bb_, "jetDeepFlavourTags_bb");
+    outtree_->Branch("jetDeepFlavourTags_uds", &jetDeepFlavourTags_uds_, "jetDeepFlavourTags_uds");
+    outtree_->Branch("jetDeepCSVDiscriminatorTags_BvsAll", &jetDeepCSVDiscriminatorTags_BvsAll_, "jetDeepCSVDiscriminatorTags_BvsAll");
+    outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
+    outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
 
     if ( data.HasMC() )
     {
@@ -359,7 +378,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
-    outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
+    //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
 
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
     outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
@@ -376,7 +395,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    TGraph *tgr[6];
+    TGraph *tgr[8];
     if(data.HasMC())
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
@@ -386,15 +405,17 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
         tgr[1] = (TGraph*) f->Get("transfS4EB");
         tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
+        tgr[3] = (TGraph*) f->Get("transffull5x5sieieEB");
 
-        tgr[3] = (TGraph*) f->Get("transfEtaWidthEE");
-        tgr[4] = (TGraph*) f->Get("transfS4EE");
-        tgr[5] = (TGraph*) f->Get("transffull5x5R9EE");
+        tgr[4] = (TGraph*) f->Get("transfEtaWidthEE");
+        tgr[5] = (TGraph*) f->Get("transfS4EE");
+        tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
+        tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
     }
 
 
 
-    printf(" processing entries %lli \n", data.GetEntriesFast());
+    LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
@@ -564,7 +585,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
-            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            //jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DSig");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
         }
 
@@ -588,6 +610,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t *jetDeepCSVTags_bb = data.GetPtrFloat("jetDeepCSVTags_bb");
         Float_t *jetDeepCSVTags_c = data.GetPtrFloat("jetDeepCSVTags_c");
         Float_t *jetDeepCSVTags_udsg = data.GetPtrFloat("jetDeepCSVTags_udsg");
+        Float_t *jetDeepFlavourTags_b = data.GetPtrFloat("jetDeepFlavourTags_b");
+        Float_t *jetDeepFlavourTags_c = data.GetPtrFloat("jetDeepFlavourTags_c");
+        Float_t *jetDeepFlavourTags_g = data.GetPtrFloat("jetDeepFlavourTags_g");
+        Float_t *jetDeepFlavourTags_lepb = data.GetPtrFloat("jetDeepFlavourTags_lepb");
+        Float_t *jetDeepFlavourTags_bb = data.GetPtrFloat("jetDeepFlavourTags_bb");
+        Float_t *jetDeepFlavourTags_uds = data.GetPtrFloat("jetDeepFlavourTags_uds");
+        Float_t *jetDeepCSVDiscriminatorTags_BvsAll = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_BvsAll");
+        Float_t *jetDeepCSVDiscriminatorTags_CvsB = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsB");
+        Float_t *jetDeepCSVDiscriminatorTags_CvsL = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsL");
 
 
         Int_t *jetPartonID = nullptr;
@@ -649,6 +680,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
+        /*
         vector<int> match;
         vector<int> converted;
         vector<int> match_ele;
@@ -657,6 +689,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         vector<float> mcphi;
         vector<float> mcCalIso04;
         vector<float> mcTrkIso04;
+        */
+
+        std::map<int,int> match;
+        std::map<int,int> converted;
+        std::map<int,int> match_ele;
+        std::map<int,float> mcpt;
+        std::map<int,float> mceta;
+        std::map<int,float> mcphi;
+        std::map<int,float> mcCalIso04;
+        std::map<int,float> mcTrkIso04;
 
         mcpt.clear();
         mceta.clear();
@@ -669,8 +711,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         int nconv=0;
 
         if(verbose) {
-            printf("-----------------------------------------------------------------------\n");
-            printf("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
+            LOG_DEBUG("-----------------------------------------------------------------------\n");
+            LOG_DEBUG("event %lli, npho %d, nMC %d\n", event_, nPho, nMC);
         }
 
         //count number of true photon
@@ -681,7 +723,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             int nnMC=0;
             for (Int_t k=0; k<nMC; ++k) {
                 if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
-                    if(verbose) printf("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
+                    if(verbose) LOG_DEBUG("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
                     mcid.push_back(k);
                     nnMC++;
                 }
@@ -721,7 +763,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 double tmp_mcCalIso04_ = -999.;
                 double tmp_mcTrkIso04_ = -999.;
  
-                if(verbose) printf("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
+                if(verbose) LOG_DEBUG("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[i], phoEta[i], phoPhi[i], phoEleVeto[i]);
                 for (int jj=0; jj<nnMC; ++jj) {
                     int k = mcid[jj];
                     float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
@@ -730,8 +772,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     if(dr<0.2)hdpt->Fill(dpt);
                     hmcCalIso->Fill(mcCalIsoDR04[k]); 
 
-                    if(verbose)printf("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
-                    if(verbose) printf("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
+                    if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
+                    if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
                     if (dr < 0.2 && dpt < 0.2){
                         float GENISO=0.;
                         for (Int_t nn=0; nn<nMC; ++nn) {
@@ -747,7 +789,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                             tmp_mcPhi_ = mcPhi[k];
                             tmp_mcCalIso04_ = mcCalIsoDR04[k];
                             tmp_mcTrkIso04_ = mcTrkIsoDR04[k];
-                            if(verbose) printf("  mc matched !!! \n");	    
+                            if(verbose) LOG_DEBUG("  mc matched !!! \n");	    
                             break;
                         }
 
@@ -785,10 +827,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }else{
                     if(tmp_isConverted==1){
                         nconv++;
-                        //printf(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
+                        //LOG_DEBUG(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[i]);
                     }
                 }
 
+                /*
                 mcpt.push_back(tmp_mcPt_);
                 mceta.push_back(tmp_mcEta_);
                 mcphi.push_back(tmp_mcPhi_);
@@ -797,19 +840,24 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 match.push_back(tmp_isMatched);
                 match_ele.push_back(tmp_isMatchedEle);
                 converted.push_back(tmp_isConverted);
+                */
+
+                mcpt[i]=tmp_mcPt_;
+                mceta[i]=tmp_mcEta_;
+                mcphi[i]=tmp_mcPhi_;
+                mcCalIso04[i]=tmp_mcCalIso04_;
+                mcTrkIso04[i]=tmp_mcTrkIso04_;
+                match[i]=tmp_isMatched;
+                match_ele[i]=tmp_isMatchedEle;
+                converted[i]=tmp_isConverted;
             }
 
             if(gjet15to6000 == 0) {
-                //h_truepho->Fill((float)nmatch/(float)nPho);
                 h_truepho->Fill(nmatch+0.001);
                 h_convpho->Fill(nconv+0.001);
             }
-            //ask for only one mc true photon
-            //if(nmatch < 1) continue;
         }
 
-        // if(gjet15to6000==1 	&& ntruephoton!=1) continue;
-        // if(gjet15to6000==1 	&& nmatch<1) continue;
 
         int npj=0;
         int npp=0;
@@ -831,7 +879,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         vector <int> photon_list;
-        vector <int> photon_jetID;
+        //vector <int> photon_jetID;
         vector<TLorentzDATA> photons;
         int jet_index=-1;
 
@@ -846,8 +894,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
             }
         }
-        int nnjet=0;
-        int jet2_index=-1;
+        //int nnjet=0;
+        //int jet2_index=-1;
         if(!data.HasMC()) { 
             for (Int_t i=0; i<nPho; ++i) {  
                 if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
@@ -875,15 +923,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
-                /* completely disable trigger selection
-
-                // in 2016 HLT Table
-                if(((phoFiredTrgs[i]>>7)&1)==1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
-
-                //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
-                //else 
-                //  continue;       
-                //  */
+                if ( USEHLT )
+                {
+                    // in 2016 HLT Table
+                    if((phoFiredTrgs[i]>>7)&1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
+                    //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
+                    else 
+                        continue;       
+                }
             }
 
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
@@ -914,7 +961,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                                 hphoEE_pt_presel_csev->Fill(phoEt[i]);
                             }
                         }
-
                     }
                 }
             }
@@ -931,19 +977,22 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
 
-        vector<int> eleID;
-        ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight 
-        h_nele->Fill(eleID.size());
 
         // find photon overlaps to electron
-        phoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
-        for(unsigned int j=0; j<eleID.size(); j++){
-            if(elePt[eleID[j]]<100) continue;
-            TLorentzVector tmp_eP4;
-            tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-            h_dR_phoele->Fill(phoP4.DeltaR(tmp_eP4));
-            if(phoP4.DeltaR(tmp_eP4) < 0.3) {
-                photon_list.clear(); 
+        TLorentzVector leadingPhoP4;
+        leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
+        if ( ELECTRONVETO ) {
+            vector<int> eleID;
+            ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
+            h_nele->Fill(eleID.size());
+            for(unsigned int j=0; j<eleID.size(); j++){
+                if(elePt[eleID[j]]<100) continue;
+                TLorentzVector tmp_eP4;
+                tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
+                h_dR_phoele->Fill(leadingPhoP4.DeltaR(tmp_eP4));
+                if(leadingPhoP4.DeltaR(tmp_eP4) < 0.3) {
+                    photon_list.clear(); 
+                }
             }
         }
 
@@ -954,44 +1003,50 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                if(phoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
-                    float dphojetpt = jetPt[j] / phoP4.Pt();
+                /*
+                if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
+                    float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
                     h_dpt_phojet->Fill(dphojetpt);
                     if( dphojetpt>0.5 || dphojetpt<2.) {
                         if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
                         else photon_jetID.push_back(0.);
                     }
                 }
+                */
 
                 if( jetId[j] ) {	  
-                    h_dR_phojet->Fill(phoP4.DeltaR(jetP4));
-                    if(phoP4.DeltaR(jetP4)>0.4){
+                    h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
+                    if(leadingPhoP4.DeltaR(jetP4)>0.4){
                         if(jet_index<0) jet_index = j;
-                        nnjet++;
-                        if(nnjet==2) jet2_index = j;
+                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
+                        //nnjet++;
+                        //if(nnjet==2) jet2_index = j;
                     }	    
                 }    
             }  
         }
 
+        /*
         if(phoEt[photon_list[0]] > 150.) {
             h_njet->Fill(nnjet, xsweight);
             if(nnjet>1){
                 int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-                int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-                h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
+                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
+                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
             }
         }
+        */
 
 
 
-        if(photon_jetID.size()==0) photon_jetID.push_back(0);
+        //if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
 
 
 
 
 
-        for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
+        //for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
+        for (Int_t ipho : photon_list ) {
             nPU=0; //ch
             HLT                = 0;
             HLTIsPrescaled     = 0;
@@ -1035,6 +1090,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetDeepCSVTags_bb_ = 0.; //ch
             jetDeepCSVTags_c_ = 0.; //ch
             jetDeepCSVTags_udsg_ = 0.; //ch
+            jetDeepFlavourTags_b_ = 0.;
+            jetDeepFlavourTags_c_ = 0.;
+            jetDeepFlavourTags_g_ = 0.;
+            jetDeepFlavourTags_lepb_ = 0.;
+            jetDeepFlavourTags_bb_ = 0.;
+            jetDeepFlavourTags_uds_ = 0.;
+            jetDeepCSVDiscriminatorTags_BvsAll_ = 0.;
+            jetDeepCSVDiscriminatorTags_CvsB_ = 0.;
+            jetDeepCSVDiscriminatorTags_CvsL_ = 0.;
             SeedTime_=0; //ch
             SeedEnergy_=0; //ch
             MIPTotEnergy_=0; //ch
@@ -1079,7 +1143,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             isData  = data.GetBool("isData");
             nVtx    = data.GetInt("nVtx");
 
-            int ipho = photon_list[ii];
+            //int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
             phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
             if(jet_index>=0) {
@@ -1095,6 +1159,16 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
                 jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
                 jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
+                jetDeepFlavourTags_b_ = jetDeepFlavourTags_b[jet_index];
+                jetDeepFlavourTags_c_ = jetDeepFlavourTags_c[jet_index];
+                jetDeepFlavourTags_g_ = jetDeepFlavourTags_g[jet_index];
+                jetDeepFlavourTags_lepb_ = jetDeepFlavourTags_lepb[jet_index];
+                jetDeepFlavourTags_bb_ = jetDeepFlavourTags_bb[jet_index];
+                jetDeepFlavourTags_uds_ = jetDeepFlavourTags_uds[jet_index];
+                jetDeepCSVDiscriminatorTags_BvsAll_ = jetDeepCSVDiscriminatorTags_BvsAll[jet_index];
+                jetDeepCSVDiscriminatorTags_CvsB_ = jetDeepCSVDiscriminatorTags_CvsB[jet_index];
+                jetDeepCSVDiscriminatorTags_CvsL_ = jetDeepCSVDiscriminatorTags_CvsL[jet_index];
+
 
                 if( data.HasMC() ) {
                     TLorentzVector jetGenJetP4;
@@ -1182,7 +1256,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             r9Full5x5        = phoR9Full5x5[ipho];
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
-            photon_jetID_ = photon_jetID[ii];
+            //photon_jetID_ = photon_jetID[ii];
 
             phoIDbit_ = phoIDbit[ipho];
 

@@ -5,5 +5,5 @@
 
 <export>
     <bin name="exec_xPhotonRunner"           file="xPhotonRunner.cc"/>
-    <bin name="exec_AppendXSWeightToxPhoton" file="AppendXSWeightToxPhoton.cc"/>
+    <bin name="exec_AppendEventInfo"         file="AppendEventInfo.cc"/>
 </export>

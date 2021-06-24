@@ -39,7 +39,23 @@ dirdev=dev
 sources_dev=$(wildcard    $(dirdev)/*.cc)
 objfile_dev=$(sources_dev:$(dirdev)/%.cc=$(dirobj)/test_%.o)
 test: dev/exe.test.xPhotonRunner
+dev:  dev/exe.test.xElectronsRunner
 
+dev/exe.test.xElectronsRunner: obj/xElectronsRunner.o $(objfile_src) $(objfile_dev)
+	$(Compiler) -o $@ $< $(objfile_dev) \
+    obj/ElectronSelections.o \
+    obj/MuonSelections.o \
+    obj/PhotonSelections.o \
+    obj/histMgr.o \
+    obj/puweicalc.o \
+    obj/readMgr.o \
+    obj/ExternalFilesMgr.o \
+    obj/untuplizer.o \
+    obj/usefulFuncs.o \
+	obj/BTagCalibrationStandalone.o \
+	obj/BTaggingMgr.o \
+
+	@echo "--- Successfully compiled " $@ " ---"
 dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
 	$(Compiler) -o $@ $< $(objfile_dev) \
     obj/ElectronSelections.o \
@@ -50,7 +66,9 @@ dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
     obj/readMgr.o \
     obj/ExternalFilesMgr.o \
     obj/untuplizer.o \
-    obj/usefulFuncs.o
+    obj/usefulFuncs.o \
+	obj/BTagCalibrationStandalone.o \
+	obj/BTaggingMgr.o
 	@echo "--- Successfully compiled " $@ " ---"
 ###### declare test end ###########
 #obj/PreselectionMgr.o \
@@ -67,8 +85,10 @@ bin/exe.RooFit_ParFit_Pythia: obj/RooFit_ParFit_Pythia.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
 bin/exe.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
-bin/exe.AppendXSWeightToxPhoton: obj/AppendXSWeightToxPhoton.o
-	$(Compiler) -o $@ $<
+bin/exe.xElectronsRunner: obj/xElectronsRunner.o $(objfile_src)
+	$(Compiler) -o $@ $< $(objfile_src)
+bin/exe.AppendEventInfo: obj/AppendEventInfo.o $(objfile_src)
+	$(Compiler) -o $@ $< $(objfile_src)
 
 ################ Main Targets Ends #########################3
 

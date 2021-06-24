@@ -1,5 +1,7 @@
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include <stdio.h>
+//#include <stdexcept>
 
 const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, int year)
 {
@@ -48,3 +50,23 @@ const char* ExternalFilesMgr::testchar()
     return tmpstr;
 }
 
+const char* ExternalFilesMgr::csvFile_BTagCalib_CSVv2()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/CSVv2_94XSF_V2_B_F.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalib_DeepCSV()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepCSV_94XSF_V5_B_F.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F_JESreduced.csv"; }
+const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name)
+{
+    if ( name == "CSVv2"                  ) return csvFile_BTagCalib_CSVv2();
+    if ( name == "DeepCSV"                ) return csvFile_BTagCalib_DeepCSV();
+    if ( name == "DeepFlavour"            ) return csvFile_BTagCalib_DeepFlavour();
+    if ( name == "DeepFlavour_JESReduced" ) return csvFile_BTagCalib_DeepFlavour_JESreduced();
+    LOG_FATAL( "Unknown input argument name '%s'", name.c_str() );
+    //throw std::invalid_argument("ExternalFilesMgr : Unknown input argument name ");
+    return "";
+}
+std::string ExternalFilesMgr::csvFile_testing()
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/CSVv2_94XSF_V2_B_F.csv"; }

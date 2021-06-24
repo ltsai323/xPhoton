@@ -27,8 +27,8 @@ public :
    Bool_t          isData;
    Long64_t        HLT;
    Long64_t        HLTIsPrescaled;
-   Long64_t        HLT50ns;
-   Long64_t        HLTIsPrescaled50ns;
+   Long64_t        HLT50ns = 0; // broken
+   Long64_t        HLTIsPrescaled50ns = 0; // broken
    Int_t           phoFiredTrg;
    Float_t         pthat;
    Float_t         genHT;
@@ -45,29 +45,29 @@ public :
    Int_t           isMatched;
    Int_t           isMatchedEle;
    Int_t           isConverted;
-   Int_t           idLoose;
-   Int_t           idMedium;
-   Int_t           idTight;
+   Int_t           idLoose = 0; //broken
+   Int_t           idMedium = 0; //broken
+   Int_t           idTight = 0; //broken
    Int_t           nVtx;
    Int_t           nPU;
    Float_t         puwei;
    Int_t           eleVeto;
    Float_t         HoverE;
-   Float_t         sieie;
-   Float_t         sieip;
-   Float_t         sipip;
-   Float_t         chIso;
-   Float_t         phoIso;
-   Float_t         nhIso;
+   Float_t         sieie = 0; //broken
+   Float_t         sieip = 0; //broken
+   Float_t         sipip = 0; //broken
+   Float_t         chIso = 0; //broken
+   Float_t         phoIso = 0; //broken
+   Float_t         nhIso = 0; //broken
    Float_t         chIsoRaw;
    Float_t         chWorstRaw;
    Float_t         phoIsoRaw;
    Float_t         nhIsoRaw;
    Float_t         rho;
-   Float_t         e1x3;
-   Float_t         e2x2;
-   Float_t         e2x5;
-   Float_t         e5x5;
+   Float_t         e1x3 = 0; //broken
+   Float_t         e2x2 = 0; //broken
+   Float_t         e2x5 = 0; //broken
+   Float_t         e5x5 = 0; //broken
    Float_t         rawE;
    Float_t         scEtaWidth;
    Float_t         scPhiWidth;
@@ -76,25 +76,25 @@ public :
    Float_t         mva;
    Float_t         photonIDmva;
    Int_t           phoIDbit;
-   Float_t         mva_hgg;
-   Int_t           HggPresel;
-   Float_t         Mmm;
-   Float_t         Mee;
+   Float_t         mva_hgg = 0; //broken
+   Int_t           HggPresel = 0; //broken
+   Float_t         Mmm = 0; //broken
+   Float_t         Mee = 0; //broken
    Float_t         MET;
    Int_t           metFilters;
    Float_t         METPhi;
    Int_t           phohasPixelSeed;
    Float_t         MTm;
    Float_t         MTe;
-   Float_t         deta_wg;
-   Float_t         dphi_wg;
+   Float_t         deta_wg = 0; //broken
+   Float_t         dphi_wg = 0; //broken
    Float_t         sieieFull5x5;
    Float_t         sieipFull5x5;
    Float_t         sipipFull5x5;
-   Float_t         e1x3Full5x5;
+   Float_t         e1x3Full5x5 = 0; //broken
    Float_t         r9Full5x5;
    Float_t         e2x2Full5x5;
-   Float_t         e2x5Full5x5;
+   Float_t         e2x5Full5x5 = 0; //broken
    Float_t         e5x5Full5x5;
    Float_t         jetPt;
    Float_t         jetEta;
@@ -220,6 +220,7 @@ public :
    TBranch        *b_MIPTotEnergy;   //!
 
    MakeHisto(Int_t option=1);
+   MakeHisto(const char* fname);
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -234,6 +235,7 @@ public :
    virtual Int_t    JetEtaBin(Float_t eta);
    virtual Int_t    triggerbit(Int_t ptbin);
 
+  TFile *fout;
 };
 
 #endif
@@ -260,7 +262,6 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
   /* Init(tree); */
   TChain *tc = new TChain("t");
 
-  TFile *fout;
 
   if(option == 1) {
     // tc->Add("../summer16_V09_04_13_04_GJet_Pt-15To6000_TuneCUETP8M1-Flat_13TeV_pythia8_20M.root");
@@ -281,18 +282,28 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
   };
 
   if(option ==2){
- //    tc->Add("../job_SinglePho_Run2016B_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016C_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016D_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016E_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016F_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016G_Legacy.root");
- //    tc->Add("../job_SinglePho_Run2016H_Legacy.root");
+      /*
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016B_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016C_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016D_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016E_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016F_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016G_Legacy.root");
+    tc->Add("~/ReceivedFile/RSprocessedFiles//job_SinglePho_Run2016H_Legacy.root");
+    */
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016B_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016C_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016D_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016E_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016F_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016G_Legacy.root");
+    tc->Add("/home/ltsai/ReceivedFile/xPhoton_Run2016Legacy_calibratedPt_noEleVeto_2016mvaweight/Run2016H_Legacy.root");
  // // tc->Add("../job_SinglePho_Run2017B_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017C_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017D_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017E_MarReminiAOD.root");
  // tc->Add("../job_SinglePho_Run2017F_MarReminiAOD.root");
+    /*
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016B_94XReReco_ver2v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016C_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016D_94XReReco_v1.root");
@@ -300,6 +311,7 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016F_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016G_94XReReco_v1.root");
     tc->Add("/wk_cms/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016H_94XReReco_v1.root");
+    */
 
     fout = new TFile("output_data.root","recreate");
   }
@@ -308,9 +320,25 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
   OPTION = option;
   Init(tc);
 }
+MakeHisto::MakeHisto(const char* fname) : fChain(0)
+{
+  HLTOPTION = 0;
+
+  /* Init(tree); */
+  TChain *tc = new TChain("t");
+  tc->Add(fname);
+
+
+
+  fout = new TFile("output_makehists.root","recreate");
+
+
+  Init(tc);
+}
 
 MakeHisto::~MakeHisto()
 {
+   if(fout)   fout->Close();
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
@@ -355,9 +383,9 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("isData", &isData, &b_isData);
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
-   fChain->SetBranchAddress("HLT50ns", &HLT50ns, &b_HLT50ns);
-   fChain->SetBranchAddress("HLTIsPrescaled50ns", &HLTIsPrescaled50ns, &b_HLTIsPrescaled50ns);
-   fChain->SetBranchAddress("phoFiredTrg", &phoFiredTrg, &b_phoFiredTrgs);
+   //fChain->SetBranchAddress("HLT50ns", &HLT50ns, &b_HLT50ns);
+   //fChain->SetBranchAddress("HLTIsPrescaled50ns", &HLTIsPrescaled50ns, &b_HLTIsPrescaled50ns);
+   fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrg, &b_phoFiredTrgs);
    fChain->SetBranchAddress("pthat", &pthat, &b_pthat);
    fChain->SetBranchAddress("genHT", &genHT, &b_genHT);
    fChain->SetBranchAddress("mcPt", &mcPt, &b_mcPt);
@@ -373,29 +401,29 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
    fChain->SetBranchAddress("isMatchedEle", &isMatchedEle, &b_isMatchedEle);
    fChain->SetBranchAddress("isConverted", &isConverted, &b_isConverted);
-   fChain->SetBranchAddress("idLoose", &idLoose, &b_idLoose);
-   fChain->SetBranchAddress("idMedium", &idMedium, &b_idMedium);
-   fChain->SetBranchAddress("idTight", &idTight, &b_idTight);
+   //fChain->SetBranchAddress("idLoose", &idLoose, &b_idLoose);
+   //fChain->SetBranchAddress("idMedium", &idMedium, &b_idMedium);
+   //fChain->SetBranchAddress("idTight", &idTight, &b_idTight);
    fChain->SetBranchAddress("nVtx", &nVtx, &b_nVtx);
    fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
    fChain->SetBranchAddress("puwei", &puwei, &b_puwei);
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
-   fChain->SetBranchAddress("sieie", &sieie, &b_sieie);
-   fChain->SetBranchAddress("sieip", &sieip, &b_sieip);
-   fChain->SetBranchAddress("sipip", &sipip, &b_sipip);
-   fChain->SetBranchAddress("chIso", &chIso, &b_chIso);
-   fChain->SetBranchAddress("phoIso", &phoIso, &b_phoIso);
-   fChain->SetBranchAddress("nhIso", &nhIso, &b_nhIso);
+   //fChain->SetBranchAddress("sieie", &sieie, &b_sieie);
+   //fChain->SetBranchAddress("sieip", &sieip, &b_sieip);
+   //fChain->SetBranchAddress("sipip", &sipip, &b_sipip);
+   //fChain->SetBranchAddress("chIso", &chIso, &b_chIso);
+   //fChain->SetBranchAddress("phoIso", &phoIso, &b_phoIso);
+   //fChain->SetBranchAddress("nhIso", &nhIso, &b_nhIso);
    fChain->SetBranchAddress("chIsoRaw", &chIsoRaw, &b_chIsoRaw);
    fChain->SetBranchAddress("chWorstRaw", &chWorstRaw, &b_chWorstIso);
    fChain->SetBranchAddress("phoIsoRaw", &phoIsoRaw, &b_phoIsoRaw);
    fChain->SetBranchAddress("nhIsoRaw", &nhIsoRaw, &b_nhIsoRaw);
    fChain->SetBranchAddress("rho", &rho, &b_rho);
-   fChain->SetBranchAddress("e1x3", &e1x3, &b_e1x3);
-   fChain->SetBranchAddress("e2x2", &e2x2, &b_e2x2);
-   fChain->SetBranchAddress("e2x5", &e2x5, &b_e2x5);
-   fChain->SetBranchAddress("e5x5", &e5x5, &b_e5x5);
+   //fChain->SetBranchAddress("e1x3", &e1x3, &b_e1x3);
+   //fChain->SetBranchAddress("e2x2", &e2x2, &b_e2x2);
+   //fChain->SetBranchAddress("e2x5", &e2x5, &b_e2x5);
+   //fChain->SetBranchAddress("e5x5", &e5x5, &b_e5x5);
    fChain->SetBranchAddress("rawE", &rawE, &b_rawE);
    fChain->SetBranchAddress("scEtaWidth", &scEtaWidth, &b_scEtaWidth);
    fChain->SetBranchAddress("scPhiWidth", &scPhiWidth, &b_scPhiWidth);
@@ -404,25 +432,25 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
-   fChain->SetBranchAddress("mva_hgg", &mva_hgg, &b_mva_hgg);
-   fChain->SetBranchAddress("HggPresel", &HggPresel, &b_HggPresel);
-   fChain->SetBranchAddress("Mmm", &Mmm, &b_Mmm);
-   fChain->SetBranchAddress("Mee", &Mee, &b_Mee);
+   //fChain->SetBranchAddress("mva_hgg", &mva_hgg, &b_mva_hgg);
+   //fChain->SetBranchAddress("HggPresel", &HggPresel, &b_HggPresel);
+   //fChain->SetBranchAddress("Mmm", &Mmm, &b_Mmm);
+   //fChain->SetBranchAddress("Mee", &Mee, &b_Mee);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
    fChain->SetBranchAddress("METPhi", &METPhi, &b_METPhi);
    fChain->SetBranchAddress("phohasPixelSeed", &phohasPixelSeed, &b_phohasPixelSeed);
-   fChain->SetBranchAddress("MTm", &MTm, &b_MTm);
-   fChain->SetBranchAddress("MTe", &MTe, &b_MTe);
-   fChain->SetBranchAddress("deta_wg", &deta_wg, &b_deta_wg);
-   fChain->SetBranchAddress("dphi_wg", &dphi_wg, &b_dphi_wg);
+   //fChain->SetBranchAddress("MTm", &MTm, &b_MTm);
+   //fChain->SetBranchAddress("MTe", &MTe, &b_MTe);
+   //fChain->SetBranchAddress("deta_wg", &deta_wg, &b_deta_wg);
+   //fChain->SetBranchAddress("dphi_wg", &dphi_wg, &b_dphi_wg);
    fChain->SetBranchAddress("sieieFull5x5", &sieieFull5x5, &b_sieieFull5x5);
    fChain->SetBranchAddress("sieipFull5x5", &sieipFull5x5, &b_sieipFull5x5);
    fChain->SetBranchAddress("sipipFull5x5", &sipipFull5x5, &b_sipipFull5x5);
-   fChain->SetBranchAddress("e1x3Full5x5", &e1x3Full5x5, &b_e1x3Full5x5);
+   //fChain->SetBranchAddress("e1x3Full5x5", &e1x3Full5x5, &b_e1x3Full5x5);
    fChain->SetBranchAddress("r9Full5x5", &r9Full5x5, &b_r9Full5x5);
    fChain->SetBranchAddress("e2x2Full5x5", &e2x2Full5x5, &b_e2x2Full5x5);
-   fChain->SetBranchAddress("e2x5Full5x5", &e2x5Full5x5, &b_e2x5Full5x5);
+   //fChain->SetBranchAddress("e2x5Full5x5", &e2x5Full5x5, &b_e2x5Full5x5);
    fChain->SetBranchAddress("e5x5Full5x5", &e5x5Full5x5, &b_e5x5Full5x5);
    fChain->SetBranchAddress("jetPt", &jetPt, &b_jetPt);
    fChain->SetBranchAddress("jetEta", &jetEta, &b_jetEta);

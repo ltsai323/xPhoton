@@ -38,7 +38,7 @@ void MakeHisto::Loop()
   TRandom3 *trd = new TRandom3();
 
 
-  TFile *fout = new TFile("output.root","recreate");
+  //TFile *fout = new TFile("output.root","recreate");
 
   TH1F *h_BDT_all[2][3][30][2]; //ebee, jetbin, ptbin, true/fake;
   TH1F *h_BDT[2][3][30][2];
@@ -57,7 +57,7 @@ void MakeHisto::Loop()
   char txt[100];
   char hname[100];
   
-  map<int, char*> varname;
+  map<int, const char*> varname;
   float var_lowx[20];
   float var_highx[20];
   varname[0] = "recoPhi"; var_lowx[0]=-3.2, var_highx[0]=3.2;
@@ -182,6 +182,7 @@ void MakeHisto::Loop()
 
   Long64_t nentries = fChain->GetEntriesFast();   
 
+  std::cout << "entries : " << fChain->GetEntries() << "   ---   " << fChain->GetEntriesFast() << std::endl;
   printf("Loading %lli events \n", fChain->GetEntriesFast() );
   printf("HLT option %d \n", HLTOPTION);
 
@@ -193,7 +194,7 @@ void MakeHisto::Loop()
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
     if (jentry % 100000 == 0){
-      fprintf(stderr, "Processing event %lli of %lli (%.3f \%)\n", jentry, fChain->GetEntriesFast(), (jentry)*100./fChain->GetEntriesFast());
+      fprintf(stderr, "Processing event %lli of %lli (%.3f %%)\n", jentry, fChain->GetEntriesFast(), (jentry)*100./fChain->GetEntriesFast());
     }
 
 
@@ -275,9 +276,9 @@ void MakeHisto::Loop()
         if(ibit==6) basebit=5;
         if(ibit>=7) basebit=6;
         if(ibit>=9) basebit=8;
-        if( (phoFiredTrg >>basebit) & 1 == 1 ) {
+        if( (phoFiredTrg >>basebit)&1 ) {
           h_HLT[ebee][ibit][0]->Fill(recoPt);
-          if( (phoFiredTrg >>(ibit)) & 1 == 1 ) {
+          if( (phoFiredTrg >>(ibit))&1 ) {
             h_HLT[ebee][ibit][1]->Fill(recoPt);
           }
         }
@@ -295,7 +296,7 @@ void MakeHisto::Loop()
     // if(isData==1 && ((phoFiredTrg>>triggerbit(ptbin))&1)==0) continue;
     // if(isData==1 && !(((phoFiredTrg>>8)&1)==1 || MTm>0) ) continue;
     //if(!(((phoFiredTrg>>8)&1)==1 || MTm>0) ) continue;
-    if(HLTOPTION==1 && (((phoFiredTrg>>8)&1)==0) ) continue;
+    if( HLTOPTION==1 && !((phoFiredTrg>>8)&1) ) continue;
     float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);
     // if(MTm>0. && ebee==0 &&dr_wg<0.4) continue;
     // if(MTm>0. && ebee==1 &&dr_wg<1.) continue;
@@ -484,7 +485,6 @@ void MakeHisto::Loop()
     }
   }
 
-  fout->Close();
 
 }
 
@@ -513,6 +513,7 @@ Int_t MakeHisto::Ptbin(Float_t pt)
     if(pt>=ptcut[ibin] && pt<ptcut[ibin+1] ) return ibin;
   }
   //if(pt<22.) return -1;
+  return -999;
 }
 
 Int_t MakeHisto::HLTbit(Float_t pt){
@@ -524,6 +525,7 @@ Int_t MakeHisto::HLTbit(Float_t pt){
   }
   if(pt>175) return 7;
   if(pt<22.) return -1;
+  return -999;
 }
 
 Int_t MakeHisto::JetEtaBin(Float_t eta){  
