@@ -522,7 +522,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     }
   }
 
-  LOG_DEBUG("return default jetSF");
+  LOG_DEBUG("return default jetSF = 0");
   return 0.;  // default value
 }
 
@@ -542,7 +542,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
   }
    
   if (eta_is_out_of_bounds) {
-      LOG_WARNING(" eta is out of bounds! please check");
+      LOG_WARNING(" eta(=%.3f) is out of bounds! { eta bound = [ %.3f, %.3f ], jet flavor = %d and discr = %.4f }",eta, sf_bounds_eta.first, sf_bounds_eta.second, jf, discr);
     return 1.;
   }
 
