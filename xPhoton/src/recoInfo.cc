@@ -1,5 +1,4 @@
 #include "xPhoton/xPhoton/interface/recoInfo.h"
-#include "xPhoton/xPhoton/interface/readMgr.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
@@ -11,6 +10,24 @@ int  TLorentzDATA::idxInEvt() const { return _idx; }
 bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA() : TLorentzVector() { _idx = NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA(int idx) : TLorentzVector() { _idx = idx; }
+ std::map<int,TLorentzVector> recoInfo::PreselectedElectron_2016(TreeReader* data)
+{
+    int nEle = data->GetInt("nEle");
+    
+    Float_t* pt    = data->GetPtrFloat("");
+    Float_t* eta   = data->GetPtrFloat("");
+    Float_t* phi   = data->GetPtrFloat("");
+
+    std::map<int,TLorentzVector> selectedElectrons;
+    for ( int iEle = 0; iEle < nEle; ++iEle )
+    {
+        TLorentzVector particle;
+
+        particle.SetPtEtaPhiM( pt[iEle], eta[iEle], phi[iEle], 0.511*0.001 );
+        selectedElectrons[iEle] = particle;
+    }
+    return selectedElectrons;
+}
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
 {

@@ -1,6 +1,7 @@
 #ifndef __RECOINFO_H__
 #define __RECOINFO_H__
-#include "xPhoton/xPhoton/interface/readMgr.h"
+//#include "xPhoton/xPhoton/interface/readMgr.h"
+#include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
@@ -8,6 +9,7 @@
 #include <TLorentzVector.h>
 #include <TMath.h>
 #include <vector>
+#include <map>
 #define NOCANDFOUND -999
 #define ELEIDENTIFICATION 3 // tight
 
@@ -18,6 +20,10 @@ struct TLorentzDATA : public TLorentzVector {
     bool isZombie() const;
     TLorentzDATA();
     TLorentzDATA(int idx);
+};
+namespace recoInfo
+{
+    std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
 };
 
 /*

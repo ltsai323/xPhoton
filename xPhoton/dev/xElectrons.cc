@@ -6,6 +6,8 @@
 #include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
+#include "xPhoton/xPhoton/interface/recoInfo.h"
+#include <TLorentzVector.h>
 #include <map>
 
 enum candF
@@ -47,9 +49,13 @@ enum recoF
     e2x5Full5x5,
     totRecoF
 };
-enum recoI
+enum candI
 {
     isMatched,
+    totCandI
+};
+enum recoI
+{
     firedTrgs,
     hasPixelSeed,
     IDbits,
@@ -98,6 +104,7 @@ void xElectrons(
 
     std::map<int, Float_t > ele1CandF,ele2CandF, ZCandF;
     std::map<int, Float_t > ele1RecoF,ele2RecoF;
+    std::map<int, Int_t   > ele1CandI,ele2CandI, ZCandI;
     std::map<int, Int_t   > ele1RecoI,ele2RecoI;
     std::map<int, Long64_t> ele1RecoL,ele2RecoL;
     std::map<int, Int_t   > eventI;
@@ -125,18 +132,9 @@ void xElectrons(
     { eventL[i] = 0; }
 
 
-    /*
-    Float_t ele1CandF[totCandF], ele2CandF[totCandF], ZCandF[totCandF];
-    Float_t ele1RecoF[totRecoF], ele2RecoF[totRecoF];
-    Int_t   ele1RecoI[totRecoI], ele2RecoI[totRecoI];
-    Int_t   eventI[totEvtI];
-
-    Long64_t ele1RecoL[totRecoL], ele2RecoL[totRecoL];
-    Long64_t eventL[totEvtL];
-    */
 
 
-    //ele1
+    // ele1
 // candF
 outtree_->Branch("ele1.mcE",&ele1CandF[candF::mcE],"ele1.mcE/F");
 outtree_->Branch("ele1.mcPt",&ele1CandF[candF::mcPt],"ele1.mcPt/F");
@@ -170,13 +168,59 @@ outtree_->Branch("ele1.sieipFull5x5",&ele1RecoF[recoF::sieipFull5x5],"ele1.sieip
 outtree_->Branch("ele1.sipipFull5x5",&ele1RecoF[recoF::sipipFull5x5],"ele1.sipipFull5x5/F");
 outtree_->Branch("ele1.e2x2Full5x5",&ele1RecoF[recoF::e2x2Full5x5],"ele1.e2x2Full5x5/F");
 outtree_->Branch("ele1.e2x5Full5x5",&ele1RecoF[recoF::e2x5Full5x5],"ele1.e2x5Full5x5/F");
+// candI
+outtree_->Branch("ele1.isMatched",&ele1CandI[candI::isMatched],"ele1.isMatched/I");
 // recoI
-outtree_->Branch("ele1.isMatched",&ele1RecoI[recoI::isMatched],"ele1.isMatched/I");
 outtree_->Branch("ele1.firedTrgs",&ele1RecoI[recoI::firedTrgs],"ele1.firedTrgs/I");
 outtree_->Branch("ele1.hasPixelSeed",&ele1RecoI[recoI::hasPixelSeed],"ele1.hasPixelSeed/I");
 outtree_->Branch("ele1.IDbits",&ele1RecoI[recoI::IDbits],"ele1.IDbits/I");
+// recoL
+outtree_->Branch("ele1.firedTrgsL", &ele1RecoL[recoL::firedTrgsL],"ele1.firedTrgsL/L");
 
-// ele1 end
+    //ele2
+// candF
+outtree_->Branch("ele2.mcE",&ele2CandF[candF::mcE],"ele2.mcE/F");
+outtree_->Branch("ele2.mcPt",&ele2CandF[candF::mcPt],"ele2.mcPt/F");
+outtree_->Branch("ele2.mcEta",&ele2CandF[candF::mcEta],"ele2.mcEta/F");
+outtree_->Branch("ele2.mcPhi",&ele2CandF[candF::mcPhi],"ele2.mcPhi/F");
+outtree_->Branch("ele2.recoE",&ele2CandF[candF::recoE],"ele2.recoE/F");
+outtree_->Branch("ele2.recoPt",&ele2CandF[candF::recoPt],"ele2.recoPt/F");
+outtree_->Branch("ele2.recoEta",&ele2CandF[candF::recoEta],"ele2.recoEta/F");
+outtree_->Branch("ele2.recoPhi",&ele2CandF[candF::recoPhi],"ele2.recoPhi/F");
+// recoF
+outtree_->Branch("ele2.recoPtCalib",&ele2RecoF[recoF::recoPtCalib],"ele2.recoPtCalib/F");
+outtree_->Branch("ele2.recoSCEta",&ele2RecoF[recoF::recoSCEta],"ele2.recoSCEta/F");
+outtree_->Branch("ele2.r9",&ele2RecoF[recoF::r9],"ele2.r9/F");
+outtree_->Branch("ele2.HoverE",&ele2RecoF[recoF::HoverE],"ele2.HoverE/F");
+outtree_->Branch("ele2.chIsoRaw",&ele2RecoF[recoF::chIsoRaw],"ele2.chIsoRaw/F");
+outtree_->Branch("ele2.phoIsoRaw",&ele2RecoF[recoF::phoIsoRaw],"ele2.phoIsoRaw/F");
+outtree_->Branch("ele2.nhIsoRaw",&ele2RecoF[recoF::nhIsoRaw],"ele2.nhIsoRaw/F");
+outtree_->Branch("ele2.chWorstIso",&ele2RecoF[recoF::chWorstIso],"ele2.chWorstIso/F");
+outtree_->Branch("ele2.rho",&ele2RecoF[recoF::rho],"ele2.rho/F");
+outtree_->Branch("ele2.rawE",&ele2RecoF[recoF::rawE],"ele2.rawE/F");
+outtree_->Branch("ele2.scEtaWidth",&ele2RecoF[recoF::scEtaWidth],"ele2.scEtaWidth/F");
+outtree_->Branch("ele2.scPhiWidth",&ele2RecoF[recoF::scPhiWidth],"ele2.scPhiWidth/F");
+outtree_->Branch("ele2.esRR",&ele2RecoF[recoF::esRR],"ele2.esRR/F");
+outtree_->Branch("ele2.esEn",&ele2RecoF[recoF::esEn],"ele2.esEn/F");
+outtree_->Branch("ele2.mva",&ele2RecoF[recoF::mva],"ele2.mva/F");
+outtree_->Branch("ele2.mva_nocorr",&ele2RecoF[recoF::mva_nocorr],"ele2.mva_nocorr/F");
+outtree_->Branch("ele2.officalIDmva",&ele2RecoF[recoF::officalIDmva],"ele2.officalIDmva/F");
+outtree_->Branch("ele2.r9Full5x5",&ele2RecoF[recoF::r9Full5x5],"ele2.r9Full5x5/F");
+outtree_->Branch("ele2.sieieFull5x5",&ele2RecoF[recoF::sieieFull5x5],"ele2.sieieFull5x5/F");
+outtree_->Branch("ele2.sieipFull5x5",&ele2RecoF[recoF::sieipFull5x5],"ele2.sieipFull5x5/F");
+outtree_->Branch("ele2.sipipFull5x5",&ele2RecoF[recoF::sipipFull5x5],"ele2.sipipFull5x5/F");
+outtree_->Branch("ele2.e2x2Full5x5",&ele2RecoF[recoF::e2x2Full5x5],"ele2.e2x2Full5x5/F");
+outtree_->Branch("ele2.e2x5Full5x5",&ele2RecoF[recoF::e2x5Full5x5],"ele2.e2x5Full5x5/F");
+// candI
+outtree_->Branch("ele2.isMatched",&ele2CandI[candI::isMatched],"ele2.isMatched/I");
+// recoI
+outtree_->Branch("ele2.firedTrgs",&ele2RecoI[recoI::firedTrgs],"ele2.firedTrgs/I");
+outtree_->Branch("ele2.hasPixelSeed",&ele2RecoI[recoI::hasPixelSeed],"ele2.hasPixelSeed/I");
+outtree_->Branch("ele2.IDbits",&ele2RecoI[recoI::IDbits],"ele2.IDbits/I");
+// recoL
+outtree_->Branch("ele2.firedTrgsL", &ele2RecoL[recoL::firedTrgsL],"ele2.firedTrgsL/L");
+
+// ele2 end
 
 // Z
 // candF
@@ -188,6 +232,9 @@ outtree_->Branch("Z.recoE",&ZCandF[candF::recoE],"Z.recoE/F");
 outtree_->Branch("Z.recoPt",&ZCandF[candF::recoPt],"Z.recoPt/F");
 outtree_->Branch("Z.recoEta",&ZCandF[candF::recoEta],"Z.recoEta/F");
 outtree_->Branch("Z.recoPhi",&ZCandF[candF::recoPhi],"Z.recoPhi/F");
+outtree_->Branch("Z.recoPhi",&ZCandF[candF::recoPhi],"Z.recoPhi/F");
+// candI
+outtree_->Branch("Z.isMatched",&ZCandI[candI::isMatched],"Z.isMatched/I");
 
 
 // evt
@@ -211,84 +258,55 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
 
 
 
-
-
-
-/*
-
-
-
-
-
-
-// recoL
-outtree_->Branch("BRAHfiredTrgsL",&firedTrgsL,"BRAHfiredTrgsL/L");
-
-// evtL
-outtree_->Branch("BRAHHLT",&HLT,"BRAHHLT/L");
-outtree_->Branch("BRAHHLTPhoIsPrescaled",&HLTPhoIsPrescaled,"BRAHHLTPhoIsPrescaled/L");
-outtree_->Branch("BRAHevent",&event,"BRAHevent/L");
-
-// recoI
-outtree_->Branch("BRAHisMatched",&isMatched,"BRAHisMatched/I");
-outtree_->Branch("BRAHfiredTrgs",&firedTrgs,"BRAHfiredTrgs/I");
-outtree_->Branch("BRAHhasPixelSeed",&hasPixelSeed,"BRAHhasPixelSeed/I");
-outtree_->Branch("BRAHIDbits",&IDbits,"BRAHIDbits/I");
-
-// evtI
-outtree_->Branch("BRAHRun",&Run,"BRAHRun/I");
-outtree_->Branch("BRAHxsweight",&xsweight,"BRAHxsweight/I");
-outtree_->Branch("BRAHpuwei",&puwei,"BRAHpuwei/I");
-outtree_->Branch("BRAHpthat",&pthat,"BRAHpthat/I");
-outtree_->Branch("BRAHMET",&MET,"BRAHMET/I");
-outtree_->Branch("BRAHMETPhi",&METPhi,"BRAHMETPhi/I");
-outtree_->Branch("BRAHnVtx",&nVtx,"BRAHnVtx/I");
-outtree_->Branch("BRAHnPU",&nPU,"BRAHnPU/I");
-
-// candF
-outtree_->Branch("BRAHmcE",&mcE,"BRAHmcE/F");
-outtree_->Branch("BRAHmcPt",&mcPt,"BRAHmcPt/F");
-outtree_->Branch("BRAHmcEta",&mcEta,"BRAHmcEta/F");
-outtree_->Branch("BRAHmcPhi",&mcPhi,"BRAHmcPhi/F");
-outtree_->Branch("BRAHrecoE",&recoE,"BRAHrecoE/F");
-outtree_->Branch("BRAHrecoPt",&recoPt,"BRAHrecoPt/F");
-outtree_->Branch("BRAHrecoEta",&recoEta,"BRAHrecoEta/F");
-outtree_->Branch("BRAHrecoPhi",&recoPhi,"BRAHrecoPhi/F");
-
-// recoF
-outtree_->Branch("BRAHrecoPtCalib",&recoPtCalib,"BRAHrecoPtCalib/F");
-outtree_->Branch("BRAHrecoSCEta",&recoSCEta,"BRAHrecoSCEta/F");
-outtree_->Branch("BRAHr9",&r9,"BRAHr9/F");
-outtree_->Branch("BRAHHoverE",&HoverE,"BRAHHoverE/F");
-outtree_->Branch("BRAHchIsoRaw",&chIsoRaw,"BRAHchIsoRaw/F");
-outtree_->Branch("BRAHphoIsoRaw",&phoIsoRaw,"BRAHphoIsoRaw/F");
-outtree_->Branch("BRAHnhIsoRaw",&nhIsoRaw,"BRAHnhIsoRaw/F");
-outtree_->Branch("BRAHchWorstIso",&chWorstIso,"BRAHchWorstIso/F");
-outtree_->Branch("BRAHrho",&rho,"BRAHrho/F");
-outtree_->Branch("BRAHrawE",&rawE,"BRAHrawE/F");
-outtree_->Branch("BRAHscEtaWidth",&scEtaWidth,"BRAHscEtaWidth/F");
-outtree_->Branch("BRAHscPhiWidth",&scPhiWidth,"BRAHscPhiWidth/F");
-outtree_->Branch("BRAHesRR",&esRR,"BRAHesRR/F");
-outtree_->Branch("BRAHesEn",&esEn,"BRAHesEn/F");
-outtree_->Branch("BRAHmva",&mva,"BRAHmva/F");
-outtree_->Branch("BRAHmva_nocorr",&mva_nocorr,"BRAHmva_nocorr/F");
-outtree_->Branch("BRAHofficalIDmva",&officalIDmva,"BRAHofficalIDmva/F");
-outtree_->Branch("BRAHr9Full5x5",&r9Full5x5,"BRAHr9Full5x5/F");
-outtree_->Branch("BRAHsieieFull5x5",&sieieFull5x5,"BRAHsieieFull5x5/F");
-outtree_->Branch("BRAHsieipFull5x5",&sieipFull5x5,"BRAHsieipFull5x5/F");
-outtree_->Branch("BRAHsipipFull5x5",&sipipFull5x5,"BRAHsipipFull5x5/F");
-outtree_->Branch("BRAHe2x2Full5x5",&e2x2Full5x5,"BRAHe2x2Full5x5/F");
-outtree_->Branch("BRAHe2x5Full5x5",&e2x5Full5x5,"BRAHe2x5Full5x5/F");
-*/
     
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++)
     {
-        data.GetEntry(ev);
         // 1. load data
-        // 2. build electron 4mom and pass electron preselection
+        // 2. build electron 4mom and pass electron preselection (and HLT)
         // 3. build Z candidate and reject event.
         // 4. mc truth matching.
         // 5. fill tree
+        // 6. mva
+        data.GetEntry(ev);
+        Int_t nEle = data.GetInt("nEle");
+        Int_t* eleCharge = data.GetPtrInt("eleCharge");
+
+
+        std::map<int, TLorentzVector> electrons = recoInfo::PreselectedElectron_2016(&data);
+        for ( int eleIdx1 = 0; eleIdx1 < nEle; ++eleIdx1 )
+        {
+            continue;
+        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         outtree_->Fill();
     }
 

@@ -50,6 +50,7 @@ dev/exe.test.xElectronsRunner: obj/xElectronsRunner.o $(objfile_src) $(objfile_d
     obj/puweicalc.o \
     obj/readMgr.o \
     obj/ExternalFilesMgr.o \
+	obj/recoInfo.o \
     obj/untuplizer.o \
     obj/usefulFuncs.o \
 	obj/BTagCalibrationStandalone.o \
