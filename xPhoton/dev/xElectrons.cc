@@ -101,7 +101,16 @@ void xElectrons(
 
     TTree *outtree_ = new TTree("t", "mini tree");
     
+    rec_Electron ele1cand, ele2cand;
+    rec_Z Zcand;
+    rec_Event event;
 
+    RegBranch( outtree_, "ele1", &ele1cand );
+    RegBranch( outtree_, "ele2", &ele2cand );
+    RegBranch( outtree_, "Z", &Zcand );
+    RegBranch( outtree_, "Events", &event );
+
+    /*
     std::map<int, Float_t > ele1CandF,ele2CandF, ZCandF;
     std::map<int, Float_t > ele1RecoF,ele2RecoF;
     std::map<int, Int_t   > ele1CandI,ele2CandI, ZCandI;
@@ -110,14 +119,12 @@ void xElectrons(
     std::map<int, Int_t   > eventI;
     std::map<int, Long64_t> eventL;
 
-    /*
-    std::map<candF, Float_t > ele1CandF,ele2CandF, ZCandF;
-    std::map<recoF, Float_t > ele1RecoF,ele2RecoF;
-    std::map<recoI, Int_t   > ele1RecoI,ele2RecoI;
-    std::map<recoL, Long64_t> ele1RecoL,ele2RecoL;
-    std::map<evtI , Int_t   > eventI;
-    std::map<evtL , Long64_t> eventL;
-    */
+    // std::map<candF, Float_t > ele1CandF,ele2CandF, ZCandF;
+    // std::map<recoF, Float_t > ele1RecoF,ele2RecoF;
+    // std::map<recoI, Int_t   > ele1RecoI,ele2RecoI;
+    // std::map<recoL, Long64_t> ele1RecoL,ele2RecoL;
+    // std::map<evtI , Int_t   > eventI;
+    // std::map<evtL , Long64_t> eventL;
     for ( int i=0; i<totCandF; ++i )
     { ele1CandF[i] = 0; ele2CandF[i] = 0; ZCandF[i] = 0; }
     for ( int i=0; i<totRecoF; ++i )
@@ -253,6 +260,7 @@ outtree_->Branch("evt.HLT",&eventL[evtL::HLT],"evt.HLT/L");
 outtree_->Branch("evt.HLTPhoIsPrescaled",&eventL[evtL::HLTPhoIsPrescaled],"evt.HLTPhoIsPrescaled/L");
 outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
 
+*/
 
 
 
@@ -268,6 +276,9 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         // 5. fill tree
         // 6. mva
         data.GetEntry(ev);
+        event.run=ev;
+        std::cout << "ev = " << ev << std::endl;
+        ele1cand.recoPt = (float) ev; outtree_->Fill();  continue;
         Int_t nEle = data.GetInt("nEle");
         Int_t* eleCharge = data.GetPtrInt("eleCharge");
 
