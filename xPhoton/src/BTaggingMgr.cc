@@ -22,6 +22,8 @@ namespace t
         fCol["Lights"] = BTagEntry::JetFlavor::FLAV_UDSG;
 
         systTypeCollection["CSVv2"] = {
+            "central"
+                /* only use central for first galanced
             "central",
             "down_cferr1",
             "down_cferr2",
@@ -41,8 +43,11 @@ namespace t
             "up_lf",
             "up_lfstats1",
             "up_lfstats2" 
+            */
         };
         systTypeCollection["DeepCSV"] = {
+            "central"
+                /* only use central value for first galanced
             "central",
             "down_cferr1",
             "down_cferr2",
@@ -114,8 +119,11 @@ namespace t
             "up_lf",
             "up_lfstats1",
             "up_lfstats2" 
+            */
         };
         systTypeCollection["DeepFlavour"] = {
+            "central"
+                /* only use central value for first galance
             "central",
             "down_cferr1",
             "down_cferr2",
@@ -187,8 +195,11 @@ namespace t
             "up_lf",
             "up_lfstats1",
             "up_lfstats2" 
+                */
         };
         systTypeCollection["DeepFlavour_JESReduced"] = {
+            "central"
+                /* only used central value for first galance
             "central",
             "down_cferr1",
             "down_cferr2",
@@ -230,6 +241,7 @@ namespace t
             "up_lf",
             "up_lfstats1",
             "up_lfstats2"
+            */
         };
     }
 }; // end of namespace t
