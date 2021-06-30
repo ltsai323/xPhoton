@@ -10,16 +10,16 @@ namespace t
     // use std::string due to a equal sign is needed. first : algorithm, second : systType
     //std::map<std::string, std::vector<const char*> > systTypeCollection;
     std::map<std::string, std::vector<std::string> > systTypeCollection;
-    std::map<std::string, BTagEntry::JetFlavor> fCol;
+    //std::map<std::string, BTagEntry::JetFlavor> fCol;
     std::vector<const char*> flavourCollection;
     void SetContent(){
         if ( systTypeCollection.size() != 0 )  return;
         flavourCollection.push_back("Bquark");
         flavourCollection.push_back("Cquark");
         flavourCollection.push_back("Lights");
-        fCol["Bquark"] = BTagEntry::JetFlavor::FLAV_B;
-        fCol["Cquark"] = BTagEntry::JetFlavor::FLAV_C;
-        fCol["Lights"] = BTagEntry::JetFlavor::FLAV_UDSG;
+        //fCol["Bquark"] = BTagEntry::JetFlavor::FLAV_B;
+        //fCol["Cquark"] = BTagEntry::JetFlavor::FLAV_C;
+        //fCol["Lights"] = BTagEntry::JetFlavor::FLAV_UDSG;
 
         systTypeCollection["CSVv2"] = {
             "central"
@@ -296,21 +296,46 @@ void BTaggingMgr::InitVars()
         LOG_FATAL("You need to execute function RegisterSystTypes() before initialize variables.");
 
     if ( systVars.size() == 0 ) // create new variables
-    for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
-    {
-        const std::string& flavour = iter->first;
-        BTagEntry::JetFlavor iFlav = iter->second;
+        //for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
+        //{
+            //const std::string& flavour = iter->first;
+            //BTagEntry::JetFlavor iFlav = iter->second;
             for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
             {
                 const std::string algoName = _usedAlgorithmNames[iAlgo];
                 for ( int iSyst = 0; iSyst < _usedSystTypes[algoName].size(); ++iSyst )
-                { systVars[ systVarIdx(iFlav,iAlgo,iSyst) ] = 0; }
+                { systVars[ systVarIdx(iAlgo,iSyst) ] = 0; }
             }
-        }
+        //}
     else
         for ( auto systVarIter = systVars.begin(); systVarIter != systVars.end(); ++systVarIter )
             systVarIter->second = 0;
 }
+void BTaggingMgr::RegBranch(TTree* t)
+{
+    if ( !_systTypeRegisted )
+        LOG_FATAL("You need to execute function RegisterSystTypes() before register branch into tree.");
+    char bname[200], bnameF[200];
+    if ( t == nullptr || t->IsZombie() ) LOG_FATAL("input tree is invalid");
+
+    //for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
+    //{
+        //const std::string& flavour = iter->first;
+        //BTagEntry::JetFlavor iFlav = iter->second;
+        for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
+        {
+            const std::string algorithm = _usedAlgorithmNames[iAlgo];
+            for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
+            {
+                const std::string systType = _usedSystTypes[algorithm][iSyst];
+                sprintf(bname , "jetSF.%s.%s"  , algorithm.c_str(), systType.c_str());
+                sprintf(bnameF, "jetSF.%s.%s/F", algorithm.c_str(), systType.c_str());
+                t->Branch(bname, &systVars[ systVarIdx(iAlgo,iSyst) ], bnameF);
+            }
+        }
+    //}
+}
+/*
 void BTaggingMgr::RegBranch(TTree* t)
 {
     if ( !_systTypeRegisted )
@@ -335,6 +360,31 @@ void BTaggingMgr::RegBranch(TTree* t)
         }
     }
 }
+*/
+void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_)
+{
+    //for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
+    //{
+        //BTagEntry::JetFlavor iFlav = iter->second;
+        for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
+        {
+            const std::string algorithm = _usedAlgorithmNames[iAlgo];
+            for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
+            {
+                if      ( hadFlav_ == HADRONFLAV_L )
+                    systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_UDSG,eta_,pt_);
+                else if ( hadFlav_ == HADRONFLAV_C )
+                    systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_C   ,eta_,pt_);
+                else if ( hadFlav_ == HADRONFLAV_B )
+                    systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_B   ,eta_,pt_);
+                else
+                    LOG_WARNING( "none of known hadron flavour input. Give a -999 for check" );
+
+            }
+        }
+    //}
+}
+/*
 void BTaggingMgr::FillWeightToEvt(float pt_, float eta_)
 {
     for ( auto iter = t::fCol.begin(); iter != t::fCol.end(); ++iter )
@@ -352,6 +402,7 @@ void BTaggingMgr::FillWeightToEvt(float pt_, float eta_)
         }
     }
 }
+*/
 
 
 /*
