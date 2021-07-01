@@ -1,24 +1,20 @@
 #!/usr/bin/env python2
 mesg='Append additional information into MC'
 command='"cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; ../bin/exe.AppendEventInfo 1.0 {file} storeroot/{newfile}"'
-'''
-mesg='Download 1 root file from T2 first and process it'
-command='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_remote.py {file} false"'
-'''
 import os
 dataflist=[
 ]
 madgraphflist=[
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-200To400_13TeV-madgraphMLM-pythia8_v3-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-200To400_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-400To600_13TeV-madgraphMLM-pythia8_v3-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-400To600_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-40To100_13TeV-madgraphMLM-pythia8_v3-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-40To100_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-600ToInf_13TeV-madgraphMLM-pythia8_v3-v2.root',
-'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-600ToInf_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-200To400_13TeV-madgraphMLM-pythia8_v3-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-200To400_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-400To600_13TeV-madgraphMLM-pythia8_v3-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-400To600_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-40To100_13TeV-madgraphMLM-pythia8_v3-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-40To100_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-600ToInf_13TeV-madgraphMLM-pythia8_v3-v2.root',
+'/home/ltsai/ReceivedFile/GJet/old/crab_sigMC_HT-600ToInf_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
 ]
 qcdflist=[
 '/home/ltsai/ReceivedFile/GJet/bkg_QCD/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.root',

@@ -278,7 +278,6 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         data.GetEntry(ev);
         event.run=ev;
         std::cout << "ev = " << ev << std::endl;
-        ele1cand.recoPt = (float) ev; outtree_->Fill();  continue;
         Int_t nEle = data.GetInt("nEle");
         Int_t* eleCharge = data.GetPtrInt("eleCharge");
 

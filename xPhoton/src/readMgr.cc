@@ -44,3 +44,5 @@ Long64_t  readMgr::Long64(int varId) { return ((Long64_t*) GetPtr(bnames[varId],
 Float_t   readMgr::Float (int varId) { return ((Float_t*)  GetPtr(bnames[varId], kFloat)) [0]; }
 Double_t  readMgr::Double(int varId) { return ((Double_t*) GetPtr(bnames[varId], kDouble))[0]; }
 
+void readMgr::_accessbranch( const std::map<int, const char*>& b )
+{ readbranches = b ; }
