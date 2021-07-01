@@ -327,6 +327,7 @@ void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_)
         const std::string algorithm = _usedAlgorithmNames[iAlgo];
         for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
         {
+            if ( fabs(eta_) > 2.5 ) LOG_FATAL(" eta is out of range!!!");
             if      ( hadFlav_ == HADRONFLAV_L )
                 systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_UDSG,eta_,pt_);
             else if ( hadFlav_ == HADRONFLAV_C )
