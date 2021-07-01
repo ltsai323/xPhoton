@@ -60,13 +60,15 @@ int main(int argc, const char* argv[])
     btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
     btagCalibs.RegisterSystTypes();
 
-    float xsweight;
+    Float_t xsweight;
     oT->SetBranchStatus("xsweight", 0);
     oT->Branch("xsweight", &xsweight, "xsweight/F");
 
-    float jetPt, jetEta;
-    iT->SetBranchAddress("recoPt" , &jetPt);
-    iT->SetBranchAddress("recoEta", &jetEta);
+    Float_t jetPt, jetEta;
+    Int_t flavour;
+    iT->SetBranchAddress("recoPt",     &jetPt);
+    iT->SetBranchAddress("recoEta",    &jetEta);
+    iT->SetBranchAddress("jetHadFlvr", &flavour);
     btagCalibs.RegBranch(oT);
 
     xsweight = new_xsweight;
@@ -76,9 +78,10 @@ int main(int argc, const char* argv[])
     {
         btagCalibs.InitVars();
         iT->GetEntry(ievt);
-        btagCalibs.FillWeightToEvt(jetPt,jetEta);
-        
+        btagCalibs.FillWeightToEvt(jetPt,jetEta, flavour);
+
         oT->Fill();
+        //break;
     }
 
     oT->Write();

@@ -44,7 +44,7 @@ private:
     bool _systTypeRegisted;
     std::vector< std::shared_ptr<BTagCalibration> > calibPTRs;
     std::vector< std::shared_ptr<BTagCalibrationReader> > calibReaderPTRs;
-    std::map<int, float> systVars;
+    std::map<int, Float_t> systVars;
 
     /*
     void initvar(int i, int j);
