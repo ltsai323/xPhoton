@@ -52,6 +52,8 @@
 */.*.swo
 .*.swp
 .*.swo
+*/qjobs
+*/*/qjobs
 
 # system running file
 */.nfs*
