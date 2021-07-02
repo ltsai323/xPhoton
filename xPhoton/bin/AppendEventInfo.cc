@@ -50,25 +50,26 @@ int main(int argc, const char* argv[])
 
     TFile* iF = TFile::Open(iFile);
     TTree* iT = (TTree*) iF->Get("t");
+    iT->SetBranchStatus("xsweight", 0);
     
     TFile* oF = new TFile(oFile,"recreate");
     oF->cd();
     TTree* oT = (TTree*) iT->CloneTree(0);
-    BTaggingMgr btagCalibsDeepCSV;
-    BTaggingMgr btagCalibsDeepFlavour;
-    BTaggingMgr btagCalibsDeepFlavour_JESReduced;;
+    //BTaggingMgr btagCalibsDeepCSV;
+    //BTaggingMgr btagCalibsDeepFlavour;
+    //BTaggingMgr btagCalibsDeepFlavour_JESReduced;;
 
-    btagCalibsDeepCSV.UseAlgorithm( "DeepCSV" );
-    btagCalibsDeepFlavour.UseAlgorithm( "DeepFlavour" );
-    btagCalibsDeepFlavour_JESReduced.UseAlgorithm( "DeepFlavour_JESReduced" );
+    //btagCalibsDeepCSV.UseAlgorithm( "DeepCSV" );
+    //btagCalibsDeepFlavour.UseAlgorithm( "DeepFlavour" );
+    //btagCalibsDeepFlavour_JESReduced.UseAlgorithm( "DeepFlavour_JESReduced" );
 
 
-    btagCalibsDeepCSV.RegisterSystTypes();
-    btagCalibsDeepFlavour.RegisterSystTypes();
-    btagCalibsDeepFlavour_JESReduced.RegisterSystTypes();
+    //btagCalibsDeepCSV.RegisterSystTypes();
+    //btagCalibsDeepFlavour.RegisterSystTypes();
+    //btagCalibsDeepFlavour_JESReduced.RegisterSystTypes();
 
     Float_t xsweight;
-    oT->SetBranchStatus("xsweight", 0);
+    //oT->SetBranchStatus("xsweight", 0);
     oT->Branch("xsweight", &xsweight, "xsweight/F");
 
     Float_t jetPt, jetEta;
@@ -84,18 +85,18 @@ int main(int argc, const char* argv[])
     iT->SetBranchAddress("jetDeepFlavourTags_b"   ,&deepjet_b);
     iT->SetBranchAddress("jetDeepFlavourTags_bb"  ,&deepjet_bb);
     iT->SetBranchAddress("jetDeepFlavourTags_lepb",&deepjet_lepb);
-    btagCalibsDeepCSV.RegBranch(oT);
-    btagCalibsDeepFlavour.RegBranch(oT);
-    btagCalibsDeepFlavour_JESReduced.RegBranch(oT);
+    //btagCalibsDeepCSV.RegBranch(oT);
+    //btagCalibsDeepFlavour.RegBranch(oT);
+    //btagCalibsDeepFlavour_JESReduced.RegBranch(oT);
 
     xsweight = new_xsweight;
     
     unsigned int nevt = iT->GetEntries();
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
-        btagCalibsDeepCSV.InitVars();
-        btagCalibsDeepFlavour.InitVars();
-        btagCalibsDeepFlavour_JESReduced.InitVars();
+        //btagCalibsDeepCSV.InitVars();
+        //btagCalibsDeepFlavour.InitVars();
+        //btagCalibsDeepFlavour_JESReduced.InitVars();
         iT->GetEntry(ievt);
         if ( jetPt < 10 )
         {
@@ -103,9 +104,9 @@ int main(int argc, const char* argv[])
             continue;
             // in this case, you cannot pass any event without Fill().
         }
-        btagCalibsDeepCSV.FillWeightToEvt(jetPt,jetEta, flavour, deepcsv_b+deepcsv_bb);
-        btagCalibsDeepFlavour.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
-        btagCalibsDeepFlavour_JESReduced.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
+        //btagCalibsDeepCSV.FillWeightToEvt(jetPt,jetEta, flavour, deepcsv_b+deepcsv_bb);
+        //btagCalibsDeepFlavour.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
+        //btagCalibsDeepFlavour_JESReduced.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
 
         oT->Fill();
     }
