@@ -1,7 +1,7 @@
 .PHONY: all clean check test
 
 # compiler setting
-MAINCOMPILER=g++
+MAINCOMPILER=g++ -O2
 USEROOT=`root-config --libs --cflags`
 USEROOFIT=-lRooFitCore -lRooFit -lMinuit
 USETMVA=-lTMVA
