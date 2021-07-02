@@ -17,7 +17,15 @@ namespace t
         flavourCollection.push_back("Lights");
 
         systTypeCollection["CSVv2"] = {
-            "central"
+            "central",
+            "down_cferr1",
+            "down_cferr2",
+            "down_hf",
+            "down_lf",
+            "up_cferr1",
+            "up_cferr2",
+            "up_hf",
+            "up_lf" 
                 /* only use central for first galanced
             "central",
             "down_cferr1",
@@ -41,7 +49,15 @@ namespace t
             */
         };
         systTypeCollection["DeepCSV"] = {
-            "central"
+            "central",
+            "down_cferr1",
+            "down_cferr2",
+            "down_hf",
+            "down_lf",
+            "up_cferr1",
+            "up_cferr2",
+            "up_hf",
+            "up_lf" 
                 /* only use central value for first galanced
             "central",
             "down_cferr1",
@@ -117,7 +133,15 @@ namespace t
             */
         };
         systTypeCollection["DeepFlavour"] = {
-            "central"
+            "central",
+            "down_cferr1",
+            "down_cferr2",
+            "down_hf",
+            "down_lf",
+            "up_cferr1",
+            "up_cferr2",
+            "up_hf",
+            "up_lf" 
                 /* only use central value for first galance
             "central",
             "down_cferr1",
@@ -193,7 +217,15 @@ namespace t
                 */
         };
         systTypeCollection["DeepFlavour_JESReduced"] = {
-            "central"
+            "central",
+            "down_cferr1",
+            "down_cferr2",
+            "down_hf",
+            "down_lf",
+            "up_cferr1",
+            "up_cferr2",
+            "up_hf",
+            "up_lf" 
                 /* only used central value for first galance
             "central",
             "down_cferr1",
@@ -275,6 +307,7 @@ void BTaggingMgr::RegisterSystTypes()
                 );
         calibReaderPTRs.push_back(
                 std::make_shared<BTagCalibrationReader>( BTagEntry::OP_RESHAPING, "central", _usedSystTypes[usedAlgorithm] )
+                //std::make_shared<BTagCalibrationReader>( BTagEntry::OP_TIGHT, "central", _usedSystTypes[usedAlgorithm] )
                 );
         BTagCalibration* calib = calibPTRs.back().get();
 
@@ -282,6 +315,12 @@ void BTaggingMgr::RegisterSystTypes()
         calibReaderPTR->load(*calib, BTagEntry::FLAV_B   , "iterativefit" );
         calibReaderPTR->load(*calib, BTagEntry::FLAV_C   , "iterativefit" );
         calibReaderPTR->load(*calib, BTagEntry::FLAV_UDSG, "iterativefit" );
+
+        /*
+        calibReaderPTR->load(*calib, BTagEntry::FLAV_B   , "comb" );
+        calibReaderPTR->load(*calib, BTagEntry::FLAV_C   , "comb" );
+        calibReaderPTR->load(*calib, BTagEntry::FLAV_UDSG, "comb" );
+        */
     }
     InitVars();
 }
@@ -320,8 +359,11 @@ void BTaggingMgr::RegBranch(TTree* t)
         }
     }
 }
-void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_)
+void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDis_)
 {
+    float bDis = bDis_;
+    if ( bDis_ < 0.0 ) bDis = -0.05;
+    else if ( bDis_ > 1.0 ) bDis = 1.0;
     for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
     {
         const std::string algorithm = _usedAlgorithmNames[iAlgo];
@@ -329,11 +371,14 @@ void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_)
         {
             if ( fabs(eta_) > 2.5 ) LOG_FATAL(" eta is out of range!!!");
             if      ( hadFlav_ == HADRONFLAV_L )
-                systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_UDSG,eta_,pt_);
+                systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_UDSG,eta_,pt_, bDis);
             else if ( hadFlav_ == HADRONFLAV_C )
-                systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_C   ,eta_,pt_);
+            {
+                systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_C   ,eta_,pt_, bDis);
+                LOG_INFO(" C flavor gets weight : %.4f", systVars[ systVarIdx(iAlgo,iSyst) ] );
+            }
             else if ( hadFlav_ == HADRONFLAV_B )
-                systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_B   ,eta_,pt_);
+                systVars[ systVarIdx(iAlgo,iSyst) ] = calibReaderPTRs[iAlgo]->eval_auto_bounds( _usedSystTypes[algorithm][iSyst], BTagEntry::FLAV_B   ,eta_,pt_, bDis);
             else
                 LOG_WARNING( "none of known hadron flavour input. Give a -999 for check" );
 

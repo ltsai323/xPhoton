@@ -51,13 +51,13 @@ const char* ExternalFilesMgr::testchar()
 }
 
 const char* ExternalFilesMgr::csvFile_BTagCalib_CSVv2()
-{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/CSVv2_94XSF_V2_B_F.csv"; }
+{ return ""; }
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepCSV()
-{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepCSV_94XSF_V5_B_F.csv"; }
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/2016Legacy/DeepCSV_2016LegacySF_V1_TuneCP5.csv"; }
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour()
-{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F.csv"; }
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/2016Legacy/DeepJet_2016LegacySF_V1_TuneCP5.csv"; }
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced()
-{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/DeepFlavour_94XSF_V4_B_F_JESreduced.csv"; }
+{ return "/home/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/2016Legacy/DeepJet_2016LegacySF_V1_TuneCP5_JESreduced.csv"; }
 const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name)
 {
     if ( name == "CSVv2"                  ) return csvFile_BTagCalib_CSVv2();

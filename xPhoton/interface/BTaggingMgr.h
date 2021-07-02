@@ -25,7 +25,7 @@ public:
     void RegisterSystTypes();
     void InitVars();
     void RegBranch(TTree* t);
-    void FillWeightToEvt(float pt_, float eta_, int hadFlav_ );
+    void FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDis_ );
 
 
     

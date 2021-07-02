@@ -513,17 +513,18 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     ){
       if (use_discr) {                                    // discr. reshaping?
         if (e.discrMin <= discr && discr < e.discrMax) {  // check discr
-            LOG_DEBUG("jet scale factor is sucessfully calculated!");
+          LOG_DEBUG("Use input discr to calculate weight");
           return e.func.Eval(discr);
         }
       } else {
         return e.func.Eval(pt);
+        LOG_DEBUG("Use pt to calculate weight");
       }
     }
   }
 
-  LOG_DEBUG("return default jetSF = 0");
-  return 0.;  // default value
+  LOG_INFO("No any scale factor found. return default jetSF = 1. discr = %.3f, flavour = %d (0:B,1:C,2:L), (pt,eta)=(%.3f,%.3f)", discr, jf, pt, eta);
+  return 1.;  // If nothing found, just return a non weighted result.
 }
 
 double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
