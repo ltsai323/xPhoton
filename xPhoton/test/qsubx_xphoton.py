@@ -79,7 +79,7 @@ qcd_madgraphlist=[
 
 if __name__ == '__main__':
     print mesg
-    flist=qcd_madgraphlist
+    flist=madgraphflist
     for f in flist:
         folder=f.split('/')[-1].split('.')[0]
         print folder
