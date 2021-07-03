@@ -10,86 +10,10 @@
 #include <TLorentzVector.h>
 #include <map>
 
-enum candF
-{
-    mcE,
-    mcPt,
-    mcEta,
-    mcPhi,
-    recoE,
-    recoPt,
-    recoEta,
-    recoPhi,
-    totCandF
-};
-enum recoF
-{
-    recoPtCalib,
-    recoSCEta,
-    r9,
-    HoverE,
-    chIsoRaw,
-    phoIsoRaw,
-    nhIsoRaw,
-    chWorstIso,
-    rho,
-    rawE,
-    scEtaWidth,
-    scPhiWidth,
-    esRR,
-    esEn,
-    mva,
-    mva_nocorr,
-    officalIDmva,
-    r9Full5x5,
-    sieieFull5x5,
-    sieipFull5x5,
-    sipipFull5x5,
-    e2x2Full5x5,
-    e2x5Full5x5,
-    totRecoF
-};
-enum candI
-{
-    isMatched,
-    totCandI
-};
-enum recoI
-{
-    firedTrgs,
-    hasPixelSeed,
-    IDbits,
-    totRecoI
-};
-enum recoL
-{
-    firedTrgsL,
-    totRecoL
-};
-
-enum evtI
-{
-    Run,
-    xsweight,
-    puwei,
-    pthat,
-    MET,
-    METPhi,
-    nVtx,
-    nPU,
-    totEvtI
-};
-
-enum evtL
-{
-    HLT,
-    HLTPhoIsPrescaled,
-    event,
-    totEvtL
-};
 
 
 
+std::vector<TLorentzDATA> PreselectedElectrons(TreeReader* dataptr);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -280,7 +204,37 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         std::cout << "ev = " << ev << std::endl;
         Int_t nEle = data.GetInt("nEle");
         Int_t* eleCharge = data.GetPtrInt("eleCharge");
-        //Intjj
+        Float_t* elePt = data.GetPtrFloat("elePt");
+        Float_t* eleEta = data.GetPtrFloat("eleEta");
+        Float_t* elePhi = data.GetPtrFloat("elePhi");
+        Float_t* eleR9  = data.GetPtrFloat("eleR9");
+        Float_t* eleCalibPt = data.GetPtrFloat("eleCalibPt");
+        Float_t* eleCalibEta = data.GetPtrFloat("eleCalibEta");
+        /*
+        Float_t* 
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        Float_t*
+        */
+        
 
 
         std::map<int, TLorentzVector> electrons = recoInfo::PreselectedElectron_2016(&data);
@@ -289,32 +243,6 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
             continue;
         }
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -340,3 +268,27 @@ void xElectrons(std::string ipath, int outID)
    xElectrons(pathes, oname);
 }
 
+std::vector<TLorentzDATA> PreselectedElectrons(TreeReader* dataptr, int WP)
+{
+    std::vector<int> selParticleIdxs;
+    
+    Int_t Size = dataptr->GetInt("nEle");
+    Float_t* pt = dataptr->GetPtrFloat("elePt");
+    Float_t* eta = dataptr->GetPtrFloat("eleSCEta");
+    Float_t* phi = dataptr->GetPtrFloat("eleSCPhi");
+    UShort_t* idbit = (UShort_t*)dataptr->GetPtrShort("eleIDbit");
+    for ( int i = 0; i < Size; ++i )
+    {
+        if ( pt[i] < 15. ) continue;
+        float abseta = fabs(eta[i]);
+        if ( abseta > 2.5 ) continue;
+        if ( abseta > 1.4442 && abseta < 1.566 ) continue;
+        if (!((idbit[i] >> WP) & 1) ) continue;
+        selParticleIdxs.push_back(i);
+    }
+
+    std::vector<TLorentzDATA> outputs;
+    for ( int idx : selParticleIdxs )
+        outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], 0.511*0.001) );
+    return outputs;
+}

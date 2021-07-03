@@ -28,6 +28,14 @@ bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
     }
     return selectedElectrons;
 }
+
+TLorentzDATA recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass )
+{
+    TLorentzDATA particle(idx);
+    particle.SetPtEtaPhiM(pt,eta,phi,mass);
+    return particle;
+}
+
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
 {

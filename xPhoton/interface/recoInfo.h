@@ -24,6 +24,7 @@ struct TLorentzDATA : public TLorentzVector {
 namespace recoInfo
 {
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
+    TLorentzDATA BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass );
 };
 
 /*
