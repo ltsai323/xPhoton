@@ -8,6 +8,9 @@
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 // usage :
 //   ./exec_thisfile input.root outfile.root 3.283
+bool useDeepCSV = true;
+bool useDeepJet = false;
+
 void PrintHelp()
 {
     printf("---------------------------------------------\n");
@@ -42,10 +45,10 @@ int main(int argc, const char* argv[])
     CheckArgs(argc,argv);
     const char* iFile = GetInputFile(argv);
     const char* oFile = GetOutputFile(argv);
-    const float new_xsweight = GetWeight(argv);
+    const float new_xs = GetWeight(argv);
     std::cout << "in file : " << iFile << std::endl;
     std::cout << "out file : " << oFile << std::endl;
-    std::cout << "in xs weight : " << new_xsweight << std::endl;
+    std::cout << "in x-sec : " << new_xs << std::endl;
     
 
     TFile* iF = TFile::Open(iFile);
@@ -55,18 +58,18 @@ int main(int argc, const char* argv[])
     TFile* oF = new TFile(oFile,"recreate");
     oF->cd();
     TTree* oT = (TTree*) iT->CloneTree(0);
-    //BTaggingMgr btagCalibsDeepCSV;
-    //BTaggingMgr btagCalibsDeepFlavour;
-    //BTaggingMgr btagCalibsDeepFlavour_JESReduced;;
+    BTaggingMgr btagCalibsDeepCSV;
+    BTaggingMgr btagCalibsDeepFlavour;
+    BTaggingMgr btagCalibsDeepFlavour_JESReduced;;
 
-    //btagCalibsDeepCSV.UseAlgorithm( "DeepCSV" );
-    //btagCalibsDeepFlavour.UseAlgorithm( "DeepFlavour" );
-    //btagCalibsDeepFlavour_JESReduced.UseAlgorithm( "DeepFlavour_JESReduced" );
+    if ( useDeepCSV ) btagCalibsDeepCSV.UseAlgorithm( "DeepCSV" );
+    if ( useDeepJet ) btagCalibsDeepFlavour.UseAlgorithm( "DeepFlavour" );
+    if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.UseAlgorithm( "DeepFlavour_JESReduced" );
 
 
-    //btagCalibsDeepCSV.RegisterSystTypes();
-    //btagCalibsDeepFlavour.RegisterSystTypes();
-    //btagCalibsDeepFlavour_JESReduced.RegisterSystTypes();
+    if ( useDeepCSV ) btagCalibsDeepCSV.RegisterSystTypes();
+    if ( useDeepJet ) btagCalibsDeepFlavour.RegisterSystTypes();
+    if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.RegisterSystTypes();
 
     Float_t xsweight;
     //oT->SetBranchStatus("xsweight", 0);
@@ -85,28 +88,30 @@ int main(int argc, const char* argv[])
     iT->SetBranchAddress("jetDeepFlavourTags_b"   ,&deepjet_b);
     iT->SetBranchAddress("jetDeepFlavourTags_bb"  ,&deepjet_bb);
     iT->SetBranchAddress("jetDeepFlavourTags_lepb",&deepjet_lepb);
-    //btagCalibsDeepCSV.RegBranch(oT);
-    //btagCalibsDeepFlavour.RegBranch(oT);
-    //btagCalibsDeepFlavour_JESReduced.RegBranch(oT);
+    if ( useDeepCSV ) btagCalibsDeepCSV.RegBranch(oT);
+    if ( useDeepJet ) btagCalibsDeepFlavour.RegBranch(oT);
+    if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.RegBranch(oT);
 
-    xsweight = new_xsweight;
+    xsweight = new_xs;
     
     unsigned int nevt = iT->GetEntries();
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
-        //btagCalibsDeepCSV.InitVars();
-        //btagCalibsDeepFlavour.InitVars();
-        //btagCalibsDeepFlavour_JESReduced.InitVars();
+        if ( useDeepCSV ) btagCalibsDeepCSV.InitVars();
+        if ( useDeepJet ) btagCalibsDeepFlavour.InitVars();
+        if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.InitVars();
         iT->GetEntry(ievt);
+
         if ( jetPt < 10 )
         {
             oT->Fill();
             continue;
             // in this case, you cannot pass any event without Fill().
         }
-        //btagCalibsDeepCSV.FillWeightToEvt(jetPt,jetEta, flavour, deepcsv_b+deepcsv_bb);
-        //btagCalibsDeepFlavour.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
-        //btagCalibsDeepFlavour_JESReduced.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
+
+        if ( useDeepCSV ) btagCalibsDeepCSV.FillWeightToEvt(jetPt,jetEta, flavour, deepcsv_b+deepcsv_bb);
+        if ( useDeepJet ) btagCalibsDeepFlavour.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
+        if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
 
         oT->Fill();
     }
