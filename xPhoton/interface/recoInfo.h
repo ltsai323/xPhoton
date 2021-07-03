@@ -16,15 +16,17 @@
 
 struct TLorentzDATA : public TLorentzVector {
     int _idx;
+    int _charge;
     int idxInEvt() const;
+    int charge() const;
     bool isZombie() const;
     TLorentzDATA();
-    TLorentzDATA(int idx);
+    TLorentzDATA(int idx, int charge_=0);
 };
 namespace recoInfo
 {
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
-    TLorentzDATA BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass );
+    TLorentzDATA BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
 };
 
 /*

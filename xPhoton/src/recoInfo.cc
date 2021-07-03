@@ -7,9 +7,10 @@
 #include <TMath.h>
 #include <vector>
 int  TLorentzDATA::idxInEvt() const { return _idx; }
+int  TLorentzDATA::charge() const { return _charge; }
 bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA() : TLorentzVector() { _idx = NOCANDFOUND; }
-     TLorentzDATA::TLorentzDATA(int idx) : TLorentzVector() { _idx = idx; }
+     TLorentzDATA::TLorentzDATA(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
  std::map<int,TLorentzVector> recoInfo::PreselectedElectron_2016(TreeReader* data)
 {
     int nEle = data->GetInt("nEle");
@@ -29,9 +30,9 @@ bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
     return selectedElectrons;
 }
 
-TLorentzDATA recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass )
+TLorentzDATA recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int charge )
 {
-    TLorentzDATA particle(idx);
+    TLorentzDATA particle(idx,charge);
     particle.SetPtEtaPhiM(pt,eta,phi,mass);
     return particle;
 }

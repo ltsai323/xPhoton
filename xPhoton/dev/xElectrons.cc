@@ -13,7 +13,7 @@
 
 
 
-std::vector<TLorentzDATA> PreselectedElectrons(TreeReader* dataptr);
+std::vector<TLorentzDATA> PreselectedElectrons(TreeReader* dataptr, int WP);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -200,8 +200,26 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         // 5. fill tree
         // 6. mva
         data.GetEntry(ev);
-        event.run=ev;
-        std::cout << "ev = " << ev << std::endl;
+        std::vector<TLorentzDATA> selelectrons = PreselectedElectrons(&data, 0);
+        
+        if ( selelectrons.size() < 2 ) continue;
+        for ( int idx=0; idx<selelectrons.size(); ++idx )
+            for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
+            {
+                TLorentzVector Zcand;
+                const TLorentzDATA ele1 = selelectrons.at(idx);
+                const TLorentzDATA ele2 = selelectrons.at(jdx);
+                Zcand = ele1+ele2;
+                
+
+            }
+        
+
+
+
+
+
+
         Int_t nEle = data.GetInt("nEle");
         Int_t* eleCharge = data.GetPtrInt("eleCharge");
         Float_t* elePt = data.GetPtrFloat("elePt");
@@ -273,6 +291,7 @@ std::vector<TLorentzDATA> PreselectedElectrons(TreeReader* dataptr, int WP)
     std::vector<int> selParticleIdxs;
     
     Int_t Size = dataptr->GetInt("nEle");
+    Int_t* charge = dataptr->GetPtrInt("eleCharge");
     Float_t* pt = dataptr->GetPtrFloat("elePt");
     Float_t* eta = dataptr->GetPtrFloat("eleSCEta");
     Float_t* phi = dataptr->GetPtrFloat("eleSCPhi");
@@ -289,6 +308,7 @@ std::vector<TLorentzDATA> PreselectedElectrons(TreeReader* dataptr, int WP)
 
     std::vector<TLorentzDATA> outputs;
     for ( int idx : selParticleIdxs )
-        outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], 0.511*0.001) );
+        outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], 0.511*0.001, charge[idx]) );
+        //outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], 0.511*0.001) );
     return outputs;
 }
