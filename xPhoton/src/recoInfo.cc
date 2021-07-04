@@ -6,11 +6,20 @@
 #include <TLorentzVector.h>
 #include <TMath.h>
 #include <vector>
-int  TLorentzDATA::idxInEvt() const { return _idx; }
+int  TLorentzDATA::idx() const { return _idx; }
 int  TLorentzDATA::charge() const { return _charge; }
 bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA() : TLorentzVector() { _idx = NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
+int  TLorentzCand::idx() const { return _idx; }
+int  TLorentzCand::charge() const { return _charge; }
+bool TLorentzCand::isZombie() const { return _idx == NOCANDFOUND; }
+     TLorentzCand::TLorentzCand() : TLorentzVector() { _idx = NOCANDFOUND; }
+     TLorentzCand::TLorentzCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
+
+bool TLorentzCompCand::isZombie() const { return NOCANDFOUND; }
+     TLorentzCompCand::TLorentzCompCand() : TLorentzVector() { }
+     //TLorentzCompCand::TLorentzCompCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
  std::map<int,TLorentzVector> recoInfo::PreselectedElectron_2016(TreeReader* data)
 {
     int nEle = data->GetInt("nEle");
