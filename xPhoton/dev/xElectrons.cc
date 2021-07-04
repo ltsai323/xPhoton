@@ -203,17 +203,33 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         std::vector<TLorentzDATA> selelectrons = PreselectedElectrons(&data, 0);
         
         if ( selelectrons.size() < 2 ) continue;
+
+
+        TLorentzVector ZeeP4;
+        bool validZ = false;
         for ( int idx=0; idx<selelectrons.size(); ++idx )
             for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
             {
-                TLorentzVector Zcand;
-                const TLorentzDATA ele1 = selelectrons.at(idx);
-                const TLorentzDATA ele2 = selelectrons.at(jdx);
-                Zcand = ele1+ele2;
-                
-
+                const TLorentzDATA& ele1 = selelectrons.at(idx);
+                const TLorentzDATA& ele2 = selelectrons.at(jdx);
+                int TIGHTID = 0;
+                if ( (( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele1.idx()]>>TIGHTID)&1 == 0 ) continue; // tight ID for tag photon.
+                // need to check the validation
+                /*
+                if ( ( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele1.idx()] & 1<<TIGHTID == 0 ) continue; // tight ID for tag photon.
+                */
+                if ( ele1.charge() * ele2.charge() > 0 ) continue;
+                ZeeP4 = ele1+ele2;
+                if ( ZeeP4.M() <  50 || ZeeP4.M() > 110 ) continue;
+                validZ = true;
+                break;
             }
+
+        if (!validZ ) continue;
         
+        // MC truth matching
+
+        //matchelectronpair(
 
 
 
