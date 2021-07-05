@@ -6,11 +6,13 @@
 #include <TLorentzVector.h>
 #include <TMath.h>
 #include <vector>
+/*
 int  TLorentzDATA::idx() const { return _idx; }
 int  TLorentzDATA::charge() const { return _charge; }
 bool TLorentzDATA::IsZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA() : TLorentzVector() { _idx = NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
+     */
 int  TLorentzCand::idx() const { return _idx; }
 int  TLorentzCand::charge() const { return _charge; }
 bool TLorentzCand::IsZombie() const { return _idx == NOCANDFOUND; }
@@ -41,9 +43,9 @@ void TLorentzCompCand::SetAlive() { _status = true; }
     return selectedElectrons;
 }
 
-TLorentzDATA recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int charge )
+TLorentzCand recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int charge )
 {
-    TLorentzDATA particle(idx,charge);
+    TLorentzCand particle(idx,charge);
     particle.SetPtEtaPhiM(pt,eta,phi,mass);
     return particle;
 }

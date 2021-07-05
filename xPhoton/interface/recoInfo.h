@@ -14,6 +14,7 @@
 #define ELEIDENTIFICATION 3 // tight
 
 
+/*
 struct TLorentzDATA : public TLorentzVector {
     int _idx;
     int _charge;
@@ -23,6 +24,7 @@ struct TLorentzDATA : public TLorentzVector {
     TLorentzDATA();
     TLorentzDATA(int idx, int charge_=0);
 };
+*/
 struct TLorentzCand : public TLorentzVector {
     int _idx;
     int _charge;
@@ -45,7 +47,7 @@ struct TLorentzCompCand : public TLorentzVector {
 namespace recoInfo
 {
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
-    TLorentzDATA BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
+    TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
 };
 
 /*
