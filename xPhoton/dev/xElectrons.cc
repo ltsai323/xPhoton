@@ -206,7 +206,7 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
 
 
         TLorentzVector ZeeP4;
-        bool validZ = false;
+        TLorentzCompCand ZcandP4;
         for ( int idx=0; idx<selelectrons.size(); ++idx )
             for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
             {
@@ -221,11 +221,10 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
                 if ( ele1.charge() * ele2.charge() > 0 ) continue;
                 ZeeP4 = ele1+ele2;
                 if ( ZeeP4.M() <  50 || ZeeP4.M() > 110 ) continue;
-                validZ = true;
                 break;
             }
 
-        if (!validZ ) continue;
+        if ( ZcandP4.IsZombie() ) continue;
         
         // MC truth matching
 
