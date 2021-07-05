@@ -8,17 +8,19 @@
 #include <vector>
 int  TLorentzDATA::idx() const { return _idx; }
 int  TLorentzDATA::charge() const { return _charge; }
-bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
+bool TLorentzDATA::IsZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA() : TLorentzVector() { _idx = NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
 int  TLorentzCand::idx() const { return _idx; }
 int  TLorentzCand::charge() const { return _charge; }
-bool TLorentzCand::isZombie() const { return _idx == NOCANDFOUND; }
+bool TLorentzCand::IsZombie() const { return _idx == NOCANDFOUND; }
      TLorentzCand::TLorentzCand() : TLorentzVector() { _idx = NOCANDFOUND; }
      TLorentzCand::TLorentzCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
 
-bool TLorentzCompCand::isZombie() const { return NOCANDFOUND; }
-     TLorentzCompCand::TLorentzCompCand() : TLorentzVector() { }
+void TLorentzCompCand::AddDaughter( const TLorentzCand& d_ ) { daugs.push_back(d_); }
+bool TLorentzCompCand::IsZombie() const { return _status; }
+void TLorentzCompCand::SetAlive() { _status = true; }
+     TLorentzCompCand::TLorentzCompCand() : TLorentzVector(), _status(false) { }
      //TLorentzCompCand::TLorentzCompCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
  std::map<int,TLorentzVector> recoInfo::PreselectedElectron_2016(TreeReader* data)
 {

@@ -19,25 +19,28 @@ struct TLorentzDATA : public TLorentzVector {
     int _charge;
     int idx() const;
     int charge() const;
-    bool isZombie() const;
+    bool IsZombie() const;
     TLorentzDATA();
     TLorentzDATA(int idx, int charge_=0);
-};
-struct TLorentzCompCand : public TLorentzVector {
-    //std::vector<TLorentzCand> daugs;
-    //uu
-    bool isZombie() const;
-    TLorentzCompCand();
-    //TLorentzCompCand(int idx, int charge_=0);
 };
 struct TLorentzCand : public TLorentzVector {
     int _idx;
     int _charge;
     int idx() const;
     int charge() const;
-    bool isZombie() const;
+    bool IsZombie() const;
     TLorentzCand();
     TLorentzCand(int idx, int charge_=0);
+};
+struct TLorentzCompCand : public TLorentzVector {
+    std::vector<TLorentzCand> daugs;
+    void AddDaughter( const TLorentzCand& d_ );
+    bool _status;
+
+    bool IsZombie() const;
+    void SetAlive();
+    TLorentzCompCand();
+    //TLorentzCompCand(int idx, int charge_=0);
 };
 namespace recoInfo
 {
