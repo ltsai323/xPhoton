@@ -39,7 +39,18 @@ TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
     
 
     return sumup;
+}
+TLorentzCand TLorentzCand::operator=(const TLorentzVector& vec_)
+{
+    this->SetPtEtaPhiE(
+            vec_.Pt(),
+            vec_.Eta(),
+            vec_.Phi(),
+            vec_.E()
+            );
+    this->_deadcand=false;
 
+    return *this;
 }
 
 void TLorentzCand::SetAlive() { _deadcand = false; }

@@ -35,6 +35,7 @@ struct TLorentzCand : public TLorentzVector {
     std::vector<Int_t> daughters() const;
 
     TLorentzCand operator+(const TLorentzCand& cand_) const;
+    TLorentzCand operator=(const TLorentzVector& vec_);
     private:
     void adddaughter( const TLorentzCand* const d_ );
     int _idx;
