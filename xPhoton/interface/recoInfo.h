@@ -34,27 +34,15 @@ struct TLorentzCand : public TLorentzVector {
     int charge() const;
     std::vector<Int_t> daughters() const;
 
-    private:
     TLorentzCand operator+(const TLorentzCand& cand_) const;
+    private:
     void adddaughter( const TLorentzCand* const d_ );
     int _idx;
     int _charge;
     bool _deadcand;
     std::vector<Int_t> daughterIdxs;
 };
-/*
-//struct TLorentzCompCand : public TLorentzVector {
-struct TLorentzCompCand : public TLorentzCand {
-    std::vector<TLorentzCand> daugs;
-    void AddDaughter( const TLorentzCand& d_ );
-    bool _deadcand;
 
-    bool IsZombie() const;
-    void SetAlive();
-    TLorentzCompCand();
-    //TLorentzCompCand(int idx, int charge_=0);
-};
-*/
 namespace recoInfo
 {
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);

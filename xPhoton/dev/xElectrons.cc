@@ -14,6 +14,7 @@
 
 
 std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP);
+std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -206,7 +207,6 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
 
 
         TLorentzVector ZeeP4;
-        //TLorentzCompCand ZcandP4;
         TLorentzCand ZcandP4;
         for ( int idx=0; idx<selelectrons.size(); ++idx )
             for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
@@ -231,7 +231,7 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         
         // MC truth matching
 
-        //matchelectronpair(
+        matchedGenZee(&data, ZcandP4);
 
 
 
@@ -327,6 +327,39 @@ std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP)
     std::vector<TLorentzCand> outputs;
     for ( int idx : selParticleIdxs )
         outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], 0.511*0.001, charge[idx]) );
-        //outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], 0.511*0.001) );
     return outputs;
+}
+std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_)
+{
+    #define DELTARCUT 0.4
+    #define FINALSTATESTATUS 3
+    #define PID_Z 23
+    #define PID_ELECTRON 11
+    
+    if (!dataptr->HasMC() ) return std::vector<TLorentzCand>();
+
+    Int_t  nMC          = dataptr->GetInt("nMC");
+    Int_t* mcPID        = dataptr->GetPtrInt("mcPID");
+    Int_t* mcMomPID     = dataptr->GetPtrInt("mcMomPID");
+    Int_t* mcStatus     = dataptr->GetPtrInt("mcStatus");
+
+
+
+    std::vector<Int_t> genElectronIdxs;
+    std::vector<Int_t> genZElectronIdxs;
+    for ( Int_t iMC = 0; iMC < nMC; ++nMC )
+        if ( fabs(mcPID[iMC]) == PID_ELECTRON && mcStatus[iMC] <= FINALSTATESTATUS )
+        {
+            genElectronIdxs.emplace_back(iMC);
+            if ( mcMomPID[iMC] == PID_Z )
+                genZElectronIdxs.emplace_back(iMC);
+        }
+    
+    
+
+    Int_t ele1Idx = ZCand_.daughters().at(0);
+    Int_t ele2Idx = ZCand_.daughters().at(1);
+    
+
+    return std::vector<TLorentzCand>();
 }

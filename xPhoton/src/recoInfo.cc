@@ -45,6 +45,7 @@ TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
 void TLorentzCand::SetAlive() { _deadcand = false; }
 void TLorentzCand::adddaughter( const TLorentzCand* const d_ )
 { this->daughterIdxs.push_back(d_->idx()); }
+std::vector<Int_t> TLorentzCand::daughters() const { return daughterIdxs; }
 
      /*
 void TLorentzCompCand::AddDaughter( const TLorentzCand& d_ ) { daugs.push_back(d_); }
