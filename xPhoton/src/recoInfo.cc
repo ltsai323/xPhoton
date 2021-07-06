@@ -15,14 +15,44 @@ bool TLorentzDATA::IsZombie() const { return _idx == NOCANDFOUND; }
      */
 int  TLorentzCand::idx() const { return _idx; }
 int  TLorentzCand::charge() const { return _charge; }
-bool TLorentzCand::IsZombie() const { return _idx == NOCANDFOUND; }
-     TLorentzCand::TLorentzCand() : TLorentzVector() { _idx = NOCANDFOUND; }
-     TLorentzCand::TLorentzCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
+bool TLorentzCand::IsZombie() const { return _deadcand; }
+     TLorentzCand::TLorentzCand() :
+         TLorentzVector()
+{
+    _idx = NOCANDFOUND; _charge=0;_deadcand=true;
+}
+     TLorentzCand::TLorentzCand(int idx_, int charge_) :
+         TLorentzVector()
+{ _idx = idx_; _charge = charge_; _deadcand=false; }
+TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
+{
+    TLorentzCand sumup;
+    sumup.SetPtEtaPhiE(
+            this->Pt() + cand_.Pt(),
+            this->Eta() + cand_.Eta(),
+            this->Phi() + cand_.Phi(),
+            this->E() + cand_.E()
+            );
+    sumup._charge = this->charge() + cand_.charge();
+    sumup.adddaughter(this);
+    sumup.adddaughter(&cand_);
+    
 
+    return sumup;
+
+}
+
+void TLorentzCand::SetAlive() { _deadcand = false; }
+void TLorentzCand::adddaughter( const TLorentzCand* const d_ )
+{ this->daughterIdxs.push_back(d_->idx()); }
+
+     /*
 void TLorentzCompCand::AddDaughter( const TLorentzCand& d_ ) { daugs.push_back(d_); }
-bool TLorentzCompCand::IsZombie() const { return _status; }
-void TLorentzCompCand::SetAlive() { _status = true; }
-     TLorentzCompCand::TLorentzCompCand() : TLorentzVector(), _status(false) { }
+bool TLorentzCompCand::IsZombie() const { return _deadcand; }
+void TLorentzCompCand::SetAlive() { _deadcand = true; }
+     //TLorentzCompCand::TLorentzCompCand() : TLorentzVector(), _deadcand(false) { }
+     TLorentzCompCand::TLorentzCompCand() : TLorentzCand(), _deadcand(false) { }
+     */
      //TLorentzCompCand::TLorentzCompCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
  std::map<int,TLorentzVector> recoInfo::PreselectedElectron_2016(TreeReader* data)
 {

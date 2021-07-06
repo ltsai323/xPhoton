@@ -206,7 +206,8 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
 
 
         TLorentzVector ZeeP4;
-        TLorentzCompCand ZcandP4;
+        //TLorentzCompCand ZcandP4;
+        TLorentzCand ZcandP4;
         for ( int idx=0; idx<selelectrons.size(); ++idx )
             for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
             {
@@ -215,12 +216,14 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
                 int TIGHTID = 0;
                 if ( (( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele1.idx()]>>TIGHTID)&1 == 0 ) continue; // tight ID for tag photon.
                 // need to check the validation
-                /*
+                /* asdf
                 if ( ( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele1.idx()] & 1<<TIGHTID == 0 ) continue; // tight ID for tag photon.
                 */
                 if ( ele1.charge() * ele2.charge() > 0 ) continue;
                 ZeeP4 = ele1+ele2;
+                ZcandP4 = ele1+ele2;
                 if ( ZeeP4.M() <  50 || ZeeP4.M() > 110 ) continue;
+                ZcandP4.SetAlive();
                 break;
             }
 
