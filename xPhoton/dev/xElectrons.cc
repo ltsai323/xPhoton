@@ -10,7 +10,9 @@
 #include <TLorentzVector.h>
 #include <map>
 
+#define BINNNING 100
 
+static std::map<const char*, TH1*> hists;
 
 
 std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP);
@@ -34,6 +36,9 @@ void xElectrons(
     RegBranch( outtree_, "ele2", &ele2cand );
     RegBranch( outtree_, "Z", &Zcand );
     RegBranch( outtree_, "Events", &event );
+
+    hists["DeltaR_GenZee"] = new TH1F("DeltaR_GenZee", "", BINNING, 0., 10.,"#delta R");
+    hists["DeltaR_GenEle"] = new TH1F("DeltaR_GenEle", "", BINNING, 0., 10.,"#delta R");
 
     /*
     std::map<int, Float_t > ele1CandF,ele2CandF, ZCandF;
@@ -288,6 +293,9 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
 
     fout_->cd();
     outtree_->Write();
+
+    for ( auto iter = hists.begin(); iter != hists.end(); ++iter )
+        iter->Write();
     fout_->Close();
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
 }
@@ -332,7 +340,7 @@ std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP)
 std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_)
 {
     #define DELTARCUT 0.4
-    #define FINALSTATESTATUS 3
+    #define FINALSTATE_STATUSCUT
     #define PID_Z 23
     #define PID_ELECTRON 11
     
@@ -348,17 +356,25 @@ std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand&
     std::vector<Int_t> genElectronIdxs;
     std::vector<Int_t> genZElectronIdxs;
     for ( Int_t iMC = 0; iMC < nMC; ++nMC )
-        if ( fabs(mcPID[iMC]) == PID_ELECTRON && mcStatus[iMC] <= FINALSTATESTATUS )
+        if ( fabs(mcPID[iMC]) == PID_ELECTRON && mcStatus[iMC] <= FINALSTATE_STATUSCUT )
         {
             genElectronIdxs.emplace_back(iMC);
             if ( mcMomPID[iMC] == PID_Z )
                 genZElectronIdxs.emplace_back(iMC);
         }
     
+    Float_t* pt         = dataptr->GetPtrFloat("elePt");
+    Float_t* eta        = dataptr->GetPtrFloat("eleEta");
+    Float_t* phi        = dataptr->GetPtrFloat("elePhi");
+    Float_t* genpt      = dataptr->GetPtrFloat("mcPt");
+    Float_t* geneta     = dataptr->GetPtrFloat("mcEta");
+    Float_t* genphi     = dataptr->GetPtrFloat("mcPhi");
     
+
 
     Int_t ele1Idx = ZCand_.daughters().at(0);
     Int_t ele2Idx = ZCand_.daughters().at(1);
+    
     
 
     return std::vector<TLorentzCand>();
