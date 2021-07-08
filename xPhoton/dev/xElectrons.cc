@@ -10,10 +10,6 @@
 #include <TLorentzVector.h>
 #include <map>
 
-#define BINNING 100
-#define MASS_ELECTRON 0.511*0.001
-#define MASS_Z 90
-#define WINDOW_Z 40
 
 static std::map<const char*, TH1*> histMap;
 
@@ -31,17 +27,19 @@ void xElectrons(
 
     TTree *outtree_ = new TTree("t", "mini tree");
     
-    rec_Electron ele1cand, ele2cand;
+    rec_Electron elecand[2];
     rec_Z Zcand;
     rec_Event event;
 
-    RegBranch( outtree_, "ele1", &ele1cand );
-    RegBranch( outtree_, "ele2", &ele2cand );
+    //RegBranch( outtree_, "electron0", &ele0cand );
+    //RegBranch( outtree_, "electron1", &ele1cand );
+    RegBranch( outtree_, "electron0", &elecand[0] );
+    RegBranch( outtree_, "electron1", &elecand[1] );
     RegBranch( outtree_, "Z", &Zcand );
     RegBranch( outtree_, "Events", &event );
 
-    histMap["DeltaR_GenZee"] = new TH1F("DeltaR_GenZee", "", BINNING, 0., 5.);
-    histMap["DeltaR_GenEle"] = new TH1F("DeltaR_GenEle", "", BINNING, 0., 5.);
+    histMap["DeltaR_GenZee"] = new TH1F("DeltaR_GenZee", "", BINNING, 0., 1.);
+    histMap["DeltaR_GenEle"] = new TH1F("DeltaR_GenEle", "", BINNING, 0., 1.);
 
     /*
     std::map<int, Float_t > ele1CandF,ele2CandF, ZCandF;
@@ -209,42 +207,59 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         // 5. fill tree
         // 6. mva
         data.GetEntry(ev);
-        std::vector<TLorentzCand> selelectrons = PreselectedElectrons(&data, 0);
+        std::vector<TLorentzCand> selelectrons = PreselectedElectrons(&data, ELECTRONWORKINGPOINT);
         
         if ( selelectrons.size() < 2 ) continue;
 
 
         TLorentzCand ZcandP4;
         for ( int idx=0; idx<selelectrons.size(); ++idx )
+        {
             for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
             {
-                const TLorentzCand& ele1 = selelectrons.at(idx);
-                const TLorentzCand& ele2 = selelectrons.at(jdx);
-                int TIGHTID = 0;
-                if ( (( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele1.idx()]>>TIGHTID)&1 == 0 ) continue; // tight ID for tag photon.
-                // need to check the validation
-                /* asdf
-                if ( ( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele1.idx()] & 1<<TIGHTID == 0 ) continue; // tight ID for tag photon.
-                */
-                if ( ele1.charge() * ele2.charge() > 0 ) continue;
-                ZcandP4 = ele1+ele2;
+                const TLorentzCand& ele0 = selelectrons.at(idx);
+                const TLorentzCand& ele1 = selelectrons.at(jdx);
+                if ( ( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()] == 0 ) continue; // nothing triggered.
+                        
+                if ( PASS_HLTBIT > 0 ) // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
+                {
+                    int bit = PASS_HLTBIT;
+                    if ( (( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()]>>bit)&1 == 0 ) continue; // tight ID for tag photon.
+                    // need to check the validation
+                    /* asdf
+                    if ( ( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele0.idx()] & 1<<bit == 0 ) continue; // tight ID for tag photon.
+                    */
+                }
+
+                if ( ele0.charge() * ele1.charge() > 0 ) continue;
+                ZcandP4 = ele0+ele1;
                 if ( ZcandP4.M() <  MASS_Z-WINDOW_Z || ZcandP4.M() > MASS_Z+WINDOW_Z ) continue;
                 ZcandP4.SetAlive();
                 break;
             }
+            if (!ZcandP4.IsZombie() ) break;
+        }
 
         if ( ZcandP4.IsZombie() ) continue;
+        LOG_DEBUG("Z candidate found, owning %d electrons", ZcandP4.daughters().size());
         
         // MC truth matching
 
-        matchedGenZee(&data, ZcandP4);
+        std::vector<TLorentzCand> matchedElectrons = matchedGenZee(&data, ZcandP4);
+        LOG_DEBUG("MC matched %d", matchedElectrons.size());
+
+        
 
 
 
-
-
-
-        Int_t nEle = data.GetInt("nEle");
+        // filling events
+        
+        //for ( int i = 0; i < 2; ++i )
+            
+        /*
+        {
+        }
+        
         Int_t* eleCharge = data.GetPtrInt("eleCharge");
         Float_t* elePt = data.GetPtrFloat("elePt");
         Float_t* eleEta = data.GetPtrFloat("eleEta");
@@ -252,51 +267,26 @@ outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
         Float_t* eleR9  = data.GetPtrFloat("eleR9");
         Float_t* eleCalibPt = data.GetPtrFloat("eleCalibPt");
         Float_t* eleCalibEta = data.GetPtrFloat("eleCalibEta");
-        /*
-        Float_t* 
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
-        Float_t*
+        
+
+
+
         */
-        
-
-
-        std::map<int, TLorentzVector> electrons = recoInfo::PreselectedElectron_2016(&data);
-        for ( int eleIdx1 = 0; eleIdx1 < nEle; ++eleIdx1 )
-        {
-            continue;
-        }
-        
-
-
 
         outtree_->Fill();
     }
 
 
+    LOG_INFO("event looping end. Storing everything into root file");
     fout_->cd();
+    LOG_DEBUG("writing tree");
     outtree_->Write();
+    LOG_DEBUG("writing histograms");
     for ( auto iter = histMap.begin(); iter != histMap.end(); ++iter ) iter->second->Write();
+    LOG_DEBUG("closing output ROOT file");
     fout_->Close();
-    for ( auto iter = histMap.begin(); iter != histMap.end(); ++iter ) delete iter->second;
+    //LOG_DEBUG("deleting histograms");
+    //for ( auto iter = histMap.begin(); iter != histMap.end(); ++iter ) delete iter->second;
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
 }
 void xElectrons(std::string ipath, int outID)
@@ -380,38 +370,42 @@ std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand&
     
     bool matched_signal = false;
     bool matched_background = false;
-    for ( Int_t geleIdx0 : genZElectronIdxs )
-        for ( Int_t geleIdx1 : genZElectronIdxs )
+    
+    
+    LOG_DEBUG("Got %d Z electrons in gen level, and %d gen electrons", genZElectronIdxs.size(), genElectronIdxs.size() );
+    const std::vector<Int_t>& genIdxsContainer = (genZElectronIdxs.size()>1) ? genZElectronIdxs : genElectronIdxs;
+    for ( Int_t geleIdx0 : genIdxsContainer )
+        for ( Int_t geleIdx1 : genIdxsContainer )
         {
+            LOG_DEBUG("starting matching");
+            if ( geleIdx0 == geleIdx1 ) continue;
+            LOG_DEBUG("selection1");
             if ( genpt_[geleIdx0] < genpt_[geleIdx1] ) continue;
+            LOG_DEBUG("selection2");
             if ( mcMomPID_[geleIdx0] != mcMomPID_[geleIdx1] ) continue;
-            TLorentzCand genEle0(geleIdx0, mcPID_[geleIdx0] > 0 ? -0 : 0 );
-            TLorentzCand genEle1(geleIdx1, mcPID_[geleIdx1] > 0 ? -0 : 0 );
+            LOG_DEBUG("selection3");
+            TLorentzCand genEle0(geleIdx0, mcPID_[geleIdx0] > 0 ? -1 : 1 );
+            TLorentzCand genEle1(geleIdx1, mcPID_[geleIdx1] > 0 ? -1 : 1 );
             genEle0.SetPtEtaPhiM(genpt_[geleIdx0], geneta_[geleIdx0], genphi_[geleIdx0], MASS_ELECTRON );
             genEle1.SetPtEtaPhiM(genpt_[geleIdx1], geneta_[geleIdx1], genphi_[geleIdx1], MASS_ELECTRON );
 
             if ( genEle0.charge() != recoEle0.charge() || genEle1.charge() != recoEle1.charge() ) continue;
+            LOG_DEBUG("selection4");
             double deltaR0 = genEle0.DeltaR(recoEle0);
             double deltaR1 = genEle1.DeltaR(recoEle1);
-            if ( deltaR0 < DELTARCUT && deltaR1 < DELTARCUT )
-                matched_signal = true;
-        }
-    if ( matched_signal ) return std::vector<TLorentzCand>();
-    for ( Int_t geleIdx0 : genElectronIdxs )
-        for ( Int_t geleIdx1 : genElectronIdxs )
-        {
-            if ( genpt_[geleIdx0] < genpt_[geleIdx1] ) continue;
-            if ( mcMomPID_[geleIdx0] != mcMomPID_[geleIdx1] ) continue;
-            TLorentzCand genEle0(geleIdx0, mcPID_[geleIdx0] > 0 ? -0 : 0 );
-            TLorentzCand genEle1(geleIdx1, mcPID_[geleIdx1] > 0 ? -0 : 0 );
-            genEle0.SetPtEtaPhiM(genpt_[geleIdx0], geneta_[geleIdx0], genphi_[geleIdx0], MASS_ELECTRON );
-            genEle1.SetPtEtaPhiM(genpt_[geleIdx1], geneta_[geleIdx1], genphi_[geleIdx1], MASS_ELECTRON );
-
-            if ( genEle0.charge() != recoEle0.charge() || genEle1.charge() != recoEle1.charge() ) continue;
-            double deltaR0 = genEle0.DeltaR(recoEle0);
-            double deltaR1 = genEle1.DeltaR(recoEle1);
-            if ( deltaR0 < DELTARCUT && deltaR1 < DELTARCUT )
-                matched_background = true;
+            LOG_DEBUG("Calculating delta R value : %.3f -- %.3f", deltaR0, deltaR1);
+            if ( genZElectronIdxs.size() > 1 )
+            {
+                histMap["DeltaR_GenZee"]->Fill(deltaR0);
+                histMap["DeltaR_GenZee"]->Fill(deltaR1);
+                if ( deltaR0 < DELTARCUT && deltaR1 < DELTARCUT )
+                    return std::vector<TLorentzCand>( {genEle0,genEle1} );
+            }
+            else
+            {
+                histMap["DeltaR_GenEle"]->Fill(deltaR0);
+                histMap["DeltaR_GenEle"]->Fill(deltaR1);
+            }
         }
     
 
