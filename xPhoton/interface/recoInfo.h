@@ -28,6 +28,7 @@ struct TLorentzDATA : public TLorentzVector {
 struct TLorentzCand : public TLorentzVector {
     TLorentzCand();
     TLorentzCand(int idx_, int charge_=0);
+    TLorentzCand(int idx_, int charge_, float pt_, float eta_, float phi_, float mass_);
     bool IsZombie() const;
     void SetAlive();
     int idx() const;

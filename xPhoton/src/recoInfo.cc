@@ -24,6 +24,9 @@ bool TLorentzCand::IsZombie() const { return _deadcand; }
      TLorentzCand::TLorentzCand(int idx_, int charge_) :
          TLorentzVector()
 { _idx = idx_; _charge = charge_; _deadcand=false; }
+     TLorentzCand::TLorentzCand(int idx_, int charge_, float pt_, float eta_, float phi_, float mass_) :
+         TLorentzVector()
+{ _idx = idx_; _charge = charge_; _deadcand=false; this->SetPtEtaPhiM(pt_,eta_,phi_,mass_); }
 TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
 {
     TLorentzCand sumup;
