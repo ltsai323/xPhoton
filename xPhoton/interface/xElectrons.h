@@ -14,7 +14,8 @@
 #define MASS_ELECTRON 0.511*0.001
 #define MASS_Z 90
 #define WINDOW_Z 40
-#define ELECTRONWORKINGPOINT 0
+// 0 : veto, 1 : loose, 2: medium, 3: tight
+#define ELECTRONWORKINGPOINT 2
 struct rec_Electron
 {
     Float_t
