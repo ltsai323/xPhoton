@@ -49,6 +49,7 @@ namespace recoInfo
 {
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
     TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
+    bool cmpPt( const TLorentzCand& cand1, const TLorentzCand& cand2 ); // used for sorting
 };
 
 /*

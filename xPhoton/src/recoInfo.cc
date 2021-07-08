@@ -94,6 +94,8 @@ TLorentzCand recoInfo::BuildSelectedParticles( int idx, float pt, float eta, flo
     particle.SetPtEtaPhiM(pt,eta,phi,mass);
     return particle;
 }
+bool recoInfo::cmpPt(const TLorentzCand& cand1, const TLorentzCand& cand2)
+{ return cand1.Pt() > cand2.Pt(); }
 
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
