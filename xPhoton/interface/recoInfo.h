@@ -31,7 +31,9 @@ struct TLorentzCand : public TLorentzVector {
     TLorentzCand(int idx_, int charge_, float pt_, float eta_, float phi_, float mass_);
     bool IsZombie() const;
     void SetAlive();
+    void SetGenIdx(int idx);
     int idx() const;
+    int genidx() const;
     int charge() const;
     std::vector<Int_t> daughters() const;
 
@@ -40,6 +42,7 @@ struct TLorentzCand : public TLorentzVector {
     private:
     void adddaughter( const TLorentzCand* const d_ );
     int _idx;
+    int _genidx;
     int _charge;
     bool _deadcand;
     std::vector<Int_t> daughterIdxs;
@@ -50,6 +53,7 @@ namespace recoInfo
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
     TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
     bool ordering_pt( const TLorentzCand& cand1, const TLorentzCand& cand2 ); // used for sorting
+    bool ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 ); // used for sorting
 };
 
 /*

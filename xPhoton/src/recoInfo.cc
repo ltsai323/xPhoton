@@ -14,19 +14,18 @@ bool TLorentzDATA::IsZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
      */
 int  TLorentzCand::idx() const { return _idx; }
+int  TLorentzCand::genidx() const { return _genidx; }
 int  TLorentzCand::charge() const { return _charge; }
 bool TLorentzCand::IsZombie() const { return _deadcand; }
      TLorentzCand::TLorentzCand() :
-         TLorentzVector()
-{
-    _idx = NOCANDFOUND; _charge=0;_deadcand=true;
-}
+         TLorentzVector(), _idx(NOCANDFOUND),_genidx(-1),_charge(0),_deadcand(true)
+{}
      TLorentzCand::TLorentzCand(int idx_, int charge_) :
-         TLorentzVector()
-{ _idx = idx_; _charge = charge_; _deadcand=false; }
+         TLorentzVector(), _idx(idx_),_genidx(-1),_charge(charge_),_deadcand(false)
+{}
      TLorentzCand::TLorentzCand(int idx_, int charge_, float pt_, float eta_, float phi_, float mass_) :
-         TLorentzVector()
-{ _idx = idx_; _charge = charge_; _deadcand=false; this->SetPtEtaPhiM(pt_,eta_,phi_,mass_); }
+         TLorentzVector(), _idx(idx_),_genidx(-1),_charge(charge_),_deadcand(false)
+{ this->SetPtEtaPhiM(pt_,eta_,phi_,mass_); }
 TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
 {
     TLorentzCand sumup;
@@ -39,7 +38,6 @@ TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
     sumup._charge = this->charge() + cand_.charge();
     sumup.adddaughter(this);
     sumup.adddaughter(&cand_);
-    
 
     return sumup;
 }
@@ -57,6 +55,7 @@ TLorentzCand TLorentzCand::operator=(const TLorentzVector& vec_)
 }
 
 void TLorentzCand::SetAlive() { _deadcand = false; }
+void TLorentzCand::SetGenIdx(int idx) { _genidx = idx; }
 void TLorentzCand::adddaughter( const TLorentzCand* const d_ )
 { this->daughterIdxs.push_back(d_->idx()); }
 std::vector<Int_t> TLorentzCand::daughters() const { return daughterIdxs; }
@@ -96,6 +95,8 @@ TLorentzCand recoInfo::BuildSelectedParticles( int idx, float pt, float eta, flo
 }
 bool recoInfo::ordering_pt(const TLorentzCand& cand1, const TLorentzCand& cand2)
 { return cand1.Pt() > cand2.Pt(); }
+bool recoInfo::ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 )
+{ return candpair1.second.Pt() > candpair2.second.Pt(); }
 
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
