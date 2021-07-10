@@ -35,17 +35,18 @@ struct TLorentzCand : public TLorentzVector {
     int idx() const;
     int genidx() const;
     int charge() const;
-    std::vector<Int_t> daughters() const;
+    std::vector<TLorentzCand> daughters() const;
 
     TLorentzCand operator+(const TLorentzCand& cand_) const;
     TLorentzCand operator=(const TLorentzVector& vec_);
+    TLorentzCand operator=(const TLorentzCand& vec_);
     private:
-    void adddaughter( const TLorentzCand* const d_ );
+    void adddaughter( const TLorentzCand& d_ );
     int _idx;
     int _genidx;
     int _charge;
     bool _deadcand;
-    std::vector<Int_t> daughterIdxs;
+    std::vector<TLorentzCand> _daughterCands;
 };
 
 namespace recoInfo

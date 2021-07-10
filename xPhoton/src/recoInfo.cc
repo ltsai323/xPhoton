@@ -29,15 +29,12 @@ bool TLorentzCand::IsZombie() const { return _deadcand; }
 TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
 {
     TLorentzCand sumup;
-    sumup.SetPtEtaPhiE(
-            this->Pt() + cand_.Pt(),
-            this->Eta() + cand_.Eta(),
-            this->Phi() + cand_.Phi(),
-            this->E() + cand_.E()
-            );
+    TLorentzVector tmpP4 = TLorentzVector(*this) + TLorentzVector(cand_);
+
+    sumup = tmpP4;
     sumup._charge = this->charge() + cand_.charge();
-    sumup.adddaughter(this);
-    sumup.adddaughter(&cand_);
+    sumup.adddaughter(*this);
+    sumup.adddaughter(cand_);
 
     return sumup;
 }
@@ -53,12 +50,28 @@ TLorentzCand TLorentzCand::operator=(const TLorentzVector& vec_)
 
     return *this;
 }
+TLorentzCand TLorentzCand::operator=(const TLorentzCand& vec_)
+{
+    this->SetPtEtaPhiE(
+            vec_.Pt(),
+            vec_.Eta(),
+            vec_.Phi(),
+            vec_.E()
+            );
+    this->_idx=             vec_._idx;
+    this->_genidx=          vec_._genidx;
+    this->_charge=          vec_._charge;
+    this->_deadcand=        vec_._deadcand;
+    this->_daughterCands=    vec_._daughterCands;
+
+    return *this;
+}
 
 void TLorentzCand::SetAlive(bool stat) { _deadcand =!stat; }
 void TLorentzCand::SetGenIdx(int idx) { _genidx = idx; }
-void TLorentzCand::adddaughter( const TLorentzCand* const d_ )
-{ this->daughterIdxs.push_back(d_->idx()); }
-std::vector<Int_t> TLorentzCand::daughters() const { return daughterIdxs; }
+void TLorentzCand::adddaughter( const TLorentzCand& d_ )
+{ this->_daughterCands.push_back(d_); }
+std::vector<TLorentzCand> TLorentzCand::daughters() const { return _daughterCands; }
 
      /*
 void TLorentzCompCand::AddDaughter( const TLorentzCand& d_ ) { daugs.push_back(d_); }
