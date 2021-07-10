@@ -16,6 +16,7 @@ static histMgr hists;
 
 
 std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr);
+std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
 bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
 std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP);
 std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_);
@@ -81,30 +82,41 @@ void xElectrons(
     
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++)
     {
-        // 1. load data
-        // 2. build electron 4mom and pass electron preselection (and HLT)
-        // 3. build Z candidate and reject event.
-        // 4. mc truth matching.
-        // 5. fill tree
-        // 6. mva
+        // 1. match reco electron and gen electron if MC used
+        // 2. pass electron preselection
+        // 3. build reco Z candidate
+        // 4. fill tree
+        // 5. load photon mva
         data.GetEntry(ev);
 
-        std::vector<TLorentzCand> matchedRes = MCmatchedZElectronPair(&data);
-        std::vector<TLorentzCand> selelectrons = PreselectedElectrons(&data, ELECTRONWORKINGPOINT);
+        std::vector<TLorentzCand> electrons;
+        if ( data.HasMC() )
+            electrons = MCmatchedZElectronPair(&data);
+        else
+            electrons = RecoElectrons(&data);
+        for ( TLorentzCand& cand : electrons )
+            cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
         hists.FillStatus("eventStat", 0);
         
-        hists.Fill("Nele", selelectrons.size() );
-        if ( selelectrons.size() < 2 ) continue;
+        int aliveEleNum = 0;
+        for ( auto ele : electrons )
+            if (!ele.IsZombie() )
+                ++aliveEleNum;
+
+        hists.Fill("Nele", aliveEleNum);
+        if ( aliveEleNum < 2 ) continue;
 
         hists.FillStatus("eventStat", 1);
 
         TLorentzCand ZcandP4;
-        for ( int idx=0; idx<selelectrons.size(); ++idx )
+        for ( int eleI = 0; eleI < electrons.size(); ++eleI )
         {
-            for ( int jdx=idx+1; jdx<selelectrons.size(); ++jdx )
+            const TLorentzCand& ele0 = electrons.at(eleI);
+            if ( ele0.IsZombie() ) continue;
+            for ( int eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
             {
-                const TLorentzCand& ele0 = selelectrons.at(idx);
-                const TLorentzCand& ele1 = selelectrons.at(jdx);
+                const TLorentzCand& ele1 = electrons.at(eleI);
+                if ( ele1.IsZombie() ) continue;
                 if (!data.HasMC() )
                 {
                     if ( ( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()] == 0 ) continue; // nothing triggered.
@@ -127,7 +139,7 @@ void xElectrons(
                 ZcandP4 = ele0+ele1;
                 if ( ZcandP4.M() <  MASS_Z-WINDOW_Z || ZcandP4.M() > MASS_Z+WINDOW_Z ) continue;
                 hists.FillStatus("ZRecoStat", 3);
-                ZcandP4.SetAlive();
+                ZcandP4.SetAlive(true);
                 break;
             }
             if (!ZcandP4.IsZombie() ) break;
@@ -193,6 +205,20 @@ void xElectrons(std::string ipath, int outID)
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
    xElectrons(pathes, oname);
+}
+std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
+{
+    std::vector<TLorentzCand> outputs;
+    for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
+        outputs.emplace_back( recoInfo::BuildSelectedParticles(
+                    idx,
+                    dataptr->GetPtrInt  ("eleCharge")[idx],
+                    dataptr->GetPtrFloat("elePt")[idx],
+                    dataptr->GetPtrFloat("eleEta")[idx],
+                    dataptr->GetPtrFloat("elePhi")[idx],
+                    MASS_ELECTRON
+                ) );
+    return outputs;
 }
 
 std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP)
