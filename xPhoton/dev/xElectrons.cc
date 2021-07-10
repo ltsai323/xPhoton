@@ -18,8 +18,6 @@ static histMgr hists;
 std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr);
 std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
 bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
-std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP);
-std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -35,8 +33,6 @@ void xElectrons(
     rec_Z Zcand;
     rec_Event event;
 
-    //RegBranch( outtree_, "electron0", &ele0cand );
-    //RegBranch( outtree_, "electron1", &ele1cand );
     RegBranch( outtree_, "electron0", &elecand[0] );
     RegBranch( outtree_, "electron1", &elecand[1] );
     RegBranch( outtree_, "Z", &Zcand );
@@ -64,8 +60,9 @@ void xElectrons(
     // 0: number of electron pairs
     // 1: pass HLT in data
     // 2: electron pair with opposite charge
-    // 3: Z candidate mass = [ 90-40, 90+40 ]
-    hists.Create("ZRecoStat", 4, 0., 4.);
+    // 3: Z candidate mass > 90 - 40
+    // 4: Z candidate mass < 90 + 40
+    hists.Create("ZRecoStat", 5, 0., 5.);
 
     // matched electrons in each event.
     // -1: the total number of events.
@@ -76,6 +73,8 @@ void xElectrons(
     hists.Create("nGenEle", 6, -1, 5);
     hists.Create("DeltaR", BINNING, 0., 0.10);
     hists.Create("ptratio", BINNING, 0., 2.0);
+
+    hists.Create("Zmass", BINNING, 50., 110.);
 
 
 
@@ -94,6 +93,7 @@ void xElectrons(
             electrons = MCmatchedZElectronPair(&data);
         else
             electrons = RecoElectrons(&data);
+
         for ( TLorentzCand& cand : electrons )
             cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
         hists.FillStatus("eventStat", 0);
@@ -109,14 +109,20 @@ void xElectrons(
         hists.FillStatus("eventStat", 1);
 
         TLorentzCand ZcandP4;
+        LOG_DEBUG( "ELECTRON (0,1) = Pt(%.2f,%.2f), Eta(%.2f,%.2f), charge(%d,%d)",
+                electrons[0].Pt(), electrons[1].Pt(),
+                electrons[0].Eta(), electrons[1].Eta(),
+                electrons[0].charge(), electrons[1].charge() );
         for ( int eleI = 0; eleI < electrons.size(); ++eleI )
         {
             const TLorentzCand& ele0 = electrons.at(eleI);
             if ( ele0.IsZombie() ) continue;
             for ( int eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
             {
-                const TLorentzCand& ele1 = electrons.at(eleI);
+                const TLorentzCand& ele1 = electrons.at(eleJ);
                 if ( ele1.IsZombie() ) continue;
+
+                hists.FillStatus("ZRecoStat", 0);
                 if (!data.HasMC() )
                 {
                     if ( ( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()] == 0 ) continue; // nothing triggered.
@@ -131,15 +137,20 @@ void xElectrons(
                         */
                     }
                 }
-                hists.FillStatus("ZRecoStat", 0);
                 hists.FillStatus("ZRecoStat", 1);
 
-                if ( ele0.charge() * ele1.charge() > 0 ) continue;
-                hists.FillStatus("ZRecoStat", 2);
                 ZcandP4 = ele0+ele1;
-                if ( ZcandP4.M() <  MASS_Z-WINDOW_Z || ZcandP4.M() > MASS_Z+WINDOW_Z ) continue;
+                if ( ZcandP4.M() > 50 && ZcandP4.M() < 110 ) hists.Fill("Zmass", ZcandP4.M());
+                LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
+                //if ( ele0.charge() * ele1.charge() > 0 ) continue;
+                if ( ZcandP4.charge() != 0 ) continue;
+                hists.FillStatus("ZRecoStat", 2);
+                if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue;
                 hists.FillStatus("ZRecoStat", 3);
+                if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue;
+                hists.FillStatus("ZRecoStat", 4);
                 ZcandP4.SetAlive(true);
+                LOG_DEBUG("Z CAND found!");
                 break;
             }
             if (!ZcandP4.IsZombie() ) break;
@@ -147,13 +158,7 @@ void xElectrons(
 
         if ( ZcandP4.IsZombie() ) continue;
         hists.FillStatus("eventStat", 2);
-        LOG_DEBUG("Z candidate found, owning %d electrons", ZcandP4.daughters().size());
         
-        // MC truth matching
-
-        std::vector<TLorentzCand> matchedElectrons = matchedGenZee(&data, ZcandP4);
-        LOG_DEBUG("MC matched %d", matchedElectrons.size());
-        if ( matchedElectrons.size() ) hists.FillStatus("ZRecoStat",4);
 
         
 
@@ -221,36 +226,6 @@ std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
     return outputs;
 }
 
-std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP)
-{
-    std::vector<int> selParticleIdxs;
-    
-    Int_t Size = dataptr->GetInt("nEle");
-    Int_t* charge = dataptr->GetPtrInt("eleCharge");
-    Float_t* pt = dataptr->GetPtrFloat("elePt");
-    Float_t* eta = dataptr->GetPtrFloat("eleSCEta");
-    Float_t* phi = dataptr->GetPtrFloat("eleSCPhi");
-    UShort_t* idbit = (UShort_t*)dataptr->GetPtrShort("eleIDbit");
-    for ( int i = 0; i < Size; ++i )
-    {
-        hists.FillStatus("elePreselectStat", 0);
-        if ( pt[i] < 12. ) continue;
-        hists.FillStatus("elePreselectStat", 1);
-        float abseta = fabs(eta[i]);
-        if ( abseta > 2.5 ) continue;
-        hists.FillStatus("elePreselectStat", 2);
-        if ( abseta > 1.4442 && abseta < 1.566 ) continue;
-        hists.FillStatus("elePreselectStat", 3);
-        if (!dataptr->HasMC() ) if (!((idbit[i] >> WP) & 1) ) continue;
-        hists.FillStatus("elePreselectStat", 4);
-        selParticleIdxs.push_back(i);
-    }
-
-    std::vector<TLorentzCand> outputs;
-    for ( int idx : selParticleIdxs )
-        outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], MASS_ELECTRON, charge[idx]) );
-    return outputs;
-}
 bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand)
 {
     int idx = cand.idx();
@@ -266,84 +241,14 @@ bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& c
     hists.FillStatus("elePreselectStat", 4);
     return true;
 }
-std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_)
+std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
 {
     #define DELTARCUT 0.10
     #define PTRATIOCUT 1.0
     #define FINALSTATE_STATUSCUT 1
     #define PID_Z 23
     #define PID_ELECTRON 11
-    
     if (!dataptr->HasMC() ) return std::vector<TLorentzCand>();
-
-    Int_t  nMC_         = dataptr->GetInt("nMC");
-    Int_t* mcPID_       = dataptr->GetPtrInt("mcPID");
-    Int_t* mcMomPID_    = dataptr->GetPtrInt("mcMomPID");
-    Int_t* mcStatus_    = dataptr->GetPtrInt("mcStatus");
-
-
-
-    std::vector<Int_t> genElectronIdxs;
-    std::vector<Int_t> genZElectronIdxs;
-    for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
-        if ( fabs(mcPID_[iMC]) == PID_ELECTRON && mcStatus_[iMC] <= FINALSTATE_STATUSCUT )
-        {
-            genElectronIdxs.emplace_back(iMC);
-            if ( mcMomPID_[iMC] == PID_Z )
-                genZElectronIdxs.emplace_back(iMC);
-        }
-    
-    Float_t* pt_        = dataptr->GetPtrFloat("elePt");
-    Float_t* eta_       = dataptr->GetPtrFloat("eleEta");
-    Float_t* phi_       = dataptr->GetPtrFloat("elePhi");
-    Int_t  * charge_    = dataptr->GetPtrInt("eleCharge");
-    Float_t* genpt_     = dataptr->GetPtrFloat("mcPt");
-    Float_t* geneta_    = dataptr->GetPtrFloat("mcEta");
-    Float_t* genphi_    = dataptr->GetPtrFloat("mcPhi");
-    
-
-
-    TLorentzCand recoEle0( ZCand_.daughters().at(0), charge_[ZCand_.daughters().at(0)] );
-    TLorentzCand recoEle1( ZCand_.daughters().at(1), charge_[ZCand_.daughters().at(1)] );
-    recoEle0.SetPtEtaPhiM(pt_[ZCand_.daughters().at(0)], eta_[ZCand_.daughters().at(0)], phi_[ZCand_.daughters().at(0)], MASS_ELECTRON );
-    recoEle1.SetPtEtaPhiM(pt_[ZCand_.daughters().at(1)], eta_[ZCand_.daughters().at(1)], phi_[ZCand_.daughters().at(1)], MASS_ELECTRON );
-    
-    bool matched_signal = false;
-    bool matched_background = false;
-    
-    
-    LOG_DEBUG("Got %d Z electrons in gen level, and %d gen electrons", genZElectronIdxs.size(), genElectronIdxs.size() );
-    const std::vector<Int_t>& genIdxsContainer = (genZElectronIdxs.size()>1) ? genZElectronIdxs : genElectronIdxs;
-    for ( Int_t geleIdx0 : genIdxsContainer )
-        for ( Int_t geleIdx1 : genIdxsContainer )
-        {
-            LOG_DEBUG("starting matching");
-            if ( geleIdx0 == geleIdx1 ) continue;
-            LOG_DEBUG("selection1");
-            if ( genpt_[geleIdx0] < genpt_[geleIdx1] ) continue;
-            LOG_DEBUG("selection2");
-            if ( mcMomPID_[geleIdx0] != mcMomPID_[geleIdx1] ) continue;
-            LOG_DEBUG("selection3");
-            TLorentzCand genEle0(geleIdx0, mcPID_[geleIdx0] > 0 ? -1 : 1 );
-            TLorentzCand genEle1(geleIdx1, mcPID_[geleIdx1] > 0 ? -1 : 1 );
-            genEle0.SetPtEtaPhiM(genpt_[geleIdx0], geneta_[geleIdx0], genphi_[geleIdx0], MASS_ELECTRON );
-            genEle1.SetPtEtaPhiM(genpt_[geleIdx1], geneta_[geleIdx1], genphi_[geleIdx1], MASS_ELECTRON );
-
-            if ( genEle0.charge() != recoEle0.charge() || genEle1.charge() != recoEle1.charge() ) continue;
-            LOG_DEBUG("selection4");
-            double deltaR0 = genEle0.DeltaR(recoEle0);
-            double deltaR1 = genEle1.DeltaR(recoEle1);
-            LOG_DEBUG("Calculating delta R value : %.3f -- %.3f", deltaR0, deltaR1);
-        }
-    
-
-    return std::vector<TLorentzCand>();
-}
-std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
-{
-    //hists.Fill("nEleMatched", -1);
-    if (!dataptr->HasMC() ) return std::vector<TLorentzCand>();
-    //hists.Fill("nEleMatched", 0);
 
     Int_t  nMC_         = dataptr->GetInt("nMC");
     Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
@@ -412,7 +317,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
             }
         }
     }
-    if ( check0 != 1 || check1 != 1 ) LOG_INFO("mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
+    if ( check0 != 1 || check1 != 1 ) LOG_INFO("Failed mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
     hists.Fill("nEleMatched",matchedPairs.size());
     std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_pt);
     return matchedPairs;
