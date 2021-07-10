@@ -69,8 +69,11 @@ void xElectrons(
     // matched electrons in each event.
     // -1: the total number of events.
     //  n: n electrons matched in each event.
-    hists.Create("nEleMatched", 5, -1, 4);
-    hists.Create("DeltaR", BINNING, 0., 1.0);
+    hists.Create("nEleMatched", 6, -1, 5);
+
+    // number of signal gen electron
+    hists.Create("nGenEle", 6, -1, 5);
+    hists.Create("DeltaR", BINNING, 0., 0.10);
     hists.Create("ptratio", BINNING, 0., 2.0);
 
     /*
@@ -90,6 +93,7 @@ void xElectrons(
         // 6. mva
         data.GetEntry(ev);
 
+        std::vector<TLorentzCand> signalElectrons = findMatchedRecoElectron(&data);
         std::vector<TLorentzCand> selelectrons = PreselectedElectrons(&data, ELECTRONWORKINGPOINT);
         hists.FillStatus("eventStat", 0);
         
@@ -227,9 +231,9 @@ std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP)
 }
 std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_)
 {
-    #define DELTARCUT 0.4
-    #define PTRATIOCUT 1.0
-    #define FINALSTATE_STATUSCUT 3
+    #define DELTARCUT 0.04
+    #define PTRATIOCUT 0.5
+    #define FINALSTATE_STATUSCUT 1
     #define PID_Z 23
     #define PID_ELECTRON 11
     
@@ -314,9 +318,9 @@ std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand&
 }
 std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
 {
-    hists.Fill("nEleMatched", -1);
-    
     if (!dataptr->HasMC() ) return std::vector<TLorentzCand>();
+    hists.Fill("nEleMatched", -1);
+    hists.Fill("nGenEle", -1);
 
     Int_t  nMC_         = dataptr->GetInt("nMC");
     Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
@@ -334,23 +338,35 @@ std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
     Int_t  * charge_    = dataptr->GetPtrInt("eleCharge");
 
 
-    std::vector<TLorentzCand> genZElectrons;
+    // finding Zee in gen level.
+    TLorentzCand genZElectrons[2];
     for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
-        if ( fabs(genPID_[iMC]) == PID_ELECTRON && genStatus_[iMC] <= FINALSTATE_STATUSCUT && genMomPID_[iMC] == PID_Z )
-            genZElectrons.emplace_back(iMC,
+        if ( abs(genPID_[iMC]) == PID_ELECTRON && genStatus_[iMC] <= FINALSTATE_STATUSCUT && genMomPID_[iMC] == PID_Z )
+        {
+            TLorentzCand genCand(iMC,
                     genPID_[iMC] == PID_ELECTRON ? -1 : 1, // charge
                     genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_ELECTRON );
-    
-    std::sort(genZElectrons.begin(), genZElectrons.end(), recoInfo::cmpPt);
-    if ( genZElectrons.size() != 2 ) LOG_WARNING( "Not only 1 Z candidate found. There are %d gen electron found", genZElectrons.size() );
-    if ( genZElectrons.at(0).charge() * genZElectrons.at(1).charge() > 0 ) LOG_WARNING("Gen Z->ee channel owns 2 electron in the same charge");
+        
+            int fillIdx = genCand.charge() < 0 ? 0 : 1;
+            if ( genZElectrons[fillIdx].IsZombie() ) genZElectrons[fillIdx] = genCand;
+            else
+            {
+                LOG_INFO("more than 1 candidate found : info (pt,stat) = orig(%.3f,%d) and new(%.3f,%d)",
+                        genZElectrons[fillIdx].Pt(), genStatus_[genZElectrons[fillIdx].idx()],
+                        genCand.Pt(), genStatus_[genCand.idx()]);
+                if ( genZElectrons[fillIdx].Pt() < genCand.Pt() ) genZElectrons[fillIdx] = genCand;
+            }
+        }
+    if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector<TLorentzCand>();
 
 
     
     
+    // matching to reco electron
     std::vector<TLorentzCand> outputs;
-    for ( const TLorentzCand&  genElectron : genZElectrons )
+    for ( int genZEIdx = 0; genZEIdx < 2; ++genZEIdx )
     {
+        const TLorentzCand& genElectron = genZElectrons[genZEIdx];
         for ( Int_t iEle = 0; iEle < nEle_; ++iEle )
         {
             if ( genElectron.charge() != charge_[iEle] ) continue;
@@ -365,6 +381,6 @@ std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
         }
     }
     hists.Fill("nEleMatched",outputs.size());
+    std::sort(outputs.begin(), outputs.end(), recoInfo::ordering_pt);
     return outputs;
-
 }
