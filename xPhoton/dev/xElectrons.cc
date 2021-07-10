@@ -16,8 +16,8 @@ static histMgr hists;
 //static std::map<const char*, TH1*> histMap;
 
 
-std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr); // removing
-std::map<int,TLorentzCand>  genMatchedElectronPair(TreeReader* dataptr);
+//std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr); // removing
+std::vector< std::pair<TLorentzCand,TLorentzCand> > MCmatchedZElectronPair(TreeReader* dataptr);
 std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP);
 std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_);
 void xElectrons(
@@ -94,7 +94,7 @@ void xElectrons(
         // 6. mva
         data.GetEntry(ev);
 
-        std::vector<TLorentzCand> matchele = findMatchedRecoElectron(&data);
+        //std::vector<TLorentzCand> matchele = findMatchedRecoElectron(&data);
         std::vector<TLorentzCand> selelectrons = PreselectedElectrons(&data, ELECTRONWORKINGPOINT);
         hists.FillStatus("eventStat", 0);
         
@@ -317,6 +317,7 @@ std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand&
 
     return std::vector<TLorentzCand>();
 }
+/*
 std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
 {
     if (!dataptr->HasMC() ) return std::vector<TLorentzCand>();
@@ -392,9 +393,10 @@ std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
     std::sort(outputs.begin(), outputs.end(), recoInfo::ordering_pt);
     return outputs;
 }
-std::map<int,TLorentzCand>  genMatchedElectronPair(TreeReader* dataptr)
+*/
+std::vector< std::pair<TLorentzCand,TLorentzCand> > MCmatchedZElectronPair(TreeReader* dataptr)
 {
-    if (!dataptr->HasMC() ) return std::map<int, TLorentzCand>();
+    if (!dataptr->HasMC() ) return std::vector< std::pair<TLorentzCand,TLorentzCand> >();
 
     Int_t  nMC_         = dataptr->GetInt("nMC");
     Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
@@ -431,15 +433,14 @@ std::map<int,TLorentzCand>  genMatchedElectronPair(TreeReader* dataptr)
                 if ( genZElectrons[fillIdx].Pt() < genCand.Pt() ) genZElectrons[fillIdx] = genCand;
             }
         }
-    if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::map<int, TLorentzCand>();
+    if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector< std::pair<TLorentzCand,TLorentzCand> >();
     hists.Fill("nEleMatched", -1);
 
 
     
     
     // matching to reco electron
-    std::vector<TLorentzCand> outputs;
-    std::vector< std::pair<TLorentzCand, TLorentzCand> > outputs_;
+    std::vector< std::pair<TLorentzCand, TLorentzCand> > matchedPairs;
     int check0 = 0;
     int check1 = 0;
     for ( int genZEIdx = 0; genZEIdx < 2; ++genZEIdx )
@@ -456,7 +457,7 @@ std::map<int,TLorentzCand>  genMatchedElectronPair(TreeReader* dataptr)
             hists.Fill("ptratio", ptratio);
             if ( deltaR < DELTARCUT && ptratio < PTRATIOCUT )
             {
-                outputs.push_back(recoElectron);
+                matchedPairs.push_back( std::make_pair(genElectron,recoElectron) );
                 // only for check
                 if ( genZEIdx == 0 ) ++check0;
                 if ( genZEIdx == 1 ) ++check1;
@@ -464,8 +465,7 @@ std::map<int,TLorentzCand>  genMatchedElectronPair(TreeReader* dataptr)
         }
     }
     if ( check0 != 1 || check1 != 1 ) LOG_INFO("mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
-    hists.Fill("nEleMatched",outputs.size());
-    std::sort(outputs.begin(), outputs.end(), recoInfo::ordering_pt);
-    //return outputs;
-    return std::map<int,TLorentzCand>();
+    hists.Fill("nEleMatched",matchedPairs.size());
+    std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_recopt);
+    return matchedPairs;
 }
