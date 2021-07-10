@@ -54,7 +54,7 @@ TLorentzCand TLorentzCand::operator=(const TLorentzVector& vec_)
     return *this;
 }
 
-void TLorentzCand::SetAlive() { _deadcand = false; }
+void TLorentzCand::SetAlive(bool stat) { _deadcand =!stat; }
 void TLorentzCand::SetGenIdx(int idx) { _genidx = idx; }
 void TLorentzCand::adddaughter( const TLorentzCand* const d_ )
 { this->daughterIdxs.push_back(d_->idx()); }
