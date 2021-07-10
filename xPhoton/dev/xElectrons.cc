@@ -13,11 +13,10 @@
 
 static histMgr hists;
 
-//static std::map<const char*, TH1*> histMap;
 
 
-//std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr); // removing
-std::vector< std::pair<TLorentzCand,TLorentzCand> > MCmatchedZElectronPair(TreeReader* dataptr);
+std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr);
+bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
 std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP);
 std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_);
 void xElectrons(
@@ -77,10 +76,6 @@ void xElectrons(
     hists.Create("DeltaR", BINNING, 0., 0.10);
     hists.Create("ptratio", BINNING, 0., 2.0);
 
-    /*
-    histMap["DeltaR_GenZee"] = new TH1F("DeltaR_GenZee_", "", BINNING, 0., 1.);
-    histMap["DeltaR_GenEle"] = new TH1F("DeltaR_GenEle_", "", BINNING, 0., 1.);
-    */
 
 
     
@@ -94,7 +89,7 @@ void xElectrons(
         // 6. mva
         data.GetEntry(ev);
 
-        //std::vector<TLorentzCand> matchele = findMatchedRecoElectron(&data);
+        std::vector<TLorentzCand> matchedRes = MCmatchedZElectronPair(&data);
         std::vector<TLorentzCand> selelectrons = PreselectedElectrons(&data, ELECTRONWORKINGPOINT);
         hists.FillStatus("eventStat", 0);
         
@@ -110,7 +105,6 @@ void xElectrons(
             {
                 const TLorentzCand& ele0 = selelectrons.at(idx);
                 const TLorentzCand& ele1 = selelectrons.at(jdx);
-                hists.FillStatus("ZRecoStat", 0);
                 if (!data.HasMC() )
                 {
                     if ( ( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()] == 0 ) continue; // nothing triggered.
@@ -125,6 +119,7 @@ void xElectrons(
                         */
                     }
                 }
+                hists.FillStatus("ZRecoStat", 0);
                 hists.FillStatus("ZRecoStat", 1);
 
                 if ( ele0.charge() * ele1.charge() > 0 ) continue;
@@ -230,6 +225,21 @@ std::vector<TLorentzCand> PreselectedElectrons(TreeReader* dataptr, int WP)
         outputs.emplace_back( recoInfo::BuildSelectedParticles(idx, pt[idx], eta[idx], phi[idx], MASS_ELECTRON, charge[idx]) );
     return outputs;
 }
+bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand)
+{
+    int idx = cand.idx();
+    hists.FillStatus("elePreselectStat", 0);
+    if ( dataptr->GetPtrFloat("elePt")[idx] < 12. ) return false;
+    hists.FillStatus("elePreselectStat", 1);
+    float abseta = fabs(dataptr->GetPtrFloat("eleSCEta")[idx]);
+    if ( abseta > 2.5 ) return false;
+    hists.FillStatus("elePreselectStat", 2);
+    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
+    hists.FillStatus("elePreselectStat", 3);
+    if (!dataptr->HasMC() ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
+    hists.FillStatus("elePreselectStat", 4);
+    return true;
+}
 std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand& ZCand_)
 {
     #define DELTARCUT 0.10
@@ -298,29 +308,16 @@ std::vector<TLorentzCand> matchedGenZee(TreeReader* dataptr, const TLorentzCand&
             double deltaR0 = genEle0.DeltaR(recoEle0);
             double deltaR1 = genEle1.DeltaR(recoEle1);
             LOG_DEBUG("Calculating delta R value : %.3f -- %.3f", deltaR0, deltaR1);
-            /*
-            if ( genZElectronIdxs.size() > 1 )
-            {
-                histMap["DeltaR_GenZee"]->Fill(deltaR0);
-                histMap["DeltaR_GenZee"]->Fill(deltaR1);
-                if ( deltaR0 < DELTARCUT && deltaR1 < DELTARCUT )
-                    return std::vector<TLorentzCand>( {genEle0,genEle1} );
-            }
-            else
-            {
-                histMap["DeltaR_GenEle"]->Fill(deltaR0);
-                histMap["DeltaR_GenEle"]->Fill(deltaR1);
-            }
-            */
         }
     
 
     return std::vector<TLorentzCand>();
 }
-/*
-std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
+std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
 {
+    //hists.Fill("nEleMatched", -1);
     if (!dataptr->HasMC() ) return std::vector<TLorentzCand>();
+    //hists.Fill("nEleMatched", 0);
 
     Int_t  nMC_         = dataptr->GetInt("nMC");
     Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
@@ -364,7 +361,7 @@ std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
     
     
     // matching to reco electron
-    std::vector<TLorentzCand> outputs;
+    std::vector<TLorentzCand> matchedPairs;
     int check0 = 0;
     int check1 = 0;
     for ( int genZEIdx = 0; genZEIdx < 2; ++genZEIdx )
@@ -381,83 +378,8 @@ std::vector<TLorentzCand>  findMatchedRecoElectron(TreeReader* dataptr)
             hists.Fill("ptratio", ptratio);
             if ( deltaR < DELTARCUT && ptratio < PTRATIOCUT )
             {
-                outputs.push_back(recoElectron);
-                // only for check
-                if ( genZEIdx == 0 ) ++check0;
-                if ( genZEIdx == 1 ) ++check1;
-            }
-        }
-    }
-    if ( check0 != 1 || check1 != 1 ) LOG_INFO("mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
-    hists.Fill("nEleMatched",outputs.size());
-    std::sort(outputs.begin(), outputs.end(), recoInfo::ordering_pt);
-    return outputs;
-}
-*/
-std::vector< std::pair<TLorentzCand,TLorentzCand> > MCmatchedZElectronPair(TreeReader* dataptr)
-{
-    if (!dataptr->HasMC() ) return std::vector< std::pair<TLorentzCand,TLorentzCand> >();
-
-    Int_t  nMC_         = dataptr->GetInt("nMC");
-    Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
-    Int_t* genMomPID_   = dataptr->GetPtrInt("mcMomPID");
-    Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
-
-    Float_t* genpt_     = dataptr->GetPtrFloat("mcPt");
-    Float_t* geneta_    = dataptr->GetPtrFloat("mcEta");
-    Float_t* genphi_    = dataptr->GetPtrFloat("mcPhi");
-
-    Int_t  nEle_        = dataptr->GetInt("nEle");
-    Float_t* pt_        = dataptr->GetPtrFloat("elePt");
-    Float_t* eta_       = dataptr->GetPtrFloat("eleEta");
-    Float_t* phi_       = dataptr->GetPtrFloat("elePhi");
-    Int_t  * charge_    = dataptr->GetPtrInt("eleCharge");
-
-
-    // finding Zee in gen level.
-    TLorentzCand genZElectrons[2];
-    for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
-        if ( abs(genPID_[iMC]) == PID_ELECTRON && genStatus_[iMC] <= FINALSTATE_STATUSCUT && genMomPID_[iMC] == PID_Z )
-        {
-            TLorentzCand genCand(iMC,
-                    genPID_[iMC] == PID_ELECTRON ? -1 : 1, // charge
-                    genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_ELECTRON );
-        
-            int fillIdx = genCand.charge() < 0 ? 0 : 1;
-            if ( genZElectrons[fillIdx].IsZombie() ) genZElectrons[fillIdx] = genCand;
-            else
-            {
-                LOG_INFO("more than 1 candidate found : info (pt,stat) = orig(%.3f,%d) and new(%.3f,%d). Use greater pt candidate",
-                        genZElectrons[fillIdx].Pt(), genStatus_[genZElectrons[fillIdx].idx()],
-                        genCand.Pt(), genStatus_[genCand.idx()]);
-                if ( genZElectrons[fillIdx].Pt() < genCand.Pt() ) genZElectrons[fillIdx] = genCand;
-            }
-        }
-    if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector< std::pair<TLorentzCand,TLorentzCand> >();
-    hists.Fill("nEleMatched", -1);
-
-
-    
-    
-    // matching to reco electron
-    std::vector< std::pair<TLorentzCand, TLorentzCand> > matchedPairs;
-    int check0 = 0;
-    int check1 = 0;
-    for ( int genZEIdx = 0; genZEIdx < 2; ++genZEIdx )
-    {
-        const TLorentzCand& genElectron = genZElectrons[genZEIdx];
-        for ( Int_t iEle = 0; iEle < nEle_; ++iEle )
-        {
-            if ( genElectron.charge() != charge_[iEle] ) continue;
-            TLorentzCand recoElectron( iEle, charge_[iEle], pt_[iEle], eta_[iEle], phi_[iEle], MASS_ELECTRON );
-
-            double deltaR = genElectron.DeltaR(recoElectron);
-            double ptratio = (recoElectron.Pt()-genElectron.Pt()) / genElectron.Pt();
-            hists.Fill("DeltaR", deltaR);
-            hists.Fill("ptratio", ptratio);
-            if ( deltaR < DELTARCUT && ptratio < PTRATIOCUT )
-            {
-                matchedPairs.push_back( std::make_pair(genElectron,recoElectron) );
+                recoElectron.SetGenIdx(genElectron.idx());
+                matchedPairs.push_back(recoElectron);
                 // only for check
                 if ( genZEIdx == 0 ) ++check0;
                 if ( genZEIdx == 1 ) ++check1;
@@ -466,6 +388,6 @@ std::vector< std::pair<TLorentzCand,TLorentzCand> > MCmatchedZElectronPair(TreeR
     }
     if ( check0 != 1 || check1 != 1 ) LOG_INFO("mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
     hists.Fill("nEleMatched",matchedPairs.size());
-    std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_recopt);
+    std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_pt);
     return matchedPairs;
 }
