@@ -29,14 +29,14 @@ void xElectrons(
 
     TTree *outtree_ = new TTree("t", "mini tree");
     
-    rec_Electron elecand[2];
-    rec_Z Zcand;
-    rec_Event event;
+    rec_Electron record_electrons[2];
+    rec_Z record_Z;
+    //rec_Event event;
 
-    RegBranch( outtree_, "electron0", &elecand[0] );
-    RegBranch( outtree_, "electron1", &elecand[1] );
-    RegBranch( outtree_, "Z", &Zcand );
-    RegBranch( outtree_, "Events", &event );
+    RegBranch( outtree_, "electron_tag", &record_electrons[0] );
+    RegBranch( outtree_, "electron_probe", &record_electrons[1] );
+    RegBranch( outtree_, "Z", &record_Z );
+    //RegBranch( outtree_, "Events", &event );
 
     
     // check the reason why event failed
@@ -125,15 +125,16 @@ void xElectrons(
                 hists.FillStatus("ZRecoStat", 0);
                 if (!data.HasMC() )
                 {
-                    if ( ( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()] == 0 ) continue; // nothing triggered.
+                    ULong64_t* trigs = (ULong64_t*) data.GetPtrLong64("eleFiredDoubleTrgs");
+                    if ( trigs[ele0.idx()] == 0 ) continue; // nothing triggered.
                             
                     if ( PASS_HLTBIT > 0 ) // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
                     {
                         int bit = PASS_HLTBIT;
-                        if ( (( (ULong64_t*)data.GetPtrLong64("eleFiredDoubleTrgs") )[ele0.idx()]>>bit)&1 == 0 ) continue; // tight ID for tag photon.
+                        if ( (trigs[ele0.idx()]>>bit)&1 == 0 ) continue; // tight ID for tag photon.
                         // need to check the validation
                         /* asdf
-                        if ( ( (UShort_t*)data.GetPtrShort("eleIDbit") )[ele0.idx()] & 1<<bit == 0 ) continue; // tight ID for tag photon.
+                        if ( trigs[ele0.idx()] & 1<<bit == 0 ) continue; // tight ID for tag photon.
                         */
                     }
                 }
@@ -142,8 +143,7 @@ void xElectrons(
                 ZcandP4 = ele0+ele1;
                 if ( ZcandP4.M() > 50 && ZcandP4.M() < 110 ) hists.Fill("Zmass", ZcandP4.M());
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
-                //if ( ele0.charge() * ele1.charge() > 0 ) continue;
-                if ( ZcandP4.charge() != 0 ) continue;
+                if ( ele0.charge() * ele1.charge() != -1 ) continue;
                 hists.FillStatus("ZRecoStat", 2);
                 if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue;
                 hists.FillStatus("ZRecoStat", 3);
@@ -166,27 +166,113 @@ void xElectrons(
 
         // filling events
         
-        //for ( int i = 0; i < 2; ++i )
-            
-        /*
-        {
-        }
         
+        if ( data.HasMC() )
+        {
+            Float_t* mcPt = data.GetPtrFloat("mcPt");
+            Float_t* mcEta = data.GetPtrFloat("mcEta");
+            Float_t* mcPhi = data.GetPtrFloat("mcPhi");
+            Float_t* mcCalIso04 = data.GetPtrFloat("mcCalIsoDR04");
+            Float_t* mcTrkIso04 = data.GetPtrFloat("mcTrkIsoDR04");
+        }
+
         Int_t* eleCharge = data.GetPtrInt("eleCharge");
         Float_t* elePt = data.GetPtrFloat("elePt");
         Float_t* eleEta = data.GetPtrFloat("eleEta");
         Float_t* elePhi = data.GetPtrFloat("elePhi");
-        Float_t* eleR9  = data.GetPtrFloat("eleR9");
         Float_t* eleCalibPt = data.GetPtrFloat("eleCalibPt");
-        Float_t* eleCalibEta = data.GetPtrFloat("eleCalibEta");
+        Float_t* eleCalibEn = data.GetPtrFloat("eleCalibEn");
+        Float_t* eleSCEta = data.GetPtrFloat("eleSCEta");
+        Float_t* eleSCPhi = data.GetPtrFloat("eleSCPhi");
+        Float_t* eleHoverE = data.GetPtrFloat("eleHoverE");
+        Float_t* eleR9  = data.GetPtrFloat("eleR9");
+        Float_t* eleRawE = data.GetPtrFloat("eleSCRawEn");
+        Float_t* eleSCEtaWidth = data.GetPtrFloat("eleSCEtaWidth");
+        Float_t* eleSCPhiWidth = data.GetPtrFloat("eleSCPhiWidth");
+        Float_t* eleESRR = data.GetPtrFloat("eleESEffSigmaRR");
+        Float_t* eleESEnP1 = data.GetPtrFloat("eleESEnP1");
+        Float_t* eleESEnP2 = data.GetPtrFloat("eleESEnP2");
+
+
+        Float_t* eleR9Full5x5  = data.GetPtrFloat("eleR9Full5x5");
+        Float_t* eleSigmaIEtaIEtaFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5");
+        Float_t* eleSigmaIPhiIPhiFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5");
+
+        Float_t* eleChIsoRaw = data.GetPtrFloat("elePFChIso");
+        Float_t* elePhoIsoRaw = data.GetPtrFloat("elePFPhoIso");
+        Float_t* eleNeuIsoRaw = data.GetPtrFloat("elePFNeuIso");
+        //Float_t* eleChWorstRaw = data.GetPtrFloat("nothing");
+
         
+        Short_t* eleID = data.GetPtrShort("eleIDbit");
+        Long64_t* doubleEleTrgs = data.GetPtrLong64("eleFiredDoubleTrgs");
+        Long64_t* singleEleTrgs = data.GetPtrLong64("eleFiredSingleTrgs");
+
+
+        Float_t rho = data.GetFloat("rho");
 
 
 
-        */
+    // clear everything.
 
+        for ( int idx=0; idx<2; ++idx )
+        {
+            const TLorentzCand& cand = ZcandP4.daughters().at(idx);
+            int recoIdx = cand.idx();
+            LOG_DEBUG("hi 0");
+                    
+            if ( data.HasMC() )
+            {
+                int genIdx = cand.genidx();
+            record_electrons[idx].mcE          = data.GetPtrFloat("mcE")[genIdx];
+            record_electrons[idx].mcPt         = data.GetPtrFloat("mcPt")[genIdx];
+            record_electrons[idx].mcEta        = data.GetPtrFloat("mcEta")[genIdx];
+            record_electrons[idx].mcPhi        = data.GetPtrFloat("mcPhi")[genIdx];
+            }
+            LOG_DEBUG("hi 1");
+            //record_electrons[idx].recoE        = data.GetPtrFloat("")[recoIdx];
+            record_electrons[idx].recoPt       = data.GetPtrFloat("elePt")[recoIdx];
+            record_electrons[idx].recoEta      = data.GetPtrFloat("eleEta")[recoIdx];
+            record_electrons[idx].recoPhi      = data.GetPtrFloat("elePhi")[recoIdx];
+            record_electrons[idx].recoPtCalib  = data.GetPtrFloat("eleCalibPt")[recoIdx];
+            LOG_DEBUG("hi 2");
+            record_electrons[idx].recoSCEta    = data.GetPtrFloat("eleSCEta")[recoIdx];
+            record_electrons[idx].r9           = data.GetPtrFloat("eleR9")[recoIdx];
+            record_electrons[idx].HoverE       = data.GetPtrFloat("eleHoverE")[recoIdx];
+            record_electrons[idx].chIsoRaw     = data.GetPtrFloat("elePFChIso")[recoIdx];
+            record_electrons[idx].phoIsoRaw    = data.GetPtrFloat("elePFPhoIso")[recoIdx];
+            LOG_DEBUG("hi 3");
+            record_electrons[idx].nhIsoRaw     = data.GetPtrFloat("elePFNeuIso")[recoIdx];
+            //record_electrons[idx].chWorstIso   = data.GetPtrFloat("")[recoIdx];
+            record_electrons[idx].rawE         = data.GetPtrFloat("eleSCRawEn")[recoIdx];
+            record_electrons[idx].scEtaWidth   = data.GetPtrFloat("eleSCEtaWidth")[recoIdx];
+            record_electrons[idx].scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
+            LOG_DEBUG("hi 4");
+            record_electrons[idx].esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
+            record_electrons[idx].esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
+                                                 data.GetPtrFloat("eleESEnP2")[recoIdx];
+            record_electrons[idx].mva          = //data.GetPtrFloat("")[recoIdx];
+            record_electrons[idx].mva_nocorr   = //data.GetPtrFloat("")[recoIdx];
+            LOG_DEBUG("hi 5");
+            record_electrons[idx].officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
+            record_electrons[idx].r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
+            record_electrons[idx].sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
+            //record_electrons[idx].sieipFull5x5 = data.GetPtrFloat("")[recoIdx];
+            record_electrons[idx].sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
+            LOG_DEBUG("hi 6");
+            record_electrons[idx].e2x2Full5x5  = //data.GetPtrFloat("")[recoIdx];
+            record_electrons[idx].e2x5Full5x5  = //data.GetPtrFloat("")[recoIdx];
+
+            record_electrons[idx].firedTrgs    = int( data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx] );
+            //record_electrons[idx].hasPixelSeed = data.GetPtrInt("");
+            LOG_DEBUG("hi 7");
+            record_electrons[idx].isMatched    = cand.genidx() >= 0;
+            record_electrons[idx].firedTrgsL   = data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx];
+            LOG_DEBUG("hi 8");
+        }
         outtree_->Fill();
     }
+    
 
 
     LOG_INFO("event looping end. Storing everything into root file");
