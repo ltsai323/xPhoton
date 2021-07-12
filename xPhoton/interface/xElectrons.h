@@ -62,6 +62,7 @@ struct rec_Z
         mcPt,
         mcEta,
         mcPhi,
+        recoMass,
         recoE,
         recoPt,
         recoEta,
@@ -94,12 +95,16 @@ void RegBranch( TTree* t, const char* name, rec_Electron* var )
 }
 void RegBranch( TTree* t, const char* name, rec_Z* var )
 {
-    t->Branch(name, var, "mcE/F:mcPt/F:mcEta/F:mcPhi/F:recoE/F:recoPt/F:recoEta/F:recoPhi/F:isMatched/I");
+    t->Branch(name, var, "mcE/F:mcPt/F:mcEta/F:mcPhi/F:recoMass/F:recoE/F:recoPt/F:recoEta/F:recoPhi/F:isMatched/I");
 }
 void RegBranch( TTree* t, const char* name, rec_Event* var )
 {
     t->Branch(name, var, "run/I:xsweight/I:puwei/I:pthat/I:MET/I:METPhi/I:nVtx/I:rho/F:nPU/I:HLT/L:HLTPhoIsPrescaled/L:event/L");
 }
+
+#include <string.h>
+template<typename T>
+void ClearStruct(T* obj) { memset( obj, 0x00, sizeof(T) ); }
 
 
 void xElectrons(
