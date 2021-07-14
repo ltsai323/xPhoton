@@ -880,7 +880,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         vector <int> photon_list;
         //vector <int> photon_jetID;
-        vector<TLorentzDATA> photons;
         int jet_index=-1;
 
 

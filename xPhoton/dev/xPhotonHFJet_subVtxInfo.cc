@@ -886,13 +886,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
         vector <int> photon_list;
         //vector <int> photon_jetID;
-        vector<TLorentzDATA> photons;
         int jet_index=-1;
 
 
         //JETPD find leading jets fired trigger
-        if(JETPD_PHOTONHLT==1){
-            for(int ijet=0; ijet<nJet; ijet++){
+        if(JETPD_PHOTONHLT==1) {
+            for(int ijet=0; ijet<nJet; ijet++) {
                 if(jetFiredTrgs!=0){
                     trigger_jetP4.SetPtEtaPhiE(jetPt[ijet], jetEta[ijet], jetPhi[ijet], jetEn[ijet]);
                     jet_index= ijet;
