@@ -111,6 +111,13 @@ bool recoInfo::ordering_pt(const TLorentzCand& cand1, const TLorentzCand& cand2)
 bool recoInfo::ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 )
 { return candpair1.second.Pt() > candpair2.second.Pt(); }
 
+bool recoInfo::InFiducialRegion(float genEta)
+{
+    float abseta = fabs(genEta);
+    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
+    if ( abseta > 2.5 ) return false;
+    return true;
+}
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
 {
