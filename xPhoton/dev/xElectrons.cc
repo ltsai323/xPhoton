@@ -8,6 +8,8 @@
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/histMgr.h"
+#include "xPhoton/xPhoton/interface/puweicalc.h"
+#include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include <TLorentzVector.h>
 #include <map>
 
@@ -31,12 +33,12 @@ void xElectrons(
     
     rec_Electron record_electrons[2];
     rec_Z record_Z;
-    //rec_Event event;
+    rec_Event record_evt;
 
     RegBranch( outtree_, "electron_tag", &record_electrons[0] );
     RegBranch( outtree_, "electron_probe", &record_electrons[1] );
     RegBranch( outtree_, "Z", &record_Z );
-    //RegBranch( outtree_, "Events", &event );
+    RegBranch( outtree_, "Events", &record_evt );
 
     
     // check the reason why event failed
@@ -224,6 +226,7 @@ void xElectrons(
         ClearStruct(&record_electrons[0]);
         ClearStruct(&record_electrons[1]);
         ClearStruct(&record_Z);
+        ClearStruct(&record_evt);
 
         for ( int idx=0; idx<2; ++idx )
         {
@@ -282,6 +285,34 @@ void xElectrons(
         record_Z.recoEta   = ZcandP4.Eta();
         record_Z.recoPhi   = ZcandP4.Phi();
         record_Z.isMatched = ZcandP4.daughters().at(0).genidx() > 0 && ZcandP4.daughters().at(1).genidx() > 0;
+
+        record_evt.run               = data.GetInt("run"); 
+        if ( data.HasMC() )
+        {
+            PUWeightCalculator pucalc;
+            pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+            Float_t* puTrue = data.GetPtrFloat("puTrue");
+            Int_t npuInfo = data.GetInt("nPUInfo");
+            int _purec = 0;
+            for ( int i=0; i<npuInfo; ++i ) if ( data.GetPtrInt("puBX")[i] == 0 ) _purec = puTrue[i];
+            
+        record_evt.xsweight          = 0;
+        record_evt.genweight         = data.HasMC() ? data.GetFloat("genWeight") : 0;
+        record_evt.puwei             = (float) pucalc.GetWeight(record_evt.run, puTrue[1]);
+        record_evt.pthat             = data.GetFloat("pthat");
+        record_evt.nPU               = _purec;
+        }
+
+        record_evt.MET               = data.GetFloat("pfMET");
+        record_evt.METPhi            = data.GetFloat("pfMETPhi");
+        record_evt.rho               = data.GetFloat("rho");
+
+        record_evt.nVtx              = data.GetInt("nVtx");
+        record_evt.HLT               = data.GetLong64("HLTPho");
+        record_evt.HLTPhoIsPrescaled = data.GetLong64("HLTPhoIsPrescaled");
+        record_evt.event             = data.GetLong64("event"); 
+
+
         outtree_->Fill();
     }
     
@@ -433,7 +464,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
     std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_pt);
     return matchedPairs;
 }
-void RegBranch( TTree* t, std::string name,  rec_Electron* var )
+void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
 {
     //t->Branch(name, var, "mcE/F:mcPt/F:mcEta/F:mcPhi/F:recoPt/F:recoEta/F:recoPhi/F:recoPtCalib/F:recoSCEta/F:r9/F:HoverE/F:chIsoRaw/F:phoIsoRaw/F:nhIsoRaw/F:chWorstIso/F:rawE/F:scEtaWidth/F:scPhiWidth/F:esRR/F:esEn/F:mva/F:mva_nocorr/F:officalIDmva/F:r9Full5x5/F:sieieFull5x5/F:sipipFull5x5/F:e2x2Full5x5/F:e2x5Full5x5/F:firedTrgs/I:isMatched/I:firedTrgsL/L");
 
@@ -472,7 +503,7 @@ void RegBranch( TTree* t, std::string name,  rec_Electron* var )
 
     t->Branch( (name+".firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+".firedTrgsL/L").c_str()       );
 }
-void RegBranch( TTree* t, const std::string name, rec_Z* var )
+void RegBranch( TTree* t, const std::string& name, rec_Z* var )
 {
     t->Branch( (name+".mcE").c_str()            ,&var->mcE       , (name+".mcE/F").c_str()        );
     t->Branch( (name+".mcPt").c_str()           ,&var->mcPt      , (name+".mcPt/F").c_str()       );
@@ -486,7 +517,21 @@ void RegBranch( TTree* t, const std::string name, rec_Z* var )
 
     t->Branch( (name+".isMatched").c_str()      ,&var->isMatched , (name+".isMatched/I").c_str()  );
 }
-void RegBranch( TTree* t, const char* name, rec_Event* var )
+void RegBranch( TTree* t, const string& name, rec_Event* var )
 {
-    t->Branch(name, var, "run/I:xsweight/I:puwei/I:pthat/I:MET/I:METPhi/I:nVtx/I:rho/F:nPU/I:HLT/L:HLTPhoIsPrescaled/L:event/L");
+    t->Branch( (name+".run").c_str()               , &var->run,                     "run/I");
+    t->Branch( (name+".xsweight").c_str()          , &var->xsweight,                "xsweight/I");
+    t->Branch( (name+".puwei").c_str()             , &var->puwei,                   "puwei/I");
+    t->Branch( (name+".pthat").c_str()             , &var->pthat,                   "pthat/I");
+    t->Branch( (name+".nVtx").c_str()              , &var->nVtx,                    "nVtx/I");
+    t->Branch( (name+".nPU").c_str()               , &var->nPU,                     "nPU/I");
+
+    t->Branch( (name+".rho").c_str()               , &var->rho,                     "rho/F");
+    t->Branch( (name+".genweight").c_str()         , &var->genweight,               "genweight/F");
+    t->Branch( (name+".MET").c_str()               , &var->MET,                     "MET/F");
+    t->Branch( (name+".METPhi").c_str()            , &var->METPhi,                  "METPhi/F");
+    
+    t->Branch( (name+".HLT").c_str()               , &var->HLT,                     "HLT/L");
+    t->Branch( (name+".HLTPhoIsPres.caled").c_str(), &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
+    t->Branch( (name+".event").c_str()             , &var->event,                   "event/L");
 }

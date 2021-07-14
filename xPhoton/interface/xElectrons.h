@@ -78,18 +78,20 @@ struct rec_Event
         xsweight,
         puwei,
         pthat,
+        nVtx,
+        nPU;
+    Float_t
+        rho,
         MET,
         METPhi,
-        nVtx,
-        rho,
-        nPU;
+        genweight;
 
     Long64_t
         HLT,
         HLTPhoIsPrescaled,
         event;
 };
-void RegBranch( TTree* t, std::string name,  rec_Electron* var );
+void RegBranch( TTree* t, const std::string& name, rec_Electron* var );
 /*
 {
     //t->Branch(name, var, "mcE/F:mcPt/F:mcEta/F:mcPhi/F:recoPt/F:recoEta/F:recoPhi/F:recoPtCalib/F:recoSCEta/F:r9/F:HoverE/F:chIsoRaw/F:phoIsoRaw/F:nhIsoRaw/F:chWorstIso/F:rawE/F:scEtaWidth/F:scPhiWidth/F:esRR/F:esEn/F:mva/F:mva_nocorr/F:officalIDmva/F:r9Full5x5/F:sieieFull5x5/F:sipipFull5x5/F:e2x2Full5x5/F:e2x5Full5x5/F:firedTrgs/I:isMatched/I:firedTrgsL/L");
@@ -130,7 +132,7 @@ void RegBranch( TTree* t, std::string name,  rec_Electron* var );
     t->Branch( (name+".firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+".firedTrgsL/L").c_str()       );
 }
 */
-void RegBranch( TTree* t, const std::string name, rec_Z* var );
+void RegBranch( TTree* t, const std::string& name, rec_Z* var );
 /*
 {
     t->Branch( (name+".mcE").c_str()            ,&var->mcE       , (name+".mcE/F").c_str()        );
@@ -146,7 +148,7 @@ void RegBranch( TTree* t, const std::string name, rec_Z* var );
     t->Branch( (name+".isMatched").c_str()      ,&var->isMatched , (name+".isMatched/I").c_str()  );
 }
 */
-void RegBranch( TTree* t, const char* name, rec_Event* var );
+void RegBranch( TTree* t, const std::string& name, rec_Event* var );
 /*
 {
     t->Branch(name, var, "run/I:xsweight/I:puwei/I:pthat/I:MET/I:METPhi/I:nVtx/I:rho/F:nPU/I:HLT/L:HLTPhoIsPrescaled/L:event/L");
