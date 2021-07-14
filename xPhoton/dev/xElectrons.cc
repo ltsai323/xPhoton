@@ -67,14 +67,20 @@ void xElectrons(
     // matched electrons in each event.
     // -1: the total number of events.
     //  n: n electrons matched in each event.
-    hists.Create("nEleMatched", 6, -1, 5);
+    hists.Create("nEleMatched", 5, 0, 5);
 
-    // number of signal gen electron
-    hists.Create("nGenEle", 6, -1, 5);
     hists.Create("DeltaR", BINNING, 0., 0.10);
     hists.Create("ptratio", BINNING, 0., 2.0);
 
     hists.Create("Zmass", BINNING, 50., 110.);
+
+    // check how much reco electrons in Zee
+    hists.Create("nEleInZee", 5,0.,5.);
+    // check how much gen Zee in MC.
+    // 0 : number of gen Zee.
+    // 1 : number of gen Zee, all electrons belongs to fiducial region.
+    // 2 : number of gen Zee, with all electrons are reco matched.
+    hists.Create("numGenZee", 4, 0., 4.);
 
 
 
@@ -94,8 +100,7 @@ void xElectrons(
         else
             electrons = RecoElectrons(&data);
 
-        for ( TLorentzCand& cand : electrons )
-            cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
+        for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
         hists.FillStatus("eventStat", 0);
         
         int aliveEleNum = 0;
@@ -124,7 +129,7 @@ void xElectrons(
 
                 hists.FillStatus("ZRecoStat", 0);
                 if (!data.HasMC() )
-                {
+                { // HLT selections
                     ULong64_t* trigs = (ULong64_t*) data.GetPtrLong64("eleFiredDoubleTrgs");
                     if ( trigs[ele0.idx()] == 0 ) continue; // nothing triggered.
                             
@@ -145,9 +150,9 @@ void xElectrons(
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
                 if ( ele0.charge() * ele1.charge() != -1 ) continue;
                 hists.FillStatus("ZRecoStat", 2);
-                if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue;
+                if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
                 hists.FillStatus("ZRecoStat", 3);
-                if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue;
+                if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
                 hists.FillStatus("ZRecoStat", 4);
                 ZcandP4.SetAlive(true);
                 LOG_DEBUG("Z CAND found!");
@@ -160,13 +165,14 @@ void xElectrons(
         hists.FillStatus("eventStat", 2);
         
 
-        
+
 
 
 
         // filling events
         
         
+        /*
         if ( data.HasMC() )
         {
             Float_t* mcPt = data.GetPtrFloat("mcPt");
@@ -210,12 +216,14 @@ void xElectrons(
 
 
         Float_t rho = data.GetFloat("rho");
+        */
 
 
 
     // clear everything.
         ClearStruct(&record_electrons[0]);
         ClearStruct(&record_electrons[1]);
+        ClearStruct(&record_Z);
 
         for ( int idx=0; idx<2; ++idx )
         {
@@ -327,7 +335,8 @@ bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& c
     hists.FillStatus("elePreselectStat", 2);
     if ( abseta > 1.4442 && abseta < 1.566 ) return false;
     hists.FillStatus("elePreselectStat", 3);
-    if (!dataptr->HasMC() ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
+    if ( WP >= 0 ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
+    //if (!dataptr->HasMC() ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
     hists.FillStatus("elePreselectStat", 4);
     return true;
 }
@@ -375,8 +384,14 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
                 if ( genZElectrons[fillIdx].Pt() < genCand.Pt() ) genZElectrons[fillIdx] = genCand;
             }
         }
+    //if (!genZElectrons[0].IsZombie() ||!genZElectrons[1].IsZombie() ) hists.FillStatus("numGenZee",0);
     if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector<TLorentzCand>();
-    hists.Fill("nEleMatched", -1);
+    hists.FillStatus("numGenZee",0);
+    if (!recoInfo::InFiducialRegion( genZElectrons[0].Eta() ) ||!recoInfo::InFiducialRegion( genZElectrons[1].Eta() ) ) return std::vector<TLorentzCand>();
+    hists.FillStatus("numGenZee",1);
+    if ( nEle_ < 2 ) return std::vector<TLorentzCand>();
+    hists.FillStatus("numGenZee",2);
+    hists.Fill("nEleInZee", nEle_);
 
 
     
@@ -407,8 +422,71 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
             }
         }
     }
-    if ( check0 != 1 || check1 != 1 ) LOG_INFO("Failed mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
     hists.Fill("nEleMatched",matchedPairs.size());
+    if ( check0 != 1 || check1 != 1 )
+    {
+        LOG_INFO("Failed mc matching status : number of reco electron matched at (ele0,ele1) = (%d, %d)", check0, check1);
+        return std::vector<TLorentzCand>();
+    }
+    hists.FillStatus("numGenZee",3);
+
     std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_pt);
     return matchedPairs;
+}
+void RegBranch( TTree* t, std::string name,  rec_Electron* var )
+{
+    //t->Branch(name, var, "mcE/F:mcPt/F:mcEta/F:mcPhi/F:recoPt/F:recoEta/F:recoPhi/F:recoPtCalib/F:recoSCEta/F:r9/F:HoverE/F:chIsoRaw/F:phoIsoRaw/F:nhIsoRaw/F:chWorstIso/F:rawE/F:scEtaWidth/F:scPhiWidth/F:esRR/F:esEn/F:mva/F:mva_nocorr/F:officalIDmva/F:r9Full5x5/F:sieieFull5x5/F:sipipFull5x5/F:e2x2Full5x5/F:e2x5Full5x5/F:firedTrgs/I:isMatched/I:firedTrgsL/L");
+
+    t->Branch( (name+".mcE").c_str()                ,&var->mcE          , (name+".mcE/F").c_str()              );
+    t->Branch( (name+".mcPt").c_str()               ,&var->mcPt         , (name+".mcPt/F").c_str()             );
+    t->Branch( (name+".mcEta").c_str()              ,&var->mcEta        , (name+".mcEta/F").c_str()            );
+    t->Branch( (name+".mcPhi").c_str()              ,&var->mcPhi        , (name+".mcPhi/F").c_str()            );
+    t->Branch( (name+".recoPt").c_str()             ,&var->recoPt       , (name+".recoPt/F").c_str()           );
+    t->Branch( (name+".recoEta").c_str()            ,&var->recoEta      , (name+".recoEta/F").c_str()          );
+    t->Branch( (name+".recoPhi").c_str()            ,&var->recoPhi      , (name+".recoPhi/F").c_str()          );
+    t->Branch( (name+".recoPtCalib").c_str()        ,&var->recoPtCalib  , (name+".recoPtCalib/F").c_str()      );
+    t->Branch( (name+".recoSCEta").c_str()          ,&var->recoSCEta    , (name+".recoSCEta/F").c_str()        );
+    t->Branch( (name+".r9").c_str()                 ,&var->r9           , (name+".r9/F").c_str()               );
+    t->Branch( (name+".HoverE").c_str()             ,&var->HoverE       , (name+".HoverE/F").c_str()           );
+    t->Branch( (name+".chIsoRaw").c_str()           ,&var->chIsoRaw     , (name+".chIsoRaw/F").c_str()         );
+    t->Branch( (name+".phoIsoRaw").c_str()          ,&var->phoIsoRaw    , (name+".phoIsoRaw/F").c_str()        );
+    t->Branch( (name+".nhIsoRaw").c_str()           ,&var->nhIsoRaw     , (name+".nhIsoRaw/F").c_str()         );
+    t->Branch( (name+".chWorstIso").c_str()         ,&var->chWorstIso   , (name+".chWorstIso/F").c_str()       );
+    t->Branch( (name+".rawE").c_str()               ,&var->rawE         , (name+".rawE/F").c_str()             );
+    t->Branch( (name+".scEtaWidth").c_str()         ,&var->scEtaWidth   , (name+".scEtaWidth/F").c_str()       );
+    t->Branch( (name+".scPhiWidth").c_str()         ,&var->scPhiWidth   , (name+".scPhiWidth/F").c_str()       );
+    t->Branch( (name+".esRR").c_str()               ,&var->esRR         , (name+".esRR/F").c_str()             );
+    t->Branch( (name+".esEn").c_str()               ,&var->esEn         , (name+".esEn/F").c_str()             );
+    t->Branch( (name+".mva").c_str()                ,&var->mva          , (name+".mva/F").c_str()              );
+    t->Branch( (name+".mva_nocorr").c_str()         ,&var->mva_nocorr   , (name+".mva_nocorr/F").c_str()       );
+    t->Branch( (name+".officalIDmva").c_str()       ,&var->officalIDmva , (name+".officalIDmva/F").c_str()     );
+    t->Branch( (name+".r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+".r9Full5x5/F").c_str()        );
+    t->Branch( (name+".sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+".sieieFull5x5/F").c_str()     );
+    t->Branch( (name+".sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+".sipipFull5x5/F").c_str()     );
+    t->Branch( (name+".e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+".e2x2Full5x5/F").c_str()      );
+    t->Branch( (name+".e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+".e2x5Full5x5/F").c_str()      );
+
+
+    t->Branch( (name+".firedTrgs").c_str()          ,&var->firedTrgs    , (name+".firedTrgs/I").c_str()        );
+    t->Branch( (name+".isMatched").c_str()          ,&var->isMatched    , (name+".isMatched/I").c_str()        );
+
+    t->Branch( (name+".firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+".firedTrgsL/L").c_str()       );
+}
+void RegBranch( TTree* t, const std::string name, rec_Z* var )
+{
+    t->Branch( (name+".mcE").c_str()            ,&var->mcE       , (name+".mcE/F").c_str()        );
+    t->Branch( (name+".mcPt").c_str()           ,&var->mcPt      , (name+".mcPt/F").c_str()       );
+    t->Branch( (name+".mcEta").c_str()          ,&var->mcEta     , (name+".mcEta/F").c_str()      );
+    t->Branch( (name+".mcPhi").c_str()          ,&var->mcPhi     , (name+".mcPhi/F").c_str()      );
+    t->Branch( (name+".recoMass").c_str()       ,&var->recoMass  , (name+".recoMass/F").c_str()   );
+    t->Branch( (name+".recoE").c_str()          ,&var->recoE     , (name+".recoE/F").c_str()      );
+    t->Branch( (name+".recoPt").c_str()         ,&var->recoPt    , (name+".recoPt/F").c_str()     );
+    t->Branch( (name+".recoEta").c_str()        ,&var->recoEta   , (name+".recoEta/F").c_str()    );
+    t->Branch( (name+".recoPhi").c_str()        ,&var->recoPhi   , (name+".recoPhi/F").c_str()    );
+
+    t->Branch( (name+".isMatched").c_str()      ,&var->isMatched , (name+".isMatched/I").c_str()  );
+}
+void RegBranch( TTree* t, const char* name, rec_Event* var )
+{
+    t->Branch(name, var, "run/I:xsweight/I:puwei/I:pthat/I:MET/I:METPhi/I:nVtx/I:rho/F:nPU/I:HLT/L:HLTPhoIsPrescaled/L:event/L");
 }
