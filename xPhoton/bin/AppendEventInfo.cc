@@ -8,7 +8,7 @@
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 // usage :
 //   ./exec_thisfile input.root outfile.root 3.283
-bool useDeepCSV = true;
+bool useDeepCSV = false;
 bool useDeepJet = false;
 
 void PrintHelp()
@@ -97,21 +97,17 @@ int main(int argc, const char* argv[])
     unsigned int nevt = iT->GetEntries();
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
-        if ( useDeepCSV ) btagCalibsDeepCSV.InitVars();
-        if ( useDeepJet ) btagCalibsDeepFlavour.InitVars();
-        if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.InitVars();
         iT->GetEntry(ievt);
 
-        if ( jetPt < 10 )
+        if ( jetPt > 10 )
         {
-            oT->Fill();
-            continue;
-            // in this case, you cannot pass any event without Fill().
+            if ( useDeepCSV ) btagCalibsDeepCSV.InitVars();
+            if ( useDeepJet ) btagCalibsDeepFlavour.InitVars();
+            if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.InitVars();
+            if ( useDeepCSV ) btagCalibsDeepCSV.FillWeightToEvt(jetPt,jetEta, flavour, deepcsv_b+deepcsv_bb);
+            if ( useDeepJet ) btagCalibsDeepFlavour.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
+            if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
         }
-
-        if ( useDeepCSV ) btagCalibsDeepCSV.FillWeightToEvt(jetPt,jetEta, flavour, deepcsv_b+deepcsv_bb);
-        if ( useDeepJet ) btagCalibsDeepFlavour.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
-        if ( useDeepJet ) btagCalibsDeepFlavour_JESReduced.FillWeightToEvt(jetPt,jetEta, flavour, deepjet_b+deepjet_bb+deepjet_lepb);
 
         oT->Fill();
     }

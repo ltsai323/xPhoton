@@ -53,8 +53,8 @@ if __name__ == '__main__':
     ShowPD(summaryfile)
     ShowDetail(summaryfile)
     version=''
-    #for pd, info in fileDict.iteritems():
-    for pd, info in testDict.iteritems():
+    for pd, info in fileDict.iteritems():
+    #for pd, info in testDict.iteritems():
         for ver, rootfile in info.iteritems():
             xs,xserr,xsunit=FindXSInfo(pd,ver,summaryfile)
             if   xsunit=='pb':
@@ -63,4 +63,5 @@ if __name__ == '__main__':
                 pass
             else :
                 mylog.error( 'recorded Xsection in "%s" unit in file %s. Which is not "pb" or "fb". Need to convert it manually!' % (xsunit, summaryfile) )
+            #print xs
             executeCommand( xs, rootfile )
