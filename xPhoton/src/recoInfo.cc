@@ -4,6 +4,7 @@
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
 
 #include <TLorentzVector.h>
+#include <TAxis.h>
 #include <TMath.h>
 #include <vector>
 /*
@@ -120,11 +121,11 @@ bool recoInfo::InFiducialRegion(float genEta)
 }
 bool recoInfo::IsEE(float eta)
 { return fabs(eta) > 1.5; }
-bool recoInfo::CorrectedValue( TGraph* correctionFunc, float val )
+float recoInfo::CorrectedValue( TGraph* correctionFunc, float val )
 {
     if ( correctionFunc )
-    if ( val > correctionFunc->GetXaxis()->GetXmin() && val < correctionFunc->GetXaxis()->GetXmax() )
-        return correctionFunc->Eval(val);
+        if ( val > correctionFunc->GetXaxis()->GetXmin() && val < correctionFunc->GetXaxis()->GetXmax() )
+            return correctionFunc->Eval(val);
     return val;
 }
 /*
