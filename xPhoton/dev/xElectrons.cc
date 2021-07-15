@@ -84,6 +84,28 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
+    LOG_DEBUG("test 0");
+    TFile* f_showershapecorrection;
+    PUWeightCalculator pucalc;
+    LOG_DEBUG("test 1");
+    std::map<std::string, TGraph*> endcapCorrections;
+    std::map<std::string, TGraph*> barrelCorrections;
+    if ( data.HasMC() )
+    {
+    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
+    endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
+    endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
+    endcapCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE");
+
+    barrelCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB");
+    barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
+    barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
+    barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
+
+    pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+    }
+    LOG_DEBUG("test 2");
 
 
     
@@ -95,10 +117,16 @@ void xElectrons(
         // 4. fill tree
         // 5. load photon mva
         data.GetEntry(ev);
+    LOG_DEBUG("test 2.1");
 
         std::vector<TLorentzCand> electrons;
         if ( data.HasMC() )
+        {
+            LOG_DEBUG("hiiiiii");
             electrons = MCmatchedZElectronPair(&data);
+            if ( electrons.size() > 1 )
+            LOG_DEBUG("event obtained electrons matched with Zee sample in gen level. Gen indexes are (%d,%d).", electrons.at(0).genidx(), electrons.at(1).genidx());
+        }
         else
             electrons = RecoElectrons(&data);
 
@@ -165,7 +193,10 @@ void xElectrons(
 
         if ( ZcandP4.IsZombie() ) continue;
         hists.FillStatus("eventStat", 2);
-        
+        if ( data.HasMC() )
+        {
+            LOG_DEBUG("reco Z candidate contains matched gen electron in idx (%d,%d)", ZcandP4.daughters().at(0).genidx(), ZcandP4.daughters().at(1).genidx());
+        }
 
 
 
@@ -221,19 +252,6 @@ void xElectrons(
         */
 
 
-        TFile* f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
-        std::map<std::string, TGraph*> endcapCorrections = {
-            { "scEtaWidth"  , (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE") },
-            { "s4"          , (TGraph*)f_showershapecorrection->Get("transfS4EE") },
-            { "r9Full5x5"   , (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE") },
-            { "sieieFull5x5", (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE") }
-        };
-        std::map<std::string, TGraph*> barrelCorrections = {
-            { "scEtaWidth"  , (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB") },
-            { "s4"          , (TGraph*)f_showershapecorrection->Get("transfS4EB") },
-            { "r9Full5x5"   , (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB") },
-            { "sieieFull5x5", (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB") }
-        };
 
 
     // clear everything.
@@ -242,9 +260,10 @@ void xElectrons(
         ClearStruct(&record_Z);
         ClearStruct(&record_evt);
 
+    LOG_DEBUG("test 3");
         for ( int idx=0; idx<2; ++idx )
         {
-            const TLorentzCand& cand = ZcandP4.daughters().at(idx);
+            const TLorentzCand cand = ZcandP4.daughters().at(idx);
             int recoIdx = cand.idx();
             rec_Electron& eleRecording = record_electrons[idx];
                     
@@ -263,7 +282,7 @@ void xElectrons(
             eleRecording.scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
             eleRecording.esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
             eleRecording.esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
-                                                 data.GetPtrFloat("eleESEnP2")[recoIdx];
+                                        data.GetPtrFloat("eleESEnP2")[recoIdx];
             eleRecording.mva          = 0; //data.GetPtrFloat("")[recoIdx];
             eleRecording.mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
             eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
@@ -281,13 +300,13 @@ void xElectrons(
             if ( data.HasMC() )
             {
                 int genIdx = cand.genidx();
-            eleRecording.mcE          = data.GetPtrFloat("mcE")[genIdx];
-            eleRecording.mcPt         = data.GetPtrFloat("mcPt")[genIdx];
-            eleRecording.mcEta        = data.GetPtrFloat("mcEta")[genIdx];
-            eleRecording.mcPhi        = data.GetPtrFloat("mcPhi")[genIdx];
+            eleRecording.mcE          = genIdx < 0 ? 0 : data.GetPtrFloat("mcE")[genIdx];
+            eleRecording.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
+            eleRecording.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
+            eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
             
             
-            std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(cand.Eta()) ? &endcapCorrections : &barrelCorrections;
+            std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(eleRecording.recoSCEta) ? &endcapCorrections : &barrelCorrections;
             eleRecording.scEtaWidth_corrected      = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , eleRecording.scEtaWidth );
 
             eleRecording.r9Full5x5_corrected       = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , eleRecording.r9Full5x5 );
@@ -295,6 +314,7 @@ void xElectrons(
             eleRecording.sieieFull5x5_corrected    = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), eleRecording.sieieFull5x5 );
             }
         }
+    LOG_DEBUG("test 4");
         if ( data.HasMC() )
         {
             int ZMCidx = data.GetPtrInt("mcMomPID")[ZcandP4.daughters().at(0).idx()];
@@ -303,6 +323,7 @@ void xElectrons(
         record_Z.mcEta     = 0;
         record_Z.mcPhi     = 0;
         }
+    LOG_DEBUG("test 4.1");
         record_Z.recoMass  = ZcandP4.M();
         record_Z.recoE     = ZcandP4.Energy();
         record_Z.recoPt    = ZcandP4.Pt();
@@ -313,8 +334,6 @@ void xElectrons(
         record_evt.run               = data.GetInt("run"); 
         if ( data.HasMC() )
         {
-            PUWeightCalculator pucalc;
-            pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
             Float_t* puTrue = data.GetPtrFloat("puTrue");
             Int_t npuInfo = data.GetInt("nPUInfo");
             int _purec = 0;
@@ -326,6 +345,7 @@ void xElectrons(
         record_evt.pthat             = data.GetFloat("pthat");
         record_evt.nPU               = _purec;
         }
+    LOG_DEBUG("test 4.2");
 
         record_evt.MET               = data.GetFloat("pfMET");
         record_evt.METPhi            = data.GetFloat("pfMETPhi");
@@ -351,6 +371,7 @@ void xElectrons(
     LOG_DEBUG("closing output ROOT file");
     fout_->Close();
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
+    f_showershapecorrection->Close();
 }
 void xElectrons(std::string ipath, int outID)
 {
@@ -420,8 +441,10 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
     Int_t  * charge_    = dataptr->GetPtrInt("eleCharge");
 
 
+    LOG_DEBUG("chk point 01");
     // finding Zee in gen level.
     TLorentzCand genZElectrons[2];
+    LOG_DEBUG("chk point 01.0");
     for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
         if ( abs(genPID_[iMC]) == PID_ELECTRON && genStatus_[iMC] <= FINALSTATE_STATUSCUT && genMomPID_[iMC] == PID_Z )
         {
@@ -439,8 +462,10 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
                 if ( genZElectrons[fillIdx].Pt() < genCand.Pt() ) genZElectrons[fillIdx] = genCand;
             }
         }
+    LOG_DEBUG("chk point 01.1");
     //if (!genZElectrons[0].IsZombie() ||!genZElectrons[1].IsZombie() ) hists.FillStatus("numGenZee",0);
     if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector<TLorentzCand>();
+    LOG_DEBUG("chk point 01.2");
     hists.FillStatus("numGenZee",0);
     if (!recoInfo::InFiducialRegion( genZElectrons[0].Eta() ) ||!recoInfo::InFiducialRegion( genZElectrons[1].Eta() ) ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",1);
@@ -450,6 +475,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
 
 
     
+    LOG_DEBUG("chk point 02");
     
     // matching to reco electron
     std::vector<TLorentzCand> matchedPairs;
@@ -477,6 +503,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
             }
         }
     }
+    LOG_DEBUG("chk point 03");
     hists.Fill("nEleMatched",matchedPairs.size());
     if ( check0 != 1 || check1 != 1 )
     {
@@ -484,6 +511,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
         return std::vector<TLorentzCand>();
     }
     hists.FillStatus("numGenZee",3);
+    LOG_DEBUG("electrons matched with Zee sample in gen level. Gen indexes are (%d,%d). Max index = %d", matchedPairs.at(0).genidx(), matchedPairs.at(1).genidx(), nMC_ );
 
     std::sort(matchedPairs.begin(), matchedPairs.end(), recoInfo::ordering_pt);
     return matchedPairs;
