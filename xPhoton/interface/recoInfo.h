@@ -56,6 +56,8 @@ namespace recoInfo
     bool ordering_pt( const TLorentzCand& cand1, const TLorentzCand& cand2 ); // used for sorting
     bool ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 ); // used for sorting
     bool InFiducialRegion(float genEta);
+    bool IsEE(float eta);
+    bool CorrectedValue( TGraph* correctionFunc, float val );
 };
 
 /*

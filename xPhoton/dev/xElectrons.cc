@@ -221,6 +221,20 @@ void xElectrons(
         */
 
 
+        TFile* f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+        std::map<std::string, TGraph*> endcapCorrections = {
+            { "scEtaWidth"  , (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE") },
+            { "s4"          , (TGraph*)f_showershapecorrection->Get("transfS4EE") },
+            { "r9Full5x5"   , (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE") },
+            { "sieieFull5x5", (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE") }
+        };
+        std::map<std::string, TGraph*> barrelCorrections = {
+            { "scEtaWidth"  , (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB") },
+            { "s4"          , (TGraph*)f_showershapecorrection->Get("transfS4EB") },
+            { "r9Full5x5"   , (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB") },
+            { "sieieFull5x5", (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB") }
+        };
+
 
     // clear everything.
         ClearStruct(&record_electrons[0]);
@@ -232,44 +246,54 @@ void xElectrons(
         {
             const TLorentzCand& cand = ZcandP4.daughters().at(idx);
             int recoIdx = cand.idx();
+            rec_Electron& eleRecording = record_electrons[idx];
                     
+            eleRecording.recoPt       = data.GetPtrFloat("elePt")[recoIdx];
+            eleRecording.recoEta      = data.GetPtrFloat("eleEta")[recoIdx];
+            eleRecording.recoPhi      = data.GetPtrFloat("elePhi")[recoIdx];
+            eleRecording.recoPtCalib  = data.GetPtrFloat("eleCalibPt")[recoIdx];
+            eleRecording.recoSCEta    = data.GetPtrFloat("eleSCEta")[recoIdx];
+            eleRecording.r9           = data.GetPtrFloat("eleR9")[recoIdx];
+            eleRecording.HoverE       = data.GetPtrFloat("eleHoverE")[recoIdx];
+            eleRecording.chIsoRaw     = data.GetPtrFloat("elePFChIso")[recoIdx];
+            eleRecording.phoIsoRaw    = data.GetPtrFloat("elePFPhoIso")[recoIdx];
+            eleRecording.nhIsoRaw     = data.GetPtrFloat("elePFNeuIso")[recoIdx];
+            eleRecording.rawE         = data.GetPtrFloat("eleSCRawEn")[recoIdx];
+            eleRecording.scEtaWidth   = data.GetPtrFloat("eleSCEtaWidth")[recoIdx];
+            eleRecording.scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
+            eleRecording.esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
+            eleRecording.esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
+                                                 data.GetPtrFloat("eleESEnP2")[recoIdx];
+            eleRecording.mva          = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
+            eleRecording.r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
+            eleRecording.sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
+            //eleRecording.sieipFull5x5 = data.GetPtrFloat("")[recoIdx];
+            eleRecording.sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
+            eleRecording.e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+
+            eleRecording.firedTrgs    = int( data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx] );
+            eleRecording.isMatched    = cand.genidx() >= 0;
+            eleRecording.firedTrgsL   = data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx];
+
             if ( data.HasMC() )
             {
                 int genIdx = cand.genidx();
-            record_electrons[idx].mcE          = data.GetPtrFloat("mcE")[genIdx];
-            record_electrons[idx].mcPt         = data.GetPtrFloat("mcPt")[genIdx];
-            record_electrons[idx].mcEta        = data.GetPtrFloat("mcEta")[genIdx];
-            record_electrons[idx].mcPhi        = data.GetPtrFloat("mcPhi")[genIdx];
-            }
-            record_electrons[idx].recoPt       = data.GetPtrFloat("elePt")[recoIdx];
-            record_electrons[idx].recoEta      = data.GetPtrFloat("eleEta")[recoIdx];
-            record_electrons[idx].recoPhi      = data.GetPtrFloat("elePhi")[recoIdx];
-            record_electrons[idx].recoPtCalib  = data.GetPtrFloat("eleCalibPt")[recoIdx];
-            record_electrons[idx].recoSCEta    = data.GetPtrFloat("eleSCEta")[recoIdx];
-            record_electrons[idx].r9           = data.GetPtrFloat("eleR9")[recoIdx];
-            record_electrons[idx].HoverE       = data.GetPtrFloat("eleHoverE")[recoIdx];
-            record_electrons[idx].chIsoRaw     = data.GetPtrFloat("elePFChIso")[recoIdx];
-            record_electrons[idx].phoIsoRaw    = data.GetPtrFloat("elePFPhoIso")[recoIdx];
-            record_electrons[idx].nhIsoRaw     = data.GetPtrFloat("elePFNeuIso")[recoIdx];
-            record_electrons[idx].rawE         = data.GetPtrFloat("eleSCRawEn")[recoIdx];
-            record_electrons[idx].scEtaWidth   = data.GetPtrFloat("eleSCEtaWidth")[recoIdx];
-            record_electrons[idx].scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
-            record_electrons[idx].esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
-            record_electrons[idx].esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
-                                                 data.GetPtrFloat("eleESEnP2")[recoIdx];
-            record_electrons[idx].mva          = 0; //data.GetPtrFloat("")[recoIdx];
-            record_electrons[idx].mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
-            record_electrons[idx].officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
-            record_electrons[idx].r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
-            record_electrons[idx].sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
-            //record_electrons[idx].sieipFull5x5 = data.GetPtrFloat("")[recoIdx];
-            record_electrons[idx].sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
-            record_electrons[idx].e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
-            record_electrons[idx].e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.mcE          = data.GetPtrFloat("mcE")[genIdx];
+            eleRecording.mcPt         = data.GetPtrFloat("mcPt")[genIdx];
+            eleRecording.mcEta        = data.GetPtrFloat("mcEta")[genIdx];
+            eleRecording.mcPhi        = data.GetPtrFloat("mcPhi")[genIdx];
+            
+            
+            std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(cand.Eta()) ? &endcapCorrections : &barrelCorrections;
+            eleRecording.scEtaWidth_corrected      = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , eleRecording.scEtaWidth );
 
-            record_electrons[idx].firedTrgs    = int( data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx] );
-            record_electrons[idx].isMatched    = cand.genidx() >= 0;
-            record_electrons[idx].firedTrgsL   = data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx];
+            eleRecording.r9Full5x5_corrected       = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , eleRecording.r9Full5x5 );
+            eleRecording.s4_corrected              = 0;
+            eleRecording.sieieFull5x5_corrected    = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), eleRecording.sieieFull5x5 );
+            }
         }
         if ( data.HasMC() )
         {
@@ -496,6 +520,10 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+".sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+".sipipFull5x5/F").c_str()     );
     t->Branch( (name+".e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+".e2x2Full5x5/F").c_str()      );
     t->Branch( (name+".e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+".e2x5Full5x5/F").c_str()      );
+    t->Branch( (name+".scEtaWidth_corrected"  ).c_str(), &var->scEtaWidth_corrected     , (name+".scEtaWidth_corrected/F").c_str()      );
+    t->Branch( (name+".r9Full5x5_corrected"   ).c_str(), &var->r9Full5x5_corrected      , (name+".r9Full5x5_corrected/F").c_str()      );
+    t->Branch( (name+".s4_corrected"          ).c_str(), &var->s4_corrected             , (name+".s4_corrected/F").c_str()      );
+    t->Branch( (name+".sieieFull5x5_corrected").c_str(), &var->sieieFull5x5_corrected   , (name+".sieieFull5x5_corrected/F").c_str()      );
 
 
     t->Branch( (name+".firedTrgs").c_str()          ,&var->firedTrgs    , (name+".firedTrgs/I").c_str()        );

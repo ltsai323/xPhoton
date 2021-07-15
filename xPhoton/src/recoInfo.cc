@@ -118,6 +118,15 @@ bool recoInfo::InFiducialRegion(float genEta)
     if ( abseta > 2.5 ) return false;
     return true;
 }
+bool recoInfo::IsEE(float eta)
+{ return fabs(eta) > 1.5; }
+bool recoInfo::CorrectedValue( TGraph* correctionFunc, float val )
+{
+    if ( correctionFunc )
+    if ( val > correctionFunc->GetXaxis()->GetXmin() && val < correctionFunc->GetXaxis()->GetXmax() )
+        return correctionFunc->Eval(val);
+    return val;
+}
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
 {

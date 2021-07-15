@@ -48,6 +48,12 @@ struct rec_Electron
         sipipFull5x5,
         e2x2Full5x5,
         e2x5Full5x5;
+    Float_t
+        scEtaWidth_corrected,
+        r9Full5x5_corrected,
+        s4_corrected,
+        sieieFull5x5_corrected;
+
 
     Int_t
         firedTrgs,
