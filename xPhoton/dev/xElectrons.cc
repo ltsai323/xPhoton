@@ -61,10 +61,12 @@ void xElectrons(
     // Filling condition to reconstruct Z->ee channel.
     // 0: number of electron pairs
     // 1: pass HLT in data
-    // 2: electron pair with opposite charge
-    // 3: Z candidate mass > 90 - 40
-    // 4: Z candidate mass < 90 + 40
-    hists.Create("ZRecoStat", 5, 0., 5.);
+    // 2: pass single electron HLT pt threshold
+    // 3: pass single electron HLT work point threshold
+    // 4: electron pair with opposite charge
+    // 5: Z candidate mass > 90 - 40
+    // 6: Z candidate mass < 90 + 40
+    hists.Create("ZRecoStat", 7, 0., 7.);
 
     // matched electrons in each event.
     // -1: the total number of events.
@@ -158,32 +160,37 @@ void xElectrons(
                 if ( ele1.IsZombie() ) continue;
 
                 hists.FillStatus("ZRecoStat", 0);
+                // HLT_Ele25_WPTight_Gsf_v1
+                const int PASS_HLTBIT = 5;
+                const int HLTWP = 3;
                 if (!data.HasMC() )
                 { // HLT selections
-                    ULong64_t* trigs = (ULong64_t*) data.GetPtrLong64("eleFiredDoubleTrgs");
+                    ULong64_t* trigs = (ULong64_t*) data.GetPtrLong64("eleFiredSingleTrgs");
                     if ( trigs[ele0.idx()] == 0 ) continue; // nothing triggered.
                             
                     if ( PASS_HLTBIT > 0 ) // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
                     {
-                        int bit = PASS_HLTBIT;
-                        if ( (trigs[ele0.idx()]>>bit)&1 == 0 ) continue; // tight ID for tag photon.
-                        // need to check the validation
-                        /* asdf
-                        if ( trigs[ele0.idx()] & 1<<bit == 0 ) continue; // tight ID for tag photon.
-                        */
+                        int hltbit_singlephoton = PASS_HLTBIT;
+                        if ( (trigs[ele0.idx()]>>hltbit_singlephoton)&1 == 0 ) continue; // single photon 
                     }
                 }
                 hists.FillStatus("ZRecoStat", 1);
+                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 25 ) continue;
+                hists.FillStatus("ZRecoStat", 2);
+                if ( HLTWP > 0 )
+                    if (!((((UShort_t*)data.GetPtrShort("eleIDbit"))[ele0.idx()] >> HLTWP ) & 1) ) continue;
+                hists.FillStatus("ZRecoStat", 3);
+
 
                 ZcandP4 = ele0+ele1;
                 if ( ZcandP4.M() > 50 && ZcandP4.M() < 110 ) hists.Fill("Zmass", ZcandP4.M());
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
                 if ( ele0.charge() * ele1.charge() != -1 ) continue;
-                hists.FillStatus("ZRecoStat", 2);
-                if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
-                hists.FillStatus("ZRecoStat", 3);
-                if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
                 hists.FillStatus("ZRecoStat", 4);
+                if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
+                hists.FillStatus("ZRecoStat", 5);
+                if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
+                hists.FillStatus("ZRecoStat", 6);
                 ZcandP4.SetAlive(true);
                 LOG_DEBUG("Z CAND found!");
                 break;
@@ -340,7 +347,7 @@ void xElectrons(
             for ( int i=0; i<npuInfo; ++i ) if ( data.GetPtrInt("puBX")[i] == 0 ) _purec = puTrue[i];
             
         record_evt.xsweight          = 0;
-        record_evt.genweight         = data.HasMC() ? data.GetFloat("genWeight") : 0;
+        record_evt.genweight         = data.HasMC() ? data.GetFloat("genWeight") : 1;
         record_evt.puwei             = (float) pucalc.GetWeight(record_evt.run, puTrue[1]);
         record_evt.pthat             = data.GetFloat("pthat");
         record_evt.nPU               = _purec;
@@ -453,6 +460,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
                     genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_ELECTRON );
         
             int fillIdx = genCand.charge() < 0 ? 0 : 1;
+            //if (!recoInfo::InFiducialRegion(genCand) ) continue;
             if ( genZElectrons[fillIdx].IsZombie() ) genZElectrons[fillIdx] = genCand;
             else
             {
@@ -467,7 +475,7 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
     if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector<TLorentzCand>();
     LOG_DEBUG("chk point 01.2");
     hists.FillStatus("numGenZee",0);
-    if (!recoInfo::InFiducialRegion( genZElectrons[0].Eta() ) ||!recoInfo::InFiducialRegion( genZElectrons[1].Eta() ) ) return std::vector<TLorentzCand>();
+    if (!recoInfo::InFiducialRegion( genZElectrons[0] ) ||!recoInfo::InFiducialRegion( genZElectrons[1] ) ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",1);
     if ( nEle_ < 2 ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",2);

@@ -8,8 +8,6 @@
 #include <TTree.h>
 #include <TFile.h>
 
-
-#define PASS_HLTBIT -1
 #define BINNING 100
 #define MASS_ELECTRON 0.511*0.001
 #define MASS_Z 90
