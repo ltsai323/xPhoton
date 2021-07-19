@@ -26,28 +26,9 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
-#include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
-#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    //BTaggingMgr btagCalibs;
-    /*
-    btagCalibs.UseAlgorithm( "CSVv2" );
-    //btagCalibs.UseAlgorithm( "alskdjfalskdjfCSVv2" ); // only for failed test
-    btagCalibs.UseAlgorithm( "DeepCSV" );
-    btagCalibs.UseAlgorithm( "DeepFlavour" );
-    btagCalibs.UseAlgorithm( "DeepFlavour_JESReduced" );
-    btagCalibs.RegisterSystTypes();
-    */
-    //btagCalibs.LoopVar(btagCalibs.SayHi);
-    //BTagCalibration calib("csvv1", ExternalFilesMgr::csvFile_BTagCalib_CSVv2());
-    //BTagCalibrationReader cReader(
-            //BTagEntry::OP_LOOSE,
-            //"central", {} );
-    //cReader.load(calib, BTagEntry::FLAV_B, "comb");
-    LOG_INFO("end of loading csv file");
-    
 
     TreeReader data(pathes);
 
@@ -290,13 +271,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     Int_t photon_jetID_;
     Int_t phoIDbit_;
-    /*
-    std::map<int, Float_t> jetWeight;
-    for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
-        for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
-            for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
-                jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ] = 0.;
-                */
 
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
@@ -394,9 +368,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVDiscriminatorTags_BvsAll", &jetDeepCSVDiscriminatorTags_BvsAll_, "jetDeepCSVDiscriminatorTags_BvsAll");
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
-
-    //btagCalibs.RegBranch(outtree_);
-
 
     if ( data.HasMC() )
     {
@@ -1145,7 +1116,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             photonIDmva = -999.; //ch
             s4=0.;
             calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5 = 0.;
-            //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
@@ -1194,8 +1164,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
-
-
                 }
 
                 if (hasSubVtxInfo) {
@@ -1210,9 +1178,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_subVtx3DErr->Fill(jetSubVtx3DErr_);
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 }
-
-                //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
-
             } // has jet end
 
 
@@ -1300,15 +1265,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if(TMath::Abs(phoEta[ipho])<1.5) h_EB_bdt->Fill(mva);
                 else h_EE_bdt->Fill(mva);
             }
-
-            /*
-            double jetSF = cReader.eval_auto_bounds(
-                    "central", BTagEntry::FLAV_B,
-                    recoEta,
-                    recoPt);
-            if ( jetSF != 1 ) LOG_WARNING(" jet SF found! %.4f", jetSF);
-            */
-
 
 
             if(MINITREE==1 ) 	{

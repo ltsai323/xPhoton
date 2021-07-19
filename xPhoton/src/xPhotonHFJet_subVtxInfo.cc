@@ -29,10 +29,7 @@ using namespace std;
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
-    std::cout << "testing : " << ExternalFilesMgr::testchar() << std::endl;
 
-    // vector <string> pathes;
-    // pathes.push_back(fname);
     TreeReader data(pathes);
 
     TFile *fout_;
@@ -266,6 +263,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetDeepCSVDiscriminatorTags_CvsB_;
     Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
+    Float_t s4;
+    Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
+
     Int_t    run;
     Long64_t event;
 
@@ -304,6 +304,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
     outtree_->Branch("r9",           &r9,           "r9/F");
+    outtree_->Branch( "s4"          , &s4             , "s4/F"               );
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
     outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
     outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
@@ -374,6 +375,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetGenPartonID", 	          &jetGenPartonID_, 	      	      "jetGenPartonID/I"); 	        
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
+        outtree_->Branch( "calib_scEtaWidth"  , &calib_scEtaWidth     , "calib_scEtaWidth/F"       );
+        outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
+        outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
+        outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
     }
 
 
@@ -413,6 +418,25 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
     }
 
+    TFile* f_showershapecorrection;
+    //PUWeightCalculator pucalc;
+    std::map<std::string, TGraph*> endcapCorrections;
+    std::map<std::string, TGraph*> barrelCorrections;
+    if ( data.HasMC() )
+    {
+    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
+    endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
+    endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
+    endcapCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE");
+
+    barrelCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB");
+    barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
+    barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
+    barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
+
+    //pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+    }
 
 
     LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
@@ -680,16 +704,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoMIPTotEnergy = data.GetPtrFloat("phoMIPTotEnergy");
         }
 
-        /*
-        vector<int> match;
-        vector<int> converted;
-        vector<int> match_ele;
-        vector<float> mcpt;
-        vector<float> mceta;
-        vector<float> mcphi;
-        vector<float> mcCalIso04;
-        vector<float> mcTrkIso04;
-        */
 
         std::map<int,int> match;
         std::map<int,int> converted;
@@ -831,16 +845,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
 
-                /*
-                mcpt.push_back(tmp_mcPt_);
-                mceta.push_back(tmp_mcEta_);
-                mcphi.push_back(tmp_mcPhi_);
-                mcCalIso04.push_back(tmp_mcCalIso04_);
-                mcTrkIso04.push_back(tmp_mcTrkIso04_);
-                match.push_back(tmp_isMatched);
-                match_ele.push_back(tmp_isMatchedEle);
-                converted.push_back(tmp_isConverted);
-                */
 
                 mcpt[i]=tmp_mcPt_;
                 mceta[i]=tmp_mcEta_;
@@ -884,8 +888,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
         //JETPD find leading jets fired trigger
-        if(JETPD_PHOTONHLT==1){
-            for(int ijet=0; ijet<nJet; ijet++){
+        if(JETPD_PHOTONHLT==1) {
+            for(int ijet=0; ijet<nJet; ijet++) {
                 if(jetFiredTrgs!=0){
                     trigger_jetP4.SetPtEtaPhiE(jetPt[ijet], jetEta[ijet], jetPhi[ijet], jetEn[ijet]);
                     jet_index= ijet;
@@ -1002,22 +1006,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
-                /*
-                if(leadingPhoP4.DeltaR(jetP4)<0.2 && photon_jetID.size()<1){
-                    float dphojetpt = jetPt[j] / leadingPhoP4.Pt();
-                    h_dpt_phojet->Fill(dphojetpt);
-                    if( dphojetpt>0.5 || dphojetpt<2.) {
-                        if(jetId[j] &&jetNHF[j]<0.9 && jetNEF[j]<0.9 ) photon_jetID.push_back(1.);
-                        else photon_jetID.push_back(0.);
-                    }
-                }
-                */
 
                 if( jetId[j] ) {	  
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
                         if(jet_index<0) jet_index = j;
-                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
+                        else LOG_DEBUG("more than 1 jet pass the selection. Please check!\n");
                         //nnjet++;
                         //if(nnjet==2) jet2_index = j;
                     }	    
@@ -1025,20 +1019,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }  
         }
 
-        /*
-        if(phoEt[photon_list[0]] > 150.) {
-            h_njet->Fill(nnjet, xsweight);
-            if(nnjet>1){
-                int jet1_eta=0; if(jetEta[jet_index]>1.5) jet1_eta=1;
-                //int jet2_eta=0; if(jetEta[jet2_index]>1.5) jet2_eta=1;	
-                //h_detadpt_jet12->Fill((jet2_eta-jet1_eta), jetPt[jet2_index]/jetPt[jet_index], xsweight);
-            }
-        }
-        */
 
-
-
-        //if(photon_jetID.size()==0) { photon_jetID.push_back(0); LOG_INFO("no jet passed event, use leading jet\n"); }
 
 
 
@@ -1133,6 +1114,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
+            s4=0.;
+            calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5 = 0.;
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
@@ -1255,9 +1238,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             r9Full5x5        = phoR9Full5x5[ipho];
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
+            s4 = e2x2Full5x5 / e5x5Full5x5;
             //photon_jetID_ = photon_jetID[ii];
 
             phoIDbit_ = phoIDbit[ipho];
+            if ( data.HasMC() )
+            {
+                    std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
+                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
+                    calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
+                    calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
+                    calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
+                    LOG_DEBUG("calibrated s4 %.6f and r9 %.6f", calib_s4, calib_r9Full5x5);
+            }
 
 
 
@@ -1454,8 +1447,3 @@ void xPhotonHFJet(std::string ipath, int outID)
    xPhotonHFJet(pathes, oname);
 
 }
-/*
-metFilters //mv
-xsweight //???
-puwei_ //???
-            */
