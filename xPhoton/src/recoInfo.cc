@@ -135,7 +135,11 @@ float recoInfo::CorrectedValue( TGraph* correctionFunc, float val )
 {
     if ( correctionFunc )
         if ( val > correctionFunc->GetXaxis()->GetXmin() && val < correctionFunc->GetXaxis()->GetXmax() )
+        {
+            LOG_DEBUG("corrected value : before %.5f, after %.5f", val, correctionFunc->Eval(val) );
             return correctionFunc->Eval(val);
+        }
+    LOG_DEBUG("nothing corrected : return original value %.5f", val );
     return val;
 }
 /*

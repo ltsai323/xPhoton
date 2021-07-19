@@ -282,6 +282,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetDeepCSVDiscriminatorTags_CvsB_;
     Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
+    Float_t s4;
     Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
 
     Int_t    run;
@@ -445,6 +446,25 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
     }
 
+    TFile* f_showershapecorrection;
+    //PUWeightCalculator pucalc;
+    std::map<std::string, TGraph*> endcapCorrections;
+    std::map<std::string, TGraph*> barrelCorrections;
+    if ( data.HasMC() )
+    {
+    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
+    endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
+    endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
+    endcapCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE");
+
+    barrelCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB");
+    barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
+    barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
+    barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
+
+    //pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+    }
 
 
     LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
@@ -1122,6 +1142,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
+            s4=0.;
+            calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5 = 0.;
             //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
@@ -1171,6 +1193,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
+
+                    std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
+                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
+                    calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
+                    calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
+                    calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
+
                 }
 
                 if (hasSubVtxInfo) {
@@ -1248,6 +1277,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             r9Full5x5        = phoR9Full5x5[ipho];
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
+            s4 = e2x2Full5x5 / e5x5Full5x5;
             //photon_jetID_ = photon_jetID[ii];
 
             phoIDbit_ = phoIDbit[ipho];
