@@ -55,7 +55,8 @@ namespace recoInfo
     TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
     bool ordering_pt( const TLorentzCand& cand1, const TLorentzCand& cand2 ); // used for sorting
     bool ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 ); // used for sorting
-    bool InFiducialRegion(float genEta);
+    bool InFiducialRegion(const TLorentzCand& cand_);
+    bool ValidEtaRegion(float eta);
     bool IsEE(float eta);
     float CorrectedValue( TGraph* correctionFunc, float val );
 };

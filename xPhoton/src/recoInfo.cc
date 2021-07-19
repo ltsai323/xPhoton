@@ -112,15 +112,25 @@ bool recoInfo::ordering_pt(const TLorentzCand& cand1, const TLorentzCand& cand2)
 bool recoInfo::ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 )
 { return candpair1.second.Pt() > candpair2.second.Pt(); }
 
-bool recoInfo::InFiducialRegion(float genEta)
+bool recoInfo::InFiducialRegion(const TLorentzCand& cand_)
 {
-    float abseta = fabs(genEta);
+    float abseta = fabs(cand_.Eta());
+    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
+    if ( abseta > 2.5 ) return false;
+    if ( cand_.Pt() < 12 ) return true;
+    return true;
+}
+bool recoInfo::ValidEtaRegion(float eta)
+{
+    float abseta = fabs(eta);
     if ( abseta > 1.4442 && abseta < 1.566 ) return false;
     if ( abseta > 2.5 ) return false;
     return true;
 }
 bool recoInfo::IsEE(float eta)
-{ return fabs(eta) > 1.5; }
+{
+    if (!recoInfo::ValidEtaRegion(eta) ) throw std::range_error("intput eta is out of range\n");
+    return fabs(eta) > 1.5; }
 float recoInfo::CorrectedValue( TGraph* correctionFunc, float val )
 {
     if ( correctionFunc )
