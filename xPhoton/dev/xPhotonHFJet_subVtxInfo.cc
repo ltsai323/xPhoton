@@ -41,11 +41,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     btagCalibs.RegisterSystTypes();
     */
     //btagCalibs.LoopVar(btagCalibs.SayHi);
-    BTagCalibration calib("csvv1", ExternalFilesMgr::csvFile_BTagCalib_CSVv2());
-    BTagCalibrationReader cReader(
-            BTagEntry::OP_LOOSE,
-            "central", {} );
-    cReader.load(calib, BTagEntry::FLAV_B, "comb");
+    //BTagCalibration calib("csvv1", ExternalFilesMgr::csvFile_BTagCalib_CSVv2());
+    //BTagCalibrationReader cReader(
+            //BTagEntry::OP_LOOSE,
+            //"central", {} );
+    //cReader.load(calib, BTagEntry::FLAV_B, "comb");
     LOG_INFO("end of loading csv file");
     
 
@@ -330,6 +330,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
     outtree_->Branch("r9",           &r9,           "r9/F");
+    outtree_->Branch( "s4"          , &s4             , "s4/F"               );
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
     outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
     outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
@@ -1039,7 +1040,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
                         if(jet_index<0) jet_index = j;
-                        else LOG_WARNING("more than 1 jet pass the selection. Please check!\n");
+                        else LOG_DEBUG("more than 1 jet pass the selection. Please check!\n");
                         //nnjet++;
                         //if(nnjet==2) jet2_index = j;
                     }	    
@@ -1194,11 +1195,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
 
-                    std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
-                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
-                    calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
-                    calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
-                    calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
 
                 }
 
@@ -1281,6 +1277,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             //photon_jetID_ = photon_jetID[ii];
 
             phoIDbit_ = phoIDbit[ipho];
+            if ( data.HasMC() )
+            {
+                    std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
+                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
+                    calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
+                    calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
+                    calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
+                    LOG_DEBUG("calibrated s4 %.6f and r9 %.6f", calib_s4, calib_r9Full5x5);
+            }
 
 
 
@@ -1296,11 +1301,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 else h_EE_bdt->Fill(mva);
             }
 
+            /*
             double jetSF = cReader.eval_auto_bounds(
                     "central", BTagEntry::FLAV_B,
                     recoEta,
                     recoPt);
             if ( jetSF != 1 ) LOG_WARNING(" jet SF found! %.4f", jetSF);
+            */
 
 
 
