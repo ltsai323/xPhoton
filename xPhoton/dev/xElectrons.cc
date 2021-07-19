@@ -86,10 +86,8 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
-    LOG_DEBUG("test 0");
     TFile* f_showershapecorrection;
     PUWeightCalculator pucalc;
-    LOG_DEBUG("test 1");
     std::map<std::string, TGraph*> endcapCorrections;
     std::map<std::string, TGraph*> barrelCorrections;
     if ( data.HasMC() )
@@ -107,7 +105,6 @@ void xElectrons(
 
     pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
     }
-    LOG_DEBUG("test 2");
 
 
     
@@ -119,7 +116,6 @@ void xElectrons(
         // 4. fill tree
         // 5. load photon mva
         data.GetEntry(ev);
-    LOG_DEBUG("test 2.1");
 
         std::vector<TLorentzCand> electrons;
         if ( data.HasMC() )
@@ -207,67 +203,12 @@ void xElectrons(
 
 
 
-
-
-        // filling events
-        
-        
-        /*
-        if ( data.HasMC() )
-        {
-            Float_t* mcPt = data.GetPtrFloat("mcPt");
-            Float_t* mcEta = data.GetPtrFloat("mcEta");
-            Float_t* mcPhi = data.GetPtrFloat("mcPhi");
-            Float_t* mcCalIso04 = data.GetPtrFloat("mcCalIsoDR04");
-            Float_t* mcTrkIso04 = data.GetPtrFloat("mcTrkIsoDR04");
-        }
-
-        Int_t* eleCharge = data.GetPtrInt("eleCharge");
-        Float_t* elePt = data.GetPtrFloat("elePt");
-        Float_t* eleEta = data.GetPtrFloat("eleEta");
-        Float_t* elePhi = data.GetPtrFloat("elePhi");
-        Float_t* eleCalibPt = data.GetPtrFloat("eleCalibPt");
-        Float_t* eleCalibEn = data.GetPtrFloat("eleCalibEn");
-        Float_t* eleSCEta = data.GetPtrFloat("eleSCEta");
-        Float_t* eleSCPhi = data.GetPtrFloat("eleSCPhi");
-        Float_t* eleHoverE = data.GetPtrFloat("eleHoverE");
-        Float_t* eleR9  = data.GetPtrFloat("eleR9");
-        Float_t* eleRawE = data.GetPtrFloat("eleSCRawEn");
-        Float_t* eleSCEtaWidth = data.GetPtrFloat("eleSCEtaWidth");
-        Float_t* eleSCPhiWidth = data.GetPtrFloat("eleSCPhiWidth");
-        Float_t* eleESRR = data.GetPtrFloat("eleESEffSigmaRR");
-        Float_t* eleESEnP1 = data.GetPtrFloat("eleESEnP1");
-        Float_t* eleESEnP2 = data.GetPtrFloat("eleESEnP2");
-
-
-        Float_t* eleR9Full5x5  = data.GetPtrFloat("eleR9Full5x5");
-        Float_t* eleSigmaIEtaIEtaFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5");
-        Float_t* eleSigmaIPhiIPhiFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5");
-
-        Float_t* eleChIsoRaw = data.GetPtrFloat("elePFChIso");
-        Float_t* elePhoIsoRaw = data.GetPtrFloat("elePFPhoIso");
-        Float_t* eleNeuIsoRaw = data.GetPtrFloat("elePFNeuIso");
-        //Float_t* eleChWorstRaw = data.GetPtrFloat("nothing");
-
-        
-        Short_t* eleID = data.GetPtrShort("eleIDbit");
-        Long64_t* doubleEleTrgs = data.GetPtrLong64("eleFiredDoubleTrgs");
-        Long64_t* singleEleTrgs = data.GetPtrLong64("eleFiredSingleTrgs");
-
-
-        Float_t rho = data.GetFloat("rho");
-        */
-
-
-
-
     // clear everything.
         ClearStruct(&record_electrons[0]);
         ClearStruct(&record_electrons[1]);
         ClearStruct(&record_Z);
         ClearStruct(&record_evt);
 
-    LOG_DEBUG("test 3");
         for ( int idx=0; idx<2; ++idx )
         {
             const TLorentzCand cand = ZcandP4.daughters().at(idx);
@@ -321,7 +262,6 @@ void xElectrons(
             eleRecording.sieieFull5x5_corrected    = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), eleRecording.sieieFull5x5 );
             }
         }
-    LOG_DEBUG("test 4");
         if ( data.HasMC() )
         {
             int ZMCidx = data.GetPtrInt("mcMomPID")[ZcandP4.daughters().at(0).idx()];
@@ -330,7 +270,6 @@ void xElectrons(
         record_Z.mcEta     = 0;
         record_Z.mcPhi     = 0;
         }
-    LOG_DEBUG("test 4.1");
         record_Z.recoMass  = ZcandP4.M();
         record_Z.recoE     = ZcandP4.Energy();
         record_Z.recoPt    = ZcandP4.Pt();
@@ -352,7 +291,6 @@ void xElectrons(
         record_evt.pthat             = data.GetFloat("pthat");
         record_evt.nPU               = _purec;
         }
-    LOG_DEBUG("test 4.2");
 
         record_evt.MET               = data.GetFloat("pfMET");
         record_evt.METPhi            = data.GetFloat("pfMETPhi");
@@ -365,7 +303,9 @@ void xElectrons(
 
 
         outtree_->Fill();
+        LOG_DEBUG("one event ended");
     }
+    LOG_DEBUG("event loop ended");
     
 
 
