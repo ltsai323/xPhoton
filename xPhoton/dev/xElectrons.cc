@@ -496,10 +496,10 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+".sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+".sipipFull5x5/F").c_str()     );
     t->Branch( (name+".e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+".e2x2Full5x5/F").c_str()      );
     t->Branch( (name+".e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+".e2x5Full5x5/F").c_str()      );
-    t->Branch( (name+".scEtaWidth_corrected"  ).c_str(), &var->scEtaWidth_corrected     , (name+".scEtaWidth_corrected/F").c_str()      );
-    t->Branch( (name+".r9Full5x5_corrected"   ).c_str(), &var->r9Full5x5_corrected      , (name+".r9Full5x5_corrected/F").c_str()      );
-    t->Branch( (name+".s4_corrected"          ).c_str(), &var->s4_corrected             , (name+".s4_corrected/F").c_str()      );
-    t->Branch( (name+".sieieFull5x5_corrected").c_str(), &var->sieieFull5x5_corrected   , (name+".sieieFull5x5_corrected/F").c_str()      );
+    t->Branch( (name+".calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+".calib_scEtaWidth/F").c_str()      );
+    t->Branch( (name+".calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+".calib_r9Full5x5/F").c_str()      );
+    t->Branch( (name+".calib_s4"          ).c_str(), &var->s4_corrected             , (name+".calib_s4/F").c_str()      );
+    t->Branch( (name+".calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+".calib_sieieFull5x5/F").c_str()      );
 
 
     t->Branch( (name+".firedTrgs").c_str()          ,&var->firedTrgs    , (name+".firedTrgs/I").c_str()        );

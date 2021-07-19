@@ -63,6 +63,7 @@ dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)
     obj/MuonSelections.o \
     obj/PhotonSelections.o \
     obj/histMgr.o \
+	obj/recoInfo.o \
     obj/puweicalc.o \
     obj/readMgr.o \
     obj/ExternalFilesMgr.o \

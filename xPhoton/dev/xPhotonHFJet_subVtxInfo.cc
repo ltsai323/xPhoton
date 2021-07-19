@@ -282,6 +282,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetDeepCSVDiscriminatorTags_CvsB_;
     Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
+    Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
+
     Int_t    run;
     Long64_t event;
 
@@ -400,6 +402,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetGenPartonID", 	          &jetGenPartonID_, 	      	      "jetGenPartonID/I"); 	        
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
+        outtree_->Branch( "calib_scEtaWidth"  , &calib_scEtaWidth     , "calib_scEtaWidth/F"       );
+        outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
+        outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
+        outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
     }
 
 
