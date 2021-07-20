@@ -122,12 +122,13 @@ void xElectrons(
         // 4. fill tree
         // 5. load photon mva
         data.GetEntry(ev);
-	if ( data.HasMC() )
-	    //overallGenweight[0] += data.GetFloat("genWeight");
-	    overallGenweight += data.GetFloat("genWeight");
-            if ( hasNon1Val != 0 )
-		if ( data.GetFloat("genWeight") != 1. )
-		    hasNon1Val = 1;
+        if ( data.HasMC() )
+        {
+            overallGenweight += data.GetFloat("genWeight");
+            if ( hasNon1Val < 0.1 )
+                if ( data.GetFloat("genWeight") != 1. )
+                    hasNon1Val = 1;
+        }
 
         std::vector<TLorentzCand> electrons;
         if ( data.HasMC() )

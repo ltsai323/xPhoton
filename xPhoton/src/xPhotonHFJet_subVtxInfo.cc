@@ -16,6 +16,7 @@ using namespace std;
 #include <iostream>
 #include <TProfile.h>
 #include <map>
+#include <TNtupleD.h>
 
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
@@ -26,9 +27,13 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
+#include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
+#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
+    LOG_INFO("end of loading csv file");
+    
 
     TreeReader data(pathes);
 
@@ -218,6 +223,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     outtree_ = new TTree("t", "mini tree");
+    TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    Double_t overallGenweight = 0;
+    Double_t hasNon1Val = 0;
 
     // Float_t effArea[3][7] = { //[Ch,Nu,Pho][iPhof_eta]
     //   { 0.012 , 0.010 , 0.014 , 0.012 , 0.016 , 0.020 , 0.012 } ,
@@ -244,6 +252,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     //Float_t mcCalIso04, mcTrkIso04;
     Float_t xsweight=XS;
+    Float_t mygenweight;
     //Long64_t HLT, HLTIsPrescaled, HLT50ns, HLTIsPrescaled50ns;
     Long64_t HLT, HLTIsPrescaled;// HLT50ns, HLTIsPrescaled50ns;
     Float_t  MET,   METPhi;
@@ -271,6 +280,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     Int_t photon_jetID_;
     Int_t phoIDbit_;
+    /*
+    std::map<int, Float_t> jetWeight;
+    for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
+        for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
+            for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
+                jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ] = 0.;
+                */
 
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
@@ -288,8 +304,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("isData",         &isData,        "isData/O");
     outtree_->Branch("HLT",         &HLT,        "HLT/L");
     outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
-    //outtree_->Branch("HLT50ns",         &HLT50ns,        "HLT50ns/L");
-    //outtree_->Branch("HLTIsPrescaled50ns",         &HLTIsPrescaled50ns,        "HLTIsPrescaled50ns/L"); //rm
     outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
     outtree_->Branch("pthat",        &pthat_,       "pthat/F");
     outtree_->Branch("genHT",        &genHT_,       "genHT/F");
@@ -308,9 +322,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
     outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
     outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
-    //outtree_->Branch("idLoose",      &idLoose,      "idLoose/I"); //removable
-    //outtree_->Branch("idMedium",     &idMedium,     "idMedium/I"); //removable
-    //outtree_->Branch("idTight",      &idTight,      "idTight/I"); //removable
     outtree_->Branch("nVtx",         &nVtx,         "nVtx/I");
     outtree_->Branch("nPU",          &nPU,          "nPU/I");
     outtree_->Branch("puwei",        &puwei_,        "puwei/F");
@@ -369,6 +380,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
     outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
 
+    //btagCalibs.RegBranch(outtree_);
+
+
     if ( data.HasMC() )
     {
         outtree_->Branch("jetPartonID", 	          &jetPartonID_, 	      	      "jetPartonID/I"); 	        
@@ -383,6 +397,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
+    outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
     //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
 
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
@@ -446,6 +461,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
+        if ( data.HasMC() )
+        {
+            overallGenweight += data.GetFloat("genWeight");
+            if ( hasNon1Val < 0.1 )
+                if ( data.GetFloat("genWeight") != 1. )
+                    hasNon1Val = 1;
+        }
 
         Int_t run_     = data.GetInt("run");
         Long64_t event_   = data.GetLong64("event");
@@ -1116,6 +1138,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             photonIDmva = -999.; //ch
             s4=0.;
             calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5 = 0.;
+            mygenweight = 0;
+            //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
@@ -1124,6 +1148,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             event   = data.GetLong64("event");
             isData  = data.GetBool("isData");
             nVtx    = data.GetInt("nVtx");
+            mygenweight = data.HasMC() ? data.GetFloat("genWeight") : 1;
 
             //int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
@@ -1164,6 +1189,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
+
+
                 }
 
                 if (hasSubVtxInfo) {
@@ -1178,6 +1205,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_subVtx3DErr->Fill(jetSubVtx3DErr_);
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 }
+
+                //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
+
             } // has jet end
 
 
@@ -1239,7 +1269,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
             s4 = e2x2Full5x5 / e5x5Full5x5;
-            //photon_jetID_ = photon_jetID[ii];
 
             phoIDbit_ = phoIDbit[ipho];
             if ( data.HasMC() )
@@ -1267,6 +1296,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
 
 
+
+
             if(MINITREE==1 ) 	{
                 outtree_->Fill();
                 if ( ONLY_LEADINGPHOTON ) break;
@@ -1280,6 +1311,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     fout_->cd();
     outtree_->Write();
+
+    if ( data.HasMC() )
+    {
+    	nt_sumupgenweight->Fill(overallGenweight,hasNon1Val);
+    	nt_sumupgenweight->Write();
+    }
+
     h_subVtxPt   ->Write();
     h_subVtxMass ->Write();
     h_subVtx3DVal->Write();
