@@ -22,3 +22,12 @@ dev           : developing codes. Compile by makefile only<br/>
 
 # data/pythonparser
 Use it to analyze the log file of getXsec.py.
+
+# bin/allexecutefiles
+* ./bin/exe.AppendEventInfo 3.14e1 in.root out.root
+Append information into events. Currently xs weight (31.4 as example) and BTagging corrections are appended in event.
+
+* ./bin/exe.xElectronsRunner inputggNtuple.root 3
+input a ggNtuple and run all events. The output name will be append a number "3". For electron. Zee event.
+* ./bin/exe.xPhotonRunner inputggNtuple.root 3
+input a ggNtuple and run all events. The output name will be append a number "3". For photon

@@ -12,6 +12,8 @@
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include <TLorentzVector.h>
 #include <map>
+#include <TNtupleD.h>
+
 
 static histMgr hists;
 
@@ -30,6 +32,10 @@ void xElectrons(
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_ = new TTree("t", "mini tree");
+    TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    //Double_t overallGenweight[1] = {0};
+    Double_t overallGenweight = 0;
+    Double_t hasNon1Val = 0;
     
     rec_Electron record_electrons[2];
     rec_Z record_Z;
@@ -116,6 +122,13 @@ void xElectrons(
         // 4. fill tree
         // 5. load photon mva
         data.GetEntry(ev);
+        if ( data.HasMC() )
+        {
+            overallGenweight += data.GetFloat("genWeight");
+            if ( hasNon1Val < 0.1 )
+                if ( data.GetFloat("genWeight") != 1. )
+                    hasNon1Val = 1;
+        }
 
         std::vector<TLorentzCand> electrons;
         if ( data.HasMC() )
@@ -313,12 +326,19 @@ void xElectrons(
     fout_->cd();
     LOG_DEBUG("writing tree");
     outtree_->Write();
+    LOG_DEBUG("writing ntuples");
+    if ( data.HasMC() )
+    {
+    	nt_sumupgenweight->Fill(overallGenweight,hasNon1Val);
+    	nt_sumupgenweight->Write();
+    }
     LOG_DEBUG("writing histograms");
     hists.WriteTo(fout_);
     LOG_DEBUG("closing output ROOT file");
     fout_->Close();
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
-    f_showershapecorrection->Close();
+    if ( data.HasMC() )
+	    f_showershapecorrection->Close();
 }
 void xElectrons(std::string ipath, int outID)
 {
