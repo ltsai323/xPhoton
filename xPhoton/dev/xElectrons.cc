@@ -184,7 +184,7 @@ void xElectrons(
                     }
                 }
                 hists.FillStatus("ZRecoStat", 1);
-                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 25 ) continue;
+                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 25 ) continue; // used for singlePhoton HLT.
                 hists.FillStatus("ZRecoStat", 2);
                 if ( HLTWP > 0 )
                     if (!((((UShort_t*)data.GetPtrShort("eleIDbit"))[ele0.idx()] >> HLTWP ) & 1) ) continue;
