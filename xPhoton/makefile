@@ -91,6 +91,8 @@ bin/exe.xElectronsRunner: obj/xElectronsRunner.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
 bin/exe.AppendEventInfo: obj/AppendEventInfo.o $(objfile_src)
 	$(Compiler) -o $@ $< $(objfile_src)
+bin/exe.AppendBTagCalibration: obj/AppendBTagCalibration.o $(objfile_src)
+	$(Compiler) -o $@ $< $(objfile_src)
 
 ################ Main Targets Ends #########################3
 
