@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <TKey.h>
+#include <TROOT.h>
+#include <TH2.h>
+#include <TH1.h>
+#include <TNtuple.h>
 #include <iostream>
 #include <stdexcept>
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
@@ -113,7 +117,18 @@ int main(int argc, const char* argv[])
     TKey *key;
     while ((key = (TKey*)keyList())) {
         if ( (key->GetName()) == "t" ) continue;
-       key->ReadObj()->Write();
+        if ( key->ReadObj()->IsZombie() ) continue;
+        TClass *cl = gROOT->GetClass(key->GetClassName());
+        if (cl->InheritsFrom("TH1"))
+            ((TH1*     )key->ReadObj())->Write();
+        /*
+        if (cl->InheritsFrom("TNtupleD"))
+            ((TNtupleD*)key->ReadObj())->Write();
+            */
+        if (cl->InheritsFrom("TNtuple"))
+            ((TNtuple* )key->ReadObj())->Write();
+        if (cl->InheritsFrom("TH2"))
+            ((TH2*     )key->ReadObj())->Write();
     }
     oF->Close();
     iF->Close();
