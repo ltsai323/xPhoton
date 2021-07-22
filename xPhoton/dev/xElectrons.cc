@@ -138,7 +138,7 @@ void xElectrons(
             if ( electrons.size() > 1 )
             LOG_DEBUG("event obtained electrons matched with Zee sample in gen level. Gen indexes are (%d,%d).", electrons.at(0).genidx(), electrons.at(1).genidx());
         }
-        else
+        if ( electrons.size() < 2 ) // if Zee signal cannot pass fiducial region, treat this event as data.
             electrons = RecoElectrons(&data);
 
         for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
