@@ -117,7 +117,7 @@ bool recoInfo::InFiducialRegion(const TLorentzCand& cand_)
     float abseta = fabs(cand_.Eta());
     if ( abseta > 1.4442 && abseta < 1.566 ) return false;
     if ( abseta > 2.5 ) return false;
-    if ( cand_.Pt() < 12 ) return true;
+    if ( cand_.Pt() < 12 ) return false;
     return true;
 }
 bool recoInfo::ValidEtaRegion(float eta)
