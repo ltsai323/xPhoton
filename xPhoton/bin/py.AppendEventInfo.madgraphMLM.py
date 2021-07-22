@@ -77,7 +77,7 @@ def MergeOutputs( primarydataset, inputlist ):
     if len(inputfiles) == 1:
         os.system('mv tmp/%s updated/%s.root' % nodir(inputfiles[0]), primarydataset )
     elif len(inputfiles) > 1:
-        os.system('hadd updated/%s.root %s' % (primarydataset, ' '.join( ['tmp/'+ nodir(fpath) for fpath in inputfiles] )))
+        os.system('hadd -f updated/%s.root %s' % (primarydataset, ' '.join( ['tmp/'+ nodir(fpath) for fpath in inputfiles] )))
     else:
         mylog.warning('nothing found in category %s' % primarydataset)
 
@@ -90,13 +90,14 @@ if __name__ == '__main__':
     mylog=GetLogger(__name__)
     newdir='updated'
     if not os.path.exists(newdir) or not os.path.isdir(newdir): os.mkdir(newdir)
-    if not os.path.exists('tmp') or not os.path.isdir(newdir): os.mkdir('tmp')
+    if not os.path.exists('tmp') or not os.path.isdir('tmp'): os.mkdir('tmp')
 
     ShowPD(summaryfile)
     ShowDetail(summaryfile)
     version=''
 
     targetDict=processedDict
+    #targetDict=testDict
     integratedgenweights = { pd:sum( [IntegratedGenWeights(fpath) for ver,fpath in info.iteritems()] )
             for pd, info in targetDict.iteritems() }
 
