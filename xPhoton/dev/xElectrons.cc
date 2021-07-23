@@ -12,7 +12,8 @@
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include <TLorentzVector.h>
 #include <map>
-#include <TNtupleD.h>
+#include <TNtuple.h>
+//#include <TNtupleD.h>
 
 
 static histMgr hists;
@@ -32,10 +33,12 @@ void xElectrons(
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_ = new TTree("t", "mini tree");
-    TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
-    //Double_t overallGenweight[1] = {0};
-    Double_t overallGenweight = 0;
-    Double_t hasNon1Val = 0;
+    //TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    TNtuple* nt_sumupgenweight = new TNtuple("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    //Double_t overallGenweight = 0;
+    //Double_t hasNon1Val = 0;
+    Float_t overallGenweight = 0;
+    Float_t hasNon1Val = 0;
     
     rec_Electron record_electrons[2];
     rec_Z record_Z;
@@ -543,19 +546,19 @@ void RegBranch( TTree* t, const std::string& name, rec_Z* var )
 }
 void RegBranch( TTree* t, const string& name, rec_Event* var )
 {
-    t->Branch( (name+".run").c_str()               , &var->run,                     "run/I");
-    t->Branch( (name+".xsweight").c_str()          , &var->xsweight,                "xsweight/I");
-    t->Branch( (name+".puwei").c_str()             , &var->puwei,                   "puwei/I");
-    t->Branch( (name+".pthat").c_str()             , &var->pthat,                   "pthat/I");
-    t->Branch( (name+".nVtx").c_str()              , &var->nVtx,                    "nVtx/I");
-    t->Branch( (name+".nPU").c_str()               , &var->nPU,                     "nPU/I");
+    t->Branch("run"               , &var->run,                     "run/I");
+    t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
+    t->Branch("puwei"             , &var->puwei,                   "puwei/I");
+    t->Branch("pthat"             , &var->pthat,                   "pthat/I");
+    t->Branch("nVtx"              , &var->nVtx,                    "nVtx/I");
+    t->Branch("nPU"               , &var->nPU,                     "nPU/I");
 
-    t->Branch( (name+".rho").c_str()               , &var->rho,                     "rho/F");
-    t->Branch( (name+".genweight").c_str()         , &var->genweight,               "genweight/F");
-    t->Branch( (name+".MET").c_str()               , &var->MET,                     "MET/F");
-    t->Branch( (name+".METPhi").c_str()            , &var->METPhi,                  "METPhi/F");
+    t->Branch("rho"               , &var->rho,                     "rho/F");
+    t->Branch("genWeight"         , &var->genweight,               "genWeight/F");
+    t->Branch("MET"               , &var->MET,                     "MET/F");
+    t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");
     
-    t->Branch( (name+".HLT").c_str()               , &var->HLT,                     "HLT/L");
-    t->Branch( (name+".HLTPhoIsPres.caled").c_str(), &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
-    t->Branch( (name+".event").c_str()             , &var->event,                   "event/L");
+    t->Branch("HLT"               , &var->HLT,                     "HLT/L");
+    t->Branch("HLTPhoIsPres.caled", &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
+    t->Branch("event"             , &var->event,                   "event/L");
 }

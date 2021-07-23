@@ -16,7 +16,7 @@ using namespace std;
 #include <iostream>
 #include <TProfile.h>
 #include <map>
-#include <TNtupleD.h>
+#include <TNtuple.h>
 
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
@@ -223,9 +223,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     outtree_ = new TTree("t", "mini tree");
-    TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
-    Double_t overallGenweight = 0;
-    Double_t hasNon1Val = 0;
+    TNtuple* nt_sumupgenweight = new TNtuple("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    Float_t overallGenweight = 0;
+    Float_t hasNon1Val = 0;
 
     // Float_t effArea[3][7] = { //[Ch,Nu,Pho][iPhof_eta]
     //   { 0.012 , 0.010 , 0.014 , 0.012 , 0.016 , 0.020 , 0.012 } ,
