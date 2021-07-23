@@ -122,6 +122,8 @@ int main(int argc, const char* argv[])
             ((TNtupleD*)key->ReadObj())->CloneTree(-1)->Write();
         else if (cl->InheritsFrom("TNtuple"))
             ((TNtuple* )key->ReadObj())->CloneTree(-1)->Write();
+        else if (cl->InheritsFrom("TTree"))
+            continue;
         else
             key->ReadObj()->Write();
     }

@@ -7,6 +7,7 @@
 #include <TH2.h>
 #include <TH1.h>
 #include <TNtuple.h>
+#include <TNtupleD.h>
 #include <iostream>
 #include <stdexcept>
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
@@ -123,6 +124,8 @@ int main(int argc, const char* argv[])
             ((TNtupleD*)key->ReadObj())->CloneTree(-1)->Write();
         else if (cl->InheritsFrom("TNtuple"))
             ((TNtuple* )key->ReadObj())->CloneTree(-1)->Write();
+        else if (cl->InheritsFrom("TTree"))
+            continue;
         else
             key->ReadObj()->Write();
     }
