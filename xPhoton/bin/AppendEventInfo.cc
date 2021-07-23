@@ -118,16 +118,12 @@ int main(int argc, const char* argv[])
         if ( (key->GetName()) == "t" ) continue;
         if ( key->ReadObj()->IsZombie() ) continue;
         TClass *cl = gROOT->GetClass(key->GetClassName());
-        if (cl->InheritsFrom("TH1"))
-            ((TH1*     )key->ReadObj())->Write();
-        /*
-        if (cl->InheritsFrom("TNtupleD"))
-            ((TNtupleD*)key->ReadObj())->Write();
-            */
-        if (cl->InheritsFrom("TNtuple"))
-            ((TNtuple* )key->ReadObj())->Write();
-        if (cl->InheritsFrom("TH2"))
-            ((TH2*     )key->ReadObj())->Write();
+        if      (cl->InheritsFrom("TNtupleD"))
+            ((TNtupleD*)key->ReadObj())->CloneTree(-1)->Write();
+        else if (cl->InheritsFrom("TNtuple"))
+            ((TNtuple* )key->ReadObj())->CloneTree(-1)->Write();
+        else
+            key->ReadObj()->Write();
     }
     oF->Close();
     iF->Close();
