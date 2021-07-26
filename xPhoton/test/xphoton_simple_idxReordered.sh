@@ -1,6 +1,11 @@
 #!/usr/bin/env sh
 input=$1
 mydir=`echo $input | cut -d'.' -f1`
+if [ "$1" == "" ]; then
+    echo "you need to input a text file"
+    exit
+fi
+
 mkdir $mydir ; cd $mydir
 idx=0
 for file in `cat ../$input`;
