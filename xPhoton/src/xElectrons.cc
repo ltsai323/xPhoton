@@ -12,7 +12,8 @@
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include <TLorentzVector.h>
 #include <map>
-#include <TNtupleD.h>
+#include <TNtuple.h>
+//#include <TNtupleD.h>
 
 
 static histMgr hists;
@@ -32,10 +33,12 @@ void xElectrons(
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_ = new TTree("t", "mini tree");
-    TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
-    //Double_t overallGenweight[1] = {0};
-    Double_t overallGenweight = 0;
-    Double_t hasNon1Val = 0;
+    //TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    TNtuple* nt_sumupgenweight = new TNtuple("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    //Double_t overallGenweight = 0;
+    //Double_t hasNon1Val = 0;
+    Float_t overallGenweight = 0;
+    Float_t hasNon1Val = 0;
     
     rec_Electron record_electrons[2];
     rec_Z record_Z;
@@ -138,7 +141,7 @@ void xElectrons(
             if ( electrons.size() > 1 )
             LOG_DEBUG("event obtained electrons matched with Zee sample in gen level. Gen indexes are (%d,%d).", electrons.at(0).genidx(), electrons.at(1).genidx());
         }
-        else
+        if ( electrons.size() < 2 ) // if Zee signal cannot pass fiducial region, treat this event as data.
             electrons = RecoElectrons(&data);
 
         for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
@@ -184,7 +187,7 @@ void xElectrons(
                     }
                 }
                 hists.FillStatus("ZRecoStat", 1);
-                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 25 ) continue;
+                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 25 ) continue; // used for singlePhoton HLT.
                 hists.FillStatus("ZRecoStat", 2);
                 if ( HLTWP > 0 )
                     if (!((((UShort_t*)data.GetPtrShort("eleIDbit"))[ele0.idx()] >> HLTWP ) & 1) ) continue;
@@ -192,7 +195,7 @@ void xElectrons(
 
 
                 ZcandP4 = ele0+ele1;
-                if ( ZcandP4.M() > 50 && ZcandP4.M() < 110 ) hists.Fill("Zmass", ZcandP4.M());
+                hists.Fill("Zmass", ZcandP4.M());
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
                 if ( ele0.charge() * ele1.charge() != -1 ) continue;
                 hists.FillStatus("ZRecoStat", 4);
@@ -201,7 +204,7 @@ void xElectrons(
                 if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
                 hists.FillStatus("ZRecoStat", 6);
                 ZcandP4.SetAlive(true);
-                LOG_DEBUG("Z CAND found!");
+
                 break;
             }
             if (!ZcandP4.IsZombie() ) break;
@@ -217,6 +220,7 @@ void xElectrons(
 
 
     // clear everything.
+        LOG_DEBUG("starting to fill event");
         ClearStruct(&record_electrons[0]);
         ClearStruct(&record_electrons[1]);
         ClearStruct(&record_Z);
@@ -356,14 +360,14 @@ std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
 {
     std::vector<TLorentzCand> outputs;
     for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
-        outputs.emplace_back( recoInfo::BuildSelectedParticles(
+        outputs.emplace_back(
                     idx,
                     dataptr->GetPtrInt  ("eleCharge")[idx],
                     dataptr->GetPtrFloat("elePt")[idx],
                     dataptr->GetPtrFloat("eleEta")[idx],
                     dataptr->GetPtrFloat("elePhi")[idx],
                     MASS_ELECTRON
-                ) );
+                );
     return outputs;
 }
 
@@ -543,19 +547,19 @@ void RegBranch( TTree* t, const std::string& name, rec_Z* var )
 }
 void RegBranch( TTree* t, const string& name, rec_Event* var )
 {
-    t->Branch( (name+".run").c_str()               , &var->run,                     "run/I");
-    t->Branch( (name+".xsweight").c_str()          , &var->xsweight,                "xsweight/I");
-    t->Branch( (name+".puwei").c_str()             , &var->puwei,                   "puwei/I");
-    t->Branch( (name+".pthat").c_str()             , &var->pthat,                   "pthat/I");
-    t->Branch( (name+".nVtx").c_str()              , &var->nVtx,                    "nVtx/I");
-    t->Branch( (name+".nPU").c_str()               , &var->nPU,                     "nPU/I");
+    t->Branch("run"               , &var->run,                     "run/I");
+    t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
+    t->Branch("puwei"             , &var->puwei,                   "puwei/I");
+    t->Branch("pthat"             , &var->pthat,                   "pthat/I");
+    t->Branch("nVtx"              , &var->nVtx,                    "nVtx/I");
+    t->Branch("nPU"               , &var->nPU,                     "nPU/I");
 
-    t->Branch( (name+".rho").c_str()               , &var->rho,                     "rho/F");
-    t->Branch( (name+".genweight").c_str()         , &var->genweight,               "genweight/F");
-    t->Branch( (name+".MET").c_str()               , &var->MET,                     "MET/F");
-    t->Branch( (name+".METPhi").c_str()            , &var->METPhi,                  "METPhi/F");
+    t->Branch("rho"               , &var->rho,                     "rho/F");
+    t->Branch("genWeight"         , &var->genweight,               "genWeight/F");
+    t->Branch("MET"               , &var->MET,                     "MET/F");
+    t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");
     
-    t->Branch( (name+".HLT").c_str()               , &var->HLT,                     "HLT/L");
-    t->Branch( (name+".HLTPhoIsPres.caled").c_str(), &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
-    t->Branch( (name+".event").c_str()             , &var->event,                   "event/L");
+    t->Branch("HLT"               , &var->HLT,                     "HLT/L");
+    t->Branch("HLTPhoIsPres.caled", &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
+    t->Branch("event"             , &var->event,                   "event/L");
 }
