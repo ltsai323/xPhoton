@@ -47,7 +47,7 @@ TLorentzCand TLorentzCand::operator=(const TLorentzVector& vec_)
             vec_.Phi(),
             vec_.E()
             );
-    this->_deadcand=false;
+    //this->_deadcand=true;
 
     return *this;
 }
@@ -62,7 +62,7 @@ TLorentzCand TLorentzCand::operator=(const TLorentzCand& vec_)
     this->_idx=             vec_._idx;
     this->_genidx=          vec_._genidx;
     this->_charge=          vec_._charge;
-    this->_deadcand=        vec_._deadcand;
+    //this->_deadcand=        vec_._deadcand;
     this->_daughterCands=    vec_._daughterCands;
 
     return *this;
@@ -101,12 +101,14 @@ void TLorentzCompCand::SetAlive() { _deadcand = true; }
     return selectedElectrons;
 }
 
+/*
 TLorentzCand recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int charge )
 {
     TLorentzCand particle(idx,charge);
     particle.SetPtEtaPhiM(pt,eta,phi,mass);
     return particle;
 }
+*/
 bool recoInfo::ordering_pt(const TLorentzCand& cand1, const TLorentzCand& cand2)
 { return cand1.Pt() > cand2.Pt(); }
 bool recoInfo::ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 )

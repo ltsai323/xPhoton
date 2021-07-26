@@ -195,7 +195,7 @@ void xElectrons(
 
 
                 ZcandP4 = ele0+ele1;
-                if ( ZcandP4.M() > 50 && ZcandP4.M() < 110 ) hists.Fill("Zmass", ZcandP4.M());
+                hists.Fill("Zmass", ZcandP4.M());
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
                 if ( ele0.charge() * ele1.charge() != -1 ) continue;
                 hists.FillStatus("ZRecoStat", 4);
@@ -204,7 +204,7 @@ void xElectrons(
                 if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
                 hists.FillStatus("ZRecoStat", 6);
                 ZcandP4.SetAlive(true);
-                LOG_DEBUG("Z CAND found!");
+
                 break;
             }
             if (!ZcandP4.IsZombie() ) break;
@@ -220,6 +220,7 @@ void xElectrons(
 
 
     // clear everything.
+        LOG_DEBUG("starting to fill event");
         ClearStruct(&record_electrons[0]);
         ClearStruct(&record_electrons[1]);
         ClearStruct(&record_Z);
@@ -359,14 +360,14 @@ std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
 {
     std::vector<TLorentzCand> outputs;
     for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
-        outputs.emplace_back( recoInfo::BuildSelectedParticles(
+        outputs.emplace_back(
                     idx,
                     dataptr->GetPtrInt  ("eleCharge")[idx],
                     dataptr->GetPtrFloat("elePt")[idx],
                     dataptr->GetPtrFloat("eleEta")[idx],
                     dataptr->GetPtrFloat("elePhi")[idx],
                     MASS_ELECTRON
-                ) );
+                );
     return outputs;
 }
 

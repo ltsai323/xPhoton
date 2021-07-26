@@ -52,7 +52,7 @@ struct TLorentzCand : public TLorentzVector {
 namespace recoInfo
 {
     std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
-    TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
+    //TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
     bool ordering_pt( const TLorentzCand& cand1, const TLorentzCand& cand2 ); // used for sorting
     bool ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 ); // used for sorting
     bool InFiducialRegion(const TLorentzCand& cand_);
