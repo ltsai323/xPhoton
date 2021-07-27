@@ -95,7 +95,7 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
-    TFile* f_showershapecorrection;
+    TFile* f_showershapecorrection = nullptr;
     PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
     std::map<std::string, TGraph*> barrelCorrections;
@@ -162,11 +162,11 @@ void xElectrons(
                 electrons[0].Pt(), electrons[1].Pt(),
                 electrons[0].Eta(), electrons[1].Eta(),
                 electrons[0].charge(), electrons[1].charge() );
-        for ( int eleI = 0; eleI < electrons.size(); ++eleI )
+        for ( unsigned eleI = 0; eleI < electrons.size(); ++eleI )
         {
             const TLorentzCand& ele0 = electrons.at(eleI);
             if ( ele0.IsZombie() ) continue;
-            for ( int eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
+            for ( unsigned eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
             {
                 const TLorentzCand& ele1 = electrons.at(eleJ);
                 if ( ele1.IsZombie() ) continue;
@@ -183,7 +183,7 @@ void xElectrons(
                     if ( PASS_HLTBIT > 0 ) // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
                     {
                         int hltbit_singlephoton = PASS_HLTBIT;
-                        if ( (trigs[ele0.idx()]>>hltbit_singlephoton)&1 == 0 ) continue; // single photon 
+                        if ( ((trigs[ele0.idx()]>>hltbit_singlephoton)&1) == 0 ) continue; // single photon 
                     }
                 }
                 hists.FillStatus("ZRecoStat", 1);
@@ -281,7 +281,6 @@ void xElectrons(
         }
         if ( data.HasMC() )
         {
-            int ZMCidx = data.GetPtrInt("mcMomPID")[ZcandP4.daughters().at(0).idx()];
         record_Z.mcE       = 0;
         record_Z.mcPt      = 0;
         record_Z.mcEta     = 0;
@@ -346,7 +345,6 @@ void xElectrons(
 }
 void xElectrons(std::string ipath, int outID)
 {
-   char fname[200];
    std::vector<std::string> pathes;
 
    pathes.push_back(ipath);

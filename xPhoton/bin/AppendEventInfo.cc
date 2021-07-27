@@ -115,7 +115,7 @@ int main(int argc, const char* argv[])
     TIter keyList(iF->GetListOfKeys());
     TKey *key;
     while ((key = (TKey*)keyList())) {
-        if ( (key->GetName()) == "t" ) continue;
+        if ( key->GetName() == std::string("t") ) continue;
         if ( key->ReadObj()->IsZombie() ) continue;
         TClass *cl = gROOT->GetClass(key->GetClassName());
         if      (cl->InheritsFrom("TNtupleD"))

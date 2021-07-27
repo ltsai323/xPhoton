@@ -631,8 +631,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
-            //jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
-            jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DSig");
+            if ( data.GetTree()->GetListOfBranches()->FindObject("jetSecVtx3DErr") )
+                jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DErr");
+            else if ( data.GetTree()->GetListOfBranches()->FindObject("jetSecVtx3DSig") )
+                jetSubVtx3DErr = data.GetPtrFloat("jetSecVtx3DSig");
+            else
+                LOG_FATAL("neigher 3DErr nor 3DSig not found in data, check it now!");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
         }
 

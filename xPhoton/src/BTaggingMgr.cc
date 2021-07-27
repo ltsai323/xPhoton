@@ -283,7 +283,7 @@ void BTaggingMgr::UseAlgorithm(std::string algorithmName)
 {
     t::SetContent();
     if ( t::systTypeCollection.find(algorithmName) == t::systTypeCollection.end() )
-        LOG_FATAL("Input name '%s' cannot be recognized in BTaggingMgr", algorithmName);
+        LOG_FATAL("Input name '%s' cannot be recognized in BTaggingMgr", algorithmName.c_str());
     _usedAlgorithmNames.push_back(algorithmName);
 }
 
@@ -330,10 +330,10 @@ void BTaggingMgr::InitVars()
         LOG_FATAL("You need to execute function RegisterSystTypes() before initialize variables.");
 
     if ( systVars.size() == 0 ) // create new variables
-        for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
+        for ( unsigned iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
         {
             const std::string algoName = _usedAlgorithmNames[iAlgo];
-            for ( int iSyst = 0; iSyst < _usedSystTypes[algoName].size(); ++iSyst )
+            for ( unsigned iSyst = 0; iSyst < _usedSystTypes[algoName].size(); ++iSyst )
             { systVars[ systVarIdx(iAlgo,iSyst) ] = 0; }
         }
     else
@@ -347,10 +347,10 @@ void BTaggingMgr::RegBranch(TTree* t)
     char bname[200], bnameF[200];
     if ( t == nullptr || t->IsZombie() ) LOG_FATAL("input tree is invalid");
 
-    for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
+    for ( unsigned iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
     {
         const std::string algorithm = _usedAlgorithmNames[iAlgo];
-        for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
+        for ( unsigned iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
         {
             const std::string systType = _usedSystTypes[algorithm][iSyst];
             sprintf(bname , "jetSF.%s.%s"  , algorithm.c_str(), systType.c_str());
@@ -364,10 +364,10 @@ void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDi
     float bDis = bDis_;
     if ( bDis_ < 0.0 ) bDis = -0.05;
     else if ( bDis_ > 1.0 ) bDis = 1.0;
-    for ( int iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
+    for ( unsigned iAlgo = 0; iAlgo < _usedAlgorithmNames.size(); ++iAlgo )
     {
         const std::string algorithm = _usedAlgorithmNames[iAlgo];
-        for ( int iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
+        for ( unsigned iSyst = 0; iSyst < _usedSystTypes[algorithm].size(); ++iSyst )
         {
             if ( fabs(eta_) > 2.5 ) LOG_FATAL(" eta is out of range!!!");
             if      ( hadFlav_ == HADRONFLAV_L )

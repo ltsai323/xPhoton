@@ -14,7 +14,7 @@ import commands
 prefix_nchc='root://se01.grid.nchc.org.tw/'
 prefix_local=''
 
-exeFile='/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/bin/exe.xPhotonRunner'
+exeFile='/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/dev/exe.test.xPhotonRunner'
 '''
 bashcommand='xrdcp -f %s running.root && {exefile} running.root %d'.format(exefile=exeFile) # download file first
 fileprefix=prefix_nchc

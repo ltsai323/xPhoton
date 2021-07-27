@@ -1,6 +1,7 @@
 #ifndef __LOGMGR_H__
 #define __LOGMGR_H__
 #include <stdio.h>
+#include <stdarg.h>
 
 // current setting
 //#define __print_debug__
