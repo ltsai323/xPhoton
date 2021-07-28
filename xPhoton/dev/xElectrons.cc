@@ -141,7 +141,8 @@ void xElectrons(
             if ( electrons.size() > 1 )
             LOG_DEBUG("event obtained electrons matched with Zee sample in gen level. Gen indexes are (%d,%d).", electrons.at(0).genidx(), electrons.at(1).genidx());
         }
-        if ( electrons.size() < 2 ) // if Zee signal cannot pass fiducial region, treat this event as data.
+
+        if ( electrons.size() != 2 ) // if Zee signal cannot pass fiducial region, treat this event as data.
             electrons = RecoElectrons(&data);
 
         for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
@@ -195,6 +196,7 @@ void xElectrons(
 
 
                 ZcandP4 = ele0+ele1;
+                ZcandP4.SetAlive(false);
                 hists.Fill("Zmass", ZcandP4.M());
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
                 if ( ele0.charge() * ele1.charge() != -1 ) continue;
@@ -435,14 +437,15 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
             }
         }
     LOG_DEBUG("chk point 01.1");
-    //if (!genZElectrons[0].IsZombie() ||!genZElectrons[1].IsZombie() ) hists.FillStatus("numGenZee",0);
+    //if (!genZElectrons[0].IsZombie() ||!genZElectrons[1].IsZombie() ) hists.FillStatus("fumGenZee",0);
+    hists.FillStatus("numGenZee",0);
     if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector<TLorentzCand>();
     LOG_DEBUG("chk point 01.2");
-    hists.FillStatus("numGenZee",0);
-    if (!recoInfo::InFiducialRegion( genZElectrons[0] ) ||!recoInfo::InFiducialRegion( genZElectrons[1] ) ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",1);
-    if ( nEle_ < 2 ) return std::vector<TLorentzCand>();
+    if (!recoInfo::InFiducialRegion( genZElectrons[0] ) ||!recoInfo::InFiducialRegion( genZElectrons[1] ) ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",2);
+    if ( nEle_ < 2 ) return std::vector<TLorentzCand>();
+    hists.FillStatus("numGenZee",3);
     hists.Fill("nEleInZee", nEle_);
 
 

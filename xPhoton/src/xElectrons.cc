@@ -95,7 +95,7 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
-    TFile* f_showershapecorrection = nullptr;
+    TFile* f_showershapecorrection;
     PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
     std::map<std::string, TGraph*> barrelCorrections;
@@ -141,7 +141,8 @@ void xElectrons(
             if ( electrons.size() > 1 )
             LOG_DEBUG("event obtained electrons matched with Zee sample in gen level. Gen indexes are (%d,%d).", electrons.at(0).genidx(), electrons.at(1).genidx());
         }
-        if ( electrons.size() < 2 ) // if Zee signal cannot pass fiducial region, treat this event as data.
+
+        if ( electrons.size() != 2 ) // if Zee signal cannot pass fiducial region, treat this event as data.
             electrons = RecoElectrons(&data);
 
         for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
@@ -162,11 +163,11 @@ void xElectrons(
                 electrons[0].Pt(), electrons[1].Pt(),
                 electrons[0].Eta(), electrons[1].Eta(),
                 electrons[0].charge(), electrons[1].charge() );
-        for ( unsigned eleI = 0; eleI < electrons.size(); ++eleI )
+        for ( int eleI = 0; eleI < electrons.size(); ++eleI )
         {
             const TLorentzCand& ele0 = electrons.at(eleI);
             if ( ele0.IsZombie() ) continue;
-            for ( unsigned eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
+            for ( int eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
             {
                 const TLorentzCand& ele1 = electrons.at(eleJ);
                 if ( ele1.IsZombie() ) continue;
@@ -183,7 +184,7 @@ void xElectrons(
                     if ( PASS_HLTBIT > 0 ) // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
                     {
                         int hltbit_singlephoton = PASS_HLTBIT;
-                        if ( ((trigs[ele0.idx()]>>hltbit_singlephoton)&1) == 0 ) continue; // single photon 
+                        if ( (trigs[ele0.idx()]>>hltbit_singlephoton)&1 == 0 ) continue; // single photon 
                     }
                 }
                 hists.FillStatus("ZRecoStat", 1);
@@ -195,6 +196,7 @@ void xElectrons(
 
 
                 ZcandP4 = ele0+ele1;
+                ZcandP4.SetAlive(false);
                 hists.Fill("Zmass", ZcandP4.M());
                 LOG_DEBUG("ZcandPt = %.3f from e1Pt = %.3f + e2Pt = %.3f. Zmass = %.2f. ch1=%d, ch2=%d", ZcandP4.Pt(), ele0.Pt(), ele1.Pt(), ZcandP4.M(), ele0.charge(), ele1.charge() );
                 if ( ele0.charge() * ele1.charge() != -1 ) continue;
@@ -281,6 +283,7 @@ void xElectrons(
         }
         if ( data.HasMC() )
         {
+            int ZMCidx = data.GetPtrInt("mcMomPID")[ZcandP4.daughters().at(0).idx()];
         record_Z.mcE       = 0;
         record_Z.mcPt      = 0;
         record_Z.mcEta     = 0;
@@ -345,6 +348,7 @@ void xElectrons(
 }
 void xElectrons(std::string ipath, int outID)
 {
+   char fname[200];
    std::vector<std::string> pathes;
 
    pathes.push_back(ipath);
@@ -433,14 +437,15 @@ std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
             }
         }
     LOG_DEBUG("chk point 01.1");
-    //if (!genZElectrons[0].IsZombie() ||!genZElectrons[1].IsZombie() ) hists.FillStatus("numGenZee",0);
+    //if (!genZElectrons[0].IsZombie() ||!genZElectrons[1].IsZombie() ) hists.FillStatus("fumGenZee",0);
+    hists.FillStatus("numGenZee",0);
     if ( genZElectrons[0].IsZombie() || genZElectrons[1].IsZombie() ) return std::vector<TLorentzCand>();
     LOG_DEBUG("chk point 01.2");
-    hists.FillStatus("numGenZee",0);
-    if (!recoInfo::InFiducialRegion( genZElectrons[0] ) ||!recoInfo::InFiducialRegion( genZElectrons[1] ) ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",1);
-    if ( nEle_ < 2 ) return std::vector<TLorentzCand>();
+    if (!recoInfo::InFiducialRegion( genZElectrons[0] ) ||!recoInfo::InFiducialRegion( genZElectrons[1] ) ) return std::vector<TLorentzCand>();
     hists.FillStatus("numGenZee",2);
+    if ( nEle_ < 2 ) return std::vector<TLorentzCand>();
+    hists.FillStatus("numGenZee",3);
     hists.Fill("nEleInZee", nEle_);
 
 
