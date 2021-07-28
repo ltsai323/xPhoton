@@ -13,7 +13,6 @@
 #include <TLorentzVector.h>
 #include <map>
 #include <TNtuple.h>
-//#include <TNtupleD.h>
 
 
 static histMgr hists;
@@ -23,6 +22,8 @@ static histMgr hists;
 std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr);
 std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
 bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
+bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand);
+bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -33,10 +34,7 @@ void xElectrons(
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_ = new TTree("t", "mini tree");
-    //TNtupleD* nt_sumupgenweight = new TNtupleD("genweightsummary", "", "sumupgenweight:hasNon1Val");
     TNtuple* nt_sumupgenweight = new TNtuple("genweightsummary", "", "sumupgenweight:hasNon1Val");
-    //Double_t overallGenweight = 0;
-    //Double_t hasNon1Val = 0;
     Float_t overallGenweight = 0;
     Float_t hasNon1Val = 0;
     
@@ -44,8 +42,8 @@ void xElectrons(
     rec_Z record_Z;
     rec_Event record_evt;
 
-    RegBranch( outtree_, "electron_tag", &record_electrons[0] );
-    RegBranch( outtree_, "electron_probe", &record_electrons[1] );
+    RegBranch( outtree_, "electron_tag.", &record_electrons[0] );
+    RegBranch( outtree_, "", &record_electrons[1] ); // probe electron, like a photon
     RegBranch( outtree_, "Z", &record_Z );
     RegBranch( outtree_, "Events", &record_evt );
 
@@ -173,8 +171,9 @@ void xElectrons(
                 if ( ele1.IsZombie() ) continue;
 
                 hists.FillStatus("ZRecoStat", 0);
-                // HLT_Ele25_WPTight_Gsf_v1
-                const int PASS_HLTBIT = 5;
+                /*
+                // HLT_Ele27_WPTight_Gsf
+                const int PASS_HLTBIT = 12;
                 const int HLTWP = 3;
                 if (!data.HasMC() )
                 { // HLT selections
@@ -188,11 +187,14 @@ void xElectrons(
                     }
                 }
                 hists.FillStatus("ZRecoStat", 1);
-                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 25 ) continue; // used for singlePhoton HLT.
+                if ( data.GetPtrFloat("elePt")[ele0.idx()] < 27 ) continue; // used for singlePhoton HLT.
                 hists.FillStatus("ZRecoStat", 2);
                 if ( HLTWP > 0 )
                     if (!((((UShort_t*)data.GetPtrShort("eleIDbit"))[ele0.idx()] >> HLTWP ) & 1) ) continue;
                 hists.FillStatus("ZRecoStat", 3);
+                */
+                if (!PassTagElePreselection(&data, ele0) ) continue;
+                if (!PassPhotonPreselection(&data, ele1) ) continue;
 
 
                 ZcandP4 = ele0+ele1;
@@ -391,7 +393,7 @@ bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& c
 }
 std::vector<TLorentzCand> MCmatchedZElectronPair(TreeReader* dataptr)
 {
-    #define DELTARCUT 0.10
+    #define DELTARCUT 0.20
     #define PTRATIOCUT 1.0
     #define FINALSTATE_STATUSCUT 1
     #define PID_Z 23
@@ -495,44 +497,44 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
 {
     //t->Branch(name, var, "mcE/F:mcPt/F:mcEta/F:mcPhi/F:recoPt/F:recoEta/F:recoPhi/F:recoPtCalib/F:recoSCEta/F:r9/F:HoverE/F:chIsoRaw/F:phoIsoRaw/F:nhIsoRaw/F:chWorstIso/F:rawE/F:scEtaWidth/F:scPhiWidth/F:esRR/F:esEn/F:mva/F:mva_nocorr/F:officalIDmva/F:r9Full5x5/F:sieieFull5x5/F:sipipFull5x5/F:e2x2Full5x5/F:e2x5Full5x5/F:firedTrgs/I:isMatched/I:firedTrgsL/L");
 
-    t->Branch( (name+".mcE").c_str()                ,&var->mcE          , (name+".mcE/F").c_str()              );
-    t->Branch( (name+".mcPt").c_str()               ,&var->mcPt         , (name+".mcPt/F").c_str()             );
-    t->Branch( (name+".mcEta").c_str()              ,&var->mcEta        , (name+".mcEta/F").c_str()            );
-    t->Branch( (name+".mcPhi").c_str()              ,&var->mcPhi        , (name+".mcPhi/F").c_str()            );
-    t->Branch( (name+".recoPt").c_str()             ,&var->recoPt       , (name+".recoPt/F").c_str()           );
-    t->Branch( (name+".recoEta").c_str()            ,&var->recoEta      , (name+".recoEta/F").c_str()          );
-    t->Branch( (name+".recoPhi").c_str()            ,&var->recoPhi      , (name+".recoPhi/F").c_str()          );
-    t->Branch( (name+".recoPtCalib").c_str()        ,&var->recoPtCalib  , (name+".recoPtCalib/F").c_str()      );
-    t->Branch( (name+".recoSCEta").c_str()          ,&var->recoSCEta    , (name+".recoSCEta/F").c_str()        );
-    t->Branch( (name+".r9").c_str()                 ,&var->r9           , (name+".r9/F").c_str()               );
-    t->Branch( (name+".HoverE").c_str()             ,&var->HoverE       , (name+".HoverE/F").c_str()           );
-    t->Branch( (name+".chIsoRaw").c_str()           ,&var->chIsoRaw     , (name+".chIsoRaw/F").c_str()         );
-    t->Branch( (name+".phoIsoRaw").c_str()          ,&var->phoIsoRaw    , (name+".phoIsoRaw/F").c_str()        );
-    t->Branch( (name+".nhIsoRaw").c_str()           ,&var->nhIsoRaw     , (name+".nhIsoRaw/F").c_str()         );
-    t->Branch( (name+".chWorstIso").c_str()         ,&var->chWorstIso   , (name+".chWorstIso/F").c_str()       );
-    t->Branch( (name+".rawE").c_str()               ,&var->rawE         , (name+".rawE/F").c_str()             );
-    t->Branch( (name+".scEtaWidth").c_str()         ,&var->scEtaWidth   , (name+".scEtaWidth/F").c_str()       );
-    t->Branch( (name+".scPhiWidth").c_str()         ,&var->scPhiWidth   , (name+".scPhiWidth/F").c_str()       );
-    t->Branch( (name+".esRR").c_str()               ,&var->esRR         , (name+".esRR/F").c_str()             );
-    t->Branch( (name+".esEn").c_str()               ,&var->esEn         , (name+".esEn/F").c_str()             );
-    t->Branch( (name+".mva").c_str()                ,&var->mva          , (name+".mva/F").c_str()              );
-    t->Branch( (name+".mva_nocorr").c_str()         ,&var->mva_nocorr   , (name+".mva_nocorr/F").c_str()       );
-    t->Branch( (name+".officalIDmva").c_str()       ,&var->officalIDmva , (name+".officalIDmva/F").c_str()     );
-    t->Branch( (name+".r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+".r9Full5x5/F").c_str()        );
-    t->Branch( (name+".sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+".sieieFull5x5/F").c_str()     );
-    t->Branch( (name+".sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+".sipipFull5x5/F").c_str()     );
-    t->Branch( (name+".e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+".e2x2Full5x5/F").c_str()      );
-    t->Branch( (name+".e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+".e2x5Full5x5/F").c_str()      );
-    t->Branch( (name+".calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+".calib_scEtaWidth/F").c_str()      );
-    t->Branch( (name+".calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+".calib_r9Full5x5/F").c_str()      );
-    t->Branch( (name+".calib_s4"          ).c_str(), &var->s4_corrected             , (name+".calib_s4/F").c_str()      );
-    t->Branch( (name+".calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+".calib_sieieFull5x5/F").c_str()      );
+    t->Branch( (name+"mcE").c_str()                ,&var->mcE          , (name+"mcE/F").c_str()              );
+    t->Branch( (name+"mcPt").c_str()               ,&var->mcPt         , (name+"mcPt/F").c_str()             );
+    t->Branch( (name+"mcEta").c_str()              ,&var->mcEta        , (name+"mcEta/F").c_str()            );
+    t->Branch( (name+"mcPhi").c_str()              ,&var->mcPhi        , (name+"mcPhi/F").c_str()            );
+    t->Branch( (name+"recoPt").c_str()             ,&var->recoPt       , (name+"recoPt/F").c_str()           );
+    t->Branch( (name+"recoEta").c_str()            ,&var->recoEta      , (name+"recoEta/F").c_str()          );
+    t->Branch( (name+"recoPhi").c_str()            ,&var->recoPhi      , (name+"recoPhi/F").c_str()          );
+    t->Branch( (name+"recoPtCalib").c_str()        ,&var->recoPtCalib  , (name+"recoPtCalib/F").c_str()      );
+    t->Branch( (name+"recoSCEta").c_str()          ,&var->recoSCEta    , (name+"recoSCEta/F").c_str()        );
+    t->Branch( (name+"r9").c_str()                 ,&var->r9           , (name+"r9/F").c_str()               );
+    t->Branch( (name+"HoverE").c_str()             ,&var->HoverE       , (name+"HoverE/F").c_str()           );
+    t->Branch( (name+"chIsoRaw").c_str()           ,&var->chIsoRaw     , (name+"chIsoRaw/F").c_str()         );
+    t->Branch( (name+"phoIsoRaw").c_str()          ,&var->phoIsoRaw    , (name+"phoIsoRaw/F").c_str()        );
+    t->Branch( (name+"nhIsoRaw").c_str()           ,&var->nhIsoRaw     , (name+"nhIsoRaw/F").c_str()         );
+    t->Branch( (name+"chWorstIso").c_str()         ,&var->chWorstIso   , (name+"chWorstIso/F").c_str()       );
+    t->Branch( (name+"rawE").c_str()               ,&var->rawE         , (name+"rawE/F").c_str()             );
+    t->Branch( (name+"scEtaWidth").c_str()         ,&var->scEtaWidth   , (name+"scEtaWidth/F").c_str()       );
+    t->Branch( (name+"scPhiWidth").c_str()         ,&var->scPhiWidth   , (name+"scPhiWidth/F").c_str()       );
+    t->Branch( (name+"esRR").c_str()               ,&var->esRR         , (name+"esRR/F").c_str()             );
+    t->Branch( (name+"esEn").c_str()               ,&var->esEn         , (name+"esEn/F").c_str()             );
+    t->Branch( (name+"mva").c_str()                ,&var->mva          , (name+"mva/F").c_str()              );
+    t->Branch( (name+"mva_nocorr").c_str()         ,&var->mva_nocorr   , (name+"mva_nocorr/F").c_str()       );
+    t->Branch( (name+"officalIDmva").c_str()       ,&var->officalIDmva , (name+"officalIDmva/F").c_str()     );
+    t->Branch( (name+"r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+"r9Full5x5/F").c_str()        );
+    t->Branch( (name+"sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+"sieieFull5x5/F").c_str()     );
+    t->Branch( (name+"sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+"sipipFull5x5/F").c_str()     );
+    t->Branch( (name+"e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+"e2x2Full5x5/F").c_str()      );
+    t->Branch( (name+"e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+"e2x5Full5x5/F").c_str()      );
+    t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F").c_str()      );
+    t->Branch( (name+"calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+"calib_r9Full5x5/F").c_str()      );
+    t->Branch( (name+"calib_s4"          ).c_str(), &var->s4_corrected             , (name+"calib_s4/F").c_str()      );
+    t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F").c_str()      );
 
 
-    t->Branch( (name+".firedTrgs").c_str()          ,&var->firedTrgs    , (name+".firedTrgs/I").c_str()        );
-    t->Branch( (name+".isMatched").c_str()          ,&var->isMatched    , (name+".isMatched/I").c_str()        );
+    t->Branch( (name+"firedTrgs").c_str()          ,&var->firedTrgs    , (name+"firedTrgs/I").c_str()        );
+    t->Branch( (name+"isMatched").c_str()          ,&var->isMatched    , (name+"isMatched/I").c_str()        );
 
-    t->Branch( (name+".firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+".firedTrgsL/L").c_str()       );
+    t->Branch( (name+"firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+"firedTrgsL/L").c_str()       );
 }
 void RegBranch( TTree* t, const std::string& name, rec_Z* var )
 {
@@ -565,4 +567,67 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
     t->Branch("HLT"               , &var->HLT,                     "HLT/L");
     t->Branch("HLTPhoIsPres.caled", &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
     t->Branch("event"             , &var->event,                   "event/L");
+}
+bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
+{
+    // HLT_Ele27_WPTight_Gsf
+    const int PASS_HLTBIT = 12;
+    const int HLTWP = 3;
+
+    unsigned idx = cand.idx();
+
+    if (!dataptr->HasMC() )
+    { // HLT selections
+        ULong64_t trigs =  ((ULong64_t*) dataptr->GetPtrLong64("eleFiredSingleTrgs") ) [idx];
+        if ( trigs == 0 ) return false;
+
+        // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
+        if ( PASS_HLTBIT < 0 ) return false;
+        int hltbit_singlephoton = PASS_HLTBIT;
+        // pass single electron HLT
+        if ( ((trigs>>hltbit_singlephoton)&1) == 0 ) return false;
+    }
+
+    if ( dataptr->GetPtrFloat("elePt")[idx] < 30 ) return false;
+
+    UShort_t eleWPbit = ((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx];
+    if ( HLTWP > 0 ) if (!((eleWPbit >> HLTWP)&1) ) return false;
+    return true;
+}
+bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand)
+{
+  Int_t phoID=1;
+  unsigned ipho = cand.idx();
+
+  Float_t* phoEt               = dataptr->GetPtrFloat("elePt");
+  Float_t* phoSCEta            = dataptr->GetPtrFloat("eleSCEta");
+  //Int_t*   phoEleVeto          = dataptr->GetPtrInt("eleEleVeto");
+  Float_t* phoSigmaIEtaIEta    = dataptr->GetPtrFloat("eleSigmaIEtaIEtaFull5x5");
+  Float_t* phoHoverE           = dataptr->GetPtrFloat("eleHoverE");
+  Float_t* phoPFPhoIso         = dataptr->GetPtrFloat("elePFPhoIso");
+  //Float_t* phoPFChWorstIso   = dataptr->GetPtrFloat("elePFChWorstIso");
+
+  
+  if (phoEt[ipho] < 10.) phoID = 0;
+  if (TMath::Abs(phoSCEta[ipho]) > 1.4442 && TMath::Abs(phoSCEta[ipho]) < 1.566) phoID = 0;
+  //if (TMath::Abs(phoSCEta[ipho]) > 2.5) phoID = 0;
+  if (TMath::Abs(phoSCEta[ipho]) > 3.) phoID = 0;
+  //if (eleVeto && phoEleVeto[ipho] == 0) phoID = 0;  
+
+  //return phoID; //for X750 analysis
+  
+  //for EB
+  if (TMath::Abs(phoSCEta[ipho]) < 1.5) {
+    //if(phoPFChWorstIso[ipho] > 15.) phoID=0;
+    if(phoPFPhoIso[ipho] > 15.) phoID=0;
+    if(phoSigmaIEtaIEta[ipho] > 0.015) phoID=0;
+    if(phoHoverE[ipho] > 0.08) phoID=0;
+  }else{ //EE
+    //if(phoPFChWorstIso[ipho] > 15.) phoID=0;
+    if(phoPFPhoIso[ipho] > 15.) phoID=0;
+    if(phoSigmaIEtaIEta[ipho] > 0.045) phoID=0;
+    if(phoHoverE[ipho] > 0.05) phoID=0;
+  }    
+  return phoID; 
+
 }
