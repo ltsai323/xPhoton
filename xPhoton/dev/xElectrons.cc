@@ -92,6 +92,7 @@ void xElectrons(
     hists.Create("numGenZee", 4, 0., 4.);
 
     TFile* f_showershapecorrection;
+    TGraph *tgr[8];
     PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
     std::map<std::string, TGraph*> barrelCorrections;
@@ -107,6 +108,15 @@ void xElectrons(
     barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
     barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
     barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
+    tgr[0] = (TGraph*) f_showershapecorrection->Get("transfEtaWidthEB");
+    tgr[1] = (TGraph*) f_showershapecorrection->Get("transfS4EB");
+    tgr[2] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EB");
+    tgr[3] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEB");
+
+    tgr[4] = (TGraph*) f_showershapecorrection->Get("transfEtaWidthEE");
+    tgr[5] = (TGraph*) f_showershapecorrection->Get("transfS4EE");
+    tgr[6] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EE");
+    tgr[7] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEE");
 
     pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
     }
@@ -223,14 +233,12 @@ void xElectrons(
             eleRecording.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
             eleRecording.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
                                         data.GetPtrFloat("phoESEnP2")[recoIdx];
-            eleRecording.mva          = 0;
-            eleRecording.mva_nocorr   = 0;
+            eleRecording.mva          = select_photon_mvanoIso(data, recoIdx, tgr);
+            eleRecording.mva_nocorr   = select_photon_mvanoIso(data, recoIdx, nullptr);
             eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
             eleRecording.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
-            //eleRecording.e2x2Full5x5  = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx];
-            //eleRecording.e2x5Full5x5  = data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
             eleRecording.s4           = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
 
