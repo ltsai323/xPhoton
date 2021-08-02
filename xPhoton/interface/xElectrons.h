@@ -44,8 +44,9 @@ struct rec_Electron
         r9Full5x5,
         sieieFull5x5,
         sipipFull5x5,
-        e2x2Full5x5,
-        e2x5Full5x5;
+        //e2x2Full5x5,
+        //e2x5Full5x5;
+        s4;
     Float_t
         scEtaWidth_corrected,
         r9Full5x5_corrected,
@@ -55,6 +56,7 @@ struct rec_Electron
 
     Int_t
         firedTrgs,
+        idbit,
         isMatched;
     Long64_t
         firedTrgsL;
