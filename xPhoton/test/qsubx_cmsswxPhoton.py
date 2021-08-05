@@ -1,8 +1,12 @@
 #!/usr/bin/env python2
+exefile='/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test/xphoton_cmssw.py'
+currentdir='/home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test'
 localmesg='Process local files'
 localcommand='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_local.py {file} false"'
 remotemesg='Download 1 root file from T2 first and process it'
-remotecommand='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_remote.py {file} false"'
+#cmscommand='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd %s; mkdir -p {fold} && cd {fold} ; python %s {file} false"' % (exefile,currentdir)
+cmscommand='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd %s; mkdir -p {fold} && cd {fold} ; python %s {file} false"' % (currentdir,exefile)
+cmscommanddiruse='export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd %s; mkdir -p {fold} && cd {fold} ; python %s {file} false' % (currentdir,exefile)
 import os
 dataflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016B_94X.txt',
@@ -13,11 +17,6 @@ dataflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016G_94X.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016H_94X.txt',
     ]
-REMOTEpythiaflist=[
-#'/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/Pt20to40_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/Pt20toInf_DoubleEMEnriched_MGG40to80_TuneCUETP8M1_13TeV_pythia8.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/Pt40toInf_DoubleEMEnriched_MGG80toInf_TuneCUETP8M1_13TeV_pythia8.txt',
-        ]
 localsignalMC_pythiaflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8.txt',
@@ -88,19 +87,19 @@ localQCD_madgraphlist=[
 ]
 
 if __name__ == '__main__':
-    command=localcommand
+    command=cmscommand
     mesg=localmesg
 
     print mesg
-    flist=localQCD_madgraphlist
+    flist=localsignalMC_pythiaflist
     for f in flist:
         folder=f.split('/')[-1].split('.')[0]
         print folder
-        '''
-        os.system('/home/ltsai/script/qjob/submitJOB.py --command={} --name={}'.format(
-            command.format(fold=folder,file=f),
-            folder))
+
+
         '''
         os.system('/home/ltsai/script/qjob/submitJOB.py --command=%s --name=%s' %(
             command.format(fold=folder,file=f),
             folder))
+        '''
+        os.system( cmscommanddiruse.format(fold=folder,file=f) )
