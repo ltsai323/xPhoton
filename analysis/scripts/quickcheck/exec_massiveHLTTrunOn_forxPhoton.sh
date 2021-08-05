@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+execCmd=Triggercheck.py
 for b in {0..8};
 do
     for (( n=$(($b+1)); n<=8; n++ ));
