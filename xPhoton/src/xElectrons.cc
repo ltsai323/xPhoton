@@ -18,6 +18,7 @@
 static histMgr hists;
 std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
 std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr);
+TLorentzCand              TriggeredElectron(TreeReader* dataptr);
 int                      FindMatchedIdx(TreeReader* dataptr, const TLorentzCand& recoCand);
 bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
 bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand);
@@ -140,10 +141,13 @@ void xElectrons(
         }
 
         LOG_DEBUG(" check point 01");
-        //std::vector<TLorentzCand> electrons = RecoElectrons(&data);
-        std::vector<TLorentzCand> electrons = RecoElectronsInPhotonCollection(&data);
+        //std::vector<TLorentzCand> electronpool = RecoElectrons(&data);
+        std::vector<TLorentzCand> electronpool = RecoElectronsInPhotonCollection(&data);
+        TLorentzCand tag_electron = TriggeredElectron(&data);
+        if ( tag_electron.IsZombie() ) continue;
+
         LOG_DEBUG(" check point 02");
-        for ( TLorentzCand& electron : electrons )
+        for ( TLorentzCand& electron : electronpool )
         {
             int genIdx = FindMatchedIdx( &data, electron );
             if ( genIdx < 0 ) continue;
@@ -151,51 +155,43 @@ void xElectrons(
         }
         LOG_DEBUG(" check point 03");
 
-        //for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
-        for ( TLorentzCand& cand : electrons ) cand.SetAlive( PassPhotonPreselection(&data, cand) );
+        //for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
+        for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassPhotonPreselection(&data, cand) );
         hists.FillStatus("eventStat", 0);
         LOG_DEBUG(" check point 04");
 
         int aliveEleNum = 0;
-        for ( auto ele : electrons )
+        for ( auto ele : electronpool )
             if (!ele.IsZombie() )
                 ++aliveEleNum;
 
         hists.Fill("Nele", aliveEleNum);
-        if ( aliveEleNum < 2 ) continue;
+        //if ( aliveEleNum < 2 ) continue;
+        if ( aliveEleNum == 0 ) continue;
 
         hists.FillStatus("eventStat", 1);
 
         TLorentzCand ZcandP4;
+        TLorentzCand probe_electron;
         LOG_DEBUG( "ELECTRON (0,1) = Pt(%.2f,%.2f), Eta(%.2f,%.2f), charge(%d,%d)",
-                electrons[0].Pt(), electrons[1].Pt(),
-                electrons[0].Eta(), electrons[1].Eta(),
-                electrons[0].charge(), electrons[1].charge() );
-        for ( int eleI = 0; eleI < electrons.size(); ++eleI )
+                electronpool[0].Pt(), electronpool[1].Pt(),
+                electronpool[0].Eta(), electronpool[1].Eta(),
+                electronpool[0].charge(), electronpool[1].charge() );
+        for ( auto& fake_photon : electronpool )
         {
-            const TLorentzCand& ele0 = electrons.at(eleI);
-            if ( ele0.IsZombie() ) continue;
-            for ( int eleJ = eleI+1; eleJ < electrons.size(); ++eleJ )
-            {
-                const TLorentzCand& ele1 = electrons.at(eleJ);
-                if ( ele1.IsZombie() ) continue;
+            if ( fake_photon.IsZombie() ) continue;
+            ZcandP4 = tag_electron + fake_photon;
+            ZcandP4.SetAlive(false);
+            if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
+            hists.FillStatus("ZRecoStat", 5);
+            if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
+            hists.FillStatus("ZRecoStat", 6);
+            ZcandP4.SetAlive(true);
+            probe_electron = fake_photon;
 
-                hists.FillStatus("ZRecoStat", 0);
-                if (!PassTagElePreselection(&data, ele0) ) continue;
-
-                ZcandP4 = ele0+ele1;
-                ZcandP4.SetAlive(false);
-                hists.Fill("Zmass", ZcandP4.M());
-                if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
-                hists.FillStatus("ZRecoStat", 5);
-                if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
-                hists.FillStatus("ZRecoStat", 6);
-                ZcandP4.SetAlive(true);
-
-                break;
-            }
-            if (!ZcandP4.IsZombie() ) break;
+            break;
         }
+
 
         if ( ZcandP4.IsZombie() ) continue;
         hists.FillStatus("eventStat", 2);
@@ -211,11 +207,44 @@ void xElectrons(
         ClearStruct(&record_Z);
         ClearStruct(&record_evt);
 
-        for ( int idx=0; idx<2; ++idx )
-        {
-            const TLorentzCand cand = ZcandP4.daughters().at(idx);
-            int recoIdx = cand.idx();
-            rec_Electron& eleRecording = record_electrons[idx];
+        { // fillin tag electron information
+            int recoIdx = tag_electron.idx();
+            rec_Electron& eleRecording = record_electrons[0];
+          
+            eleRecording.recoPt       = data.GetPtrFloat("elePt")[recoIdx];
+            eleRecording.recoEta      = data.GetPtrFloat("eleEta")[recoIdx];
+            eleRecording.recoPhi      = data.GetPtrFloat("elePhi")[recoIdx];
+            eleRecording.recoPtCalib  = data.GetPtrFloat("eleCalibPt")[recoIdx];
+            eleRecording.recoSCEta    = data.GetPtrFloat("eleSCEta")[recoIdx];
+            eleRecording.r9           = data.GetPtrFloat("eleR9")[recoIdx];
+            eleRecording.HoverE       = data.GetPtrFloat("eleHoverE")[recoIdx];
+            eleRecording.chIsoRaw     = data.GetPtrFloat("elePFChIso")[recoIdx];
+            eleRecording.phoIsoRaw    = data.GetPtrFloat("elePFPhoIso")[recoIdx];
+            eleRecording.nhIsoRaw     = data.GetPtrFloat("elePFNeuIso")[recoIdx];
+            eleRecording.rawE         = data.GetPtrFloat("eleSCRawEn")[recoIdx];
+            eleRecording.scEtaWidth   = data.GetPtrFloat("eleSCEtaWidth")[recoIdx];
+            eleRecording.scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
+            eleRecording.esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
+            eleRecording.esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
+                                        data.GetPtrFloat("eleESEnP2")[recoIdx];
+            eleRecording.mva          = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
+            eleRecording.r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
+            eleRecording.sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
+            //eleRecording.sieipFull5x5 = data.GetPtrFloat("")[recoIdx];
+            eleRecording.sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
+            //eleRecording.e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+            //eleRecording.e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+
+            //eleRecording.firedTrgs    = int( data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx] );
+            eleRecording.isMatched    = tag_electron.genidx() >= 0;
+            eleRecording.firedTrgsL   = data.GetPtrLong64("eleFiredSingleTrgs")[recoIdx];
+
+        }
+        { // fill in probe electron information
+            int recoIdx = probe_electron.idx();
+            rec_Electron& eleRecording = record_electrons[1];
                     
             eleRecording.recoPt       = data.GetPtrFloat("phoEt")[recoIdx];
             eleRecording.recoEta      = data.GetPtrFloat("phoEta")[recoIdx];
@@ -243,13 +272,13 @@ void xElectrons(
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
 
             eleRecording.firedTrgs    = int( data.GetPtrLong64("phoFiredDoubleTrgs")[recoIdx] );
-            eleRecording.isMatched    = cand.genidx() >= 0;
+            eleRecording.isMatched    = probe_electron.genidx() >= 0;
             eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
             eleRecording.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
 
             if ( data.HasMC() )
             {
-                int genIdx = cand.genidx();
+                int genIdx = probe_electron.genidx();
             eleRecording.mcE          = genIdx < 0 ? 0 : data.GetPtrFloat("mcE")[genIdx];
             eleRecording.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
             eleRecording.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
@@ -370,6 +399,37 @@ std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr)
                     MASS_ELECTRON
                 );
     return outputs;
+}
+TLorentzCand TriggeredElectron(TreeReader* dataptr)
+{
+    // HLT_Ele27_WPTight_Gsf
+    const int PASS_HLTBIT = 12;
+    const int HLTWP = 3;
+
+    for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
+    {
+        if ( dataptr->GetPtrFloat("elePt")[idx] < 27. ) continue;
+        UShort_t* id_bits = (UShort_t*)dataptr->GetPtrShort("eleIDbit");
+        if (!(id_bits[idx]>>HLTWP&1) ) continue;
+        if (!dataptr->HasMC() )
+        {
+            ULong64_t* hlt_bits = (ULong64_t*) dataptr->GetPtrLong64("eleFiredSingleTrgs");
+            if (!(hlt_bits[idx]>>PASS_HLTBIT&1) ) continue;
+        }
+
+        TLorentzCand output(
+                    idx,
+                    dataptr->GetPtrInt  ("eleCharge")[idx],
+                    dataptr->GetPtrFloat("elePt")[idx],
+                    dataptr->GetPtrFloat("eleEta")[idx],
+                    dataptr->GetPtrFloat("elePhi")[idx],
+                    MASS_ELECTRON
+                );
+        int genIdx = FindMatchedIdx( dataptr, output );
+        if ( genIdx >= 0 ) output.SetGenIdx( genIdx );
+        return output;
+    }
+    return TLorentzCand();
 }
 
 bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand)
