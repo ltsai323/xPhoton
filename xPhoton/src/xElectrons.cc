@@ -237,9 +237,7 @@ void xElectrons(
             //eleRecording.e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
             //eleRecording.e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
 
-            //eleRecording.firedTrgs    = int( data.GetPtrLong64("eleFiredDoubleTrgs")[recoIdx] );
             eleRecording.isMatched    = tag_electron.genidx() >= 0;
-            eleRecording.firedTrgsL   = data.GetPtrLong64("eleFiredSingleTrgs")[recoIdx];
 
         }
         { // fill in probe electron information
@@ -271,7 +269,6 @@ void xElectrons(
             eleRecording.s4           = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
 
-            eleRecording.firedTrgs    = int( data.GetPtrLong64("phoFiredDoubleTrgs")[recoIdx] );
             eleRecording.isMatched    = probe_electron.genidx() >= 0;
             eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
             eleRecording.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
@@ -485,7 +482,6 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F").c_str()      );
 
 
-    t->Branch( (name+"firedTrgs").c_str()          ,&var->firedTrgs    , (name+"firedTrgs/I").c_str()        );
     t->Branch( (name+"isMatched").c_str()          ,&var->isMatched    , (name+"isMatched/I").c_str()        );
 
     t->Branch( (name+"firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+"firedTrgsL/L").c_str()       );

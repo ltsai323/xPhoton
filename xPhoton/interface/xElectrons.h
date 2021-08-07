@@ -55,7 +55,6 @@ struct rec_Electron
 
 
     Int_t
-        firedTrgs,
         idbit,
         isMatched;
     Long64_t
