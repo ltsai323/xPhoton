@@ -2,13 +2,15 @@
 # usage : ./this.py
 # format of ouptut json file
 #   { pd: { version : { 'xs':[val,err,unit], 'fracofevt':[val,err], 'lumiper1Mevt':[val,err,unit] } } }
+template_summaryoutput='../mcInformation/summary_%s.json'
+
 from xPhoton.xPhoton.Managers.LogMgr import GetLogger, LoadLoggerConfig
 LoadLoggerConfig(confPath='/home/ltsai/local/mylib/data/logger_debug.config',fromCurrentDir=False)
 mylog=GetLogger(__name__)
 
 
 from mcinfo_extractMCInfo import ExtractMCInfo
-from mcinfo_primarydatasetMatching import PrimaryDataseatMatching
+from mcinfo_primarydatasetMatching import PrimaryDataseatMatching, GetFileNameFromPD, version
 import os
 import json
 
@@ -40,7 +42,11 @@ if __name__ == '__main__':
             ('sigMC_madgraph', '../mcInformation/crabExecHistory/sigMC_madgraph_py_crabConfig_25ns.py'),
             ('sigMC_pythiaFlat', '../mcInformation/crabExecHistory/sigMC_pythiaFlat_py_crabConfig_25ns.py'),
             ]
+    datalist=[
+            ('bkgMC_madgraph',  '../mcInformation/datasets/dataset.QCDmadgraph.txt')
+                ]
 
+    mesg_outputs=[]
     for inputlabel, crabfile in crabfiles:
         print ' -> processing file '+crabfile
         datacollector={}
@@ -54,9 +60,35 @@ if __name__ == '__main__':
             if info:
                 assertinfo(datacollector, pd, info)
 
-
-        fout=open('../mcInformation/summary_%s.json'%inputlabel,'w')
+        mesg_outputs.append( template_summaryoutput % inputlabel )
+        fout=open((template_summaryoutput%inputlabel),'w')
         json.dump(datacollector, fout, indent=2)
         fout.close()
 
+    for inputlabel, datasetfile in datalist:
+        print ' -> processing file '+crabfile
+        with open(datasetfile,'r') as ifile:
+            datacollector={}
+            for line in ifile.readlines():
+                if line.strip() == '': continue
+
+                primarydataset=line.strip()
+                filename_mcinfo=GetFileNameFromPD(primarydataset)
+                v_=version(primarydataset)
+
+                p_, info=ExtractMCInfo(filename_mcinfo, primarydataset)
+                pd=keyinfo(primarydataset, v_)
+
+                if info:
+                    assertinfo(datacollector, pd, info)
+
+
+            mesg_outputs.append(template_summaryoutput%inputlabel)
+            fout=open((template_summaryoutput%inputlabel),'w')
+            json.dump(datacollector, fout, indent=2)
+            fout.close()
+
+    print 'output files are : '
+    for f in mesg_outputs:
+        print f
 
