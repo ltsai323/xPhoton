@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-summaryfile='../data/summaryJson/summary_bkgMC_QCDpythia.json'
+summaryfile='../data/summaryJson/summary_bkgMC_pythia.json'
 workingpath='step1.xsinfoAppended'
 destinypath='step2.mergePDversion'
 datalumi={ 2016: 36.47, 2017:20, 2018:30 }

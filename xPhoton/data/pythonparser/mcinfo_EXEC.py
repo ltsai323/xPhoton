@@ -10,7 +10,7 @@ mylog=GetLogger(__name__)
 
 
 from mcinfo_extractMCInfo import ExtractMCInfo
-from mcinfo_primarydatasetMatching import PrimaryDataseatMatching, GetFileNameFromPD, version
+from mcinfo_primarydatasetMatching import PrimaryDataseatMatching, GetFileNameFromPD, _version, _primarydataset, _secondarydataset
 import os
 import json
 
@@ -72,12 +72,17 @@ if __name__ == '__main__':
             for line in ifile.readlines():
                 if line.strip() == '': continue
 
-                primarydataset=line.strip()
-                filename_mcinfo=GetFileNameFromPD(primarydataset)
-                v_=version(primarydataset)
+                datasetname=line.strip()
+                primarydataset=_primarydataset(datasetname)
+                secondarydataset=_secondarydataset(datasetname)
+                filename_mcinfo=GetFileNameFromPD(primarydataset,secondarydataset)
+
+                v_=_version(datasetname)
 
                 p_, info=ExtractMCInfo(filename_mcinfo, primarydataset)
                 pd=keyinfo(primarydataset, v_)
+                print pd.Key()
+
 
                 if info:
                     assertinfo(datacollector, pd, info)
