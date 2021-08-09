@@ -2,7 +2,7 @@
 summaryfile='../data/summaryJson/summary_sigMC_madgraph.json'
 workingpath='step1.xsinfoAppended'
 destinypath='step2.mergePDversion'
-datalumi={ 2016: 37.40, 2017:20, 2018:30 }
+datalumi={ 2016: 36.47, 2017:20, 2018:30 }
 fileDict={
   "GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
     'v3-v2'     :'/home/ltsai/ReceivedFile/GJet/madgraphMLM/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3-v2.root',

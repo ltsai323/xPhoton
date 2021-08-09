@@ -2,7 +2,7 @@
 summaryfile='../data/summaryJson/summary_bkgMC_QCDpythia.json'
 workingpath='step1.xsinfoAppended'
 destinypath='step2.mergePDversion'
-datalumi={ 2016: 37.40, 2017:20, 2018:30 }
+datalumi={ 2016: 36.47, 2017:20, 2018:30 }
 
 fDict={
   "QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8": {
