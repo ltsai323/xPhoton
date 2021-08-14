@@ -202,6 +202,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     TH2F *h2_mcPID_mcPt = new TH2F("h2_mcPID_mcPt","mcPID vs mcPt", 100, 0., 1000, 30, 0., 30);
 
 
+    std::map<std::string, TH1F*> histMap;
+    histMap["lheEnergy"] = new TH1F("lheEnergy", "hi", 100, 0., 4000.);
 
     char txt[50];
 
@@ -280,6 +282,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     Int_t photon_jetID_;
     Int_t phoIDbit_;
+    
+    const unsigned MAX_LHEPARTICLE = 50;
+    Int_t nLHE;
+    Int_t lhePID[MAX_LHEPARTICLE];
+    Float_t lheE[MAX_LHEPARTICLE], lhePx[MAX_LHEPARTICLE], lhePy[MAX_LHEPARTICLE], lhePz[MAX_LHEPARTICLE];
     /*
     std::map<int, Float_t> jetWeight;
     for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
@@ -297,6 +304,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetSubVtx3DVal", &jetSubVtx3DVal_, "jetSubVtx3DVal/F");
         outtree_->Branch("jetSubVtx3DErr"  , &jetSubVtx3DErr_  , "jetSubVtx3DErr/F"  );
         outtree_->Branch("jetSubVtxNtrks", &jetSubVtxNtrks_, "jetSubVtxNtrks/I");
+
     }
 
     outtree_->Branch("run", &run, "run/I");
@@ -393,6 +401,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
         outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
         outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
+
+        outtree_->Branch("nLHE"               , &nLHE                 , "nLHE/I"                   );
+        outtree_->Branch("lhePID"             ,  lhePID               , "lhePID[nLHE]/I"           );
+        outtree_->Branch("lheE"               ,  lheE                 , "lheE  [nLHE]/F"           );
+        outtree_->Branch("lhePx"              ,  lhePx                , "lhePx [nLHE]/F"           );
+        outtree_->Branch("lhePy"              ,  lhePy                , "lhePy [nLHE]/F"           );
+        outtree_->Branch("lhePz"              ,  lhePz                , "lhePz [nLHE]/F"           );
     }
 
 
@@ -1141,8 +1156,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
             s4=0.;
-            calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5 = 0.;
+            calib_s4=calib_r9Full5x5=calib_scEtaWidth=calib_sieieFull5x5 = 0.;
             mygenweight = 0;
+            for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
+                lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
             //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
@@ -1230,6 +1247,17 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 mcCalIso04_ = mcCalIso04[ipho];
                 mcTrkIso04_ = mcTrkIso04[ipho];
                 genHT_ = genHT;
+                
+                nLHE   = data.GetInt("nLHE");
+                for ( int i=0; i<nLHE; ++i )
+                {
+                    lhePID[i] = data.GetPtrInt  ("lhePID")[i];
+                    lheE[i]   = data.GetPtrFloat("lheE")[i];
+                    lhePx[i]  = data.GetPtrFloat("lhePx")[i];
+                    lhePy[i]  = data.GetPtrFloat("lhePy")[i];
+                    lhePz[i]  = data.GetPtrFloat("lhePz")[i];
+                    histMap["lheEnergy"]->Fill(lheE[i]);
+                }
 
                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
             }
@@ -1432,6 +1460,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     h_EESeedTimeW->Write();
 
     h2_mcPID_mcPt->Write();
+
+    std::map<std::string, TH1F*>::const_iterator citer = histMap.cbegin();
+    std::map<std::string, TH1F*>::const_iterator ciend = histMap.cend  ();
+    while ( citer != ciend )
+    { citer++->second->Write(); }
 
     fout_->Close();
 
