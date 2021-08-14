@@ -1,0 +1,108 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.10/09                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 16 October 2017                                 |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+Loading FW Lite setup.
+hi
+
+Attaching file output_job_PhotonHFJet_0.root as _file0...
+(TFile *) 0x55257f0
+(int) 392
+======> EVENT:3
+ electron_tag.mcE = 0
+ electron_tag.mcPt = 0
+ electron_tag.mcEta = 0
+ electron_tag.mcPhi = 0
+ electron_tag.recoPt = 45.9927
+ electron_tag.recoEta = -1.32415
+ electron_tag.recoPhi = 2.20033
+ electron_tag.recoPtCalib = 45.6592
+ electron_tag.recoSCEta = -1.33624
+ electron_tag.r9 = 0.700168
+ electron_tag.HoverE = 0
+ electron_tag.chIsoRaw = 1.27395
+ electron_tag.phoIsoRaw = 2.02009
+ electron_tag.nhIsoRaw = 0.732649
+ electron_tag.chWorstIso = 0
+ electron_tag.rawE = 83.8207
+ electron_tag.scEtaWidth = 0.0146368
+ electron_tag.scPhiWidth = 0.0761559
+ electron_tag.esRR = 0
+ electron_tag.esEn = 0
+ electron_tag.mva = 0
+ electron_tag.mva_nocorr = 0
+ electron_tag.officalIDmva = 0.999997
+ electron_tag.r9Full5x5 = 0.700169
+ electron_tag.sieieFull5x5 = 0.00871828
+ electron_tag.sipipFull5x5 = 0.0181672
+ electron_tag.s4 = 0
+ electron_tag.calib_scEtaWidth = 0
+ electron_tag.calib_r9Full5x5 = 0
+ electron_tag.calib_s4 = 0
+ electron_tag.calib_sieieFull5x5 = 0
+ electron_tag.firedTrgs = 0
+ electron_tag.isMatched = 0
+ electron_tag.firedTrgsL = 3014652
+ electron_tag.idbit = 0
+ mcE             = 0
+ mcPt            = 0
+ mcEta           = 0
+ mcPhi           = 0
+ recoPt          = 42.2041
+ recoEta         = -1.0705
+ recoPhi         = -0.7436
+ recoPtCalib     = 42.1745
+ recoSCEta       = -1.08013
+ r9              = 0.836044
+ HoverE          = 0
+ chIsoRaw        = 9.64307
+ phoIsoRaw       = 1.05957
+ nhIsoRaw        = 2.75977
+ chWorstIso      = 0
+ rawE            = 64.8153
+ scEtaWidth      = 0.0112404
+ scPhiWidth      = 0.0283686
+ esRR            = 0
+ esEn            = 0
+ mva             = -0.978254
+ mva_nocorr      = -0.978254
+ officalIDmva    = -0.992966
+ r9Full5x5       = 0.921288
+ sieieFull5x5    = 0.0129194
+ sipipFull5x5    = 0.0142714
+ s4              = 0.831948
+ calib_scEtaWidth = 0
+ calib_r9Full5x5 = 0
+ calib_s4        = 0
+ calib_sieieFull5x5 = 0
+ firedTrgs       = 87294027
+ isMatched       = 0
+ firedTrgsL      = 0
+ idbit           = 0
+ Z.mcE           = 0
+ Z.mcPt          = 0
+ Z.mcEta         = 0
+ Z.mcPhi         = 0
+ Z.recoMass      = 88.3675
+ Z.recoE         = 161.298
+ Z.recoPt        = 9.49288
+ Z.recoEta       = -3.34618
+ Z.recoPhi       = 1.14016
+ Z.isMatched     = 0
+ run             = 273425
+ xsweight        = 0
+ puwei           = 0
+ pthat           = 0
+ nVtx            = 18
+ nPU             = 0
+ rho             = 15.5081
+ genWeight       = 0
+ MET             = 46.7515
+ METPhi          = 2.64235
+ HLT             = 40960
+ HLTPhoIsPrescaled = 235929727
+ event           = 228984614

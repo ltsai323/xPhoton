@@ -5,8 +5,64 @@ destinypath='step2.mergePDversion'
 datalumi={ 2016: 36.47, 2017:20, 2018:30 }
 
 fDict={
+  "QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }, 
+  "QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }, 
+  "QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }, 
+  "QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v1":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v1.root',
+  }, 
+  "QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }, 
+  "QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+  }, 
+  "QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }, 
+  "QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }, 
+  "QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }
 }
 testDict={
+  "QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
+    "v3_ext1-v2":
+'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
+  }
 }
 import os
 from xPhoton.xPhoton.AppendEventInfo import FindXSInfo, nodir, ShowPD, ShowDetail
@@ -16,6 +72,7 @@ mylog=GetLogger(__name__)
 #from xPhoton.xPhoton.AppendEventInfo_IntegratedGenWeights import IntegratedGenWeights
 import ROOT
 def IntegratedGenWeights(filename):
+    print filename
     f=ROOT.TFile.Open(filename)
     nt=f.Get('genweightsummary')
 
@@ -94,71 +151,3 @@ if __name__ == '__main__':
         MergeOutputs(pd, info)
 
 
-{
-  "QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }, 
-  "QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }, 
-  "QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }, 
-  "QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v1": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v1.root',
-    }
-  }, 
-  "QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }, 
-  "QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    }
-  }, 
-  "QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }, 
-  "QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }, 
-  "QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
-    "v3-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.root',
-    },
-    "v3_ext1-v2": {
-'/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test/storeroot/madgraph_qcd/crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.root',
-    }, 
-  }
-}
