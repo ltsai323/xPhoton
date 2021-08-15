@@ -29,6 +29,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
+#include "xPhoton/xPhoton/interface/JetIDMgr.h"
 
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
