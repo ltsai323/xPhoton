@@ -283,6 +283,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     Int_t photon_jetID_;
     Int_t phoIDbit_;
+    Int_t jetID;
     
     const unsigned MAX_LHEPARTICLE = 50;
     Int_t nLHE;
@@ -298,15 +299,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
-    if ( hasSubVtxInfo )
-    {
+    //if ( hasSubVtxInfo )
+    //{
         outtree_->Branch("jetSubVtxPt"   , &jetSubVtxPt_   , "jetSubVtxPt/F"   );
         outtree_->Branch("jetSubVtxMass" , &jetSubVtxMass_ , "jetSubVtxMass/F" );
         outtree_->Branch("jetSubVtx3DVal", &jetSubVtx3DVal_, "jetSubVtx3DVal/F");
         outtree_->Branch("jetSubVtx3DErr"  , &jetSubVtx3DErr_  , "jetSubVtx3DErr/F"  );
         outtree_->Branch("jetSubVtxNtrks", &jetSubVtxNtrks_, "jetSubVtxNtrks/I");
 
-    }
+    //}
 
     outtree_->Branch("run", &run, "run/I");
     outtree_->Branch("event", &event, "event/L");
@@ -374,20 +375,23 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetGenJetPhi", &jetGenJetPhi_, "jetGenJetPhi/F");
     outtree_->Branch("jetGenJetY", &jetGenJetY_, "jetGenJetY/F");
 
-    outtree_->Branch("jetCSV2BJetTags",             &jetCSV2BJetTags_, 	      "jetCSV2BJetTags/F"); 	        
-    outtree_->Branch("jetDeepCSVTags_b",            &jetDeepCSVTags_b_,         "jetDeepCSVTags_b/F");
-    outtree_->Branch("jetDeepCSVTags_bb",           &jetDeepCSVTags_bb_,        "jetDeepCSVTags_bb/F");
-    outtree_->Branch("jetDeepCSVTags_c",            &jetDeepCSVTags_c_,         "jetDeepCSVTags_c/F");
-    outtree_->Branch("jetDeepCSVTags_udsg",         &jetDeepCSVTags_udsg_,      "jetDeepCSVTags_udsg/F");
-    outtree_->Branch("jetDeepFlavourTags_b", &jetDeepFlavourTags_b_, "jetDeepFlavourTags_b");
-    outtree_->Branch("jetDeepFlavourTags_c", &jetDeepFlavourTags_c_, "jetDeepFlavourTags_c");
-    outtree_->Branch("jetDeepFlavourTags_g", &jetDeepFlavourTags_g_, "jetDeepFlavourTags_g");
-    outtree_->Branch("jetDeepFlavourTags_lepb", &jetDeepFlavourTags_lepb_, "jetDeepFlavourTags_lepb");
-    outtree_->Branch("jetDeepFlavourTags_bb", &jetDeepFlavourTags_bb_, "jetDeepFlavourTags_bb");
-    outtree_->Branch("jetDeepFlavourTags_uds", &jetDeepFlavourTags_uds_, "jetDeepFlavourTags_uds");
-    outtree_->Branch("jetDeepCSVDiscriminatorTags_BvsAll", &jetDeepCSVDiscriminatorTags_BvsAll_, "jetDeepCSVDiscriminatorTags_BvsAll");
-    outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
-    outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
+    if ( testJetSF )
+    {
+        outtree_->Branch("jetCSV2BJetTags",             &jetCSV2BJetTags_, 	      "jetCSV2BJetTags/F"); 	        
+        outtree_->Branch("jetDeepCSVTags_b",            &jetDeepCSVTags_b_,         "jetDeepCSVTags_b/F");
+        outtree_->Branch("jetDeepCSVTags_bb",           &jetDeepCSVTags_bb_,        "jetDeepCSVTags_bb/F");
+        outtree_->Branch("jetDeepCSVTags_c",            &jetDeepCSVTags_c_,         "jetDeepCSVTags_c/F");
+        outtree_->Branch("jetDeepCSVTags_udsg",         &jetDeepCSVTags_udsg_,      "jetDeepCSVTags_udsg/F");
+        outtree_->Branch("jetDeepFlavourTags_b", &jetDeepFlavourTags_b_, "jetDeepFlavourTags_b");
+        outtree_->Branch("jetDeepFlavourTags_c", &jetDeepFlavourTags_c_, "jetDeepFlavourTags_c");
+        outtree_->Branch("jetDeepFlavourTags_g", &jetDeepFlavourTags_g_, "jetDeepFlavourTags_g");
+        outtree_->Branch("jetDeepFlavourTags_lepb", &jetDeepFlavourTags_lepb_, "jetDeepFlavourTags_lepb");
+        outtree_->Branch("jetDeepFlavourTags_bb", &jetDeepFlavourTags_bb_, "jetDeepFlavourTags_bb");
+        outtree_->Branch("jetDeepFlavourTags_uds", &jetDeepFlavourTags_uds_, "jetDeepFlavourTags_uds");
+        outtree_->Branch("jetDeepCSVDiscriminatorTags_BvsAll", &jetDeepCSVDiscriminatorTags_BvsAll_, "jetDeepCSVDiscriminatorTags_BvsAll");
+        outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB_, "jetDeepCSVDiscriminatorTags_CvsB");
+        outtree_->Branch("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL_, "jetDeepCSVDiscriminatorTags_CvsL");
+    }
 
     //btagCalibs.RegBranch(outtree_);
 
@@ -415,6 +419,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
     outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
     //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
+    outtree_->Branch("jetID", &jetID, "jetID/I");
 
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
     outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
@@ -642,8 +647,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t *jetSubVtx3DVal = nullptr;
         Float_t *jetSubVtx3DErr = nullptr;
         Int_t   *jetSubVtxNtrks = nullptr;
-        if ( hasSubVtxInfo )
-        {
+        //if ( hasSubVtxInfo )
+        //{
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
@@ -654,7 +659,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             else
                 LOG_FATAL("neigher 3DErr nor 3DSig not found in data, check it now!");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
-        }
+        //}
 
         Float_t pfMET = data.GetFloat("pfMET");
         Float_t pfMETPhi = data.GetFloat("pfMETPhi");
@@ -671,20 +676,38 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         Float_t* jetNHF = data.GetPtrFloat("jetNHF");
         Float_t* jetNEF = data.GetPtrFloat("jetNEF");
 
-        Float_t *jetCSV2BJetTags = data.GetPtrFloat("jetCSV2BJetTags");
-        Float_t *jetDeepCSVTags_b = data.GetPtrFloat("jetDeepCSVTags_b");
-        Float_t *jetDeepCSVTags_bb = data.GetPtrFloat("jetDeepCSVTags_bb");
-        Float_t *jetDeepCSVTags_c = data.GetPtrFloat("jetDeepCSVTags_c");
-        Float_t *jetDeepCSVTags_udsg = data.GetPtrFloat("jetDeepCSVTags_udsg");
-        Float_t *jetDeepFlavourTags_b = data.GetPtrFloat("jetDeepFlavourTags_b");
-        Float_t *jetDeepFlavourTags_c = data.GetPtrFloat("jetDeepFlavourTags_c");
-        Float_t *jetDeepFlavourTags_g = data.GetPtrFloat("jetDeepFlavourTags_g");
-        Float_t *jetDeepFlavourTags_lepb = data.GetPtrFloat("jetDeepFlavourTags_lepb");
-        Float_t *jetDeepFlavourTags_bb = data.GetPtrFloat("jetDeepFlavourTags_bb");
-        Float_t *jetDeepFlavourTags_uds = data.GetPtrFloat("jetDeepFlavourTags_uds");
-        Float_t *jetDeepCSVDiscriminatorTags_BvsAll = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_BvsAll");
-        Float_t *jetDeepCSVDiscriminatorTags_CvsB = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsB");
-        Float_t *jetDeepCSVDiscriminatorTags_CvsL = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsL");
+        Float_t *jetCSV2BJetTags = nullptr;
+        Float_t *jetDeepCSVTags_b = nullptr;
+        Float_t *jetDeepCSVTags_bb = nullptr;
+        Float_t *jetDeepCSVTags_c = nullptr;
+        Float_t *jetDeepCSVTags_udsg = nullptr;
+        Float_t *jetDeepFlavourTags_b = nullptr;
+        Float_t *jetDeepFlavourTags_c = nullptr;
+        Float_t *jetDeepFlavourTags_g = nullptr;
+        Float_t *jetDeepFlavourTags_lepb = nullptr;
+        Float_t *jetDeepFlavourTags_bb = nullptr;
+        Float_t *jetDeepFlavourTags_uds = nullptr;
+        Float_t *jetDeepCSVDiscriminatorTags_BvsAll = nullptr;
+        Float_t *jetDeepCSVDiscriminatorTags_CvsB = nullptr;
+        Float_t *jetDeepCSVDiscriminatorTags_CvsL = nullptr;
+
+        if ( testJetSF )
+        {
+            jetCSV2BJetTags = data.GetPtrFloat("jetCSV2BJetTags");
+            jetDeepCSVTags_b = data.GetPtrFloat("jetDeepCSVTags_b");
+            jetDeepCSVTags_bb = data.GetPtrFloat("jetDeepCSVTags_bb");
+            jetDeepCSVTags_c = data.GetPtrFloat("jetDeepCSVTags_c");
+            jetDeepCSVTags_udsg = data.GetPtrFloat("jetDeepCSVTags_udsg");
+            jetDeepFlavourTags_b = data.GetPtrFloat("jetDeepFlavourTags_b");
+            jetDeepFlavourTags_c = data.GetPtrFloat("jetDeepFlavourTags_c");
+            jetDeepFlavourTags_g = data.GetPtrFloat("jetDeepFlavourTags_g");
+            jetDeepFlavourTags_lepb = data.GetPtrFloat("jetDeepFlavourTags_lepb");
+            jetDeepFlavourTags_bb = data.GetPtrFloat("jetDeepFlavourTags_bb");
+            jetDeepFlavourTags_uds = data.GetPtrFloat("jetDeepFlavourTags_uds");
+            jetDeepCSVDiscriminatorTags_BvsAll = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_BvsAll");
+            jetDeepCSVDiscriminatorTags_CvsB = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsB");
+            jetDeepCSVDiscriminatorTags_CvsL = data.GetPtrFloat("jetDeepCSVDiscriminatorTags_CvsL");
+        }
 
 
         Int_t *jetPartonID = nullptr;
@@ -1161,6 +1184,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             mygenweight = 0;
             for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
                 lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
+            jetID = 0;
             //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
@@ -1183,20 +1207,24 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 jetPhi_ = jetPhi[jet_index];
                 jetY_ = jetP4.Rapidity();
                 jetJECUnc_ = jetJECUnc[jet_index];
-                jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
-                jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
-                jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
-                jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
-                jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
-                jetDeepFlavourTags_b_ = jetDeepFlavourTags_b[jet_index];
-                jetDeepFlavourTags_c_ = jetDeepFlavourTags_c[jet_index];
-                jetDeepFlavourTags_g_ = jetDeepFlavourTags_g[jet_index];
-                jetDeepFlavourTags_lepb_ = jetDeepFlavourTags_lepb[jet_index];
-                jetDeepFlavourTags_bb_ = jetDeepFlavourTags_bb[jet_index];
-                jetDeepFlavourTags_uds_ = jetDeepFlavourTags_uds[jet_index];
-                jetDeepCSVDiscriminatorTags_BvsAll_ = jetDeepCSVDiscriminatorTags_BvsAll[jet_index];
-                jetDeepCSVDiscriminatorTags_CvsB_ = jetDeepCSVDiscriminatorTags_CvsB[jet_index];
-                jetDeepCSVDiscriminatorTags_CvsL_ = jetDeepCSVDiscriminatorTags_CvsL[jet_index];
+                if ( testJetSF )
+                {
+                    jetCSV2BJetTags_ = jetCSV2BJetTags[jet_index];
+                    jetDeepCSVTags_b_ = jetDeepCSVTags_b[jet_index];
+                    jetDeepCSVTags_bb_ = jetDeepCSVTags_bb[jet_index];
+                    jetDeepCSVTags_c_ = jetDeepCSVTags_c[jet_index];
+                    jetDeepCSVTags_udsg_ = jetDeepCSVTags_udsg[jet_index];
+                    jetDeepFlavourTags_b_ = jetDeepFlavourTags_b[jet_index];
+                    jetDeepFlavourTags_c_ = jetDeepFlavourTags_c[jet_index];
+                    jetDeepFlavourTags_g_ = jetDeepFlavourTags_g[jet_index];
+                    jetDeepFlavourTags_lepb_ = jetDeepFlavourTags_lepb[jet_index];
+                    jetDeepFlavourTags_bb_ = jetDeepFlavourTags_bb[jet_index];
+                    jetDeepFlavourTags_uds_ = jetDeepFlavourTags_uds[jet_index];
+                    jetDeepCSVDiscriminatorTags_BvsAll_ = jetDeepCSVDiscriminatorTags_BvsAll[jet_index];
+                    jetDeepCSVDiscriminatorTags_CvsB_ = jetDeepCSVDiscriminatorTags_CvsB[jet_index];
+                    jetDeepCSVDiscriminatorTags_CvsL_ = jetDeepCSVDiscriminatorTags_CvsL[jet_index];
+                }
+                jetID = JetIDMgr::IDPassed(&data, jet_index, JetIDMgr::JetIDCuts_ULRun2016_CHS);
 
 
                 if( data.HasMC() ) {
@@ -1215,7 +1243,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
                 }
 
-                if (hasSubVtxInfo) {
+                //if (hasSubVtxInfo) {
                     jetSubVtxPt_    = jetSubVtxPt   [jet_index];
                     jetSubVtxMass_  = jetSubVtxMass [jet_index];
                     jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
@@ -1226,7 +1254,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     h_subVtx3DVal->Fill(jetSubVtx3DVal_);
                     h_subVtx3DErr->Fill(jetSubVtx3DErr_);
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
-                }
+                //}
 
                 //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
 
