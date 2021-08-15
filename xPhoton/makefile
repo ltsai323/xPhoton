@@ -55,6 +55,7 @@ dev/exe.test.xElectronsRunner: obj/xElectronsRunner.o $(objfile_src) $(objfile_d
     obj/usefulFuncs.o \
 	obj/BTagCalibrationStandalone.o \
 	obj/BTaggingMgr.o \
+	obj/JetIDMgr.o
 
 	@echo "--- Successfully compiled " $@ " ---"
 dev/exe.test.xPhotonRunner: obj/xPhotonRunner.o $(objfile_src) $(objfile_dev)

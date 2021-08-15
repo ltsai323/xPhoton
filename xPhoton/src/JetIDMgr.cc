@@ -1,11 +1,42 @@
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
 #include <exception>
 
-void EtaIsOutOfRange()
+void JetIDMgr::etaisoutofrange()
 { throw std::out_of_range( "JetIDCuts() : Input jet Eta is out of range()\n"); }
-// -1 : skip this.
-// The bigger and smaller relation needs to check twiki.
-std::map<std::string,std::pair<float,float>> JetIDCuts_ULRun2016_CHS( float jetEta )
+
+bool JetIDMgr::FailedSelection( const std::pair<float,float>& selrange, float val )
+{
+    float range_lower = selrange.first;
+    float range_upper = selrange.second;
+    if ( range_lower != NO_SELECTION )
+        if ( val < range_lower ) return true;
+    if ( range_upper != NO_SELECTION )
+        if ( val > range_upper ) return true;
+    return false;
+}
+
+bool JetIDMgr::IDPassed( TreeReader* dataptr, int iJet, JetIDCutsFPtr cut_definition )
+{
+    float jeteta = dataptr->GetPtrFloat("jetEta")[iJet];
+
+    std::map<std::string, std::pair<float,float> > jetID_criteria = cut_definition(jeteta);
+
+    if ( FailedSelection(jetID_criteria["Fraction_NeutralHadron"]   , dataptr->GetPtrFloat("jetNHF"         )[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["Fraction_NeutralEM"]       , dataptr->GetPtrFloat("jetNEF"         )[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["NumOfConstituents"]        , dataptr->GetPtrInt  ("jetNConstituents")[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["Fraction_Muon"]            , dataptr->GetPtrFloat("jetMUF"         )[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["Fraction_ChargedHadron"]   , dataptr->GetPtrFloat("jetCHF"         )[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["ChargedMultiplicity"]      , dataptr->GetPtrFloat("jetNCH"         )[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["Fraction_ChargedEM"]       , dataptr->GetPtrFloat("jetCEF"         )[iJet]) ) return false;
+    if ( FailedSelection(jetID_criteria["NumOfNeutralParticle"]     , dataptr->GetPtrInt  ("jetNNP"         )[iJet]) ) return false;
+    return true;
+}
+
+
+
+
+
+std::map<std::string,std::pair<float,float>> JetIDMgr::JetIDCuts_ULRun2016_CHS( float jetEta )
 {
     float abseta = fabs(jetEta);
     if ( abseta < 2.4 )
@@ -52,10 +83,10 @@ std::map<std::string,std::pair<float,float>> JetIDCuts_ULRun2016_CHS( float jetE
                 {"Fraction_ChargedEM",     { NO_SELECTION, NO_SELECTION } },
                 {"NumOfNeutralParticle",   { 10.         , NO_SELECTION } }
                 } );
-    EtaIsOutOfRange();
+    etaisoutofrange();
     return std::map<std::string,std::pair<float,float>>();
 }
-std::map<std::string,std::pair<float,float>> JetIDCuts_ULRun2016_PUPPI( float jetEta )
+std::map<std::string,std::pair<float,float>> JetIDMgr::JetIDCuts_ULRun2016_PUPPI( float jetEta )
 {
     float abseta = fabs(jetEta);
     if ( abseta < 2.4 )
@@ -102,37 +133,6 @@ std::map<std::string,std::pair<float,float>> JetIDCuts_ULRun2016_PUPPI( float je
                 {"Fraction_ChargedEM",     { NO_SELECTION, NO_SELECTION } },
                 {"NumOfNeutralParticle",   { 2.0         , NO_SELECTION } }
                 } );
-    EtaIsOutOfRange();
+    etaisoutofrange();
     return std::map<std::string,std::pair<float,float>>();
 }
-
-
-
-bool FailedSelection( const std::pair<float,float>& selrange, float val )
-{
-    float range_lower = selrange.first;
-    float range_upper = selrange.second;
-    if ( range_lower != NO_SELECTION )
-        if ( val < range_lower ) return true;
-    if ( range_upper != NO_SELECTION )
-        if ( val > range_upper ) return true;
-    return false;
-}
-
-bool JetID( TreeReader* dataptr, int iJet, JetIDCutsFPtr cut_definition )
-{
-    float jeteta = dataptr->GetPtrFloat("jetEta")[iJet];
-
-    std::map<std::string, std::pair<float,float> > jetID_criteria = cut_definition(jeteta);
-
-    if ( FailedSelection(jetID_criteria["Fraction_NeutralHadron"]   , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["Fraction_NeutralEM"]       , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["NumOfConstituents"]        , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["Fraction_Muon"]            , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["Fraction_ChargedHadron"]   , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["ChargedMultiplicity"]      , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["Fraction_ChargedEM"]       , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    if ( FailedSelection(jetID_criteria["NumOfNeutralParticle"]     , dataptr->GetPtrFloat(""               )[iJet]) ) return false;
-    return true;
-}
-
