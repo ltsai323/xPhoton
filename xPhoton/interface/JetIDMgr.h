@@ -15,7 +15,7 @@ namespace JetIDMgr{
     // -1 : skip this.
     // The bigger and smaller relation needs to check twiki.
     typedef std::map<std::string,std::pair<float,float>> (*JetIDCutsFPtr) (float);
-    typedef float (*PUJetIDCutsFPtr) (float);
+    typedef float (*PUJetIDCutsFPtr) (float,float);
     bool IDPassed( TreeReader* dataptr, int iJet, JetIDCutsFPtr cut_definition );
     // if pass PUID : is signal jet. fail PUID : is PU
     bool PUIDPassed( TreeReader* dataptr, int iJet, PUJetIDCutsFPtr cut_definition );

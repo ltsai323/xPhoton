@@ -33,9 +33,10 @@ bool JetIDMgr::IDPassed( TreeReader* dataptr, int iJet, JetIDCutsFPtr cut_defini
 }
 bool JetIDMgr::PUIDPassed( TreeReader* dataptr, int iJet, PUJetIDCutsFPtr cut_definition )
 {
+    float jetpt  = dataptr->GetPtrFloat("jetPt" )[iJet];
     float jeteta = dataptr->GetPtrFloat("jetEta")[iJet];
 
-    float jetPUID_criteria = cut_definition(jeteta, jeteta);
+    float jetPUID_criteria = cut_definition(jetpt, jeteta);
     if ( dataptr->GetPtrFloat("jetPUID")[iJet] > jetPUID_criteria ) return true;
     return false;
 }
