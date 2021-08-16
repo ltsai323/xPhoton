@@ -144,15 +144,15 @@ std::map<std::string,std::pair<float,float>> JetIDMgr::JetIDCuts_ULRun2016_PUPPI
     etaisoutofrange();
     return std::map<std::string,std::pair<float,float>>();
 }
-float JetIDMgr::JetPUIDCuts_ULRun2016_CHS_Tight (  float jetPt, float jetEta )
-{ return JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Tight (jetPt,jetEta); }
-float JetIDMgr::JetPUIDCuts_ULRun2016_CHS_Medium(  float jetPt, float jetEta )
-{ return JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Medium(jetPt,jetEta); }
-float JetIDMgr::JetPUIDCuts_ULRun2016_CHS_Loose (  float jetPt, float jetEta ) 
-{ return JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Loose (jetPt,jetEta); }
+float JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Tight (  float jetPt, float jetEta )
+{ return JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (jetPt,jetEta); }
+float JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Medium(  float jetPt, float jetEta )
+{ return JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(jetPt,jetEta); }
+float JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose (  float jetPt, float jetEta ) 
+{ return JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (jetPt,jetEta); }
 
 
-float JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta ) 
+float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta ) 
 {
     float abseta = fabs(jetEta);
     if ( jetPt < 10 ) return FAILED_PUID;
@@ -190,7 +190,7 @@ float JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta )
     }
     return PASSED_PUID;
 }
-float JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta ) 
+float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta ) 
 {
     float abseta = fabs(jetEta);
     if ( jetPt < 10 ) return FAILED_PUID;
@@ -228,7 +228,7 @@ float JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta )
     }
     return PASSED_PUID;
 }
-float JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta ) 
+float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta ) 
 {
     float abseta = fabs(jetEta);
     if ( jetPt < 10 ) return FAILED_PUID;
@@ -268,9 +268,9 @@ float JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta )
 }
 
 
-float JetIDMgr::JetPUIDCuts_ULRun2018_CHS_Tight (  float jetPt, float jetEta ) 
-{ return JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Tight (jetPt,jetEta); }
-float JetIDMgr::JetPUIDCuts_ULRun2018_CHS_Medium(  float jetPt, float jetEta ) 
-{ return JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Medium(jetPt,jetEta); }
-float JetIDMgr::JetPUIDCuts_ULRun2018_CHS_Loose (  float jetPt, float jetEta ) 
-{ return JetIDMgr::JetPUIDCuts_ULRun2017_CHS_Loose (jetPt,jetEta); }
+float JetIDMgr::PUJetIDCuts_ULRun2018_CHS_Tight (  float jetPt, float jetEta ) 
+{ return JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (jetPt,jetEta); }
+float JetIDMgr::PUJetIDCuts_ULRun2018_CHS_Medium(  float jetPt, float jetEta ) 
+{ return JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(jetPt,jetEta); }
+float JetIDMgr::PUJetIDCuts_ULRun2018_CHS_Loose (  float jetPt, float jetEta ) 
+{ return JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (jetPt,jetEta); }
