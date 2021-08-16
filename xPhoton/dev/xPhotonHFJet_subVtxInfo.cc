@@ -421,6 +421,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
     //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
     outtree_->Branch("jetID", &jetID, "jetID/I");
+    // PUbit : 0 -- loose, 1 -- medium, 2 -- tight
     outtree_->Branch("jetPUIDbit", &jetPUIDbit, "jetPUIDbit/I");
 
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
@@ -1229,11 +1230,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                 }
                 jetID = JetIDMgr::IDPassed(&data, jet_index, JetIDMgr::JetIDCuts_ULRun2016_CHS) ? 1 : 0;
                 if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
+                    jetPUIDbit += 1<<0;
+                if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
                     jetPUIDbit += 1<<1;
                 if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
                     jetPUIDbit += 1<<2;
-                if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
-                    jetPUIDbit += 1<<3;
 
 
                 if( data.HasMC() ) {

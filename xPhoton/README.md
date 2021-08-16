@@ -31,3 +31,9 @@ Append information into events. Currently xs weight (31.4 as example) and BTaggi
 input a ggNtuple and run all events. The output name will be append a number "3". For electron. Zee event.
 * ./bin/exe.xPhotonRunner inputggNtuple.root 3
 input a ggNtuple and run all events. The output name will be append a number "3". For photon
+
+## some variables in xPhoton outputs
+JetID : 1 = passed and 0 = fail
+PUJetIDbit : 1<<0 : loose, 1<<1), tight(1<<2)
+phoIDbit : loose(1<<0), medium(1<<1), tight(1<<2)
+
