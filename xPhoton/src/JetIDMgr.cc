@@ -31,11 +31,11 @@ bool JetIDMgr::IDPassed( TreeReader* dataptr, int iJet, JetIDCutsFPtr cut_defini
     if ( FailedSelection(jetID_criteria["NumOfNeutralParticle"]     , dataptr->GetPtrInt  ("jetNNP"         )[iJet]) ) return false; // is it iJet->neutralMultiplicity() ?
     return true;
 }
-bool JetIDMgr::PUIDPassed( TreeReader* dataptr, int iJet, JetIDCutsFPtr cut_definition )
+bool JetIDMgr::PUIDPassed( TreeReader* dataptr, int iJet, PUJetIDCutsFPtr cut_definition )
 {
     float jeteta = dataptr->GetPtrFloat("jetEta")[iJet];
 
-    float jetPUID_criteria = cut_definition(jeteta);
+    float jetPUID_criteria = cut_definition(jeteta, jeteta);
     if ( dataptr->GetPtrFloat("jetPUID")[iJet] > jetPUID_criteria ) return true;
     return false;
 }

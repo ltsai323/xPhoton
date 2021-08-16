@@ -284,6 +284,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Int_t photon_jetID_;
     Int_t phoIDbit_;
     Int_t jetID;
+    Int_t jetPUIDbit;
     
     const unsigned MAX_LHEPARTICLE = 50;
     Int_t nLHE;
@@ -420,6 +421,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
     //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
     outtree_->Branch("jetID", &jetID, "jetID/I");
+    outtree_->Branch("jetPUIDbit", &jetPUIDbit, "jetPUIDbit/I");
 
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
     outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
@@ -1185,6 +1187,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
                 lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
             jetID = 0;
+            jetPUIDbit = 0;
             //btagCalibs.InitVars();
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
@@ -1224,7 +1227,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     jetDeepCSVDiscriminatorTags_CvsB_ = jetDeepCSVDiscriminatorTags_CvsB[jet_index];
                     jetDeepCSVDiscriminatorTags_CvsL_ = jetDeepCSVDiscriminatorTags_CvsL[jet_index];
                 }
-                jetID = JetIDMgr::IDPassed(&data, jet_index, JetIDMgr::JetIDCuts_ULRun2016_CHS);
+                jetID = JetIDMgr::IDPassed(&data, jet_index, JetIDMgr::JetIDCuts_ULRun2016_CHS) ? 1 : 0;
+                if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
+                    jetPUIDbit += 1<<1;
+                if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
+                    jetPUIDbit += 1<<2;
+                if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Loose) )
+                    jetPUIDbit += 1<<3;
 
 
                 if( data.HasMC() ) {
