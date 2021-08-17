@@ -29,7 +29,7 @@ static Int_t genHTcut=0;
 static Int_t gjetSignal=0;
 
 static bool hasSubVtxInfo = true;
-static bool testJetSF = false;
+static bool testJetSF = true;
 static bool ELECTRONVETO = false;
 static bool USEHLT = false;
 
