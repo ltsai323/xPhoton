@@ -1,11 +1,8 @@
 #!/usr/bin/env python2
-#localmesg='Process local files'
-#localcommand='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_local.py {file} false"'
-#remotemesg='Download 1 root file from T2 first and process it'
-#remotecommand='"export X509_USER_PROXY=/home/ltsai/.x509up_u54608; cd /home/ltsai/Work/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test ; mkdir -p {fold} && cd {fold} ; python ../xphoton_remote.py {file} false"'
 shmesg='Process local file by sh'
 shcommand='"cd /home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test ;sh xphoton_simple_idxReordered_abspath.sh  {file}"'
 import os
+# unchecked
 dataflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016B_94X.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016C_94X.txt',
@@ -15,19 +12,14 @@ dataflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016G_94X.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016H_94X.txt',
     ]
-localpythiaflist=[
-#'/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.txt',
-        ]
-localsignalMC_pythiaflist=[
+# unchecked
+local_pythiaflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/GJets/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.txt',
-]
+        ]
 
-
-madgraphflist=[
+local_madgraphflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/madgraphMLM/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3-v2.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/madgraphMLM/crab_sigMC_HT-100To200_13TeV-madgraphMLM-pythia8_v3_ext1-v2.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/madgraphMLM/crab_sigMC_HT-200To400_13TeV-madgraphMLM-pythia8_v3-v2.txt',
@@ -39,7 +31,9 @@ madgraphflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/madgraphMLM/crab_sigMC_HT-600ToInf_13TeV-madgraphMLM-pythia8_v3-v2.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/madgraphMLM/crab_sigMC_HT-600ToInf_13TeV-madgraphMLM-pythia8_v3_ext1-v2.txt',
 ]
-qcdflist=[
+
+# unchecked
+local_qcdflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3v1.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3-v1.txt',
@@ -70,6 +64,7 @@ qcdflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_80to120_13TeV_TuneCUETP8M1_pythia8_v3-v1.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_80to120_13TeV_TuneCUETP8M1_pythia8_v3_ext2-v2.txt',
 ]
+
 localQCD_madgraphlist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCDmadgraph/crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3-v2.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCDmadgraph/crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.txt',
@@ -89,15 +84,18 @@ localQCD_madgraphlist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCDmadgraph/crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.txt',
 ]
 
+
 if __name__ == '__main__':
     command=shcommand
     mesg=shmesg
 
     print mesg
-    flist=localpythiaflist
+    flist=local_madgraphflist
+    #flist=localQCD_madgraphlist
     for f in flist:
         folder=f.split('/')[-1].split('.')[0]
         print folder
-        #os.system('/home/ltsai/script/qjob/submitJOB.py --command={} --name={}'.format(
-        print '/home/ltsai/script/qjob/submitJOB.py --command=%s --name=%s' %(
-            (command.format(file=f), folder) )
+        os.system('/home/ltsai/script/qjob/submitJOB.py --command=%s --name=%s --lowPriority' %(
+            (command.format(file=f), folder) ) )
+        #print      '/home/ltsai/script/qjob/submitJOB.py --command=%s --name=%s' %(
+        #    (command.format(file=f), folder) )
