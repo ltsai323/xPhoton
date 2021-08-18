@@ -1,4 +1,5 @@
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include <exception>
 
 void JetIDMgr::etaisoutofrange()
@@ -35,8 +36,12 @@ bool JetIDMgr::PUIDPassed( TreeReader* dataptr, int iJet, PUJetIDCutsFPtr cut_de
 {
     float jetpt  = dataptr->GetPtrFloat("jetPt" )[iJet];
     float jeteta = dataptr->GetPtrFloat("jetEta")[iJet];
+    float puid = dataptr->GetPtrFloat("jetPUID")[iJet];
 
     float jetPUID_criteria = cut_definition(jetpt, jeteta);
+
+    if ( jetpt > 10 )
+        LOG_DEBUG("jetID = %.2f, the criteria = %.2f, which is passed ? %d", puid, jetPUID_criteria, (puid>jetPUID_criteria) );
     if ( dataptr->GetPtrFloat("jetPUID")[iJet] > jetPUID_criteria ) return true;
     return false;
 }
@@ -163,7 +168,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return  0.90;
         else if ( jetPt < 40 ) return  0.96;
         else if ( jetPt < 50 ) return  0.98;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 2.75 )
     {
@@ -171,7 +176,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return  0.60;
         else if ( jetPt < 40 ) return  0.82;
         else if ( jetPt < 50 ) return  0.92;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 3.0 )
     {
@@ -179,7 +184,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.12;
         else if ( jetPt < 40 ) return  0.20;
         else if ( jetPt < 50 ) return  0.47;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 5.0 )
     {
@@ -187,7 +192,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Tight (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.13;
         else if ( jetPt < 40 ) return  0.09;
         else if ( jetPt < 50 ) return  0.29;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     return PASSED_PUID;
 }
@@ -201,7 +206,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return  0.68;
         else if ( jetPt < 40 ) return  0.90;
         else if ( jetPt < 50 ) return  0.96;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 2.75 )
     {
@@ -209,7 +214,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.04;
         else if ( jetPt < 40 ) return  0.36;
         else if ( jetPt < 50 ) return  0.61;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 3.0 )
     {
@@ -217,7 +222,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.43;
         else if ( jetPt < 40 ) return -0.16;
         else if ( jetPt < 50 ) return  0.14;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 5.0 )
     {
@@ -225,7 +230,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Medium(  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.30;
         else if ( jetPt < 40 ) return -0.09;
         else if ( jetPt < 50 ) return  0.12;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     return PASSED_PUID;
 }
@@ -239,7 +244,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.88;
         else if ( jetPt < 40 ) return -0.63;
         else if ( jetPt < 50 ) return -0.19;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 2.75 )
     {
@@ -247,7 +252,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.55;
         else if ( jetPt < 40 ) return -0.18;
         else if ( jetPt < 50 ) return  0.22;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 3.0 )
     {
@@ -255,7 +260,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.60;
         else if ( jetPt < 40 ) return -0.43;
         else if ( jetPt < 50 ) return -0.13;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     else if ( abseta < 5.0 )
     {
@@ -263,7 +268,7 @@ float JetIDMgr::PUJetIDCuts_ULRun2017_CHS_Loose (  float jetPt, float jetEta )
         else if ( jetPt < 30 ) return -0.43;
         else if ( jetPt < 40 ) return -0.24;
         else if ( jetPt < 50 ) return -0.03;
-        return FAILED_PUID;
+        return PASSED_PUID;
     }
     return PASSED_PUID;
 }
