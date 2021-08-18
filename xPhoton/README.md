@@ -33,18 +33,18 @@ input a ggNtuple and run all events. The output name will be append a number "3"
 input a ggNtuple and run all events. The output name will be append a number "3". For photon
 
 ## some variables in xPhoton outputs
-JetID : 1 = passed and 0 = fail
-PUJetIDbit : 1<<0 : loose, 1<<1), tight(1<<2)
-phoIDbit : loose(1<<0), medium(1<<1), tight(1<<2)
+* JetID : 1 = passed and 0 = fail
+* PUJetIDbit : 1<<0 : loose, 1<<1), tight(1<<2)
+* phoIDbit : loose(1<<0), medium(1<<1), tight(1<<2)
 
 (Only valid after AppendEventInfo.cc)
-genWeight = gen weight from MC
-xsweight = xs or -1 * xs
-crossSection = xs
-integratedLuminosity = lumi in data
-integratedGenWeight = sum of all gen weight in this primary dataset. Note that this result merges the extended MC sample and standard samples.
+* genWeight = gen weight from MC
+* xsweight = xs or -1 * xs
+* crossSection = xs
+* integratedLuminosity = lumi in data
+* integratedGenWeight = sum of all gen weight in this primary dataset. Note that this result merges the extended MC sample and standard samples.
 
-mcweight = cross section * data lumi * genweight / (Integrated genweight)
+* mcweight = cross section * data lumi * genweight / (Integrated genweight)
 
 
 TNtuple nt_sumupgenweight records the integration of gen weight at each job. So once you need to get the full integrated gen weight, you need to sum up all events. ( The number of entries is the number of jobs)
