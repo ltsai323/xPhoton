@@ -36,6 +36,10 @@ const char* ExternalFilesMgr::RooFile_PileUp()
 {
     return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root";
 }
+const char* ExternalFilesMgr::RooFile_PileUp_Run2016_69200nb_Moriond17()
+{
+    return "/home/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/94X/summer16/PUweight_2016Legacy_forMoriond17_69200nb.root";
+}
 const char* ExternalFilesMgr::RooFile_ShowerShapeCorrection()
 {
     //return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root";

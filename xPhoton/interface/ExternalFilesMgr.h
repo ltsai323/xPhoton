@@ -6,6 +6,7 @@ namespace ExternalFilesMgr
 {
     const char* xmlFile_MVAweight(int isEndcap, int year);
     const char* RooFile_PileUp();
+    const char* RooFile_PileUp_Run2016_69200nb_Moriond17();
     const char* RooFile_ShowerShapeCorrection();
     const char* testchar();
     const char* csvFile_BTagCalib_CSVv2();

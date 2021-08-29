@@ -442,7 +442,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     TGraph *tgr[8];
     if(data.HasMC())
     {
-        puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+        //puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+        puCalc.Init( ExternalFilesMgr::RooFile_PileUp_Run2016_69200nb_Moriond17() );
         TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
         LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
 
@@ -578,7 +579,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }      
             mcCalIsoDR04 = data.GetPtrFloat("mcCalIsoDR04");
             mcTrkIsoDR04 = data.GetPtrFloat("mcTrkIsoDR04");
-            puwei_ = 1.;//
             puwei_ = (float) puCalc.GetWeight(run_, puTrue[1]); // in-time PU
 
             genWeight = data.GetFloat("genWeight");      
