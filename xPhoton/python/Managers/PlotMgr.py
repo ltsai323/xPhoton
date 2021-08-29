@@ -119,6 +119,46 @@ class DrawingMgr(object):
     def GeneralSetting():
         ROOT.gROOT.SetBatch(True)
 
+class DrawableMgr(object):
+    def __init__(self):
+        self._drawObj=[]
+        self._drawArg=[]
+        self._drawPad=[]
+
+        self._addfuncMGR=ImportAddFunc()
+
+    #?
+    def grabrootobj(self, obj, opt):
+        self._drawObj.append(obj)
+        self._drawArg.append(opt)
+        return self._drawObj[-1]
+    def AddPlotContent(self, **kwargs):
+        if not 'function' in kwargs:
+            logging.error('importing function but no any "function" argument input')
+            exit(1)
+        self._addfuncMGR.ImportFunction(**kwargs)
+
+    ''' need to be put at MyCanvas
+    def ExportFig(self, output='hi.png',
+            canv=ROOT.TCanvas('c1','',SMALL_WindowW,SMALL_WindowH),
+            logScale=False, transparentCanv=True):
+        canv.cd()
+        self._pad.cd()
+        self._pad.Draw()
+        if logScale: self._pad.SetLogy()
+
+        # execute
+        for funcMgr in self._addfuncMGR:
+            funcMgr.Exec()
+        # arrange drawables
+        for funcMgr in self._addfuncMGR:
+            funcMgr.GetExecRes().Draw( funcMgr.GetArg('drawOpt') )
+        canv.SaveAs(output)
+        self._pad.Update()
+        canv.Update()
+    '''
+
+
 
 ''' need to be modified
 
@@ -128,7 +168,7 @@ def AdditionalLine(self,p0,p1,drawOpt=''):
     line=self._drawObj[-1]
     line.SetLineWidth(4)
     line.SetLineColor(32)
-    line.Draw(drawOpt)
+   line.Draw(drawOpt)
 
 # plot text by TLatex
 def PointInfo(self,x,y,content):
