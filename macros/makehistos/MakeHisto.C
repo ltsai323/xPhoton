@@ -206,9 +206,6 @@ void MakeHisto::Loop()
     // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
     // photonIDmva = mva - tmp_shift;// - trd->Gaus(0.025,0.05);
 
-    //if(run>259000) continue;
-    if(run == 256729) continue;
-    if(run == 256734 ) continue;
     //jetY =jetEta;
 
     //printf("photon eta %.2f, bin %d,  pt %.2f, bin %d , hltbit %d\n", recoEta, EBEE(recoEta), recoPt, Ptbin(recoPt) , HLTbit(recoPt));
