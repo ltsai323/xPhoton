@@ -500,21 +500,18 @@ Int_t MakeHisto::EBEE(Float_t eta)
 }
 Int_t MakeHisto::Ptbin(Float_t pt)
 {
-  //                  0   1   2   3   4   5   6   7    8    9   10   11   12
-  // float ptcut[30] = {20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 
-  // 		     150, 160, 170, 180, 200, 225, 250, 300, 350, 400, 500, 750, 1000,}; //25 bins to index 10
-  //                  13   14   15   16   17   18   19   20   21   22   23   24    25
-  //                  0   1   2   3   4   5    6    7    8    9   10   11   12
-  //float ptcut[30] = {22, 30, 36, 50, 75, 90, 105,  120, 135, 150, 165, 175, 185,
-  float ptcut[30] = {15, 30, 35, 60, 75, 90, 100,  120, 135, 150, 165, 175, 185,
-		     190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000}; //22 bins
-  //                  13   14   15   16   17   18   19   20   21    22    23    24    25     26
-  for(int ibin=0; ibin<26; ibin++){
-    if(pt>=ptcut[ibin] && pt<ptcut[ibin+1] ) return ibin;
-  }
-  if(pt<22.) return -1;
+  std::vector<float> ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300}; // size = 16. ptbin = [0,15]
+  int ibin = ptcut.size();
+
+  // returned ibin = 0 to size-1
+  while ( ibin-- )
+  { if ( pt >= ptcut[ibin] ) return ibin; }
+
+  // nothing found.
+  return -1;
 }
 
+// unused
 Int_t MakeHisto::HLTbit(Float_t pt){
   //                  0   1   2   3   4   5    6    7    8    9   10   11   12
   float ptcut[30] = {22, 30, 36, 50, 75, 90, 120, 165, 175 };
@@ -532,17 +529,21 @@ Int_t MakeHisto::JetEtaBin(Float_t eta){
   return 1;
 }
 Int_t MakeHisto::triggerbit(Int_t ptbin){
-  if(ptbin==2) return 2;
-  if(ptbin==3) return 3;
-  if(ptbin==4) return 4;
-  if(ptbin==5) return 5;
-  if(ptbin==6) return 5;
-  if(ptbin==7) return 6;
-  if(ptbin==8) return 6;
-  if(ptbin==9) return 6;
-  if(ptbin==10) return 6;
-  if(ptbin==11) return 6;
-  if(ptbin==12) return 6;
-  if(ptbin>=13) return 8;
+  if ( ptbin == 0 ) return 0;  //  25- 34
+  if ( ptbin == 1 ) return 1;  //  34- 40
+  if ( ptbin == 2 ) return 2;  //  40- 55
+  if ( ptbin == 3 ) return 3;  //  55- 70
+  if ( ptbin == 4 ) return 3;  //  70- 85
+  if ( ptbin == 5 ) return 4;  // 85-100
+  if ( ptbin == 6 ) return 5;  // 100-115
+  if ( ptbin == 7 ) return 5;  // 115-136
+  if ( ptbin == 8 ) return 6;  // 135-155
+  if ( ptbin == 9 ) return 6;  // 155-175
+  if ( ptbin ==10 ) return 6;  // 175-190
+  if ( ptbin ==11 ) return 7;  // 190-200
+  if ( ptbin ==12 ) return 7;  // 200-220
+  if ( ptbin ==13 ) return 7;  // 220-250
+  if ( ptbin ==14 ) return 7;  // 250-300
+  if ( ptbin ==15 ) return 7;  // 300-inf
   return 0;
 }
