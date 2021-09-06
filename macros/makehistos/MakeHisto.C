@@ -165,22 +165,7 @@ void MakeHisto::Loop()
       h_HLT[jj][ii][1] = new TH1F(hname,txt, 2000, 0., 2000.);
     }
   }
-  //smearing due to gain switching (G6->G1)    
-  // float binning[10]={0,100,175,225, 275, 350, 100000}; //from E/P
-  // TH1F *h_gainCorr = new TH1F("h_gainCorr","correction due to gain switch", 6, binning);
-  // h_gainCorr->SetBinContent(1,1.);      h_gainCorr->SetBinError(1,0.001);
-  // h_gainCorr->SetBinContent(2,0.998);	  h_gainCorr->SetBinError(2,0.002);
-  // h_gainCorr->SetBinContent(3,0.996);	  h_gainCorr->SetBinError(3,0.002);
-  // h_gainCorr->SetBinContent(4,0.991);	  h_gainCorr->SetBinError(4,0.003);
-  // h_gainCorr->SetBinContent(5,0.981);	  h_gainCorr->SetBinError(5,0.003);
-  // h_gainCorr->SetBinContent(6,0.965);	  h_gainCorr->SetBinError(6,0.010);  
   float binning[10]={0,200,300, 400, 500, 100000};
-  TH1F *h_gainCorr = new TH1F("h_gainCorr","correction due to gain switch", 5, binning);
-  h_gainCorr->SetBinContent(1,1.);      h_gainCorr->SetBinError(1,0.001);
-  h_gainCorr->SetBinContent(2,1./1.0199);	  h_gainCorr->SetBinError(2,0.001);
-  h_gainCorr->SetBinContent(3,1./1.052);	  h_gainCorr->SetBinError(3,0.003);
-  h_gainCorr->SetBinContent(4,1./1.015);	  h_gainCorr->SetBinError(4,0.006);
-  h_gainCorr->SetBinContent(5,1.);      h_gainCorr->SetBinError(5,0.001);  
 
   Long64_t nentries = fChain->GetEntries();   
   printf("nentries %li \n", nentries);
@@ -217,20 +202,7 @@ void MakeHisto::Loop()
     //smearing due to gain switching (G6->G1)    
     TLorentzVector *phop4 = new TLorentzVector();
     phop4->SetPtEtaPhiM(recoPt, recoEta, recoPhi,0.);
-    if(isData==1 && TMath::Abs(recoEta)<1.5) {
-      phop4->SetPtEtaPhiM(recoPt, recoEta, recoPhi,0.);
-      float phoE = phop4->E();
-      int bin1 =  h_gainCorr->FindBin(SeedEnergy);
-      // float factor = trd->Gaus( h_gainCorr->GetBinContent(bin1), h_gainCorr->GetBinError(bin1));
-      float factor = h_gainCorr->GetBinContent(bin1);
-      float phoE_new = phoE*1./factor;
-      //printf("phoE %.3f , factor 1./%.3f, new %.3f \n", phoE, factor, phoE_new);
-      phop4->SetE(phoE_new);
-      //printf("phoEt %.3f , new %.3f \n", recoPt, phop4->Et());
-      ptbin = Ptbin(phop4->Et());
-    }
-    //end of smeaing gain switching effect
-    //----------------------------------------------------------------
+
     int hltbit = HLTbit(recoPt);
     int jetbin = JetEtaBin(jetY);
 
