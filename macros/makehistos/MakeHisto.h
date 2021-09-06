@@ -27,8 +27,8 @@ public :
    Bool_t          isData;
    Long64_t        HLT;
    Long64_t        HLTIsPrescaled;
-   Long64_t        HLT50ns;
-   Long64_t        HLTIsPrescaled50ns;
+   //Long64_t        HLT50ns;
+   //Long64_t        HLTIsPrescaled50ns;
    Int_t           phoFiredTrg;
    Float_t         pthat;
    Float_t         mcPt;
@@ -49,7 +49,7 @@ public :
    Int_t           nPU;
    Int_t           eleVeto;
    Float_t         HoverE;
-   Float_t         sieie;
+   //Float_t         sieie;
    Float_t         sieip;
    Float_t         sipip;
    Float_t         chIso;
@@ -71,7 +71,7 @@ public :
    Float_t         esEn;
    Float_t         mva;
    Float_t         photonIDmva;
-   Float_t         mva_hgg;
+   //Float_t         mva_hgg;
    Int_t           HggPresel;
    Float_t         sieieFull5x5;
    Float_t         sieipFull5x5;
@@ -110,8 +110,8 @@ public :
    TBranch        *b_isData;   //!
    TBranch        *b_HLT;   //!
    TBranch        *b_HLTIsPrescaled;   //!
-   TBranch        *b_HLT50ns;   //!
-   TBranch        *b_HLTIsPrescaled50ns;   //!
+   //TBranch        *b_HLT50ns;   //!
+   //TBranch        *b_HLTIsPrescaled50ns;   //!
    TBranch        *b_phoFiredTrgs;   //!
    TBranch        *b_pthat;   //!
    TBranch        *b_mcPt;   //!
@@ -132,7 +132,7 @@ public :
    TBranch        *b_nPU;   //!
    TBranch        *b_eleVeto;   //!
    TBranch        *b_HoverE;   //!
-   TBranch        *b_sieie;   //!
+   //TBranch        *b_sieie;   //!
    TBranch        *b_sieip;   //!
    TBranch        *b_sipip;   //!
    TBranch        *b_chIso;   //!
@@ -154,7 +154,7 @@ public :
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
    TBranch        *b_photonIDmva;   //!
-   TBranch        *b_mva_hgg;   //!
+   //TBranch        *b_mva_hgg;   //!
    TBranch        *b_HggPresel;   //!
    TBranch        *b_sieieFull5x5;   //!
    TBranch        *b_sieipFull5x5;   //!
@@ -210,76 +210,37 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
-   /* if (tree == 0) { */
-   /*    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../SinglePho_Run2015B_PR_Jul24.root"); */
-   /*    if (!f || !f->IsOpen()) { */
-   /* 	//f = new TFile("../SinglePho_Run2015B_PR_Jul24.root"); */
-   /* 	f = new TFile("../output_job_spring15_gjet_pt15to6000_50ns.root"); */
 
-   /*    } */
-   /*    f->GetObject("t",tree); */
   printf("option %d \n", option);
   HLTOPTION = 0;
-   /* } */
   /* Init(tree); */
   TChain *tc = new TChain("t");
+    //tc->Add("");
 
-  if(option == 1) {
-    // tc->Add("/home/ltsai/ReceivedFile/GJet/test/ggtree_datasample.root");
-    tc->Add("/home/ltsai/ReceivedFile/GJet/data/crab_data_ResentHLT16_Run2016B_94XReReco_ver2v1.root"); // failed
+  if(option == 1) { // data
+    tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
   };
-  if(option == 2) {
-    tc->Add("/home/ltsai/ReceivedFile/GJet/test/RSpreviousSample/SinglePho_miniAOD_golden.root");
-    //tc->Add("../SinglePho_miniAOD_golden_nocsev.root");
-    HLTOPTION=1;
+  if(option == 2) { // madgraph sig MC
+    tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root");
+    //HLTOPTION=1; // prevent to use HLT
   }
-  if(option == 5) {
-    tc->Add("../qcd/job_spring*_qcd*.root");
-    HLTOPTION=1;
+  if(option == 3) { // madgraph QCD MC
+    tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root");
+    //HLTOPTION=1; // prevent to use HLT
+  }
+  if(option == 4) { // pythia   sig MC
+    tc->Add("");
+    //HLTOPTION=1; // prevent to use HLT
+  }
+  if(option == 5) { // pythia   QCD MC
+    //HLTOPTION=1; // prevent to use HLT
   }
 
   if(option == 15) tc->Add("../qcd/job_spring*_qcd*.root");
   if(option == 8) tc->Add("../output_job_fall15_gjet_pt15to6000_miniAOD.root");
   if(option == 16) tc->Add("../gjet_MG.root");
 
-
-  //if(option == 3) tc->Add("../DoubleMu.root");
-  if(option == 6) tc->Add("../WJets_m_amcnlo.root");
-  if(option == 10) tc->Add("../SinglePho_miniAOD_allHLT.root");
-  if(option == 12) tc->Add("../JetHT_PD.root");
-
-  if(option == 4) tc->Add("../data_noGenIsoCut/DYJets_Wmn.root");
-  if(option == 7) tc->Add("../data_noGenIsoCut/SingleMu_miniAOD_golden.root");
-  if(option == 9) tc->Add("../data_noGenIsoCut/Wgamma_m_aMCatNLO_miniAOD.root");
-  if(option == 11) tc->Add("../data_noGenIsoCut/WJets_aMCatNLO.root");
-  if(option == 13) tc->Add("../data_noGenIsoCut/TT_miniAOD.root");
-  if(option == 14) tc->Add("../data_noGenIsoCut/qcd_miniAOD_wmn/job_*_qcd*.root");
-
-  /* /\* if(option == 9) tc->Add("../Wgamma_m_MadGraph_miniAOD.root"); *\/ */
-  /* /\* if(option == 11) tc->Add("../WJets.root"); *\/ */
-
-
-  /* if(option == 1) { */
-  /*   tc->Add("../output_job_0.root"); */
-  /*   tc->Add("../output_job_1.root"); */
-  /*   tc->Add("../output_job_2.root"); */
-  /* }; */
-  /* if(option == 2) tc->Add("../output_job_5.root"); */
-  /* if(option == 5) tc->Add("../job*_qcd*.root"); */
-
-  /* if(option == 4) tc->Add("../output_job_7.root"); */
-  /* if(option == 7) tc->Add("../output_job_12.root"); */
-  /* if(option == 9) tc->Add("../output_job_14.root"); */
-  /* if(option == 11) tc->Add("../output_job_11.root"); */
-  /* if(option == 13) tc->Add("../output_job_16.root"); */
-
   OPTION = option;
-
-  /* if(option == 3) tc->Add("../DoubleEG.root"); */
-  /* if(option == 4) tc->Add("../DYJets_ee.root"); */
-  /* if(option == 5) tc->Add("../job*qcd*.root"); */
-  /* if(option == 6) tc->Add("../WJets_e.root"); */
-  /* if(option == 7) tc->Add("../SingleEle.root"); */
 
   Init(tc);
 }
@@ -330,9 +291,9 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("isData", &isData, &b_isData);
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
-   fChain->SetBranchAddress("HLT50ns", &HLT50ns, &b_HLT50ns);
-   fChain->SetBranchAddress("HLTIsPrescaled50ns", &HLTIsPrescaled50ns, &b_HLTIsPrescaled50ns);
-   fChain->SetBranchAddress("phoFiredTrg", &phoFiredTrg, &b_phoFiredTrgs);
+   //fChain->SetBranchAddress("HLT50ns", &HLT50ns, &b_HLT50ns);
+   //fChain->SetBranchAddress("HLTIsPrescaled50ns", &HLTIsPrescaled50ns, &b_HLTIsPrescaled50ns);
+   fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrg, &b_phoFiredTrgs);
    fChain->SetBranchAddress("pthat", &pthat, &b_pthat);
    /* fChain->SetBranchAddress("mcPt", &mcPt, &b_mcPt); */
    /* fChain->SetBranchAddress("mcEta", &mcEta, &b_mcEta); */
@@ -353,7 +314,7 @@ void MakeHisto::Init(TTree *tree)
    /* fChain->SetBranchAddress("nPU", &nPU, &b_nPU); */
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
-   fChain->SetBranchAddress("sieie", &sieie, &b_sieie);
+   //fChain->SetBranchAddress("sieie", &sieie, &b_sieie);
    /* fChain->SetBranchAddress("sieip", &sieip, &b_sieip); */
    /* fChain->SetBranchAddress("sipip", &sipip, &b_sipip); */
    /* fChain->SetBranchAddress("chIso", &chIso, &b_chIso); */
@@ -375,7 +336,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("esEn", &esEn, &b_esEn);
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    //fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
-   fChain->SetBranchAddress("mva_hgg", &mva_hgg, &b_mva_hgg);
+   //fChain->SetBranchAddress("mva_hgg", &mva_hgg, &b_mva_hgg);
    fChain->SetBranchAddress("HggPresel", &HggPresel, &b_HggPresel);
    fChain->SetBranchAddress("sieieFull5x5", &sieieFull5x5, &b_sieieFull5x5);
    fChain->SetBranchAddress("sieipFull5x5", &sieipFull5x5, &b_sieipFull5x5);
