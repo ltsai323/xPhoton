@@ -337,7 +337,8 @@ void MakeHisto::Init(TTree *tree)
    /* fChain->SetBranchAddress("mcPt", &mcPt, &b_mcPt); */
    /* fChain->SetBranchAddress("mcEta", &mcEta, &b_mcEta); */
    /* fChain->SetBranchAddress("mcPhi", &mcPhi, &b_mcPhi); */
-   fChain->SetBranchAddress("recoPt", &recoPt, &b_recoPt);
+   //fChain->SetBranchAddress("recoPt", &recoPt, &b_recoPt); // turn to use calibrated Pt
+   fChain->SetBranchAddress("recoPtCalib", &recoPt, &b_recoPt);
    fChain->SetBranchAddress("recoEta", &recoEta, &b_recoEta);
    fChain->SetBranchAddress("recoPhi", &recoPhi, &b_recoPhi);
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
