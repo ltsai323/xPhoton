@@ -58,47 +58,6 @@ void MakeHisto::Loop()
   char txt[100];
   char hname[100];
   
-  map<int, char*> varname;
-  float var_lowx[20];
-  float var_highx[20];
-  varname[0] = "recoPhi"; var_lowx[0]=-3.2, var_highx[0]=3.2;
-  varname[1] = "r9"; var_lowx[1]=0.5, var_highx[1]=1.05;;
-  varname[2] = "e1x3Full5x5/e5x5Full5x5"; var_lowx[2]=0.2, var_highx[2]=1.05;
-  varname[3] = "e2x2Full5x5/e5x5Full5x5"; var_lowx[3]=0.4, var_highx[3]=1.05;
-  varname[4] = "e2x5Full5x5/e5x5Full5x5"; var_lowx[4]=0.4, var_highx[4]=1.05;
-  varname[5] = "sieieFull5x5"; var_lowx[5]=0.00, var_highx[5]=0.05;
-  varname[6] = "sieipFull5x5"; var_lowx[6]=-0.0002, var_highx[6]=0.0002;
-  varname[7] = "recoSCEta"; var_lowx[7]=-2.5, var_highx[7]=2.5;
-  varname[8] = "rawE"; var_lowx[8]=0., var_highx[8]=1000.;
-  varname[9] = "scEtaWidth"; var_lowx[9]=0., var_highx[9]=0.06;
-  varname[10] = "scPhiWidth"; var_lowx[10]=0., var_highx[10]=0.12;
-  varname[11] = "phoIsoRaw"; var_lowx[11]=0., var_highx[11]=20.;
-  varname[12] = "chIsoRaw"; var_lowx[12]=0., var_highx[12]=20.;
-  varname[13] = "chWorstRaw"; var_lowx[13]=0., var_highx[13]=20.;
-  varname[14] = "rho"; var_lowx[14]=0., var_highx[14]=40.;
-  varname[15] = "photonIDmva"; var_lowx[15]=-1., var_highx[15]=1.;
-  varname[16] = "esRR"; var_lowx[16]=0., var_highx[16]=15.;
-  varname[17] = "esEn/rawE"; var_lowx[17]=0., var_highx[17]=0.6;
-  varname[18] = "nVtx"; var_lowx[18]=0., var_highx[18]=50;
-  //varname[] = ""; var_lowx[]=, var_highx[]=;
-
-  // printf(" %s \n", varname.find(0)->second);
-  // return;
-  printf("define 1st set \n");
-  // for(int ii=0; ii<20; ii++){
-  //   for(int mm=0; mm<8; mm++){
-  //     for(int jj=0; jj<30; jj++){
-  //  	for(int kk=0; kk<2; kk++){	  
-  //  	  sprintf(txt,"var %s EBEE_%d_ptbin_%d_true_%d",varname.find(ii)->second,mm,jj,kk);
-  //  	  sprintf(hname,"h_BDTvar_%d_%d_%d_%d",ii,mm,jj,kk);
-  //  	  if(ii!=5) h_BDTvar[ii][mm][jj][kk] = new TH1F(hname,txt,40, var_lowx[ii], var_highx[ii]);
-  // 	  else h_BDTvar[ii][mm][jj][kk] = new TH1F(hname,txt,90, var_lowx[ii], var_highx[ii]);
-	  
-  // 	  printf("%d %d %d %d \n", ii, mm, jj, kk);
-  //  	}
-  //     }
-  //   }
-  // }
   
   /* MTm var
   for(int ii=0; ii<netabin; ii++){
@@ -208,27 +167,6 @@ void MakeHisto::Loop()
     int hltbit = HLTbit(recoPt);
     int jetbin = JetEtaBin(jetY);
 
-    //define BDT var
-    float var[20];
-    var[0] = recoPhi;
-    var[1] = r9;
-    //var[2] = e1x3Full5x5/e5x5Full5x5;
-    var[3] = e2x2Full5x5/e5x5Full5x5;
-    //var[4] = e2x5Full5x5/e5x5Full5x5;
-    var[5] = sieieFull5x5;
-    var[6] = sieipFull5x5;
-    var[7] = recoSCEta;
-    var[8] = rawE;
-    var[9] = scEtaWidth;
-    var[10] = scPhiWidth;
-    var[11] = phoIsoRaw;
-    var[12] = chIsoRaw;
-    var[13] = chWorstRaw;
-    var[14] = rho;
-    var[15] = photonIDmva;
-    var[16] = esRR;
-    var[17] = esEn/rawE; 
-    var[18] = nVtx;
 
     if(eleVeto==1 && photonIDmva>0.35 && chIsoRaw<2.){
       if(ebee>1 && HoverE > 0.01) continue;
