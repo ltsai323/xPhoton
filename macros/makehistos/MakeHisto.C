@@ -49,7 +49,7 @@ void MakeHisto::Loop()
   TH1F *h_Pt_all[netabin][3][30][2];
   TH1F *h_Pt[netabin][2];
   TH1F *h_Ptspec[netabin][2];
-  TH1F *h_Wmn_mt[netabin][2];
+  //TH1F *h_Wmn_mt[netabin][2]; MTm var
 
   TH2F *h_IsovsBDT[netabin][3][30][2][4]; //ebee,jetbin, ptbin, truth/fake, isovar;
 
@@ -100,6 +100,7 @@ void MakeHisto::Loop()
   //   }
   // }
   
+  /* MTm var
   for(int ii=0; ii<netabin; ii++){
     for(int kk=0; kk<2; kk++){
       sprintf(txt,"Wmass EBEE_%d_true_%d",ii,kk);
@@ -107,6 +108,7 @@ void MakeHisto::Loop()
       h_Wmn_mt[ii][kk] = new TH1F(hname,txt, 150, 0., 150.); 
     }
   }
+  */
   for(int ii=0; ii<netabin; ii++){
     for(int mm=0; mm<3; mm++){
       for(int jj=0; jj<30; jj++){
@@ -210,9 +212,9 @@ void MakeHisto::Loop()
     float var[20];
     var[0] = recoPhi;
     var[1] = r9;
-    var[2] = e1x3Full5x5/e5x5Full5x5;
+    //var[2] = e1x3Full5x5/e5x5Full5x5;
     var[3] = e2x2Full5x5/e5x5Full5x5;
-    var[4] = e2x5Full5x5/e5x5Full5x5;
+    //var[4] = e2x5Full5x5/e5x5Full5x5;
     var[5] = sieieFull5x5;
     var[6] = sieipFull5x5;
     var[7] = recoSCEta;
@@ -258,7 +260,7 @@ void MakeHisto::Loop()
     // if(isData==1 && !(((phoFiredTrg>>8)&1)==1 || MTm>0) ) continue;
     //if(!(((phoFiredTrg>>8)&1)==1 || MTm>0) ) continue;
     if(HLTOPTION==1 && (((phoFiredTrg>>8)&1)==0) ) continue;
-    float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);
+    //float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);// deta_wg
     // if(MTm>0. && ebee==0 &&dr_wg<0.4) continue;
     // if(MTm>0. && ebee==1 &&dr_wg<1.) continue;
     // if(MTm>0. && dr_wg<0.4) continue;
@@ -312,9 +314,9 @@ void MakeHisto::Loop()
       //h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(mva, xsweight*puwei);
       h_Pt[ebee][mctruth]->Fill(recoPt, xsweight*puwei);
       h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), xsweight*puwei);
-      if(recoPt>15.) {
-	h_Wmn_mt[ebee][mctruth]->Fill(MTm, xsweight*puwei);            
-      }
+      //if(recoPt>15.) { MTm var
+	////h_Wmn_mt[ebee][mctruth]->Fill(MTm, xsweight*puwei);            
+      //}
       if(mctruth==1&&recoPt>100.){
 	h_chiso_sg->Fill(chIsoRaw);
 	h_chworst_sg->Fill(chWorstRaw+phoIsoRaw);
@@ -337,9 +339,9 @@ void MakeHisto::Loop()
       //h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(mva, xsweight*puwei);
       h_Pt[ebee][mctruth]->Fill(recoPt, xsweight*puwei);
       h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), xsweight*puwei);
-      if(recoPt>15.) {
-	h_Wmn_mt[ebee][mctruth]->Fill(MTm, xsweight*puwei);             	
-      }   
+      //if(recoPt>15.) { MTm var
+	////h_Wmn_mt[ebee][mctruth]->Fill(MTm, xsweight*puwei);             	
+      //}   
     }   
   }
 
@@ -430,11 +432,13 @@ void MakeHisto::Loop()
 
   h_sf_EB->Write();
   h_sf_EE->Write();
+  /* MTm var
   for(int ii=0; ii<netabin; ii++){
     for(int kk=0; kk<2; kk++){
       h_Wmn_mt[ii][kk]->Write();
     }
   }
+  */
 
   // for(int ii=0; ii<19; ii++){
   //   for(int mm=0; mm<netabin; mm++){

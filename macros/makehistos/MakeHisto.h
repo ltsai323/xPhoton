@@ -42,28 +42,28 @@ public :
    Int_t           isMatched;
    Int_t           isMatchedEle;
    Int_t           isConverted;
-   Int_t           idLoose;
-   Int_t           idMedium;
-   Int_t           idTight;
+   //Int_t           idLoose;
+   //Int_t           idMedium;
+   //Int_t           idTight;
    Int_t           nVtx;
    Int_t           nPU;
    Int_t           eleVeto;
    Float_t         HoverE;
    //Float_t         sieie;
-   Float_t         sieip;
-   Float_t         sipip;
-   Float_t         chIso;
-   Float_t         phoIso;
-   Float_t         nhIso;
+   //Float_t         sieip;
+   //Float_t         sipip;
+   //Float_t         chIso;
+   //Float_t         phoIso;
+   //Float_t         nhIso;
    Float_t         chIsoRaw;
    Float_t         chWorstRaw;
    Float_t         phoIsoRaw;
    Float_t         nhIsoRaw;
    Float_t         rho;
-   Float_t         e1x3;
-   Float_t         e2x2;
-   Float_t         e2x5;
-   Float_t         e5x5;
+   //Float_t         e1x3;
+   //Float_t         e2x2;
+   //Float_t         e2x5;
+   //Float_t         e5x5;
    Float_t         rawE;
    Float_t         scEtaWidth;
    Float_t         scPhiWidth;
@@ -72,22 +72,22 @@ public :
    Float_t         mva;
    Float_t         photonIDmva;
    //Float_t         mva_hgg;
-   Int_t           HggPresel;
+   //Int_t           HggPresel;
    Float_t         sieieFull5x5;
    Float_t         sieipFull5x5;
    Float_t         sipipFull5x5;
-   Float_t         e1x3Full5x5;
+   //Float_t         e1x3Full5x5;
    Float_t         r9Full5x5;
    Float_t         e2x2Full5x5;
-   Float_t         e2x5Full5x5;
+   //Float_t         e2x5Full5x5;
    Float_t         e5x5Full5x5;
    Float_t         mcCalIso04;
    Float_t         mcTrkIso04;
    Float_t         xsweight;
    Float_t         puwei;
-   Float_t         Mmm;
-   Float_t         Mee;
-   Float_t         MTm;
+   //Float_t         Mmm;
+   //Float_t         Mee;
+   //Float_t         MTm;
    Float_t         MET;
    Int_t           phohasPixelSeed;
    Float_t         jetPt;
@@ -97,8 +97,8 @@ public :
    Int_t           OPTION;
    Int_t           photon_jetID;
    Int_t HLTOPTION;
-   Float_t   deta_wg;
-   Float_t   dphi_wg;
+   //Float_t   deta_wg;
+   //Float_t   dphi_wg;
 
    Float_t SeedTime;
    Float_t SeedEnergy;
@@ -125,28 +125,28 @@ public :
    TBranch        *b_isMatched;   //!
    TBranch        *b_isMatchedEle;   //!
    TBranch        *b_isConverted;   //!
-   TBranch        *b_idLoose;   //!
-   TBranch        *b_idMedium;   //!
-   TBranch        *b_idTight;   //!
+   //TBranch        *b_idLoose;   //!
+   //TBranch        *b_idMedium;   //!
+   //TBranch        *b_idTight;   //!
    TBranch        *b_nVtx;   //!
    TBranch        *b_nPU;   //!
    TBranch        *b_eleVeto;   //!
    TBranch        *b_HoverE;   //!
    //TBranch        *b_sieie;   //!
-   TBranch        *b_sieip;   //!
-   TBranch        *b_sipip;   //!
-   TBranch        *b_chIso;   //!
-   TBranch        *b_phoIso;   //!
-   TBranch        *b_nhIso;   //!
+   //TBranch        *b_sieip;   //!
+   //TBranch        *b_sipip;   //!
+   //TBranch        *b_chIso;   //!
+   //TBranch        *b_phoIso;   //!
+   //TBranch        *b_nhIso;   //!
    TBranch        *b_chIsoRaw;   //!
    TBranch        *b_chWorstIso;   //!
    TBranch        *b_phoIsoRaw;   //!
    TBranch        *b_nhIsoRaw;   //!
    TBranch        *b_rho;   //!
-   TBranch        *b_e1x3;   //!
-   TBranch        *b_e2x2;   //!
-   TBranch        *b_e2x5;   //!
-   TBranch        *b_e5x5;   //!
+   //TBranch        *b_e1x3;   //!
+   //TBranch        *b_e2x2;   //!
+   //TBranch        *b_e2x5;   //!
+   //TBranch        *b_e5x5;   //!
    TBranch        *b_rawE;   //!
    TBranch        *b_scEtaWidth;   //!
    TBranch        *b_scPhiWidth;   //!
@@ -155,14 +155,14 @@ public :
    TBranch        *b_mva;   //!
    TBranch        *b_photonIDmva;   //!
    //TBranch        *b_mva_hgg;   //!
-   TBranch        *b_HggPresel;   //!
+   //TBranch        *b_HggPresel;   //!
    TBranch        *b_sieieFull5x5;   //!
    TBranch        *b_sieipFull5x5;   //!
    TBranch        *b_sipipFull5x5;   //!
-   TBranch        *b_e1x3Full5x5;   //!
+   //TBranch        *b_e1x3Full5x5;   //!
    TBranch        *b_r9Full5x5;   //!
    TBranch        *b_e2x2Full5x5;   //!
-   TBranch        *b_e2x5Full5x5;   //!
+   //TBranch        *b_e2x5Full5x5;   //!
    TBranch        *b_e5x5Full5x5;   //!
    TBranch        *b_mcCalIso04;   //!
    TBranch        *b_mcTrkIso04;   //!
@@ -178,8 +178,8 @@ public :
    TBranch        *b_jetPhi;   //!
    TBranch        *b_jetY;
    TBranch        *b_photon_jetID;
-   TBranch   *b_deta_wg;
-   TBranch   *b_dphi_wg;
+   //TBranch   *b_deta_wg;
+   //TBranch   *b_dphi_wg;
    TBranch *b_SeedTime;
    TBranch *b_SeedEnergy;
    TBranch *b_MIPTotEnergy;
@@ -337,23 +337,23 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    //fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    //fChain->SetBranchAddress("mva_hgg", &mva_hgg, &b_mva_hgg);
-   fChain->SetBranchAddress("HggPresel", &HggPresel, &b_HggPresel);
+   //fChain->SetBranchAddress("HggPresel", &HggPresel, &b_HggPresel);
    fChain->SetBranchAddress("sieieFull5x5", &sieieFull5x5, &b_sieieFull5x5);
    fChain->SetBranchAddress("sieipFull5x5", &sieipFull5x5, &b_sieipFull5x5);
    /* fChain->SetBranchAddress("sipipFull5x5", &sipipFull5x5, &b_sipipFull5x5); */
-   fChain->SetBranchAddress("e1x3Full5x5", &e1x3Full5x5, &b_e1x3Full5x5);
+   //fChain->SetBranchAddress("e1x3Full5x5", &e1x3Full5x5, &b_e1x3Full5x5);
    /* fChain->SetBranchAddress("r9Full5x5", &r9Full5x5, &b_r9Full5x5); */
    fChain->SetBranchAddress("e2x2Full5x5", &e2x2Full5x5, &b_e2x2Full5x5);
-   fChain->SetBranchAddress("e2x5Full5x5", &e2x5Full5x5, &b_e2x5Full5x5);
+   //fChain->SetBranchAddress("e2x5Full5x5", &e2x5Full5x5, &b_e2x5Full5x5);
    fChain->SetBranchAddress("e5x5Full5x5", &e5x5Full5x5, &b_e5x5Full5x5);
     fChain->SetBranchAddress("mcCalIso04", &mcCalIso04, &b_mcCalIso04);
    /* fChain->SetBranchAddress("mcTrkIso04", &mcTrkIso04, &b_mcTrkIso04); */
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
    fChain->SetBranchAddress("puwei", &puwei, &b_puwei);
-   fChain->SetBranchAddress("Mmm", &Mmm, &b_Mmm);
-   fChain->SetBranchAddress("MTm", &MTm, &b_MTm);
+   //fChain->SetBranchAddress("Mmm", &Mmm, &b_Mmm);
+   //fChain->SetBranchAddress("MTm", &MTm, &b_MTm);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
-   fChain->SetBranchAddress("Mee", &Mee, &b_Mee);
+   //fChain->SetBranchAddress("Mee", &Mee, &b_Mee);
    fChain->SetBranchAddress("phohasPixelSeed", &phohasPixelSeed, &b_phohasPixelSeed);
    fChain->SetBranchAddress("jetPt", &jetPt, &b_jetPt);
    fChain->SetBranchAddress("jetEta", &jetEta, &b_jetEta);
@@ -361,21 +361,21 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetY", &jetY, &b_jetY);
    fChain->SetBranchStatus("mcEta", 0);
    fChain->SetBranchStatus("mcPhi", 0);
-   fChain->SetBranchStatus("idLoose", 0);
-   fChain->SetBranchStatus("idMedium", 0);
-   fChain->SetBranchStatus("idTight", 0);
+   //fChain->SetBranchStatus("idLoose", 0);
+   //fChain->SetBranchStatus("idMedium", 0);
+   //fChain->SetBranchStatus("idTight", 0);
    fChain->SetBranchStatus("nVtx", 0);
    fChain->SetBranchStatus("nPU", 0);
-   fChain->SetBranchStatus("sieip", 0);
-   fChain->SetBranchStatus("sipip", 0);
-   fChain->SetBranchStatus("chIso", 0);
-   fChain->SetBranchStatus("phoIso", 0);
-   fChain->SetBranchStatus("nhIso", 0);
+   //fChain->SetBranchStatus("sieip", 0);
+   //fChain->SetBranchStatus("sipip", 0);
+   //fChain->SetBranchStatus("chIso", 0);
+   //fChain->SetBranchStatus("phoIso", 0);
+   //fChain->SetBranchStatus("nhIso", 0);
    /* fChain->SetBranchStatus("rho", 0); */
-   fChain->SetBranchStatus("e1x3", 0);
-   fChain->SetBranchStatus("e2x2", 0);
-   fChain->SetBranchStatus("e2x5", 0);
-   fChain->SetBranchStatus("e5x5", 0);
+   //fChain->SetBranchStatus("e1x3", 0);
+   //fChain->SetBranchStatus("e2x2", 0);
+   //fChain->SetBranchStatus("e2x5", 0);
+   //fChain->SetBranchStatus("e5x5", 0);
    /* fChain->SetBranchStatus("rawE", 0); */
    /* fChain->SetBranchStatus("scEtaWidth", 0); */
    /* fChain->SetBranchStatus("scPhiWidth", 0); */
@@ -391,8 +391,8 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchStatus("mcCalIso04", 0);
    fChain->SetBranchStatus("mcTrkIso04", 0);
    //fChain->SetBranchAddress("photon_jetID", &photon_jetID, &b_photon_jetID);   
-   fChain->SetBranchAddress("deta_wg",&deta_wg, &b_deta_wg);
-   fChain->SetBranchAddress("dphi_wg",&dphi_wg, &b_dphi_wg);
+   //fChain->SetBranchAddress("deta_wg",&deta_wg, &b_deta_wg);
+   //fChain->SetBranchAddress("dphi_wg",&dphi_wg, &b_dphi_wg);
 
    fChain->SetBranchAddress("SeedTime",&SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy",&SeedEnergy, &b_SeedEnergy);
