@@ -70,7 +70,8 @@ public :
    Float_t         esRR;
    Float_t         esEn;
    Float_t         mva;
-   Float_t         photonIDmva;
+   Float_t         mva_nocorr;
+   Float_t         photonIDmva; // is overwritten in line149@.C file. So read value is disabled
    //Float_t         mva_hgg;
    //Int_t           HggPresel;
    Float_t         sieieFull5x5;
@@ -153,6 +154,7 @@ public :
    TBranch        *b_esRR;   //!
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
+   TBranch        *b_mva_nocorr;   //!
    TBranch        *b_photonIDmva;   //!
    //TBranch        *b_mva_hgg;   //!
    //TBranch        *b_HggPresel;   //!
@@ -335,6 +337,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("esRR", &esRR, &b_esRR);
    fChain->SetBranchAddress("esEn", &esEn, &b_esEn);
    fChain->SetBranchAddress("mva", &mva, &b_mva);
+   fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
    //fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    //fChain->SetBranchAddress("mva_hgg", &mva_hgg, &b_mva_hgg);
    //fChain->SetBranchAddress("HggPresel", &HggPresel, &b_HggPresel);
