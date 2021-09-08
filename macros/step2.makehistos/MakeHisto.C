@@ -11,6 +11,7 @@
 #define NUMBIN_PHOETA 2
 #define NUMBIN_JETETA 3
 #define NUMBIN_PHOPT  20 // which is needed to be oversize
+#define NUMBIT_HLT 9 // 0~8
 
 void MakeHisto::Loop()
 {
@@ -116,9 +117,9 @@ void MakeHisto::Loop()
   TH1F *h_chworst_sg = new TH1F("h_chworst_sg","chworst signal region", 150, 0., 30);
 
 
-  TH1F *h_HLT[NUMBIN_PHOETA][13][2];
+  TH1F *h_HLT[NUMBIN_PHOETA][NUMBIT_HLT][2];
   for (int jj=0; jj<NUMBIN_PHOETA; jj++){
-    for(int ii=0; ii<13; ii++){
+    for(int ii=0; ii<NUMBIT_HLT; ii++){
       sprintf(txt,"HLT ebee %d bit %d all",jj, ii);
       sprintf(hname,"h_HLT_ebee_%d_bit%d",jj, ii);
       h_HLT[jj][ii][0] = new TH1F(hname,txt, 2000, 0., 2000.);
@@ -171,7 +172,8 @@ void MakeHisto::Loop()
 
     if(eleVeto==1 && photonIDmva>0.35 && chIsoRaw<2.){
       if(ebee>1 && HoverE > 0.01) continue;
-      for(int ibit=0; ibit<13; ibit++){
+      /*  asdf Modified needed !!!! asdf */
+      for(int ibit=0; ibit<NUMBIT_HLT; ibit++){
 	int basebit=ibit-1;
 	//if(basebit==7) basebit=6;
 	if(ibit>=4) basebit=3;
@@ -190,6 +192,7 @@ void MakeHisto::Loop()
 	else h_EE_HLTall->Fill(recoPt);
       }
     }
+      /*  asdf Modified needed !!!! asdf */
       
 
 
@@ -360,7 +363,7 @@ void MakeHisto::Loop()
   h_EE_HLTall->Write();
 
   for (int jj=0; jj<NUMBIN_PHOETA; jj++){
-    for(int ii=0; ii<13; ii++){
+    for(int ii=0; ii<NUMBIT_HLT; ii++){
       h_HLT[jj][ii][0]->Write();
       h_HLT[jj][ii][1]->Write();
     }
