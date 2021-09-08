@@ -1,8 +1,23 @@
+#include <iostream>
+#include <stdio.h>
+
+#include <TFile.h>
+#include <TH1F.h>
+#include <TH2F.h>
+#include <TCanvas.h>
+#include <TLegend.h>
+#include <TGraph.h>
+#include <TGraphAsymmErrors.h>
+
 void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
   
-  TFile *fqcd = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root");
-  TFile *fgjet = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root");
-  TFile *fdata = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
+  TFile *fqcd  = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
+  TFile *fdata = TFile::Open("../step2.makehistos/storeroot/makehisto_data.root");
+  TFile *fgjet = TFile::Open("../step2.makehistos/storeroot/makehisto_sig_madgraph.root");
+  fqcd->Print();
+  std::cout << fqcd->IsZombie() <<std::endl;
+  std::cout << fdata->IsZombie() <<std::endl;
+  std::cout << fgjet->IsZombie() <<std::endl;
   char hname[100];
   // int ebee=0;
   // if(strcmp(EBEE,"EE")==0) ebee=1;
@@ -46,9 +61,9 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
   }
   
 
-  TH2F* hgjet_all = hgjet->Clone();
-  TH2F* hqcd_all = hqcd->Clone();
-  TH2F* hdata_all = hdata->Clone(); 
+  TH2F* hgjet_all = (TH2F*) hgjet->Clone();
+  TH2F* hqcd_all =  (TH2F*) hqcd->Clone();
+  TH2F* hdata_all = (TH2F*) hdata->Clone(); 
   
   sprintf(hname,"gjet_all_%d_%d_%d",ebee, jetbin, ptbin, IsoOption);  
   hgjet_all->SetName(hname);
@@ -174,6 +189,7 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
   printf("sig fraction of %d %d SB/all  = %f \n", ptbin, ebee, h_gjet_zone2->Integral()/(hgjet->Integral()));
   printf("sig fraction of %d %d sig/all = %f \n", ptbin, ebee, h_gjet_zone1->Integral()/(hgjet->Integral()));
   printf("sig fit correction       %f \n",h_gjet_zone1->Integral()/(hgjet->Integral())- h_gjet_zone2->Integral()/(hgjet->Integral()));
+  {
   c2->cd(2);
   //gPad->SetLogy();
   //h_qcd_zone1->SetMinimum(h_qcd_zone2->GetMinimum()*0.1);
@@ -191,7 +207,9 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
   printf("zone1 sig faction of left / right = %f \n", h_qcd_zone1->Integral(1,nbinx/2.)/h_qcd_zone1->Integral(nbinx/2+1,nbinx));
   printf("zone2 SB  faction of left / right = %f \n", h_qcd_zone2->Integral(1,nbinx/2.)/h_qcd_zone2->Integral(nbinx/2+1,nbinx));
 
+  }
  
+  {
   c2->cd(3);
   //gPad->SetLogy();
   //h_data_zone1->SetMinimum(h_data_zone2->GetMinimum()*0.1);
@@ -205,6 +223,7 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
   h_data_zone2->Draw("same");
   printf("Data faction of SB/all = %f \n", h_data_zone2->Integral()/(hdata->Integral()));
   printf("Data faction of sig/all = %f \n", h_data_zone1->Integral()/(hdata->Integral()));
+  }
 
 
   if(rebinoption==1){
@@ -288,7 +307,7 @@ void Draw_Isoeff(){
   // return;
 
 
-  TCanvas *C1 = new TCanvas("c1","",600,600);
+  TCanvas *c1 = new TCanvas("c1","",600,600);
   c1->Draw();
   
   TH2F *h2 = new TH2F("h2","",100, 150, 1000, 100, 0.9, 1.);
