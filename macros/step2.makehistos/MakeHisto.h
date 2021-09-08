@@ -84,7 +84,7 @@ public :
    Float_t         e5x5Full5x5;
    Float_t         mcCalIso04;
    Float_t         mcTrkIso04;
-   Float_t         xsweight;
+   Float_t         mcweight;
    Float_t         puwei;
    //Float_t         Mmm;
    //Float_t         Mee;
@@ -168,7 +168,7 @@ public :
    TBranch        *b_e5x5Full5x5;   //!
    TBranch        *b_mcCalIso04;   //!
    TBranch        *b_mcTrkIso04;   //!
-   TBranch        *b_xsweight;   //!
+   TBranch        *b_mcweight;   //!
    TBranch        *b_puwei;   //!
    TBranch        *b_Mmm;   //!
    TBranch        *b_MTm;   //!
@@ -351,7 +351,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("e5x5Full5x5", &e5x5Full5x5, &b_e5x5Full5x5);
     fChain->SetBranchAddress("mcCalIso04", &mcCalIso04, &b_mcCalIso04);
    /* fChain->SetBranchAddress("mcTrkIso04", &mcTrkIso04, &b_mcTrkIso04); */
-   fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
+   fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
    fChain->SetBranchAddress("puwei", &puwei, &b_puwei);
    //fChain->SetBranchAddress("Mmm", &Mmm, &b_Mmm);
    //fChain->SetBranchAddress("MTm", &MTm, &b_MTm);

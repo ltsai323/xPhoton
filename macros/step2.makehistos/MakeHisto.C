@@ -207,8 +207,8 @@ void MakeHisto::Loop()
     int mctruth = 0;
     if(isData!=1 && isMatched!=1 && isConverted!=1 && isMatchedEle!=1) mctruth=1; //fake
 
-    h_BDT_all[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, xsweight*puwei); //<-default 
-    h_Pt_all[ebee][jetbin][ptbin][mctruth]->Fill(recoPt, xsweight*puwei);
+    h_BDT_all[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight*puwei); //<-default 
+    h_Pt_all[ebee][jetbin][ptbin][mctruth]->Fill(recoPt, mcweight*puwei);
 
     //if(isData==1 && ((phoFiredTrg>>8)&1)==0) continue;
     //if(mctruth<0)continue;      
@@ -232,29 +232,29 @@ void MakeHisto::Loop()
       //  	float rnd_gau = 1- TMath::Abs(trd->Gaus(0,0.02));
       //  	if(rnd_gau<0.) rnd_gau=1.;
       //  	//printf("smear by %f \n", rnd_gau );
-      //  	h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva*rnd_gau, xsweight*puwei);
+      //  	h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva*rnd_gau, mcweight*puwei);
       // }else{
-      //  	h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, xsweight*puwei);
+      //  	h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight*puwei);
       // }
 
-      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, xsweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, xsweight*puwei);
+      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, mcweight*puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, puwei);
       // for(int ivar=0; ivar<16; ivar++){	
-      // 	h_BDTvar[ivar][ebee][ptbin][mctruth]->Fill(var[ivar], xsweight*puwei);
+      // 	h_BDTvar[ivar][ebee][ptbin][mctruth]->Fill(var[ivar], mcweight*puwei);
       // 	//printf("var %s, value %f \n", varname.find(ivar)->second, var[ivar]);
       // }
-      //h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(mva, xsweight*puwei);
-      h_Pt[ebee][mctruth]->Fill(recoPt, xsweight*puwei);
-      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), xsweight*puwei);
+      //h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(mva, mcweight*puwei);
+      h_Pt[ebee][mctruth]->Fill(recoPt, mcweight*puwei);
+      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), mcweight*puwei);
       //if(recoPt>15.) { MTm var
-	////h_Wmn_mt[ebee][mctruth]->Fill(MTm, xsweight*puwei);            
+	////h_Wmn_mt[ebee][mctruth]->Fill(MTm, mcweight*puwei);            
       //}
       if(mctruth==1&&recoPt>100.){
 	h_chiso_sg->Fill(chIsoRaw);
@@ -262,24 +262,24 @@ void MakeHisto::Loop()
       }
     }else{
       if(sieieFull5x5>0.045)  continue;
-      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, xsweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, xsweight*puwei);
+      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, mcweight*puwei);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, mcweight*puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, puwei);
       // h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, puwei);
 
       // for(int ivar=0; ivar<18; ivar++){	
-      // 	h_BDTvar[ivar][ebee][ptbin][mctruth]->Fill(var[ivar], xsweight*puwei);
+      // 	h_BDTvar[ivar][ebee][ptbin][mctruth]->Fill(var[ivar], mcweight*puwei);
       // }
-      //h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(mva, xsweight*puwei);
-      h_Pt[ebee][mctruth]->Fill(recoPt, xsweight*puwei);
-      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), xsweight*puwei);
+      //h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(mva, mcweight*puwei);
+      h_Pt[ebee][mctruth]->Fill(recoPt, mcweight*puwei);
+      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), mcweight*puwei);
       //if(recoPt>15.) { MTm var
-	////h_Wmn_mt[ebee][mctruth]->Fill(MTm, xsweight*puwei);             	
+	////h_Wmn_mt[ebee][mctruth]->Fill(MTm, mcweight*puwei);             	
       //}   
     }   
   }
