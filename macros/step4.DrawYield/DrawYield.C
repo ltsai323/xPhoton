@@ -763,7 +763,7 @@ void DrawYield(int ebee=0, int jetbin=0){
 
 
   double *fitted;
-  float lumi = 36.47;
+  float lumi = 35.9;
 
   char txt[100];
   for(int ii=0; ii<ptbin_ranges().size()-1; ii++){
@@ -822,6 +822,7 @@ void DrawYield(int ebee=0, int jetbin=0){
     std::cout << "hjjjj05\n";
 } // end of DrawYield
 
+/*
 void Draw_yield_treeeff(int ebee=0, int jetbin=0){
   char EBEE[20]="EB";
   if(ebee>1) sprintf(EBEE,"EE");
@@ -1019,6 +1020,7 @@ void Draw_yield_treeeff(int ebee=0, int jetbin=0){
   // tlx->DrawLatex(200, 1.01, "CMS Preliminary #sqrt{s} = 13TeV");
   
 }
+*/
 
 void Draw_XS(char EBEE[20]="EB", int jetbin=0){
     std::cout << "daraw xsssss\n";

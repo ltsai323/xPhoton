@@ -2,7 +2,7 @@
 summaryfile='../data/summaryJson/summary_bkgMC_madgraph.json'
 workingpath='step1.xsinfoAppended'
 destinypath='step2.mergePDversion'
-datalumi={ 2016: 36.47, 2017:20, 2018:30 }
+datalumi={ 2016: 35.9, 2017:20, 2018:30 }
 
 fDict={
   "QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
