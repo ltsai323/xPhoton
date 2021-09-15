@@ -9,6 +9,14 @@
 #include <TGraph.h>
 #include <TGraphAsymmErrors.h>
 
+std::vector<float> ptbin_ranges()
+{
+  // for 2016
+  //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
+  std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+  return vec_ptcut;
+}
+
 void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
   
   TFile *fqcd  = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
@@ -250,10 +258,10 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
 }
 
 void Draw_Isoeff(){
+  std::vector<float> vec_ptcut = ptbin_ranges();
+  float* ptcut = &vec_ptcut.front();
   
-  float ptcut[30] = {22, 30, 36, 50, 75, 90, 105,  120, 135, 150, 165, 175, 185,
-                     190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000};
-  int nbin=22;
+  int nbin=vec_ptcut.size();
   TH1F *h_EB_pass  = new TH1F("h_EB_pass" ,"",nbin,ptcut);
   TH1F *h_EB_total = new TH1F("h_EB_total","",nbin,ptcut);
   TH1F *h_EE_pass  = new TH1F("h_EE_pass" ,"",nbin,ptcut);
@@ -265,7 +273,7 @@ void Draw_Isoeff(){
   TH1F *h1;
   TH1F *htotal;
   char hname[100];
-  for(int ii=13; ii<22; ii++){
+  for(int ii=13; ii<nbin; ii++){
     int ebeebin=0;
     //correct signal efficiency
     sprintf(hname,"gjet_%d_%d_%d_px1_chIso", ebeebin, 2, ii);

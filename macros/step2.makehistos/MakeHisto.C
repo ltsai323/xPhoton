@@ -10,11 +10,19 @@
 #include <TLorentzVector.h>
 #define NUMBIN_PHOETA 2
 #define NUMBIN_JETETA 3
-#define NUMBIN_PHOPT  20 // which is needed to be oversize
 #define NUMBIT_HLT 9 // 0~8
+
+std::vector<float> ptbin_ranges()
+{
+  // for 2016
+  //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
+  std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+  return vec_ptcut;
+}
 
 void MakeHisto::Loop()
 {
+  const int NUMBIN_PHOPT = ptbin_ranges().size();
   //   In a ROOT session, you can do:
   //      Root > .L MakeHisto.C
   //      Root > MakeHisto t
@@ -450,7 +458,7 @@ Int_t MakeHisto::EBEE(Float_t eta)
 }
 Int_t MakeHisto::Ptbin(Float_t pt)
 {
-  std::vector<float> ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300}; // size = 16. ptbin = [0,15]
+  std::vector<float> ptcut = ptbin_ranges();
   int ibin = ptcut.size();
 
   // returned ibin = 0 to size-1

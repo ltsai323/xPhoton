@@ -351,7 +351,8 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("e5x5Full5x5", &e5x5Full5x5, &b_e5x5Full5x5);
     fChain->SetBranchAddress("mcCalIso04", &mcCalIso04, &b_mcCalIso04);
    /* fChain->SetBranchAddress("mcTrkIso04", &mcTrkIso04, &b_mcTrkIso04); */
-   fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
+ //fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
+   fChain->SetBranchAddress("xsweight", &mcweight, &b_mcweight);
    fChain->SetBranchAddress("puwei", &puwei, &b_puwei);
    //fChain->SetBranchAddress("Mmm", &Mmm, &b_Mmm);
    //fChain->SetBranchAddress("MTm", &MTm, &b_MTm);
