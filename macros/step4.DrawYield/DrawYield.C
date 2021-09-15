@@ -587,7 +587,7 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
     lumiTextOffset   = 0.; 
     cmsTextSize      = 0.5;
     cmsTextOffset    = 2.; 
-    CMS_lumi( pad1, 4, 11);
+    CMS_lumi( pad1, 2016, 11); // 2016 is data era
   }
   // TLatex *tlx = new TLatex();
   // tlx->SetTextSize(0.035);
