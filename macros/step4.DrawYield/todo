@@ -1,0 +1,7 @@
+For DrawYield :
+1. Modify input files to isovsbdt_template.root
+2. Add new function for pt_ranges(). To get array size and unify the pt array.
+3. Delete all input files "if used"
+4. I remembered there is something breaks the fit. Try to find out it. -> all hists needs to be rebined!
+5. Try to give a 1.6 if histogram contains zero bin content.
+6. other 

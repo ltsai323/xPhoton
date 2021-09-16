@@ -3,6 +3,10 @@ import ROOT
 import xPhoton.xPhoton.Managers.LogMgr as LogMgr
 mylog=LogMgr.GetLogger(__name__)
 
+class MyTH1(ROOT.TH1F):
+    def __init__(self, *args):
+        super(MyCanvas,self).__init__(*args)
+        self.Sumw2()
 class HistMgr1D(dict):
     def __init__(self, prefix):
         mylog.debug('it"s a init func')

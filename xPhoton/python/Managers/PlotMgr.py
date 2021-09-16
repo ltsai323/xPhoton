@@ -22,50 +22,20 @@ def ClearWorkspace(NeedToClean, directory='storefig'):
         else:
             print 'You have a clean workspace'
 
-class MyCanvas(object):
-    def __init__(self,batchmode=True, smallsize=False):
-        ROOT.gROOT.SetBatch(batchmode)
-        self._tmpfile=ROOT.TFile('/tmp/tmp.root', 'recreate')
-        self._tmpfile.cd()
-        w_=SMALL_WindowW if smallsize else DEFAULT_WindowW
-        h_=SMALL_WindowH if smallsize else DEFAULT_WindowH
-        self._canv=ROOT.TCanvas('mycanv','',w_,h_)
-        RootObjFormatMgr.CanvasStyler(self._canv)
-
-        self._outputformats=[]
-        self._savingFolder='.'
-    def __del__(self):
-        self._tmpfile.Close()
-    def SaveAs(self, name, filetype=None, logscale=False):
-        self._canv.SetLogy(logscale)
-        self._canv.Update()
-        if filetype:
-            self.savesinglefile(name,filetype)
-        elif len(self._outputformats):
-            for otype in self._outputformats:
-                self.savesinglefile(name, otype)
-        else:
-            print 'WARNING : NOTHING SAVED! Use "SetOutputFormats" to assert output format'
-        self._canv.SetLogy(False)
-
-    def savesinglefile(self, name, filetype):
-        folder=self._savingFolder+'/'
-        if len(self._outputformats) > 1:
-            folder=folder+filetype+'/'
-            if not os.path.isdir(folder): os.mkdir(folder)
-
-        self._canv.SaveAs( folder + name + '.' + filetype )
-
-    def SetOutputFormats(self, *args):
-        for arg in args:
-            if not isinstance(arg, str): raise ValueError('output formats are string only')
-        self._outputformats=args
-    def SetOutputFolder(self, folder):
-        if not os.path.isdir(folder):
-            raise IOError('no such folder found!')
-        self._savingFolder=folder
-    def GetCanvas(self):
-        return self._canv
+class MyCanvas(ROOT.TCanvas):
+    def __init__(self, name, title, width, height):
+        super(MyCanvas,self).__init__(name,title,width,height)
+        ROOT.gROOT.SetBatch(True)
+        '''
+        super(MyCanvas,self).SetFrameFillColor(4000)
+        super(MyCanvas,self).SetFrameFillStyle(4000)
+        super(MyCanvas,self).SetFillColor(4000)
+        super(MyCanvas,self).SetFillStyle(4000)
+        '''
+        self.SetFrameFillColor(4000)
+        self.SetFrameFillStyle(4000)
+        self.SetFillColor(4000)
+        self.SetFillStyle(4000)
 
 class DrawingMgr(object):
     def __init__(self, width=1000, height=1000):

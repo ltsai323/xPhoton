@@ -33,36 +33,37 @@ local_madgraphflist=[
 ]
 
 # unchecked
-local_qcdflist=[
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3v1.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3-v1.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1400to1800_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1400to1800_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_15to30_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_15to6500_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_170to300_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_170to300_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1800to2400_13TeV_TuneCUETP8M1_pythia8_v3-ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_1800to2400_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_2400to3200_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_2400to3200_13TeV_TuneCUETP8M1_pythia8v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_300to470_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_300to470_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_30to50_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_3200toInf_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_470to600_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_470to600_13TeV_TuneCUETP8M1_pythia8_v3-v2_backup.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_50to80_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_600to800_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_600to800_13TeV_TuneCUETP8M1_pythia8_v3-v2_backup.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_600to800_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_800to1000_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_800to1000_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_80to120_13TeV_TuneCUETP8M1_pythia8_v3-v1.txt',
-'/home/ltsai/ReceivedFile/GJet/listedPaths/QCD/crab_bkgMC_Pt_80to120_13TeV_TuneCUETP8M1_pythia8_v3_ext2-v2.txt',
+localQCD_pythiaflist=[
+
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_1000to1400_13TeV_TuneCUETP8M1_pythia8_v3v1.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3-v1.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_120to170_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_1400to1800_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_1400to1800_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_15to30_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_15to6500_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_170to300_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_170to300_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_1800to2400_13TeV_TuneCUETP8M1_pythia8_v3-ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_1800to2400_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_2400to3200_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_2400to3200_13TeV_TuneCUETP8M1_pythia8v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_300to470_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_300to470_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_30to50_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_3200toInf_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_470to600_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_470to600_13TeV_TuneCUETP8M1_pythia8_v3-v2_backup.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_50to80_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_600to800_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_600to800_13TeV_TuneCUETP8M1_pythia8_v3-v2_backup.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_600to800_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_800to1000_13TeV_TuneCUETP8M1_pythia8_v3-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_800to1000_13TeV_TuneCUETP8M1_pythia8_v3_ext1-v2.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_80to120_13TeV_TuneCUETP8M1_pythia8_v3-v1.txt",
+"/home/ltsai/ReceivedFile/GJet/listedPaths/QCDpythia/crab_bkgMC_Pt_80to120_13TeV_TuneCUETP8M1_pythia8_v3_ext2-v2.txt",
 ]
 
 localQCD_madgraphlist=[
@@ -90,8 +91,10 @@ if __name__ == '__main__':
     mesg=shmesg
 
     print mesg
-    flist=local_madgraphflist
+    #flist=local_madgraphflist
     #flist=localQCD_madgraphlist
+    #flist=local_pythiaflist
+    flist=localQCD_pythiaflist
     for f in flist:
         folder=f.split('/')[-1].split('.')[0]
         print folder
