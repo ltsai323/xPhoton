@@ -43,186 +43,8 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
 
     TTree *outtree_;
 
-    float ptcut[] = {
-           15,    20,    40,    60,    75, // 0
-           90,   105,   120,   135,   150, // 5
-
-          160,   170,   180,   190,   200, //10
-          220,   250,   300,   350,   400, //15
-
-          500,   750,  1000,  1500,  2000, //20
-         3000, 10000}; //22 bins
-
-    float etabin[] = {0., 0.8, 1.5, 2.1, 2.5};
-
-    TH1F* h_subVtxPt    = new TH1F("subVtxPt"   , "pt distribution of secondary vertex in bJet", 70, 0., 350. );
-    TH1F* h_subVtxMass  = new TH1F("subVtxMass" , "mass spectrum of secondary vertex in bJet", 88, 0., 22. );
-    TH1F* h_subVtx3DVal = new TH1F("subVtx3DVal", "flight distance between PV and SV", 60, 0., 120. );
-    TH1F* h_subVtx3DErr = new TH1F("subVtx3DErr", "error of flight distance between PV and SV", 88, 0., 22. );
-    TH1F* h_subVtxNtrks = new TH1F("subVtxNtrks", "number of tracks containing in SV", 18,0.,18. );
-
-    TH1F *h_hasGoodVtx = new TH1F("h_hasGoodVtx","hasGoodVtx",2,0,2);
-    TH1F *hpthat = new TH1F("hpthat","pt hat", 100, 0., 1000.);
-    TH1F *hpthat_wide = new TH1F("hpthat_wide","pt hat wide window", 600, 0., 6000.);
-
-    TH1F *hdpt = new TH1F("hdpt","dpt", 100, 0., 1.);
-    TH1F *hdR = new TH1F("hdR","dR", 100, 0., 2.);
-
-    TH1F *hdpt_ele = new TH1F("hdpt_ele","dpt", 100, 0., 1.);
-    TH1F *hdR_ele = new TH1F("hdR_ele","dR", 100, 0., 2.);
-
-    TH1F *hdR_genjet = new TH1F("hdR_genjet","dR", 100, 0., 2.);
-
-    TH1F *hdR_pho_lep = new TH1F("hdR_pho_lep","dR pho and lepton", 150, 0., 3.);
-    TH1F *hdR_fake_lep = new TH1F("hdR_fake_lep","dR fake and lepton", 150, 0., 3.);
-
-    TH1F *hmcCalIso = new TH1F("hmcCalIso","mcCalIso", 100, 0., 20.);
-    TH1F *hmcGenIso = new TH1F("hmcGenIso","mcGenIso", 100, 0., 20.);
-    TH1F *hmcpartonIso = new TH1F("hmcpartonIso","mcpartonIso", 100, 0., 20.);
-    TH1F *hgenphoEB_pt = new TH1F("hgenphoEB_pt","GenphoEB photon Pt", 3000, 0., 3000.);
-    TH1F *hgenphoEB_eta = new TH1F("hgenphoEB_eta","GenphoEB photon eta", 600, -3., 3.);
-    TH1F *hgenphoEE_pt = new TH1F("hgenphoEE_pt","GenphoEE photon Pt", 3000, 0., 3000.);
-    TH1F *hgenphoEE_eta = new TH1F("hgenphoEE_eta","GenphoEE photon eta", 600, -3., 3.);
-
-    TH1F *hgenphoEB_pt_vbin = new TH1F("hgenphoEB_pt_vbin","GenphoEB photon Pt var. bin", 25, ptcut);
-    TH1F *hgenphoEE_pt_vbin = new TH1F("hgenphoEE_pt_vbin","GenphoEE photon Pt var. bin", 25, ptcut);
-
-    TH1F *hgenphoEBEE0_pt_vbin = new TH1F("hgenphoEBEE0_pt_vbin","GenphoEBEE0 photon Pt var. bin", 25, ptcut);
-    TH1F *hgenphoEBEE1_pt_vbin = new TH1F("hgenphoEBEE1_pt_vbin","GenphoEBEE1 photon Pt var. bin", 25, ptcut);
-    TH1F *hgenphoEBEE2_pt_vbin = new TH1F("hgenphoEBEE2_pt_vbin","GenphoEBEE2 photon Pt var. bin", 25, ptcut);
-    TH1F *hgenphoEBEE3_pt_vbin = new TH1F("hgenphoEBEE3_pt_vbin","GenphoEBEE3 photon Pt var. bin", 25, ptcut);
-
-    TH1F *hgenphoEBEE0_pt_vbin_amcnlo = new TH1F("hgenphoEBEE0_pt_vbin_amcnlo","GenphoEBEE0 photon Pt var. bin_amcnlo", 25, ptcut);
-    TH1F *hgenphoEBEE1_pt_vbin_amcnlo = new TH1F("hgenphoEBEE1_pt_vbin_amcnlo","GenphoEBEE1 photon Pt var. bin_amcnlo", 25, ptcut);
-    TH1F *hgenphoEBEE2_pt_vbin_amcnlo = new TH1F("hgenphoEBEE2_pt_vbin_amcnlo","GenphoEBEE2 photon Pt var. bin_amcnlo", 25, ptcut);
-    TH1F *hgenphoEBEE3_pt_vbin_amcnlo = new TH1F("hgenphoEBEE3_pt_vbin_amcnlo","GenphoEBEE3 photon Pt var. bin_amcnlo", 25, ptcut);
-
-    TH1F *hgenphoEBjet0_pt_vbin_amcnlo = new TH1F("hgenphoEBjet0_pt_vbin_amcnlo","GenphoEB jet0 photon Pt var. bin_amcnlo", 25, ptcut);
-    TH1F *hgenphoEBjet1_pt_vbin_amcnlo = new TH1F("hgenphoEBjet1_pt_vbin_amcnlo","GenphoEB jet1 photon Pt var. bin_amcnlo", 25, ptcut);
-    TH1F *hgenphoEEjet0_pt_vbin_amcnlo = new TH1F("hgenphoEEjet0_pt_vbin_amcnlo","GenphoEB jet0 photon Pt var. bin_amcnlo", 25, ptcut);
-    TH1F *hgenphoEEjet1_pt_vbin_amcnlo = new TH1F("hgenphoEEjet1_pt_vbin_amcnlo","GenphoEB jet1 photon Pt var. bin_amcnlo", 25, ptcut);
-
-    hgenphoEB_pt->Sumw2();
-    hgenphoEB_eta->Sumw2();
-    hgenphoEE_pt->Sumw2();
-    hgenphoEE_eta->Sumw2();
-    hgenphoEB_pt_vbin->Sumw2();
-    hgenphoEE_pt_vbin->Sumw2();
-    hgenphoEBEE0_pt_vbin->Sumw2();
-    hgenphoEBEE1_pt_vbin->Sumw2();
-    hgenphoEBEE2_pt_vbin->Sumw2();
-    hgenphoEBEE3_pt_vbin->Sumw2();
-
-    hgenphoEBEE0_pt_vbin_amcnlo->Sumw2();
-    hgenphoEBEE1_pt_vbin_amcnlo->Sumw2();
-    hgenphoEBEE2_pt_vbin_amcnlo->Sumw2();
-    hgenphoEBEE3_pt_vbin_amcnlo->Sumw2();  
-    hgenphoEBjet0_pt_vbin_amcnlo->Sumw2(); 
-    hgenphoEBjet1_pt_vbin_amcnlo->Sumw2(); 
-    hgenphoEEjet0_pt_vbin_amcnlo->Sumw2(); 
-    hgenphoEEjet1_pt_vbin_amcnlo->Sumw2(); 
-
-    TH1F *hphoEB_pt_presel_nocsev = new TH1F("hphoEB_pt_presel_nocsev","pt of EB no csev", 25, ptcut);
-    TH1F *hphoEB_pt_presel_csev = new TH1F("hphoEB_pt_presel_csev","pt of EB  csev", 25, ptcut);
-    TH1F *hphoEE_pt_presel_nocsev = new TH1F("hphoEE_pt_presel_nocsev","pt of EE no csev", 25, ptcut);
-    TH1F *hphoEE_pt_presel_csev = new TH1F("hphoEE_pt_presel_csev","pt of EE  csev", 25, ptcut);
-
-    TH1F *hphoEB_pt_presel_den = new TH1F("hphoEB_pt_presel_den","pt of EB can", 25, ptcut);
-    TH1F *hphoEB_pt_presel_num = new TH1F("hphoEB_pt_presel_num","pt of EB sel", 25, ptcut);
-    TH1F *hphoEE_pt_presel_den = new TH1F("hphoEE_pt_presel_den","pt of EE can", 25, ptcut);
-    TH1F *hphoEE_pt_presel_num = new TH1F("hphoEE_pt_presel_num","pt of EE sel", 25, ptcut);
-
-    TH2F *h_phoPt_eta_Z_all = new TH2F("h_phoPt_eta_Z_all","pt eta of photon from Z all", 25, ptcut, 4, etabin);
-    TH2F *h_phoPt_eta_Z_csev = new TH2F("h_phoPt_eta_Z_csev","pt eta of photon from Z all", 25, ptcut, 4, etabin);
-
-    TH2F *hgenpho_eta_phi = new TH2F("hgenpho_eta_phi","gen photon eta phi", 500, -2.5, 2.5, 320, -3.2, 3.2);
-    TH2F *hgenpho_eta_pt = new TH2F("hgenpho_eta_pt","gen photon eta pt", 50, -2.5, 2.5, 100, 0., 1000.);
-
-    TH1F *h_ngenpho = new TH1F("h_ngenpho","n gen pho", 20, 0., 20);
-    TH1F *h_npho = new TH1F("h_npho","n pho", 20, 0., 20);
-    TH1F *h_nele = new TH1F("h_nele","n ele", 20, 0., 20);
-    TH1F *h_nphoFiredTrgs = new TH1F("h_nphoFiredTrgs","n pho", 20, 0., 20);
-    TH1F *h_truepho = new TH1F("h_truepho","true pho", 10, 0., 10.);
-    TH1F *h_convpho = new TH1F("h_convpho","converted pho", 10, 0., 10.);
-    TH1F *h_phoEt = new TH1F("h_phoEt","pho Et", 200, 0., 1000);
-    TH1F *h_jetPt = new TH1F("h_jetPt","jet Pt", 200, 0., 1000);
-    TH1F *h_npj = new TH1F("h_npj","n pho jet comb", 20, 0., 20.);
-    TH1F *h_pjmass = new TH1F("h_pjmass","inv mass of pho jet", 1000, 0., 10000);
-    TH1F *h_njet = new TH1F("h_njet","njet", 20, 0., 20);
-    TH1F *h_nrecojet = new TH1F("h_nrecojet","n reco jet", 20, 0., 20);
-    TH1F *h_ngenjet = new TH1F("h_ngenjet","n gen jet", 20, 0., 20);
-
-    TH2F *h_detadpt_jet12 = new TH2F("h_detadpt_jet12","deta dpt jet12",3,-1,2,100,0., 1.);
 
 
-    TH1F *h_dR_phojet = new TH1F("h_dR_phojet","dR of pho jet", 100, 0., 2.);
-    TH1F *h_dR_phoele = new TH1F("h_dR_phoele","dR of pho ele", 100, 0., 2.);
-    TH1F *h_dpt_phojet = new TH1F("h_dpt_phojet","dpt of pho jet", 100, 0., 4.);
-
-    TH1F *h_jetID = new TH1F("h_jetID", "jetid", 2, 0., 2.);
-    TH1F *h_jetIDv = new TH1F("h_jetIDv", "jetid v", 2, 0., 2.);
-
-
-    TH1F *h_pho2Pt = new TH1F("h_pho2Pt","pho2 Pt", 200, 0., 1000);
-    TH1F *h_npp = new TH1F("h_npp","pho pho comb", 20, 0., 20.);
-    TH1F *h_ppmass = new TH1F("h_ppmass","inv mass of pho pho", 1000, 0., 10000);
-    TH1F *h_ppmass_zoom = new TH1F("h_ppmass_zoom","inv mass of pho pho zoom", 200, 0., 200);
-    TH1F *h_EBSeedTime = new TH1F("h_EBSeedTime","EBSeedTime from z",1000, -5., 5.);
-    TH1F *h_EESeedTime = new TH1F("h_EESeedTime","EESeedTime from z",1000, -5., 5.);
-    TH1F *h_EBSeedTimeW = new TH1F("h_EBSeedTimeW","EBSeedTime from W",1000, -5., 5.);
-    TH1F *h_EESeedTimeW = new TH1F("h_EESeedTimeW","EESeedTime from W",1000, -5., 5.);
-
-    TH1F *h_EB_bdt = new TH1F("h_EB_bdt","EB bdt output", 200, -1., 1.);
-    TH1F *h_EE_bdt = new TH1F("h_EE_bdt","EE bdt output", 200, -1., 1.);
-
-    TH1F *h_dphi_recoil = new TH1F("h_dphi_recoil","dphi recoil jet", 100., -4., 4.);
-    TH1F *h_dpt_recoil = new TH1F("h_dpt_recoil","dpt recoil jet", 100.,-2., 2.);
-
-
-    TProfile *tp_rho = new TProfile("tp_rho","tp_rho", 100, 0., 100.);
-    TProfile *tp_rho_EB = new TProfile("tp_rho_EB","tp_rho_EB", 100, 0., 100.);
-    TProfile *tp_rho_EE = new TProfile("tp_rho_EE","tp_rho_EE", 100, 0., 100.);
-    TH2F *h2_nVtx_rho = new TH2F("h2_nVtx_rho","h2_nVtx_rho",100, 0., 100., 100., 0., 50.);; //= new TProfile();
-    TH2F *h2_nVtx_iso = new TH2F("h2_nVtx_iso","h2_nVtx_iso",100, 0., 100., 1000., 0., 10.);; //= new TProfile();
-
-    TProfile *tp_chIso[10]; //= new TProfile();
-    TProfile *tp_phIso[10]; //= new TProfile();
-    TProfile *tp_nhIso[10]; //= new TProfile();
-
-    TProfile *tp_chIso_rho[10]; //= new TProfile();
-    TProfile *tp_phIso_rho[10]; //= new TProfile();
-    TProfile *tp_nhIso_rho[10]; //= new TProfile();
-
-    TH1F *h_Zee_mass = new TH1F("h_Zee_mass","Zee mass", 100, 50., 250);
-    TH1F *h_Zee_mass_csev = new TH1F("h_Zee_mass_csev","Zee mass photon CSEV", 100, 50., 250);
-    TH1F *h_Zmm_mass = new TH1F("h_Zmm_mass","Zmm mass", 150, 0., 150);
-    TH1F *h_MET = new TH1F("h_MET","MET", 100, 0., 200.);
-    TH1F *h_Wen_mt = new TH1F("h_Wen_mt","W enue Mt", 150, 0., 150.); 
-    TH1F *h_Wmn_mt = new TH1F("h_Wmn_mt","W mnue Mt", 150, 0., 150.); 
-
-    TH2F *h2_mcPID_mcPt = new TH2F("h2_mcPID_mcPt","mcPID vs mcPt", 100, 0., 1000, 30, 0., 30);
-
-
-    std::map<std::string, TH1F*> histMap;
-    histMap["lheEnergy"] = new TH1F("lheEnergy", "hi", 100, 0., 4000.);
-
-    char txt[50];
-
-    for(int ii=0; ii<10; ii++){
-        sprintf(txt,"tp_chIso_bin%d",ii);
-        tp_chIso[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_phIso_bin%d",ii);
-        tp_phIso[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_nhIso_bin%d",ii);
-        tp_nhIso[ii] = new TProfile(txt,txt, 100, 0., 100.);
-
-        sprintf(txt,"tp_chIso_rho_bin%d",ii);
-        tp_chIso_rho[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_phIso_rho_bin%d",ii);
-        tp_phIso_rho[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_nhIso_rho_bin%d",ii);
-        tp_nhIso_rho[ii] = new TProfile(txt,txt, 100, 0., 100.);
-    }
 
 
     outtree_ = new TTree("t", "mini tree");
@@ -241,7 +63,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
     Bool_t isData;
     Float_t pthat_, mcPt_, mcEta_, mcPhi_, recoPt, recoPtCalib, recoEta, recoPhi, recoSCEta, r9;
     Float_t mcCalIso04_, mcTrkIso04_;
-    Float_t puwei_=1.;
     Float_t r9Full5x5;
     //Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
     Int_t   isMatched, isMatchedEle,  nVtx, eleVeto, nPU;
@@ -276,7 +97,7 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
     Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
     Float_t s4;
-    Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
+    //Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
 
     Int_t    run;
     Long64_t event;
@@ -310,62 +131,61 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
 
     //}
 
-    outtree_->Branch("run", &run, "run/I");
-    outtree_->Branch("event", &event, "event/L");
-    outtree_->Branch("isData",         &isData,        "isData/O");
-    outtree_->Branch("HLT",         &HLT,        "HLT/L");
-    outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
-    outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
-    outtree_->Branch("pthat",        &pthat_,       "pthat/F");
-    outtree_->Branch("genHT",        &genHT_,       "genHT/F");
-    outtree_->Branch("mcPt",         &mcPt_,        "mcPt/F");
-    outtree_->Branch("mcEta",        &mcEta_,       "mcEta/F");
-    outtree_->Branch("mcPhi",        &mcPhi_,       "mcPhi/F");
-    outtree_->Branch("mcCalIso04",   &mcCalIso04_,   "mcCalIso04/F");
-    outtree_->Branch("mcTrkIso04",   &mcTrkIso04_,   "mcTrkIso04/F");
-    outtree_->Branch("recoPt",       &recoPt,       "recoPt/F");
-    outtree_->Branch("recoPtCalib",  &recoPtCalib,  "recoPtCalib/F");
-    outtree_->Branch("recoEta",      &recoEta,      "recoEta/F");
-    outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
-    outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
-    outtree_->Branch("r9",           &r9,           "r9/F");
-    outtree_->Branch( "s4"          , &s4             , "s4/F"               );
-    outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
-    outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
-    outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
-    outtree_->Branch("nVtx",         &nVtx,         "nVtx/I");
-    outtree_->Branch("nPU",          &nPU,          "nPU/I");
-    outtree_->Branch("puwei",        &puwei_,        "puwei/F");
-    outtree_->Branch("eleVeto",      &eleVeto,      "eleVeto/I");
-    outtree_->Branch("HoverE",       &HoverE,       "HoverE/F");
-
-    outtree_->Branch("chIsoRaw",     &chIsoRaw,     "chIsoRaw/F");
-    outtree_->Branch("chWorstRaw",   &chWorstIso,   "chWorstIso/F");
-    outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
-    outtree_->Branch("nhIsoRaw",     &nhIsoRaw,     "nhIsoRaw/F");
-    outtree_->Branch("rho",          &rho,          "rho/F"); 
-
-    outtree_->Branch("rawE",         &rawE,         "rawE/F");
-    outtree_->Branch("scEtaWidth",   &scEtaWidth,   "scEtaWidth/F");
-    outtree_->Branch("scPhiWidth",   &scPhiWidth,   "scPhiWidth/F");
-    outtree_->Branch("esRR",         &esRR,         "esRR/F");   
-    outtree_->Branch("esEn",         &esEn,         "esEn/F");   
-    outtree_->Branch("mva",          &mva,          "mva/F");  
-    outtree_->Branch("mva_nocorr",   &mva_nocorr,   "mva_nocorr/F");  
-    outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
-    outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
-    outtree_->Branch("MET",    &MET,    "MET/F");  
-    outtree_->Branch("metFilters",    &metFilters,    "metFilters/I");  
-    outtree_->Branch("METPhi",    &METPhi,    "METPhi/F");  
-    outtree_->Branch("phohasPixelSeed", &phohasPixelSeed_, "phohasPixelSeed/I");
-
-    outtree_->Branch("sieieFull5x5",        &sieieFull5x5,        "sieieFull5x5/F");
-    outtree_->Branch("sieipFull5x5",        &sieipFull5x5,        "sieipFull5x5/F");
-    outtree_->Branch("sipipFull5x5",        &sipipFull5x5,        "sipipFull5x5/F");
-    outtree_->Branch("r9Full5x5",        &r9Full5x5,        "r9Full5x5/F");
-    outtree_->Branch("e2x2Full5x5",        &e2x2Full5x5,        "e2x2Full5x5/F");
-    outtree_->Branch("e5x5Full5x5",        &e5x5Full5x5,        "e5x5Full5x5/F");
-
+    //outtree_->Branch("run", &run, "run/I");
+    //outtree_->Branch("event", &event, "event/L");
+    //outtree_->Branch("isData",         &isData,        "isData/O");
+    //outtree_->Branch("HLT",         &HLT,        "HLT/L");
+    //outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
+    //outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
+    //outtree_->Branch("pthat",        &pthat_,       "pthat/F");
+    //outtree_->Branch("genHT",        &genHT_,       "genHT/F");
+    //outtree_->Branch("mcPt",         &mcPt_,        "mcPt/F");
+    //outtree_->Branch("mcEta",        &mcEta_,       "mcEta/F");
+    //outtree_->Branch("mcPhi",        &mcPhi_,       "mcPhi/F");
+    //outtree_->Branch("mcCalIso04",   &mcCalIso04_,   "mcCalIso04/F");
+    //outtree_->Branch("mcTrkIso04",   &mcTrkIso04_,   "mcTrkIso04/F");
+    ////outtree_->Branch("recoPt",       &recoPt,       "recoPt/F");
+    //outtree_->Branch("recoPtCalib",  &recoPtCalib,  "recoPtCalib/F");
+    //outtree_->Branch("recoEta",      &recoEta,      "recoEta/F");
+    ////////////////////outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
+    ////////////////////outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
+    ////////////////////outtree_->Branch("r9",           &r9,           "r9/F");
+    ////////////////////outtree_->Branch( "s4"          , &s4             , "s4/F"               );
+    ////////////////////outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
+    ////////////////////outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
+    ////////////////////outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
+    ////////////////////outtree_->Branch("nVtx",         &nVtx,         "nVtx/I");
+    ////////////////////outtree_->Branch("nPU",          &nPU,          "nPU/I");
+    ////////////////////outtree_->Branch("eleVeto",      &eleVeto,      "eleVeto/I");
+    ////////////////////outtree_->Branch("HoverE",       &HoverE,       "HoverE/F");
+////////////////////
+    ////////////////////outtree_->Branch("chIsoRaw",     &chIsoRaw,     "chIsoRaw/F");
+    ////////////////////outtree_->Branch("chWorstRaw",   &chWorstIso,   "chWorstIso/F");
+    ////////////////////outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
+    ////////////////////outtree_->Branch("nhIsoRaw",     &nhIsoRaw,     "nhIsoRaw/F");
+    ////////////////////outtree_->Branch("rho",          &rho,          "rho/F"); 
+////////////////////
+    ////////////////////outtree_->Branch("rawE",         &rawE,         "rawE/F");
+    ////////////////////outtree_->Branch("scEtaWidth",   &scEtaWidth,   "scEtaWidth/F");
+    ////////////////////outtree_->Branch("scPhiWidth",   &scPhiWidth,   "scPhiWidth/F");
+    ////////////////////outtree_->Branch("esRR",         &esRR,         "esRR/F");   
+    ////////////////////outtree_->Branch("esEn",         &esEn,         "esEn/F");   
+    ////////////////////////////////////////outtree_->Branch("mva",          &mva,          "mva/F");  
+    ////////////////////outtree_->Branch("mva_nocorr",   &mva_nocorr,   "mva_nocorr/F");  
+    ////////////////////outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
+    ////////////////////outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
+    ////////////////////outtree_->Branch("MET",    &MET,    "MET/F");  
+    ////////////////////outtree_->Branch("metFilters",    &metFilters,    "metFilters/I");  
+    ////////////////////outtree_->Branch("METPhi",    &METPhi,    "METPhi/F");  
+    ////////////////////outtree_->Branch("phohasPixelSeed", &phohasPixelSeed_, "phohasPixelSeed/I");
+////////////////////
+    ////////////////////outtree_->Branch("sieieFull5x5",        &sieieFull5x5,        "sieieFull5x5/F");
+    ////////////////////outtree_->Branch("sieipFull5x5",        &sieipFull5x5,        "sieipFull5x5/F");
+    ////////////////////outtree_->Branch("sipipFull5x5",        &sipipFull5x5,        "sipipFull5x5/F");
+    ////////////////////outtree_->Branch("r9Full5x5",        &r9Full5x5,        "r9Full5x5/F");
+    ////////////////////outtree_->Branch("e2x2Full5x5",        &e2x2Full5x5,        "e2x2Full5x5/F");
+    ////////////////////outtree_->Branch("e5x5Full5x5",        &e5x5Full5x5,        "e5x5Full5x5/F");
+////////////////////
     outtree_->Branch("jetPt", &jetPt_, "jetPt/F");
     outtree_->Branch("jetEta", &jetEta_, "jetEta/F");
     outtree_->Branch("jetPhi", &jetPhi_, "jetPhi/F");
@@ -403,30 +223,30 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetGenPartonID", 	          &jetGenPartonID_, 	      	      "jetGenPartonID/I"); 	        
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
-        outtree_->Branch( "calib_scEtaWidth"  , &calib_scEtaWidth     , "calib_scEtaWidth/F"       );
-        outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
-        outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
-        outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
+        //outtree_->Branch( "calib_scEtaWidth"  , &calib_scEtaWidth     , "calib_scEtaWidth/F"       );
+        //outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
+        //outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
+        //outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
 
-        outtree_->Branch("nLHE"               , &nLHE                 , "nLHE/I"                   );
-        outtree_->Branch("lhePID"             ,  lhePID               , "lhePID[nLHE]/I"           );
-        outtree_->Branch("lheE"               ,  lheE                 , "lheE  [nLHE]/F"           );
-        outtree_->Branch("lhePx"              ,  lhePx                , "lhePx [nLHE]/F"           );
-        outtree_->Branch("lhePy"              ,  lhePy                , "lhePy [nLHE]/F"           );
-        outtree_->Branch("lhePz"              ,  lhePz                , "lhePz [nLHE]/F"           );
+        ////////////////////outtree_->Branch("nLHE"               , &nLHE                 , "nLHE/I"                   );
+        ////////////////////outtree_->Branch("lhePID"             ,  lhePID               , "lhePID[nLHE]/I"           );
+        ////////////////////outtree_->Branch("lheE"               ,  lheE                 , "lheE  [nLHE]/F"           );
+        ////////////////////outtree_->Branch("lhePx"              ,  lhePx                , "lhePx [nLHE]/F"           );
+        ////////////////////outtree_->Branch("lhePy"              ,  lhePy                , "lhePy [nLHE]/F"           );
+        ////////////////////outtree_->Branch("lhePz"              ,  lhePz                , "lhePz [nLHE]/F"           );
     }
 
 
-    outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
-    outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
+    ////////////////////outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
+    ////////////////////outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
     //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
     outtree_->Branch("jetID", &jetID, "jetID/I");
     // PUbit : 0 -- loose, 1 -- medium, 2 -- tight
     outtree_->Branch("jetPUIDbit", &jetPUIDbit, "jetPUIDbit/I");
 
-    outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
-    outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
-    outtree_->Branch("MIPTotEnergy", &MIPTotEnergy_, "MIPTotEnergy/F");
+    ////////////////////outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
+    ////////////////////outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
+    ////////////////////outtree_->Branch("MIPTotEnergy", &MIPTotEnergy_, "MIPTotEnergy/F");
 
 
     //get weight for gjetpt15to6000
@@ -438,28 +258,9 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
     TH1F *hist_reco = new TH1F("hist_reco","reco", 100, 0., 1000);
 
     // // pileup reweighting for MC
-    PUWeightCalculator puCalc;
-    TGraph *tgr[8];
-    if(data.HasMC())
-    {
-        //puCalc.Init( ExternalFilesMgr::RooFile_PileUp() );
-        puCalc.Init( ExternalFilesMgr::RooFile_PileUp_Run2016_69200nb_Moriond17() );
-        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
-        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
 
-        tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
-        tgr[1] = (TGraph*) f->Get("transfS4EB");
-        tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
-        tgr[3] = (TGraph*) f->Get("transffull5x5sieieEB");
-
-        tgr[4] = (TGraph*) f->Get("transfEtaWidthEE");
-        tgr[5] = (TGraph*) f->Get("transfS4EE");
-        tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
-        tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
-    }
-
+    /*
     TFile* f_showershapecorrection;
-    //PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
     std::map<std::string, TGraph*> barrelCorrections;
     if ( data.HasMC() )
@@ -477,6 +278,7 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
 
     //pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
     }
+    */
 
 
     LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
@@ -500,14 +302,11 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
 
         Int_t    nPho     = data.GetInt("nPho");
         Int_t nJet = data.GetInt("nJet");
-        h_nrecojet->Fill(nJet);	  
         if(nJet <1 ) continue;
 
         if(!data.HasMC())
         {
             Int_t hasGoodVtx = data.GetInt("nGoodVtx");
-            if(hasGoodVtx) h_hasGoodVtx->Fill(1.1);
-            else h_hasGoodVtx->Fill(0.1);
             if(!hasGoodVtx) continue;
             int metFilters_ = data.GetInt("metFilters");
             if(metFilters_ != 0 ) continue;
@@ -544,8 +343,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
         int nPU_ = 0;
         if( data.HasMC()) { 
             pthat     = data.GetFloat("pthat");
-            hpthat->Fill(pthat,xsweight);
-            hpthat_wide->Fill(pthat,xsweight);
 
             nMC       = data.GetInt("nMC");
             mcPID     = data.GetPtrInt("mcPID");
@@ -579,7 +376,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
             }      
             mcCalIsoDR04 = data.GetPtrFloat("mcCalIsoDR04");
             mcTrkIsoDR04 = data.GetPtrFloat("mcTrkIsoDR04");
-            puwei_ = (float) puCalc.GetWeight(run_, puTrue[1]); // in-time PU
 
             genWeight = data.GetFloat("genWeight");      
             if(genWeight>0.) xsweight=XS;
@@ -592,14 +388,12 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                 if(jetGenJetPt[j] > 40 && TMath::Abs(jetGenJetEta[j])<2.4)
                     ngenjet++;
             }
-            h_ngenjet->Fill(ngenjet);      
 
 
             int ngenpho=0;
             //Get gjet gen photon denominator
             for (Int_t k=0; k<nMC; ++k) {
                 if (mcPID[k] == 22 &&  mcPt[k]>15. && TMath::Abs(mcMomPID[k]) <= 22) {
-                    if(mcPt[k]>150.) hmcGenIso->Fill(mcCalIsoDR04[k]);
 
                     float GENISO=0.;
                     for (Int_t nn=0; nn<nMC; ++nn) {
@@ -608,39 +402,15 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                         float dr = usefulFuncs::deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
                         if( dr < 0.4) GENISO += mcPt[nn];
                     }
-                    if(mcPt[k]>150.) hmcpartonIso->Fill(GENISO);
 
                     if(mcCalIsoDR04[k]<5.0 ){ //for gammajet photon 	    
                         ngenpho++;
-                        hgenpho_eta_phi->Fill(mcEta[k], mcPhi[k]);
-                        hgenpho_eta_pt->Fill(mcEta[k], mcPt[k]);
-                        if(TMath::Abs(mcEta[k])<1.4442) {
-                            hgenphoEB_pt->Fill(mcPt[k],xsweight*puwei_);
-                            //hgenphoEB_pt_vbin->Fill(mcPt[k]);
-                            hgenphoEB_pt_vbin->Fill(mcPt[k],xsweight*puwei_); //madgraph
-                            hgenphoEB_eta->Fill(mcEta[k]);
-                        }else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.5) {
-                            hgenphoEE_pt->Fill(mcPt[k],xsweight*puwei_);
-                            //hgenphoEE_pt_vbin->Fill(mcPt[k]);
-                            hgenphoEE_pt_vbin->Fill(mcPt[k],xsweight*puwei_); //madgraph
-                            hgenphoEE_eta->Fill(mcEta[k]);
-                        }
 
-                        if(TMath::Abs(mcEta[k])<0.8) hgenphoEBEE0_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-                        else if(TMath::Abs(mcEta[k])<1.4442) hgenphoEBEE1_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.1) hgenphoEBEE2_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.5) hgenphoEBEE3_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-
-                        if(TMath::Abs(mcEta[k])<0.8) hgenphoEBEE0_pt_vbin->Fill(mcPt[k]);
-                        else if(TMath::Abs(mcEta[k])<1.4442) hgenphoEBEE1_pt_vbin->Fill(mcPt[k]);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.1) hgenphoEBEE2_pt_vbin->Fill(mcPt[k]);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.5) hgenphoEBEE3_pt_vbin->Fill(mcPt[k]);
 
                         break;
                     }
                 }
             }
-            h_ngenpho->Fill(ngenpho);
         } // isdata end
 
 
@@ -786,7 +556,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
         mceta.clear();
         mcphi.clear();
 
-        //h_npho->Fill(nPho);
         int nmatch=0;
         int nmatch_EB=0;
         int nmatch_EE=0;
@@ -800,6 +569,7 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
         //count number of true photon
         int ntruephoton=0;
 
+        /*
         if( data.HasMC()) { 
             vector<int> mcid;
             int nnMC=0;
@@ -828,8 +598,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
             }
 
 
-            h_truepho->Fill(nnMC+0.001);
-            h_convpho->Fill(nneleMC/2. + 0.001);
             ntruephoton= nnMC + nneleMC/2.;
 
 
@@ -850,9 +618,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                     int k = mcid[jj];
                     float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
                     float dpt = fabs((phoEt[i] - mcPt[k])/mcPt[k]);
-                    if(dpt<0.2)hdR->Fill(dr);
-                    if(dr<0.2)hdpt->Fill(dpt);
-                    hmcCalIso->Fill(mcCalIsoDR04[k]); 
 
                     if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
                     if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatus[k], mcCalIsoDR04[k], mcTrkIsoDR04[k]);
@@ -890,8 +655,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                     if (fabs(mcPID[k]) == 11 && mcMomPID[k] == 22) {	    
                         float dr = usefulFuncs::deltaR(phoEta[i], phoPhi[i], mcEta[k], mcPhi[k]);
                         float dpt = fabs((phoEt[i] - mcMomPt[k])/mcMomPt[k]);
-                        hdR_ele->Fill(dr);
-                        hdpt_ele->Fill(dpt);
                         if (dr < 0.2 && dpt < 0.2 && (mcCalIsoDR04[k]+mcTrkIsoDR04[k])<5.0 ){
                             tmp_isConverted = 1;
                             tmp_mcPt_  = mcMomPt[k];
@@ -924,21 +687,12 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                 converted[i]=tmp_isConverted;
             }
 
-            if(gjet15to6000 == 0) {
-                h_truepho->Fill(nmatch+0.001);
-                h_convpho->Fill(nconv+0.001);
-            }
         }
+    */
 
 
         int npj=0;
         int npp=0;
-        tp_rho->Fill(nVtx_, rho_, xsweight);
-        h2_nVtx_rho->Fill(nVtx_,rho_,xsweight);
-        if( data.HasMC()) { 
-            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx_, rho_, xsweight);
-            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx_, rho_, xsweight);
-        }
         int nphofiredtrgs=0;
         //look for 2nd photon back of HLT matched photon
 
@@ -947,11 +701,9 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
         float* elePhi = data.GetPtrFloat("elePhi");    
 
 
-        h_MET->Fill(pfMET);
 
 
-        vector <int> photon_list;
-        //vector <int> photon_jetID;
+        vector<int> jet_list;
         int jet_index=-1;
 
 
@@ -960,141 +712,19 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
             for(int ijet=0; ijet<nJet; ijet++) {
                 if(jetFiredTrgs!=0){
                     trigger_jetP4.SetPtEtaPhiE(jetPt[ijet], jetEta[ijet], jetPhi[ijet], jetEn[ijet]);
-                    jet_index= ijet;
-                    break;
-                }
-            }
-        }
-        //int nnjet=0;
-        //int jet2_index=-1;
-        if(!data.HasMC()) { 
-            for (Int_t i=0; i<nPho; ++i) {  
-                if(JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
-                if(PhotonPreselection(data, i, kFALSE) !=1) continue;
-
-                for (Int_t j=i+1; j<nPho; ++j) {  
-                    if(PhotonPreselection(data, j, kFALSE) !=1) continue;	  
-                    TLorentzVector iphoP4, jphoP4;
-                    iphoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);	  
-                    jphoP4.SetPtEtaPhiM(phoEt[j], phoEta[j], phoPhi[j], 0.);
-                    TLorentzVector ppP4;
-                    ppP4 = iphoP4;	  ppP4 += jphoP4;
-                    h_ppmass->Fill(ppP4.M());
-                    h_ppmass_zoom->Fill(ppP4.M());
+                    jet_list.push_back(jet_index);
                 }
             }
         }
 
 
-        for (Int_t i=0; i<nPho; ++i) {      
-            if(phoEt[i]<15.) continue;       
-            //if(phoEt[i]<100.) continue;
-            if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
-            if(TMath::Abs(phoSCEta[i])>2.5) continue;
-            if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
-            if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
-                if(phoFiredTrgs[i]==0) continue;
-                if ( USEHLT )
-                {
-                    // in 2016 HLT Table
-                    if((phoFiredTrgs[i]>>7)&1) nphofiredtrgs++; //HLT175  asdf note this trigger bit need to be modified once you have a newer ggAnalysis version.
-                    //if(((phoFiredTrgs[i]>>4)&1)==1) nphofiredtrgs++; //HLT120
-                    else 
-                        continue;       
-                }
-            }
-
-            phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
-            int pho_presel = 0;
-            pho_presel = PhotonPreselection(data, i, kTRUE);
-            //check CSEV eff vs pt
-            if( data.HasMC()) { 
-                if(i==0 && match[i]==1){
-
-                    if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_den->Fill(phoEt[i]);
-                    else hphoEE_pt_presel_den->Fill(phoEt[i]);	
-                    if(pho_presel == 1){
-                        if(TMath::Abs(phoSCEta[i])<1.5) {
-                            if(phoPFChIso[i]<2.) hphoEB_pt_presel_num->Fill(phoEt[i]);
-                        }else {
-                            if(phoPFChIso[i]<1.5) hphoEE_pt_presel_num->Fill(phoEt[i]);
-                        }
-                    }
-
-                    if( PhotonPreselection(data, i, kFALSE) ==1){
-                        if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
-                        else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
-
-                        if(pho_presel == 1){
-                            if(TMath::Abs(phoSCEta[i])<1.5) {
-                                hphoEB_pt_presel_csev->Fill(phoEt[i]);
-                            }else {
-                                hphoEE_pt_presel_csev->Fill(phoEt[i]);
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-            if(pho_presel!=1) continue;
-            if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
-            photon_list.push_back(i); 
-            if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
-
-
-        }
-        h_npho->Fill(photon_list.size());
-        if(photon_list.size() < 1) continue;
-
-
-        // find photon overlaps to electron
-        TLorentzVector leadingPhoP4;
-        leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
-        if ( ELECTRONVETO ) {
-            vector<int> eleID;
-            ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
-            h_nele->Fill(eleID.size());
-            for(unsigned int j=0; j<eleID.size(); j++){
-                if(elePt[eleID[j]]<100) continue;
-                TLorentzVector tmp_eP4;
-                tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-                h_dR_phoele->Fill(leadingPhoP4.DeltaR(tmp_eP4));
-                if(leadingPhoP4.DeltaR(tmp_eP4) < 0.3) {
-                    photon_list.clear(); 
-                }
-            }
-        }
-
-        //find one jet in event
-        for(int j=0; j<nJet; j++){
-            float jetjecunc = 1.;
-            if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
-                if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
-                jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
-
-
-                if( jetId[j] ) {	  
-                    h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
-                    if(leadingPhoP4.DeltaR(jetP4)>0.4){
-                        if(jet_index<0) jet_index = j;
-                        else LOG_DEBUG("more than 1 jet pass the selection. Please check!\n");
-                        //nnjet++;
-                        //if(nnjet==2) jet2_index = j;
-                    }	    
-                }    
-            }  
-        }
 
 
 
 
 
 
-
-        //for (Int_t ii=0; ii< (int)photon_list.size(); ii++) {            
-        for (Int_t ipho : photon_list ) {
+        for (Int_t jet_index : jet_list ) {
             nPU=0; //ch
             HLT                = 0;
             HLTIsPrescaled     = 0;
@@ -1183,26 +813,8 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
             s4=0.;
-            calib_s4=calib_r9Full5x5=calib_scEtaWidth=calib_sieieFull5x5 = 0.;
+            //calib_s4=calib_r9Full5x5=calib_scEtaWidth=calib_sieieFull5x5 = 0.;
             mygenweight = 0;
-            for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
-                lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
-            jetID = 0;
-            jetPUIDbit = 0;
-            //btagCalibs.InitVars();
-            rho = data.GetFloat("rho"); //kk
-            MET = pfMET;
-            METPhi = pfMETPhi;
-            nPU=nPU_;
-            run     = data.GetInt("run");
-            event   = data.GetLong64("event");
-            isData  = data.GetBool("isData");
-            nVtx    = data.GetInt("nVtx");
-            mygenweight = data.HasMC() ? data.GetFloat("genWeight") : 1;
-
-            //int ipho = photon_list[ii];
-            phoFiredTrgs_ = phoFiredTrgs[ipho];
-            phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
             if(jet_index>=0) {
                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
 
@@ -1248,7 +860,6 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                     jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
-                    h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
 
 
                 }
@@ -1259,112 +870,19 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
                     jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
                     jetSubVtx3DErr_ = jetSubVtx3DErr[jet_index];
                     jetSubVtxNtrks_ = jetSubVtxNtrks[jet_index];
-                    h_subVtxPt   ->Fill(jetSubVtxPt_   );
-                    h_subVtxMass ->Fill(jetSubVtxMass_ );
-                    h_subVtx3DVal->Fill(jetSubVtx3DVal_);
-                    h_subVtx3DErr->Fill(jetSubVtx3DErr_);
-                    h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 //}
 
-                //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
 
             } // has jet end
 
 
 
 
-            if ( data.HasMC() )
-            {
-                isMatched = match[ipho];
-                isMatchedEle = match_ele[ipho];
-                isConverted = converted[ipho];
-
-                pthat_    = pthat;
-                mcPt_     = mcpt[ipho];
-                mcEta_    = mceta[ipho];
-                mcPhi_    = mcphi[ipho];
-                mcCalIso04_ = mcCalIso04[ipho];
-                mcTrkIso04_ = mcTrkIso04[ipho];
-                genHT_ = genHT;
-                
-                nLHE   = data.GetInt("nLHE");
-                for ( int i=0; i<nLHE; ++i )
-                {
-                    lhePID[i] = data.GetPtrInt  ("lhePID")[i];
-                    lheE[i]   = data.GetPtrFloat("lheE")[i];
-                    lhePx[i]  = data.GetPtrFloat("lhePx")[i];
-                    lhePy[i]  = data.GetPtrFloat("lhePy")[i];
-                    lhePz[i]  = data.GetPtrFloat("lhePz")[i];
-                    histMap["lheEnergy"]->Fill(lheE[i]);
-                }
-
-                h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
-            }
-            if (!data.HasMC() ) {
-                SeedTime_ = phoSeedTime[ipho];
-                SeedEnergy_ = phoSeedEnergy[ipho];
-                MIPTotEnergy_ = phoMIPTotEnergy[ipho];
-                HLT = data.GetLong64("HLTPho");
-                HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
-                metFilters = data.GetInt("metFilters");
-            }
 
 
 
-            recoPt    = phoEt[ipho];
-            recoPtCalib    = phoEtCalib[ipho];
-            recoEta   = phoEta[ipho];
-            recoPhi   = phoPhi[ipho];
-            recoSCEta = phoSCEta[ipho];
-            r9        = phoR9[ipho];
-            eleVeto   = phoEleVeto[ipho];
-            HoverE    = phoHoverE[ipho];
-
-            phohasPixelSeed_ = phohasPixelSeed[ipho];
-            chIsoRaw   = phoPFChIso[ipho];
-            phoIsoRaw  = phoPFPhoIso[ipho];
-            nhIsoRaw   = phoPFNeuIso[ipho];
 
 
-            rawE       = phoSCRawE[ipho];
-            scEtaWidth = phoSCEtaWidth[ipho];
-            scPhiWidth = phoSCPhiWidth[ipho];
-            esRR       = phoESEffSigmaRR[ipho];
-            esEn       = phoESEnP1[ipho] +phoESEnP2[ipho];
-            chWorstIso = phoPFChWorstIso[ipho];
-
-            sieieFull5x5     = phoSigmaIEtaIEtaFull5x5[ipho];
-            sieipFull5x5     = phoSigmaIEtaIPhiFull5x5[ipho];
-            sipipFull5x5     = phoSigmaIPhiIPhiFull5x5[ipho];
-            r9Full5x5        = phoR9Full5x5[ipho];
-            e2x2Full5x5       = phoE2x2Full5x5[ipho];
-            e5x5Full5x5       = phoE5x5Full5x5[ipho];
-            s4 = e2x2Full5x5 / e5x5Full5x5;
-
-            phoIDbit_ = phoIDbit[ipho];
-            if ( data.HasMC() )
-            {
-                    std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
-                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
-                    calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
-                    calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
-                    calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
-                    LOG_DEBUG("calibrated s4 %.6f and r9 %.6f", calib_s4, calib_r9Full5x5);
-            }
-
-
-
-            mva = select_photon_mvanoIso(data, ipho, tgr);
-            mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
-            photonIDmva = phoIDMVA[ipho];
-
-            h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
-            h2_mcPID_mcPt->Fill( phoEt[ipho], 10.09, xsweight);
-
-            if(isMatched==1){
-                if(TMath::Abs(phoEta[ipho])<1.5) h_EB_bdt->Fill(mva);
-                else h_EE_bdt->Fill(mva);
-            }
 
 
 
@@ -1376,134 +894,12 @@ void xCheckJetID(vector<string> pathes, Char_t oname[200]){
 
         } // fill tree end
 
-        h_nphoFiredTrgs->Fill(nphofiredtrgs);
 
     } // event loop end
 
     fout_->cd();
     outtree_->Write();
 
-    if ( data.HasMC() )
-    {
-    	nt_sumupgenweight->Fill(overallGenweight,hasNon1Val);
-    	nt_sumupgenweight->Write();
-    }
-
-    h_subVtxPt   ->Write();
-    h_subVtxMass ->Write();
-    h_subVtx3DVal->Write();
-    h_subVtx3DErr->Write();
-    h_subVtxNtrks->Write();
-
-    h_hasGoodVtx->Write();
-    hpthat->Write();
-    hpthat_wide->Write();
-
-    hdR->Write();
-    hdpt->Write();
-    hdR_ele->Write();
-    hdpt_ele->Write();
-    hdR_genjet->Write();
-    hmcCalIso->Write();
-    hmcGenIso->Write();
-    hmcpartonIso->Write();
-    h_truepho->Write();
-    h_convpho->Write();
-    h_ngenpho->Write();
-    h_npho->Write();
-    h_nele->Write();
-    h_nphoFiredTrgs->Write();
-
-    hgenphoEB_pt->Write();
-    hgenphoEB_pt_vbin->Write();
-    hgenphoEB_eta->Write();
-    hgenphoEE_pt->Write();
-    hgenphoEE_pt_vbin->Write();
-    hgenphoEE_eta->Write();
-    hgenpho_eta_phi->Write();
-    hgenpho_eta_pt->Write();
-
-    hgenphoEBEE0_pt_vbin->Write();
-    hgenphoEBEE1_pt_vbin->Write();
-    hgenphoEBEE2_pt_vbin->Write();
-    hgenphoEBEE3_pt_vbin->Write();
-
-    h_EB_bdt->Write();
-    h_EE_bdt->Write();
-
-    h_phoEt->Write();
-    h_npj->Write();
-    h_jetPt->Write();
-    h_pjmass->Write();
-    h_npp->Write();
-    h_pho2Pt->Write();
-    h_ppmass->Write();
-    h_ppmass_zoom->Write();
-
-    h_njet->Write();
-    h_nrecojet->Write();
-    h_ngenjet->Write();
-    h_detadpt_jet12->Write();
-    h_dR_phojet->Write();
-    h_dR_phoele->Write();
-    h_dpt_phojet->Write();
-
-    h_dphi_recoil->Write();
-    h_dpt_recoil->Write();
-
-    tp_rho->Write();
-    tp_rho_EB->Write();
-    tp_rho_EE->Write();
-    h2_nVtx_rho->Write();
-    h2_nVtx_iso->Write();
-    for(int ii=0; ii<7; ii++){
-        tp_chIso[ii]->Write();
-        tp_phIso[ii]->Write();
-        tp_nhIso[ii]->Write();
-
-        tp_chIso_rho[ii]->Write();
-        tp_phIso_rho[ii]->Write();
-        tp_nhIso_rho[ii]->Write();
-    }
-
-    h_Zee_mass->Write();
-    h_Zee_mass_csev->Write();
-    h_phoPt_eta_Z_all->Write();
-    h_phoPt_eta_Z_csev->Write();
-
-    h_Zmm_mass->Write();
-    h_MET->Write();
-    h_Wen_mt->Write();
-    h_Wmn_mt->Write();
-
-    hist_measured->Write();
-    hist_reco->Write();  
-
-    h_jetID->Write();
-    h_jetIDv->Write();
-    hdR_pho_lep->Write();
-    hdR_fake_lep->Write();
-
-    hphoEB_pt_presel_nocsev->Write();
-    hphoEB_pt_presel_csev->Write();
-    hphoEE_pt_presel_nocsev->Write();
-    hphoEE_pt_presel_csev->Write();
-
-    hphoEB_pt_presel_den->Write();
-    hphoEB_pt_presel_num->Write();
-    hphoEE_pt_presel_den->Write();
-    hphoEE_pt_presel_num->Write();
-    h_EBSeedTime->Write();
-    h_EESeedTime->Write();
-    h_EBSeedTimeW->Write();
-    h_EESeedTimeW->Write();
-
-    h2_mcPID_mcPt->Write();
-
-    std::map<std::string, TH1F*>::const_iterator citer = histMap.cbegin();
-    std::map<std::string, TH1F*>::const_iterator ciend = histMap.cend  ();
-    while ( citer != ciend )
-    { citer++->second->Write(); }
 
     fout_->Close();
 
