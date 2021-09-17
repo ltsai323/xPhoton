@@ -80,7 +80,8 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 std::vector<float> ptbin_ranges()
 {
   // for 2016
-  std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
+  //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
+  std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 25. ptbin = [0,24]
   return vec_ptcut;
 }
 int numPtBins() { return ptbin_ranges().size()-1; } // pt range N has n-1 intevals
@@ -89,7 +90,7 @@ Int_t ptbin_index(float pt){
   std::vector<float> vec_ptcut = ptbin_ranges();
 
   // ignoring last one due to lack of [last, inf] bin in physics.
-  for ( int ibin = vec_ptcut.size()-2; ibin >= 0 ; --ibin )
+  for ( int ibin = numPtBins()-1; ibin >= 0 ; --ibin )
       if ( pt > vec_ptcut[ibin] ) return ibin;
   return -1;
 }
@@ -772,6 +773,7 @@ void DrawYield(int ebee=0, int jetbin=0){
   float lumi = 35.9;
 
   char txt[100];
+  std::cerr << "total bins : " << numPtBins() << std::endl;
   for(int ii=0; ii<numPtBins(); ii++){
     //perform fit for yield
     fitted=Ifit(ii, ebee, 1, jetbin);
