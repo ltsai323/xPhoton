@@ -83,10 +83,12 @@ std::vector<float> ptbin_ranges()
   std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
   return vec_ptcut;
 }
+int numPtBins() { return ptbin_ranges().size()-1; } // pt range N has n-1 intevals
 
 Int_t ptbin_index(float pt){
   std::vector<float> vec_ptcut = ptbin_ranges();
 
+  // ignoring last one due to lack of [last, inf] bin in physics.
   for ( int ibin = vec_ptcut.size()-2; ibin >= 0 ; --ibin )
       if ( pt > vec_ptcut[ibin] ) return ibin;
   return -1;
@@ -164,12 +166,9 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
     //hsig=(TH1F*)ff->Get(hname);
     hsig=(TH1F*)fhisto_sig->Get(hname);
     
-    TString newhname(hname); hsig->Draw(); c1->SaveAs(newhname+".png");
-    //hsig=(TH1F*)fhisto_sigalt->Get(hname);
     sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
     if(ptbin >=20) sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, 19);
     hbkg=(TH1F*)ff->Get(hname);      
-            newhname=hname ; hbkg->Draw(); c1->SaveAs(newhname+".png");
   }else if(fit_data==0){
     sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);    
 
@@ -244,11 +243,10 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
   //   sprintf(hname,"data_%d_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
   //   hEGdata=(TH1F*)ff->Get(hname);
   // }    
-    TString newhname(hname); hsig->Draw(); c1->SaveAs(newhname+".png");
 
 
 
-  // hsig->Rebin(10);
+  hsig->Rebin(10);
   hbkg->Rebin(10);
   hEGdata->Rebin(10);
   if(fit_data==0 || fit_data==5){  
@@ -633,11 +631,8 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
   tlx->DrawLatex(-0.65, hdata->GetMaximum()*0.46, text);
 
   char fname[30];
-  std::cout << "ptbin : " << ptbin << ", ptbin new : " << ptbin << std::endl;
   sprintf(fname,"plots/test_Ifit%s_%d_%d_%d.pdf",EBEE, ebee, jetbin, ptbin);
-  std::cout << "hiii01\n";
   if(fit_data==1 || fit_data==2) c1->SaveAs(fname);
-  std::cout << "hiii02\n";
 
 
   fitted[0] = para[0];
@@ -649,7 +644,6 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
   fitted[5] = sig_part_err/TMath::Sqrt(2);
   fitted[6] = bkg_part;
   fitted[7] = bkg_part_err/TMath::Sqrt(2);
-  std::cout << "hiii03\n";
   
   if(fit_data==0 || fit_data==5 || fit_data==11) {
     printf(" all files closed ... \n");
@@ -660,7 +654,6 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
     /*fhisto_sigalt->Close();    */
     if ( fhisto_sig  ) fhisto_sig->Close();
   }
-  std::cout << "hiii04\n";
   return fitted;
 } // end of Ifit
 
@@ -734,7 +727,6 @@ void pulltest(int ptbin=13, int ebee=0, int jetbin=0, int sig=400, int bkg=400){
 }
 // decouple eff.dat file
 void DrawYield(int ebee=0, int jetbin=0){
-    std::cout << "hiiiiii\n";
   char EBEE[20]="EB";
   if(ebee==1) sprintf(EBEE,"EE");
    int ebeebin=0;
@@ -746,11 +738,9 @@ void DrawYield(int ebee=0, int jetbin=0){
 
   std::vector<float> vec_ptcut = ptbin_ranges();
   float* ptcut = &vec_ptcut.front();
-  for ( int i=0; i<vec_ptcut.size(); ++i )
-      std::cout << ", " << ptcut[i];
-  std::cout << std::endl;
 
-  int nbin=vec_ptcut.size();
+  //int nbin=vec_ptcut.size();
+  int nbin=numPtBins();
 
   TH1F *h_yield = new TH1F("h_yield","",nbin, ptcut);
   TH1F *h_purity = new TH1F("h_purity","",nbin, ptcut);
@@ -766,10 +756,9 @@ void DrawYield(int ebee=0, int jetbin=0){
   float lumi = 35.9;
 
   char txt[100];
-  for(int ii=0; ii<ptbin_ranges().size()-1; ii++){
+  for(int ii=0; ii<numPtBins(); ii++){
     //perform fit for yield
     fitted=Ifit(ii, ebee, 1, jetbin);
-    std::cout << "hjjjj01\n";
     if(fitted[0]>0.) {
 
       h_yield->SetBinContent(ii+1, fitted[0]/h_yield->GetBinWidth(ii+1));
@@ -786,7 +775,6 @@ void DrawYield(int ebee=0, int jetbin=0){
       h_bkg_yield_tight->SetBinContent(ii+1, fitted[6]);
     } // if fitted yield found
   } // end of photon bins
-    std::cout << "hjjjj02\n";
 
   TCanvas *c10 = new TCanvas("c10","",600,600);
   c10->Draw();
@@ -797,7 +785,6 @@ void DrawYield(int ebee=0, int jetbin=0){
   h_yield->SetMarkerStyle(8);
   h_yield->GetXaxis()->SetRangeUser(150.,1000.);
   h_yield->Draw("pe");
-    std::cout << "hjjjj03\n";
 
   char pho_text[100];
   char jet_text[100];
@@ -805,7 +792,6 @@ void DrawYield(int ebee=0, int jetbin=0){
   else sprintf(pho_text,"1.566<|#eta_{#gamma}|<2.5");
   if(jetbin==0) sprintf(jet_text,"|#eta_{jet}|<1.5");
   else sprintf(jet_text,"1.5<|#eta_{jet}|<2.4");
-    std::cout << "hjjjj04\n";
 
 
   TLegend *tleg = new TLegend(0.4, 0.65, 0.85, 0.92);
@@ -819,7 +805,6 @@ void DrawYield(int ebee=0, int jetbin=0){
   if(jetbin==2)   sprintf(text,"%s",pho_text);
   tleg->AddEntry(h_yield,text,"pl");
   tleg->Draw();
-    std::cout << "hjjjj05\n";
 } // end of DrawYield
 
 /*
@@ -1023,7 +1008,6 @@ void Draw_yield_treeeff(int ebee=0, int jetbin=0){
 */
 
 void Draw_XS(char EBEE[20]="EB", int jetbin=0){
-    std::cout << "daraw xsssss\n";
 
   float ptcut[30] = {22, 30, 36, 50, 75, 90, 105,  120, 135, 150, 165, 175, 185,
 		     190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000};
