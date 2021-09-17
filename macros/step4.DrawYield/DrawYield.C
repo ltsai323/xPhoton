@@ -99,6 +99,17 @@ Int_t findbin_phopt(float phopt) {
         
 
 Int_t ptbin_lowedge(float ptbin){ return int( ptbin_ranges().at(ptbin) ); }
+const char* EtaName(int ebee)
+{
+    if ( ebee == 0 ) return "EB";
+    if ( ebee == 1 ) return "EE";
+    return "hi";
+
+    /* used for 2015, 4 eta bins analysis
+    if ( ebee > 1 ) return "EE";
+    return "EB";
+    */
+}
 
 
 //___________________________________________________________________________
@@ -121,8 +132,9 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
 
   totalColl.clear();
   ctauColl.clear();
-  char EBEE[10]="EB";
-  if(ebee>1) sprintf(EBEE,"EE");
+  const char* EBEE = EtaName(ebee);
+  //char EBEE[10]="EB";
+  //if(ebee!=0) sprintf(EBEE,"EE");
   //Get data from looping tree
   TFile *ff = new TFile("isovsbdt_template.root");
   //TFile *ff = new TFile("isovsbdt_template_nominal.root");
@@ -727,12 +739,16 @@ void pulltest(int ptbin=13, int ebee=0, int jetbin=0, int sig=400, int bkg=400){
 }
 // decouple eff.dat file
 void DrawYield(int ebee=0, int jetbin=0){
+    const char* EBEE = EtaName(ebee);
+    int ebeebin = ebee>0 ? 1 : 0;
+    /*
   char EBEE[20]="EB";
   if(ebee==1) sprintf(EBEE,"EE");
    int ebeebin=0;
    if(strcmp(EBEE,"EE")==0) {
      ebeebin=1;
    }
+   */
 
 
 
