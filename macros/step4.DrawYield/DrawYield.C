@@ -126,8 +126,8 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
   //TFile *ff = new TFile("isovsbdt_template_nominal.root");
   //TFile *ff = new TFile("isovsbdt_template_sig_altm.root");
   //TFile *ff = new TFile("isovsbdt.root");
-  TFile *fhisto_data = new TFile("data.root");
-  TFile *fhisto_qcd = new TFile("mc_QCD.root");
+  TFile *fhisto_data = nullptr; // = new TFile("data.root");
+  TFile *fhisto_qcd = nullptr; // = new TFile("mc_QCD.root");
   /*TFile *fhisto_gjet6000 = new TFile("mc_gjet6000.root");*/
   //TFile *fhisto_gjet6000 = new TFile("mc_hggfilter.root");
   //TFile *fhisto_sigalt = new TFile("isovsbdt_template_sig_altp.root");
@@ -137,11 +137,11 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
 
 
   if(ptbin < 0) {
-    fhisto_data->Close();
-    fhisto_qcd->Close();
+    if ( fhisto_data ) fhisto_data->Close();
+    if ( fhisto_qcd  ) fhisto_qcd->Close();
     /*fhisto_gjet6000->Close();*/
-    ff->Close();
-    fhisto_sig->Close();
+    if ( ff          ) ff->Close();
+    if ( fhisto_sig  ) fhisto_sig->Close();
     /*fhisto_sigalt->Close();*/
     return fitted;
   }
@@ -357,12 +357,12 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
     fitted[5] = 0.;
     fitted[6] = 0.;
     fitted[7] = 0.;
-    fhisto_data->Close();
-    fhisto_qcd->Close();
+    if ( fhisto_data ) fhisto_data->Close();
+    if ( fhisto_qcd  ) fhisto_qcd->Close();
     /*fhisto_gjet6000->Close();*/
-    ff->Close();
+    if ( ff          ) ff->Close();
     /*fhisto_sigalt->Close();*/
-    fhisto_sig->Close();
+    if ( fhisto_sig  ) fhisto_sig->Close();
     return fitted;
   }    
 
@@ -382,12 +382,12 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
 	  sigColl.size(), bkgColl.size() );  
   if ( dataColl.size() != sigColl.size() || sigColl.size()!=bkgColl.size() ) {
     printf(" error ...  inconsistent hit collection size \n");
-    fhisto_data->Close();
-    fhisto_qcd->Close();
+    if ( fhisto_data ) fhisto_data->Close();
+    if ( fhisto_qcd  ) fhisto_qcd->Close();
     /*fhisto_gjet6000->Close();*/
-    ff->Close();
+    if ( ff          ) ff->Close();
     /*fhisto_sigalt->Close();*/
-    fhisto_sig->Close();
+    if ( fhisto_sig  ) fhisto_sig->Close();
     return fitted;
   }
 
@@ -653,12 +653,12 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
   
   if(fit_data==0 || fit_data==5 || fit_data==11) {
     printf(" all files closed ... \n");
-    ff->Close();
-    fhisto_data->Close();
-    fhisto_qcd->Close();
+    if ( ff          ) ff->Close();
+    if ( fhisto_data ) fhisto_data->Close();
+    if ( fhisto_qcd  ) fhisto_qcd->Close();
     /*fhisto_gjet6000->Close();*/
     /*fhisto_sigalt->Close();    */
-    fhisto_sig->Close();
+    if ( fhisto_sig  ) fhisto_sig->Close();
   }
   std::cout << "hiii04\n";
   return fitted;
