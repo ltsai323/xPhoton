@@ -140,10 +140,11 @@ void MakeHisto::Loop()
 
   Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) {
-    //for (Long64_t jentry=0; jentry<1000;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+    Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
     // if (Cut(ientry) < 0) continue;
     if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
     if(TMath::Abs(recoEta)>2.5) continue;

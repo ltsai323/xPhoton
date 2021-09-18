@@ -251,14 +251,17 @@ public :
    virtual Int_t    JetEtaBin(Float_t eta);
    virtual Int_t    triggerbit(Int_t ptbin);
 
+   bool IsMC();
+
    Int_t           OPTION;
    Int_t        HLTOPTION;
+   bool fkMC;
 };
 
 #endif
 
 #ifdef MakeHisto_cxx
-MakeHisto::MakeHisto(Int_t option) : fChain(0) 
+MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(false)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -294,6 +297,7 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0)
 
   OPTION = option;
 
+  fkMC = tc->GetBranch("mcPt") ? kTRUE : kFALSE;
   Init(tc);
 }
 
@@ -346,9 +350,15 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
+   
+   if (!IsMC() )
+   {
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
+   }
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("pthat", &pthat, &b_pthat);
    fChain->SetBranchAddress("genHT", &genHT, &b_genHT);
    fChain->SetBranchAddress("mcPt", &mcPt, &b_mcPt);
@@ -356,6 +366,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mcPhi", &mcPhi, &b_mcPhi);
    fChain->SetBranchAddress("mcCalIso04", &mcCalIso04, &b_mcCalIso04);
    fChain->SetBranchAddress("mcTrkIso04", &mcTrkIso04, &b_mcTrkIso04);
+   }
    fChain->SetBranchAddress("recoPt", &recoPt, &b_recoPt);
    fChain->SetBranchAddress("recoPtCalib", &recoPtCalib, &b_recoPtCalib);
    fChain->SetBranchAddress("recoEta", &recoEta, &b_recoEta);
@@ -363,12 +374,18 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
    fChain->SetBranchAddress("r9", &r9, &b_r9);
    fChain->SetBranchAddress("s4", &s4, &b_s4);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
    fChain->SetBranchAddress("isMatchedEle", &isMatchedEle, &b_isMatchedEle);
    fChain->SetBranchAddress("isConverted", &isConverted, &b_isConverted);
+   }
    fChain->SetBranchAddress("nVtx", &nVtx, &b_nVtx);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
    fChain->SetBranchAddress("puwei", &puwei, &b_puwei);
+   }
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
    fChain->SetBranchAddress("chIsoRaw", &chIsoRaw, &b_chIsoRaw);
@@ -382,11 +399,17 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("esRR", &esRR, &b_esRR);
    fChain->SetBranchAddress("esEn", &esEn, &b_esEn);
    fChain->SetBranchAddress("mva", &mva, &b_mva);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
+   }
    fChain->SetBranchAddress("METPhi", &METPhi, &b_METPhi);
    fChain->SetBranchAddress("phohasPixelSeed", &phohasPixelSeed, &b_phohasPixelSeed);
    fChain->SetBranchAddress("sieieFull5x5", &sieieFull5x5, &b_sieieFull5x5);
@@ -400,10 +423,13 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetPhi", &jetPhi, &b_jetPhi);
    fChain->SetBranchAddress("jetY", &jetY, &b_jetY);
    fChain->SetBranchAddress("jetJECUnc", &jetJECUnc, &b_jetJECUnc);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("jetGenJetPt", &jetGenJetPt, &b_jetGenJetPt);
    fChain->SetBranchAddress("jetGenJetEta", &jetGenJetEta, &b_jetGenJetEta);
    fChain->SetBranchAddress("jetGenJetPhi", &jetGenJetPhi, &b_jetGenJetPhi);
    fChain->SetBranchAddress("jetGenJetY", &jetGenJetY, &b_jetGenJetY);
+   }
    fChain->SetBranchAddress("jetCSV2BJetTags", &jetCSV2BJetTags, &b_jetCSV2BJetTags);
    fChain->SetBranchAddress("jetDeepCSVTags_b", &jetDeepCSVTags_b, &b_jetDeepCSVTags_b);
    fChain->SetBranchAddress("jetDeepCSVTags_bb", &jetDeepCSVTags_bb, &b_jetDeepCSVTags_bb);
@@ -422,6 +448,8 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetGenPartonID", &jetGenPartonID, &b_jetGenPartonID);
    fChain->SetBranchAddress("jetHadFlvr", &jetHadFlvr, &b_jetHadFlvr);
    fChain->SetBranchAddress("jetGenPartonMomID", &jetGenPartonMomID, &b_jetGenPartonMomID);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("calib_scEtaWidth", &calib_scEtaWidth, &b_calib_scEtaWidth);
    fChain->SetBranchAddress("calib_r9Full5x5", &calib_r9Full5x5, &b_calib_r9Full5x5);
    fChain->SetBranchAddress("calib_s4", &calib_s4, &b_calib_s4);
@@ -433,17 +461,24 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("lhePy", lhePy, &b_lhePy);
    fChain->SetBranchAddress("lhePz", lhePz, &b_lhePz);
    fChain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
+   }
    fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
+   if (!IsMC() )
+   {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
+   }
+
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
    fChain->SetBranchAddress("crossSection", &crossSection, &b_crossSection);
    fChain->SetBranchAddress("integratedLuminosity", &integratedLuminosity, &b_integratedLuminosity);
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
-   //fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
-   fChain->SetBranchAddress("xsweight", &mcweight, &b_mcweight);
+   fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
+   }
    Notify();
 }
 
@@ -472,4 +507,7 @@ Int_t MakeHisto::Cut(Long64_t entry)
 // returns -1 otherwise.
    return 1;
 }
+
+bool MakeHisto::IsMC()
+{ return fkMC; }
 #endif // #ifdef MakeHisto_cxx
