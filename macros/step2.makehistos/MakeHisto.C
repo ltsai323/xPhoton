@@ -88,17 +88,20 @@ void MakeHisto::Loop()
 	    //h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(hname,txt,90, -0.8, 1., 30, 0., 15);
 	    h_IsovsBDT[ii][mm][jj][kk][nn]->Sumw2();
 	  }
-      /*
-      for ( int nn = 0; nn < _totFitVar-1; ++nn )
       {
-
-	    sprintf(txt,"%s EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d", ""            ,ii,mm,jj,kk,nn);
-	    sprintf(hname,"h_%s_%d_%d_%d_%d_%d"                    , ""            ,ii,mm,jj,kk,nn);
-        h_fitvar[ii][mm][jj][kk][nn] = new TH1F(hname,txt,100,0.,1.);
+          for ( int nn = 0; nn <= fitVar::_deepCSVDiscriminatorTags_CvsL; ++nn )
+          {
+            sprintf(txt,"%s EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[nn],ii,mm,jj,kk);
+            sprintf(hname,"h_%s_%d_%d_%d_%d"                    , fitVarNames[nn],ii,mm,jj,kk);
+            h_fitvar[ii][mm][jj][kk][nn] = new TH1F(hname,txt,10,0.,1.);
+            h_fitvar[ii][mm][jj][kk][nn]->Sumw2();
+          }
+            sprintf(txt,"%s EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk);
+            sprintf(hname,"h_%s_%d_%d_%d_%d"                , fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk);
+            h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] = new TH1F(hname,txt,100,0.,5.);
+            h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] -> Sumw2();
       }
-      */
-      TString names, title; // asdf
-      names.Format(""); // asdf
+
 
 	  sprintf(txt,"Pt all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk);
 	  sprintf(hname,"h_Pt_all_%d_%d_%d_%d",ii,mm,jj,kk);
@@ -249,6 +252,21 @@ void MakeHisto::Loop()
       h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, eventweight);
       h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, eventweight);
 
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_b]                      ->Fill( jetDeepCSVTags_b                  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_bb]                     ->Fill( jetDeepCSVTags_bb                 , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_c]                      ->Fill( jetDeepCSVTags_c                  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_udsg]                   ->Fill( jetDeepCSVTags_udsg               , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_b]                  ->Fill( jetDeepFlavourTags_b              , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_c]                  ->Fill( jetDeepFlavourTags_c              , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_g]                  ->Fill( jetDeepFlavourTags_g              , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_lepb]               ->Fill( jetDeepFlavourTags_lepb           , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_bb]                 ->Fill( jetDeepFlavourTags_bb             , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_uds]                ->Fill( jetDeepFlavourTags_uds            , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVDiscriminatorTags_BvsAll]    ->Fill( jetDeepCSVDiscriminatorTags_BvsAll, eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVDiscriminatorTags_CvsB]      ->Fill( jetDeepCSVDiscriminatorTags_CvsB  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVDiscriminatorTags_CvsL]      ->Fill( jetDeepCSVDiscriminatorTags_CvsL  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_subVtxMass]                         ->Fill( jetSubVtxMass, eventweight);
+
       h_Pt[ebee][mctruth]->Fill(photonpt, eventweight);
       h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), eventweight);
       if(mctruth==1&&photonpt>100.){
@@ -262,6 +280,21 @@ void MakeHisto::Loop()
       h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, eventweight);
       h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, eventweight);
       h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, eventweight);
+
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_b]                      ->Fill( jetDeepCSVTags_b                  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_bb]                     ->Fill( jetDeepCSVTags_bb                 , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_c]                      ->Fill( jetDeepCSVTags_c                  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_udsg]                   ->Fill( jetDeepCSVTags_udsg               , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_b]                  ->Fill( jetDeepFlavourTags_b              , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_c]                  ->Fill( jetDeepFlavourTags_c              , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_g]                  ->Fill( jetDeepFlavourTags_g              , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_lepb]               ->Fill( jetDeepFlavourTags_lepb           , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_bb]                 ->Fill( jetDeepFlavourTags_bb             , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepFlavourTags_uds]                ->Fill( jetDeepFlavourTags_uds            , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVDiscriminatorTags_BvsAll]    ->Fill( jetDeepCSVDiscriminatorTags_BvsAll, eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVDiscriminatorTags_CvsB]      ->Fill( jetDeepCSVDiscriminatorTags_CvsB  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVDiscriminatorTags_CvsL]      ->Fill( jetDeepCSVDiscriminatorTags_CvsL  , eventweight);
+      h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_subVtxMass]                         ->Fill( jetSubVtxMass, eventweight);
 
       h_Pt[ebee][mctruth]->Fill(photonpt, eventweight);
       h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), eventweight);
@@ -309,8 +342,17 @@ void MakeHisto::Loop()
   h_sf_EB->Write();
   h_sf_EE->Write();
 
-  TDirectory* dir = (TDirectory*) fout->mkdir("jetVars");
+  TDirectory* dir = (TDirectory*) fout->mkdir("fitVars");
   dir->cd();
+  for(int ii=0; ii<NUMBIN_PHOETA; ii++){
+    for(int mm=0; mm<NUMBIN_JETETA; mm++){
+      for(int jj=0; jj<NUMBIN_PHOPT; jj++){
+        for(int kk=0; kk<2; kk++){
+          for ( int varIdx=0; varIdx<fitVar::_totFitVar; ++varIdx )
+            h_fitvar[ii][mm][jj][kk][varIdx]->Write();
+    }}}}
+
+
   fout->Close();
 
 }
