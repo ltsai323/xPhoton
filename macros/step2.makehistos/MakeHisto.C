@@ -60,15 +60,14 @@ void MakeHisto::Loop()
   TH1F *h_Pt[NUMBIN_PHOETA][2];
   TH1F *h_Ptspec[NUMBIN_PHOETA][2];
   //TH1F *h_Wmn_mt[NUMBIN_PHOETA][2]; MTm var
+  TH1F *h_fitvar[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][fitVar::_totFitVar];
 
   TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][4]; //ebee,jetbin, ptbin, truth/fake, isovar;
-  TH1F* h_btaggingvar[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][4]; // ebee, jetbin, ptbin, truth/fake, vars=[B,CvsL,CvsB,SVmass]
 
 
   //printf("eta bins %d \n", 8);
   char txt[100];
   char hname[100];
-  //char bjetVars[4]={"
   
   
   for(int ii=0; ii<NUMBIN_PHOETA; ii++){
@@ -88,8 +87,16 @@ void MakeHisto::Loop()
 	    h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(hname,txt,100, -1., 1., 30, 0., 15);
 	    //h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(hname,txt,90, -0.8, 1., 30, 0., 15);
 	    h_IsovsBDT[ii][mm][jj][kk][nn]->Sumw2();
-
 	  }
+      /*
+      for ( int nn = 0; nn < _totFitVar-1; ++nn )
+      {
+
+	    sprintf(txt,"%s EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d", ""            ,ii,mm,jj,kk,nn);
+	    sprintf(hname,"h_%s_%d_%d_%d_%d_%d"                    , ""            ,ii,mm,jj,kk,nn);
+        h_fitvar[ii][mm][jj][kk][nn] = new TH1F(hname,txt,100,0.,1.);
+      }
+      */
       TString names, title; // asdf
       names.Format(""); // asdf
 
