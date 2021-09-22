@@ -145,16 +145,19 @@ void MakeHisto::Loop()
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
     Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
+    Float_t photonpt = recoPtCalib;
+
     // if (Cut(ientry) < 0) continue;
     if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
     if(TMath::Abs(recoEta)>2.5) continue;
-    recoPt = recoPtCalib; // asdf
 
-    if(MET/recoPt > 0.7) continue;
+    //if(MET/photonpt > 0.7) continue;
+    if(MET/photonpt > 0.7) continue;
 
     //test new mva with isolation smearing
     //if(isData!=1) 
-    photonIDmva = mva;// norminall
+    Float_t bdt_score = mva;// norminall
+    photonIDmva = mva;
     // photonIDmva = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
     // photonIDmva = mva - trd->Gaus(0.025,0.05);
     // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
@@ -162,17 +165,17 @@ void MakeHisto::Loop()
 
     //jetY =jetEta;
 
-    //printf("photon eta %.2f, bin %d,  pt %.2f, bin %d , hltbit %d\n", recoEta, EBEE(recoEta), recoPt, Ptbin(recoPt) , HLTbit(recoPt));
+    //printf("photon eta %.2f, bin %d,  pt %.2f, bin %d , hltbit %d\n", recoEta, EBEE(recoEta), photonpt, Ptbin(photonpt) , HLTbit(photonpt));
     int ebee = EBEE(recoEta);
     //if(recoEta>-1.8 && recoEta<-1.5) printf("ebee bin %d \n", ebee);
-    int ptbin = Ptbin(recoPt);
-    //int ptbin = Ptbin(recoPt*0.99); //playing with photon energy scale
+    int ptbin = Ptbin(photonpt);
+    //int ptbin = Ptbin(photonpt*0.99); //playing with photon energy scale
 
     //smearing due to gain switching (G6->G1)    
     TLorentzVector *phop4 = new TLorentzVector();
-    phop4->SetPtEtaPhiM(recoPt, recoEta, recoPhi,0.);
+    phop4->SetPtEtaPhiM(photonpt, recoEta, recoPhi,0.);
 
-    int hltbit = HLTbit(recoPt);
+    int hltbit = HLTbit(photonpt);
     int jetbin = JetEtaBin(jetY);
 
 
@@ -194,8 +197,8 @@ void MakeHisto::Loop()
 	}	  
       }	
       if(phoFiredTrgs>0) {
-	if(ebee==0) h_EB_HLTall->Fill(recoPt);
-	else h_EE_HLTall->Fill(recoPt);
+	if(ebee==0) h_EB_HLTall->Fill(photonpt);
+	else h_EE_HLTall->Fill(photonpt);
       }
     }
       /*  asdf Modified needed !!!! asdf */
@@ -216,8 +219,8 @@ void MakeHisto::Loop()
     int mctruth = 0;
     if(isData!=1 && isMatched!=1 && isConverted!=1 && isMatchedEle!=1) mctruth=1; //fake
 
-    h_BDT_all[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight*puwei); //<-default 
-    h_Pt_all[ebee][jetbin][ptbin][mctruth]->Fill(recoPt, mcweight*puwei);
+    h_BDT_all[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, eventweight); //<-default 
+    h_Pt_all[ebee][jetbin][ptbin][mctruth]->Fill(photonpt, eventweight);
 
     //if(isData==1 && ((phoFiredTrgs>>8)&1)==0) continue;
     //if(mctruth<0)continue;      
@@ -233,28 +236,28 @@ void MakeHisto::Loop()
     if(TMath::Abs(recoEta)<1.4442){
       if(sieieFull5x5 > 0.015) continue;
 
-      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, mcweight*puwei);
+      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, eventweight);
 
-      h_Pt[ebee][mctruth]->Fill(recoPt, mcweight*puwei);
-      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), mcweight*puwei);
-      if(mctruth==1&&recoPt>100.){
+      h_Pt[ebee][mctruth]->Fill(photonpt, eventweight);
+      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), eventweight);
+      if(mctruth==1&&photonpt>100.){
 	h_chiso_sg->Fill(chIsoRaw);
 	h_chworst_sg->Fill(chWorstRaw+phoIsoRaw);
       }
     }else{
       if(sieieFull5x5>0.045)  continue;
-      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, mcweight*puwei);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, mcweight*puwei);
+      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, eventweight);
 
-      h_Pt[ebee][mctruth]->Fill(recoPt, mcweight*puwei);
-      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), mcweight*puwei);
+      h_Pt[ebee][mctruth]->Fill(photonpt, eventweight);
+      h_Ptspec[ebee][mctruth]->Fill( phop4->Et(), eventweight);
     }   
   }
 

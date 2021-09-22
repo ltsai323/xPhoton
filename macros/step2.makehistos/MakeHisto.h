@@ -256,6 +256,24 @@ public :
    Int_t           OPTION;
    Int_t        HLTOPTION;
    bool fkMC;
+
+   enum fitVar {
+   _deepCSVTags_b,
+   _deepCSVTags_bb,
+   _deepCSVTags_c,
+   _deepCSVTags_udsg,
+   _deepFlavourTags_b,
+   _deepFlavourTags_c,
+   _deepFlavourTags_g,
+   _deepFlavourTags_lepb,
+   _deepFlavourTags_bb,
+   _deepFlavourTags_uds,
+   _deepCSVDiscriminatorTags_BvsAll,
+   _deepCSVDiscriminatorTags_CvsB,
+   _deepCSVDiscriminatorTags_CvsL,
+   _subVtxMass,
+   totFitVar
+   };
 };
 
 #endif
@@ -283,8 +301,8 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(false)
     tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root");
     //HLTOPTION=1; // prevent to use HLT
   }
-  if(option == 4) { // pythia   sig MC
-    tc->Add("");
+  if(option == -5) { // test sample of QCD pythiasig MC
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/bin/step1.xsinfoAppended/crab_bkgMC_Pt_1400to1800_13TeV_TuneCUETP8M1_pythia8_v3-v2.root");
     //HLTOPTION=1; // prevent to use HLT
   }
   if(option == 5) { // pythia   QCD MC
