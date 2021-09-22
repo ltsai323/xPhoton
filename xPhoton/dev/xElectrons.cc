@@ -325,6 +325,7 @@ void xElectrons(
         record_evt.MET               = data.GetFloat("pfMET");
         record_evt.METPhi            = data.GetFloat("pfMETPhi");
         record_evt.rho               = data.GetFloat("rho");
+        record_evt.fixedGridRhoAll   = data.GetFloat("rhoAll");
 
         record_evt.nVtx              = data.GetInt("nVtx");
         record_evt.HLT               = data.GetLong64("HLTPho");
@@ -513,6 +514,7 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
     t->Branch("nPU"               , &var->nPU,                     "nPU/I");
 
     t->Branch("rho"               , &var->rho,                     "rho/F");
+    t->Branch("fixedGridRhoAll"   , &var->fixedGridRhoAll,         "fixedGridRhoAll/F");
     t->Branch("genWeight"         , &var->genweight,               "genWeight/F");
     t->Branch("MET"               , &var->MET,                     "MET/F");
     t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");

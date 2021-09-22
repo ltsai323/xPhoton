@@ -88,6 +88,7 @@ struct rec_Event
         nPU;
     Float_t
         rho,
+        fixedGridRhoAll,
         MET,
         METPhi,
         genweight;
