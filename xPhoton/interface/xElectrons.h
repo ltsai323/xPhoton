@@ -43,6 +43,7 @@ struct rec_Electron
         officalIDmva,
         r9Full5x5,
         sieieFull5x5,
+        sieipFull5x5,
         sipipFull5x5,
         //e2x2Full5x5,
         //e2x5Full5x5;

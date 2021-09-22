@@ -232,13 +232,12 @@ void xElectrons(
             eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
-            //eleRecording.sieipFull5x5 = data.GetPtrFloat("")[recoIdx];
+            eleRecording.sieipFull5x5 = 0; // = data.GetPtrFloat("eleSigmaIEtaIPhiFull5x5")[recoIdx]; no sieip in electron
             eleRecording.sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
             //eleRecording.e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
             //eleRecording.e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
 
             eleRecording.isMatched    = tag_electron.genidx() >= 0;
-            eleRecording.firedTrgsL   = data.GetPtrLong64("eleFiredSingleTrgs")[recoIdx];
 
         }
         { // fill in probe electron information
@@ -266,6 +265,7 @@ void xElectrons(
             eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
+            eleRecording.sieipFull5x5 = data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[recoIdx];
             eleRecording.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
             eleRecording.s4           = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
@@ -473,6 +473,7 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"officalIDmva").c_str()       ,&var->officalIDmva , (name+"officalIDmva/F").c_str()     );
     t->Branch( (name+"r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+"r9Full5x5/F").c_str()        );
     t->Branch( (name+"sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+"sieieFull5x5/F").c_str()     );
+    t->Branch( (name+"sieipFull5x5").c_str()       ,&var->sieipFull5x5 , (name+"sieipFull5x5/F").c_str()     );
     t->Branch( (name+"sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+"sipipFull5x5/F").c_str()     );
     //t->Branch( (name+"e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+"e2x2Full5x5/F").c_str()      );
     //t->Branch( (name+"e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+"e2x5Full5x5/F").c_str()      );
