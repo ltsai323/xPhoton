@@ -58,80 +58,56 @@ struct VARList
         histnames[deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
         histnames[subVtxMass]                         = "subVtxMass";
     }
-    struct BinHistNaming
-    {
-        int phopt, phoeta, jeteta, isbkg;
-        //const char* nameformat;
-        void SetEta(int phoeta_) { phoeta = phoeta_; }
-        void SetPt(int phopt_ ) { phopt = phopt_; }
-        void SetJet(int jeteta_ ) { jeteta = jeteta_; }
-        void SetIsBkg(int isbkg_ ) { isbkg = isbkg_; }
-        //BinHistNaming(const char* n_) : nameformat(n_) { isbkg=-1; }
-        BinHistNaming() { isbkg=-1; }
-        TString BinningName( const char* formatedStr )
-        {
-            TString output;
-            if ( isbkg < 0 )
-                output.Form( formatedStr, phoeta, jeteta, phopt );
-            else
-                output.Form( formatedStr, phoeta, jeteta, phopt, isbkg );
-            return output;
-        }
-
-    } bins;
-    /*
-    TString HistName( int varnum )
-    { return HistName( varnum, bins.phopt, bins.phoeta, bins.jeteta, bins.isbkg ); }
-    TString HistName( int varenum, int etabin, int jetbin, int ptbin, int isbkg )
-    {
-        TString output;
-        if ( isbkg>= 0 )
-            output.Form("fitVars/h_%s_%d_%d_%d_%d", histnames[varenum],etabin,jetbin,ptbin,isbkg);
-        else
-            output.Form("fitVars/h_%s_%d_%d_%d", histnames[varenum],etabin,jetbin,ptbin);
-
-        return output;
-    }
-    */
 };
 
 // jetbin = 0 : barrel jet
 // jetbin = 1 : endcap jet
 // jetbin = 2 : inclusive photon. So it sums up all jetbins.
+TH2F* GetSigHistFromFile_General(TFile* infile, const char* varname,
+        int ebee, int jetbin, int ptbin, int IsoOption )
+{
+    TH2F* hist;
+    char hname[200];
+    //sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
+    sprintf(hname,"h_%s_%d_%d_%d_0_%d", varname, ebee, jetbin, ptbin, IsoOption);  
+    hist = (TH2F*)infile->Get(hname);
+    if ( jetbin == 0 || jetbin == 1 ) return hist;
+    
+    while ( jetbin-- )
+    {
+        //sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
+        sprintf(hname,"h_%s_%d_%d_%d_0_%d", varname, ebee, jetbin, ptbin, IsoOption);  
+        hist->Add( (TH2F*)infile->Get(hname) );
+    }
+    return hist;
+
+}
+TH2F* GetBkgHistFromFile_General(TFile* infile, const char* varname,
+        int ebee, int jetbin, int ptbin, int IsoOption )
+{
+    TH2F* hist;
+    char hname[200];
+    //sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
+    sprintf(hname,"h_%s_%d_%d_%d_1_%d", varname, ebee, jetbin, ptbin, IsoOption);  
+    hist = (TH2F*)infile->Get(hname);
+    if ( jetbin == 0 || jetbin == 1 ) return hist;
+    
+    while ( jetbin-- )
+    {
+        //sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
+        sprintf(hname,"h_%s_%d_%d_%d_1_%d", varname, ebee, jetbin, ptbin, IsoOption);  
+        hist->Add( (TH2F*)infile->Get(hname) );
+    }
+    return hist;
+
+}
 TH2F* GetSigHistFromFile(TFile* infile,
         int ebee, int jetbin, int ptbin, int IsoOption )
-{
-    TH2F* hist;
-    char hname[200];
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-    hist = (TH2F*)infile->Get(hname);
-    if ( jetbin == 0 || jetbin == 1 ) return hist;
-    
-    while ( jetbin-- )
-    {
-        sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-        hist->Add( (TH2F*)infile->Get(hname) );
-    }
-    return hist;
-
-}
+{ return GetSigHistFromFile_General(infile, "IsovsBDT", ebee, jetbin, ptbin, IsoOption); }
 TH2F* GetBkgHistFromFile(TFile* infile,
         int ebee, int jetbin, int ptbin, int IsoOption )
-{
-    TH2F* hist;
-    char hname[200];
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-    hist = (TH2F*)infile->Get(hname);
-    if ( jetbin == 0 || jetbin == 1 ) return hist;
-    
-    while ( jetbin-- )
-    {
-        sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-        hist->Add( (TH2F*)infile->Get(hname) );
-    }
-    return hist;
+{ return GetBkgHistFromFile_General(infile, "IsovsBDT", ebee, jetbin, ptbin, IsoOption); }
 
-}
 
 
 int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
@@ -148,6 +124,10 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   TH2F *hgjet = GetSigHistFromFile( fgjet, ebee, jetbin, ptbin, IsoOption );
   TH2F *hdata = GetSigHistFromFile( fdata, ebee, jetbin, ptbin, IsoOption );
   TH2F *hqcd  = GetBkgHistFromFile( fqcd , ebee, jetbin, ptbin, IsoOption );
+
+  VARList fitvars;
+  std::vector<TH2F*> fithists(VARList::totvars, nullptr);
+
 
 
   /*
