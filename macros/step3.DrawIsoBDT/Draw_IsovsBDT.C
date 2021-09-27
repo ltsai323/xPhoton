@@ -17,15 +17,14 @@ std::vector<float> ptbin_ranges()
   return vec_ptcut;
 }
 
-void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+
+
+void main(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
   
   TFile *fqcd  = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
   TFile *fdata = TFile::Open("../step2.makehistos/storeroot/makehisto_data.root");
   TFile *fgjet = TFile::Open("../step2.makehistos/storeroot/makehisto_sig_madgraph.root");
   fqcd->Print();
-  std::cout << fqcd->IsZombie() <<std::endl;
-  std::cout << fdata->IsZombie() <<std::endl;
-  std::cout << fgjet->IsZombie() <<std::endl;
   char hname[100];
   // int ebee=0;
   // if(strcmp(EBEE,"EE")==0) ebee=1;
@@ -179,6 +178,7 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
 
 
 
+  // ??? asdf need to be remove!
   if(ptbin==13 && rebinoption==1){
     h_qcd_zone1->SetBinContent(89,0.);
     h_qcd_zone1->SetBinError(89,0.);
@@ -344,4 +344,7 @@ void Draw_Isoeff(){
 
   gPad->RedrawAxis();
 
+}
+void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+    main(ebee,jetbin,ptbin,rebinoption,sb1,sb2);
 }
