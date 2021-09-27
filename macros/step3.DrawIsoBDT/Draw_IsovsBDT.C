@@ -163,9 +163,9 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   // if(strcmp(EBEE,"EE")==0) ebee=1;
 
   int IsoOption=0; //0 chIso, 1 phoIso, 2 combIso, 3 chWorst
-  TH2F *hgjet = GetSigHistFromFile( fgjet, ebee, jetbin, ptbin, IsoOption );
-  TH2F *hdata = GetSigHistFromFile( fdata, ebee, jetbin, ptbin, IsoOption );
-  TH2F *hqcd  = GetBkgHistFromFile( fqcd , ebee, jetbin, ptbin, IsoOption );
+  TH2F *hgjet = (TH2F*) GetSigHistFromFile( fgjet, ebee, jetbin, ptbin, IsoOption );
+  TH2F *hdata = (TH2F*) GetSigHistFromFile( fdata, ebee, jetbin, ptbin, IsoOption );
+  TH2F *hqcd  = (TH2F*) GetBkgHistFromFile( fqcd , ebee, jetbin, ptbin, IsoOption );
 
   VARList fitvars;
   std::vector<TH2F*> gjet_fithists(VARList::totvars, nullptr);
@@ -175,42 +175,11 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   {
       char vartemplate[100];
       sprintf(vartemplate,"fitVars/h_%s",fitvars.histnames[varidx]);
-      gjet_fithists[varidx] = GetSigVarHistFromFile( fgjet, vartemplate, ebee, jetbin, ptbin );
-      data_fithists[varidx] = GetSigVarHistFromFile( fdata, vartemplate, ebee, jetbin, ptbin );
-       qcd_fithists[varidx] = GetBkgVarHistFromFile( fqcd , vartemplate, ebee, jetbin, ptbin );
+      gjet_fithists[varidx] = (TH2F*) GetSigVarHistFromFile( fgjet, vartemplate, ebee, jetbin, ptbin )->Clone();
+      data_fithists[varidx] = (TH2F*) GetSigVarHistFromFile( fdata, vartemplate, ebee, jetbin, ptbin )->Clone();
+       qcd_fithists[varidx] = (TH2F*) GetBkgVarHistFromFile( fqcd , vartemplate, ebee, jetbin, ptbin )->Clone();
   }
 
-
-
-  /*
-  if(jetbin==0 || jetbin==1){
-    hqcd = GetBkgHistFromFile( fqcd, ebee, jetbin, ptbin, IsoOption ); 
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-    hqcd = (TH2F*)fqcd->Get(hname);
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-    hgjet = (TH2F*)fgjet->Get(hname);
-    hdata = (TH2F*)fdata->Get(hname);
-  }else{
-      // inclusive photon option : sum up all previous result.
-    printf("jet bin %d \n", jetbin);
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, 0, ptbin, IsoOption);  
-    hqcd = (TH2F*)fqcd->Get(hname);
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, 1, ptbin, IsoOption);  
-    hqcd->Add((TH2F*)fqcd->Get(hname));
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, 2, ptbin, IsoOption);  
-    hqcd->Add((TH2F*)fqcd->Get(hname));
-
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, 0, ptbin, IsoOption);  
-    hgjet = (TH2F*)fgjet->Get(hname);
-    hdata = (TH2F*)fdata->Get(hname);
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, 1, ptbin, IsoOption);  
-    hgjet->Add((TH2F*)fgjet->Get(hname));
-    hdata->Add((TH2F*)fdata->Get(hname));
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, 2, ptbin, IsoOption);  
-    hgjet->Add((TH2F*)fgjet->Get(hname));
-    hdata->Add((TH2F*)fdata->Get(hname));
-  }
-  */
   
 
   TH2F* hgjet_all = (TH2F*) hgjet->Clone();
@@ -224,12 +193,32 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   sprintf(hname,"data_all_%d_%d_%d",ebee, jetbin, ptbin, IsoOption);  
   hdata_all->SetName(hname);
 
+  std::vector<TH2F*> gjet_all_fithists(VARList::totvars, nullptr);
+  std::vector<TH2F*> data_all_fithists(VARList::totvars, nullptr);
+  std::vector<TH2F*>  qcd_all_fithists(VARList::totvars, nullptr);
+  for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
+  {
+      char vartemplate[100];
+      sprintf(vartemplate,"%s_%s_%d_%d_%d","gjet_all",fitvars.histnames[varidx], ebee, jetbin, ptbin);
+      gjet_all_fithists[varidx] = (TH2F*) gjet_fithists[varidx]->Clone();  gjet_all_fithists[varidx]->SetName(vartemplate);
+      sprintf(vartemplate,"%s_%s_%d_%d_%d","data_all",fitvars.histnames[varidx], ebee, jetbin, ptbin);
+      data_all_fithists[varidx] = (TH2F*) data_fithists[varidx]->Clone();  data_all_fithists[varidx]->SetName(vartemplate);
+      sprintf(vartemplate,"%s_%s_%d_%d_%d","qcd_all" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
+       qcd_all_fithists[varidx] = (TH2F*)  qcd_fithists[varidx]->Clone();   qcd_all_fithists[varidx]->SetName(vartemplate);
+  }
+
 
   Printf("data %.0f, signal %.2f, bkg %.2f \n", hdata->Integral(), hgjet->Integral(), hqcd->Integral());
 
   hqcd->Rebin2D(rebinoption,2);
   hgjet->Rebin2D(rebinoption,2);
   hdata->Rebin2D(rebinoption,2);
+  for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
+  {
+      gjet_fithists[varidx]->Rebin2D(rebinoption,2);
+      data_fithists[varidx]->Rebin2D(rebinoption,2);
+       qcd_fithists[varidx]->Rebin2D(rebinoption,2);
+  }
 
   int nbinx = hqcd->GetNbinsX();
 
@@ -277,6 +266,32 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
   TH1F *h_data_zone2 = (TH1F*)hdata->ProjectionX(hname,zone2_low, zone2_high);
 
+  std::vector<TH1F*> gjet_zone1_fithists(VARList::totvars, nullptr);
+  std::vector<TH1F*> data_zone1_fithists(VARList::totvars, nullptr);
+  std::vector<TH1F*>  qcd_zone1_fithists(VARList::totvars, nullptr);
+  std::vector<TH1F*> gjet_zone2_fithists(VARList::totvars, nullptr);
+  std::vector<TH1F*> data_zone2_fithists(VARList::totvars, nullptr);
+  std::vector<TH1F*>  qcd_zone2_fithists(VARList::totvars, nullptr);
+  for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
+  {
+      char vartemplate[100];
+      sprintf(vartemplate,"%s_%s_%d_%d_%d_px1","gjet",fitvars.histnames[varidx], ebee, jetbin, ptbin);
+      gjet_zone1_fithists[varidx] = (TH1F*)gjet_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
+      sprintf(vartemplate,"%s_%s_%d_%d_%d_px1","data",fitvars.histnames[varidx], ebee, jetbin, ptbin);
+      data_zone1_fithists[varidx] = (TH1F*)data_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
+      sprintf(vartemplate,"%s_%s_%d_%d_%d_px1","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
+       qcd_zone1_fithists[varidx] = (TH1F*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
+  }
+  for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
+  {
+      char vartemplate[100];
+      sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","gjet",fitvars.histnames[varidx], ebee, jetbin, ptbin);
+      gjet_zone2_fithists[varidx] = (TH1F*)gjet_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
+      sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","data",fitvars.histnames[varidx], ebee, jetbin, ptbin);
+      data_zone2_fithists[varidx] = (TH1F*)data_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
+      sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
+       qcd_zone2_fithists[varidx] = (TH1F*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
+  }
 
 
   //for PhoISO
@@ -397,6 +412,19 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
     hgjet_all->Write();
     hdata_all->Write();
     hqcd_all->Write();
+
+    TDirectory* outdir = (TDirectory*) fout->mkdir("fitVars");
+    outdir->cd();
+    for ( auto iter : gjet_all_fithists ) iter->Write();
+    for ( auto iter : data_all_fithists ) iter->Write();
+    for ( auto iter :  qcd_all_fithists ) iter->Write();
+    for ( auto iter : gjet_zone1_fithists ) iter->Write();
+    for ( auto iter : data_zone1_fithists ) iter->Write();
+    for ( auto iter :  qcd_zone1_fithists ) iter->Write();
+    for ( auto iter : gjet_zone2_fithists ) iter->Write();
+    for ( auto iter : data_zone2_fithists ) iter->Write();
+    for ( auto iter :  qcd_zone2_fithists ) iter->Write();
+
     fout->Close();
   }
 
