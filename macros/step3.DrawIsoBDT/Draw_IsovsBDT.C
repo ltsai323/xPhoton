@@ -8,6 +8,9 @@
 #include <TLegend.h>
 #include <TGraph.h>
 #include <TGraphAsymmErrors.h>
+// target : 
+//    input data / sigMC / bkgMC and return binning histogram with all and sideband BDT distribution.
+//    which all distribution is 2D histogram. But sideband is 1D.
 
 std::vector<float> ptbin_ranges()
 {
@@ -16,10 +19,122 @@ std::vector<float> ptbin_ranges()
   std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
   return vec_ptcut;
 }
+struct VARList
+{
+    enum vars
+    {
+        deepCSVTags_b,
+        deepCSVTags_bb,
+        deepCSVTags_c,
+        deepCSVTags_udsg,
+        deepFlavourTags_b,
+        deepFlavourTags_c,
+        deepFlavourTags_g,
+        deepFlavourTags_lepb,
+        deepFlavourTags_bb,
+        deepFlavourTags_uds,
+        deepCSVDiscriminatorTags_BvsAll,
+        deepCSVDiscriminatorTags_CvsB,
+        deepCSVDiscriminatorTags_CvsL,
+        subVtxMass,
+        totvars
+    };
+    std::vector<const char*> histnames;
+
+    VARList() : histnames(totvars)
+    {
+        histnames[deepCSVTags_b]                      = "deepCSVTags_b";                   
+        histnames[deepCSVTags_bb]                     = "deepCSVTags_bb";
+        histnames[deepCSVTags_c]                      = "deepCSVTags_c";
+        histnames[deepCSVTags_udsg]                   = "deepCSVTags_udsg";
+        histnames[deepFlavourTags_b]                  = "deepFlavourTags_b";
+        histnames[deepFlavourTags_c]                  = "deepFlavourTags_c";
+        histnames[deepFlavourTags_g]                  = "deepFlavourTags_g";
+        histnames[deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
+        histnames[deepFlavourTags_bb]                 = "deepFlavourTags_bb";
+        histnames[deepFlavourTags_uds]                = "deepFlavourTags_uds";
+        histnames[deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
+        histnames[deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
+        histnames[deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
+        histnames[subVtxMass]                         = "subVtxMass";
+    }
+    struct BinHistNaming
+    {
+        int phopt, phoeta, jeteta, isbkg;
+        //const char* nameformat;
+        void SetEta(int phoeta_) { phoeta = phoeta_; }
+        void SetPt(int phopt_ ) { phopt = phopt_; }
+        void SetJet(int jeteta_ ) { jeteta = jeteta_; }
+        void SetIsBkg(int isbkg_ ) { isbkg = isbkg_; }
+        //BinHistNaming(const char* n_) : nameformat(n_) { isbkg=-1; }
+        BinHistNaming() { isbkg=-1; }
+        TString BinningName( const char* formatedStr )
+        {
+            TString output;
+            if ( isbkg < 0 )
+                output.Form( formatedStr, phoeta, jeteta, phopt );
+            else
+                output.Form( formatedStr, phoeta, jeteta, phopt, isbkg );
+            return output;
+        }
+
+    } bins;
+    /*
+    TString HistName( int varnum )
+    { return HistName( varnum, bins.phopt, bins.phoeta, bins.jeteta, bins.isbkg ); }
+    TString HistName( int varenum, int etabin, int jetbin, int ptbin, int isbkg )
+    {
+        TString output;
+        if ( isbkg>= 0 )
+            output.Form("fitVars/h_%s_%d_%d_%d_%d", histnames[varenum],etabin,jetbin,ptbin,isbkg);
+        else
+            output.Form("fitVars/h_%s_%d_%d_%d", histnames[varenum],etabin,jetbin,ptbin);
+
+        return output;
+    }
+    */
+};
+
+// jetbin = 0 : barrel jet
+// jetbin = 1 : endcap jet
+// jetbin = 2 : inclusive photon. So it sums up all jetbins.
+TH2F* GetSigHistFromFile(TFile* infile,
+        int ebee, int jetbin, int ptbin, int IsoOption )
+{
+    TH2F* hist;
+    char hname[200];
+    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
+    hist = (TH2F*)infile->Get(hname);
+    if ( jetbin == 0 || jetbin == 1 ) return hist;
+    
+    while ( jetbin-- )
+    {
+        sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
+        hist->Add( (TH2F*)infile->Get(hname) );
+    }
+    return hist;
+
+}
+TH2F* GetBkgHistFromFile(TFile* infile,
+        int ebee, int jetbin, int ptbin, int IsoOption )
+{
+    TH2F* hist;
+    char hname[200];
+    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
+    hist = (TH2F*)infile->Get(hname);
+    if ( jetbin == 0 || jetbin == 1 ) return hist;
+    
+    while ( jetbin-- )
+    {
+        sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
+        hist->Add( (TH2F*)infile->Get(hname) );
+    }
+    return hist;
+
+}
 
 
-
-void main(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
   
   TFile *fqcd  = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
   TFile *fdata = TFile::Open("../step2.makehistos/storeroot/makehisto_data.root");
@@ -29,25 +144,22 @@ void main(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14,
   // int ebee=0;
   // if(strcmp(EBEE,"EE")==0) ebee=1;
 
-  TH2F *hgjet;
-  TH2F *hqcd;
-  TH2F *hdata;
-
   int IsoOption=0; //0 chIso, 1 phoIso, 2 combIso, 3 chWorst
+  TH2F *hgjet = GetSigHistFromFile( fgjet, ebee, jetbin, ptbin, IsoOption );
+  TH2F *hdata = GetSigHistFromFile( fdata, ebee, jetbin, ptbin, IsoOption );
+  TH2F *hqcd  = GetBkgHistFromFile( fqcd , ebee, jetbin, ptbin, IsoOption );
 
-  if(jetbin==0){
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-    hqcd = (TH2F*)fqcd->Get(hname);
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-    hgjet = (TH2F*)fgjet->Get(hname);
-    hdata = (TH2F*)fdata->Get(hname);
-  }else if(jetbin==1){
+
+  /*
+  if(jetbin==0 || jetbin==1){
+    hqcd = GetBkgHistFromFile( fqcd, ebee, jetbin, ptbin, IsoOption ); 
     sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
     hqcd = (TH2F*)fqcd->Get(hname);
     sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
     hgjet = (TH2F*)fgjet->Get(hname);
     hdata = (TH2F*)fdata->Get(hname);
   }else{
+      // inclusive photon option : sum up all previous result.
     printf("jet bin %d \n", jetbin);
     sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, 0, ptbin, IsoOption);  
     hqcd = (TH2F*)fqcd->Get(hname);
@@ -66,6 +178,7 @@ void main(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14,
     hgjet->Add((TH2F*)fgjet->Get(hname));
     hdata->Add((TH2F*)fdata->Get(hname));
   }
+  */
   
 
   TH2F* hgjet_all = (TH2F*) hgjet->Clone();
@@ -255,6 +368,7 @@ void main(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14,
     fout->Close();
   }
 
+  return 0;
 }
 
 void Draw_Isoeff(){
@@ -346,5 +460,5 @@ void Draw_Isoeff(){
 
 }
 void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
-    main(ebee,jetbin,ptbin,rebinoption,sb1,sb2);
+    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2);
 }
