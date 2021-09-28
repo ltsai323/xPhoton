@@ -33,6 +33,7 @@ struct DATTree
     {
         _tree->ReadFile(datfile);
 
+        if (!_tree->FindBranch("bkg") ) throw std::runtime_error("input dat file is not fake yield. Please check input dat file\n");
         _tree->SetBranchAddress("ptbin"  , &ptbin);
         _tree->SetBranchAddress("EBEE"   , &etabin);
         _tree->SetBranchAddress("jetbin" , &jetbin);
@@ -153,7 +154,7 @@ void ScaleHist( TH1* hist, float Nentry )
 }
     
 
-TH1* HI( TFile* fdata, const char* datfile )
+std::vector<TH1*> GetFakeTemplates( TFile* fdata, const char* datfile )
 {
     DATTree datcontent( datfile );
     VARList histvars;
@@ -169,35 +170,21 @@ TH1* HI( TFile* fdata, const char* datfile )
         histvars.bins.SetPt( datcontent.ptbin );
         histvars.bins.SetEta( datcontent.etabin );
         histvars.bins.SetJet( datcontent.jetbin );
-        //histvars.bins.SetIsBkg(1);
         
         TH1* loadhist;
 
-        //int varidx = VARList::deepCSVTags_b;
         // change to use step3 result. Change loading naming.
         for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
         {
-            std::cout << histvars.data_sideband(varidx) << std::endl;
             loadhist = (TH1*) fdata->Get( histvars.data_sideband(varidx) );
-            //ScaleHist( loadhist, datcontent.fityield );
-            if (!outputs[varidx] )
-            {
-                outputs[varidx] = (TH1*)loadhist->Clone();
-                printhistinfo(outputs[varidx], nullptr );
-            }
-            else                 
-            {
-                printhistinfo(outputs[varidx], loadhist);
-                outputs[varidx]->Add(loadhist);
-            }
+            ScaleHist( loadhist, datcontent.fityield );
+            if (!outputs[varidx] ) outputs[varidx] = (TH1*)loadhist->Clone();
+            else                   outputs[varidx]->Add(loadhist);
                 
         }
     }
-    TCanvas c1("cc","",500,500);
-    outputs[VARList::deepCSVTags_b]->Draw();
-    c1.SaveAs("h.png");
 
-    return new TH1F();
+    return outputs;
 }
 
 
@@ -232,8 +219,6 @@ void FakeEstimation()
     TFile* f_sig = TFile::Open("../step2.makehistos/storeroot/makehisto_sig_madgraph.root");
     TFile* f_bkg = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
     */
-    //fdata->ls();
-    //std::cout << ((TH1*)fdata->Get("fitVars/h_deepCSVTags_b_0_0_0_1"))->GetTitle() << std::endl;
-    HI(fin, "../step4.DrawYield/data_bkg_barrelJet.dat");
-    //main();
+    std::vector<TH1*> hi = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_barrelJet.dat");
+    std::vector<TH1*> hj = GetFakeTemplates(fin, "../step4.DrawYield/data_yield_barrelJet.dat");
 }
