@@ -254,43 +254,43 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   
   //for chIso SB
   sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-  TH1F *h_gjet_zone1 = (TH1F*)hgjet->ProjectionX(hname,zone1_low, zone1_high);
+  TH1D *h_gjet_zone1 = (TH1D*)hgjet->ProjectionX(hname,zone1_low, zone1_high);
   sprintf(hname,"gjet_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-  TH1F *h_gjet_zone2 = (TH1F*)hgjet->ProjectionX(hname,zone2_low, zone2_high);
+  TH1D *h_gjet_zone2 = (TH1D*)hgjet->ProjectionX(hname,zone2_low, zone2_high);
   sprintf(hname,"qcd_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-  TH1F *h_qcd_zone1 = (TH1F*)hqcd->ProjectionX(hname,zone1_low, zone1_high);
+  TH1D *h_qcd_zone1 = (TH1D*)hqcd->ProjectionX(hname,zone1_low, zone1_high);
   sprintf(hname,"qcd_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-  TH1F *h_qcd_zone2 = (TH1F*)hqcd->ProjectionX(hname,zone2_low, zone2_high);
+  TH1D *h_qcd_zone2 = (TH1D*)hqcd->ProjectionX(hname,zone2_low, zone2_high);
   sprintf(hname,"data_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-  TH1F *h_data_zone1 = (TH1F*)hdata->ProjectionX(hname,zone1_low, zone1_high);
+  TH1D *h_data_zone1 = (TH1D*)hdata->ProjectionX(hname,zone1_low, zone1_high);
   sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-  TH1F *h_data_zone2 = (TH1F*)hdata->ProjectionX(hname,zone2_low, zone2_high);
+  TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(hname,zone2_low, zone2_high);
 
-  std::vector<TH1F*> gjet_zone1_fithists(VARList::totvars, nullptr);
-  std::vector<TH1F*> data_zone1_fithists(VARList::totvars, nullptr);
-  std::vector<TH1F*>  qcd_zone1_fithists(VARList::totvars, nullptr);
-  std::vector<TH1F*> gjet_zone2_fithists(VARList::totvars, nullptr);
-  std::vector<TH1F*> data_zone2_fithists(VARList::totvars, nullptr);
-  std::vector<TH1F*>  qcd_zone2_fithists(VARList::totvars, nullptr);
+  std::vector<TH1D*> gjet_zone1_fithists(VARList::totvars, nullptr);
+  std::vector<TH1D*> data_zone1_fithists(VARList::totvars, nullptr);
+  std::vector<TH1D*>  qcd_zone1_fithists(VARList::totvars, nullptr);
+  std::vector<TH1D*> gjet_zone2_fithists(VARList::totvars, nullptr);
+  std::vector<TH1D*> data_zone2_fithists(VARList::totvars, nullptr);
+  std::vector<TH1D*>  qcd_zone2_fithists(VARList::totvars, nullptr);
   for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
   {
       char vartemplate[100];
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px1","gjet",fitvars.histnames[varidx], ebee, jetbin, ptbin);
-      gjet_zone1_fithists[varidx] = (TH1F*)gjet_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
+      gjet_zone1_fithists[varidx] = (TH1D*)gjet_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px1","data",fitvars.histnames[varidx], ebee, jetbin, ptbin);
-      data_zone1_fithists[varidx] = (TH1F*)data_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
+      data_zone1_fithists[varidx] = (TH1D*)data_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px1","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
-       qcd_zone1_fithists[varidx] = (TH1F*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
+       qcd_zone1_fithists[varidx] = (TH1D*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone1_low, zone1_high);
   }
   for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
   {
       char vartemplate[100];
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","gjet",fitvars.histnames[varidx], ebee, jetbin, ptbin);
-      gjet_zone2_fithists[varidx] = (TH1F*)gjet_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
+      gjet_zone2_fithists[varidx] = (TH1D*)gjet_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","data",fitvars.histnames[varidx], ebee, jetbin, ptbin);
-      data_zone2_fithists[varidx] = (TH1F*)data_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
+      data_zone2_fithists[varidx] = (TH1D*)data_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
-       qcd_zone2_fithists[varidx] = (TH1F*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
+       qcd_zone2_fithists[varidx] = (TH1D*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
   }
 
 
@@ -324,17 +324,17 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   //   zone2_high = 20;
   // }    
   // sprintf(hname,"gjet_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-  // TH1F *h_gjet_zone1_phoIso = (TH1F*)hgjet->ProjectionX(hname,zone1_low, zone1_high);
+  // TH1D *h_gjet_zone1_phoIso = (TH1D*)hgjet->ProjectionX(hname,zone1_low, zone1_high);
   // sprintf(hname,"gjet_%d_%d_px2_phoIso",ebee, jetbin, ptbin);
-  // TH1F *h_gjet_zone2_phoIso = (TH1F*)hgjet->ProjectionX(hname,zone2_low, zone2_high);
+  // TH1D *h_gjet_zone2_phoIso = (TH1D*)hgjet->ProjectionX(hname,zone2_low, zone2_high);
   // sprintf(hname,"qcd_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-  // TH1F *h_qcd_zone1_phoIso = (TH1F*)hqcd->ProjectionX(hname,zone1_low, zone1_high);
+  // TH1D *h_qcd_zone1_phoIso = (TH1D*)hqcd->ProjectionX(hname,zone1_low, zone1_high);
   // sprintf(hname,"qcd_%d_%d_px2_phoIso",ebee, jetbin, ptbin);
-  // TH1F *h_qcd_zone2_phoIso = (TH1F*)hqcd->ProjectionX(hname,zone2_low, zone2_high);
+  // TH1D *h_qcd_zone2_phoIso = (TH1D*)hqcd->ProjectionX(hname,zone2_low, zone2_high);
   // sprintf(hname,"data_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-  // TH1F *h_data_zone1_phoIso = (TH1F*)hdata->ProjectionX(hname,zone1_low, zone1_high);
+  // TH1D *h_data_zone1_phoIso = (TH1D*)hdata->ProjectionX(hname,zone1_low, zone1_high);
   // sprintf(hname,"data_%d_%d_px2_phoIso",ebee, jetbin, ptbin);
-  // TH1F *h_data_zone2_phoIso = (TH1F*)hdata->ProjectionX(hname,zone2_low, zone2_high);
+  // TH1D *h_data_zone2_phoIso = (TH1D*)hdata->ProjectionX(hname,zone2_low, zone2_high);
 
 
 
