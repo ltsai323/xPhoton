@@ -40,9 +40,9 @@ struct DATTree
         _tree->SetBranchAddress("bkg"    , &fityield);
         _tree->SetBranchAddress("bkg_err", &fityield_err);
 
-        _ptmax  = _tree->GetMaximum("ptbin" );
-        _etamax = _tree->GetMaximum("EBEE"  );
-        _jetmax = _tree->GetMaximum("jetbin");
+        _ptmax  = _tree->GetMaximum("ptbin" ) + 1;
+        _etamax = _tree->GetMaximum("EBEE"  ) + 1;
+        _jetmax = _tree->GetMaximum("jetbin") + 1;
     }
     ~DATTree()
     { delete _tree; printf("~DATTree() : Loaded Tree Closed\n"); }
@@ -87,7 +87,7 @@ struct VARList
     };
     std::vector<const char*> histnames;
 
-    VARList() : histnames(totvars)
+    VARList( int etamax_ ) : histnames(totvars), bins(etamax_)
     {
         histnames[deepCSVTags_b]                      = "deepCSVTags_b";                   
         histnames[deepCSVTags_bb]                     = "deepCSVTags_bb";
@@ -106,26 +106,14 @@ struct VARList
     }
     struct BinHistNaming
     {
-        int phopt, phoeta, jeteta; //, isbkg;
-        //const char* nameformat;
+        int phopt, phoeta, jeteta;
+        int _jetmax, _etamax;
         void SetEta(int phoeta_) { phoeta = phoeta_; }
         void SetPt(int phopt_ ) { phopt = phopt_; }
         void SetJet(int jeteta_ ) { jeteta = jeteta_; }
-        //void SetIsBkg(int isbkg_ ) { isbkg = isbkg_; }
-        //BinHistNaming(const char* n_) : nameformat(n_) { isbkg=-1; }
-        BinHistNaming() { }
-        /*
-        TString BinningName( const char* formatedStr )
-        {
-            TString output;
-            if ( isbkg < 0 )
-                output.Form( formatedStr, phoeta, jeteta, phopt );
-            else
-                output.Form( formatedStr, phoeta, jeteta, phopt, isbkg );
-            return output;
-        }
-        */
-
+        BinHistNaming(int etamax_) : _etamax(etamax_){ }
+        int Size() { return totvars * _etamax; }
+        int HistIdx( int varidx ) { return varidx + totvars * phoeta; }
     } bins;
     TString GetNameFromTemplate( int varnum, const char* name_template )
     {
@@ -153,14 +141,21 @@ void ScaleHist( TH1* hist, float Nentry )
     hist->Scale( Nentry/histentry );
 }
     
+void ReNames( TH1* hist )
+{
+    std::string origname( hist->GetName() );
+    std::string newname;
+    newname.assign(origname, 0, origname.size() - 6);
+    hist->SetName( newname.c_str() );
+}
 
 std::vector<TH1*> GetFakeTemplates( TFile* fdata, const char* datfile )
 {
     DATTree datcontent( datfile );
-    VARList histvars;
+    VARList histvars( datcontent.MaxBin_EtaBin() );
     TTree* t_datcontent = datcontent.GetTree();
 
-    std::vector<TH1*> outputs(VARList::totvars, nullptr);
+    std::vector<TH1*> outputs(histvars.bins.Size(), nullptr);
 
     int binInfoIdx = 0;
     int binInfoNdx = t_datcontent->GetEntries();
@@ -170,55 +165,40 @@ std::vector<TH1*> GetFakeTemplates( TFile* fdata, const char* datfile )
         histvars.bins.SetPt( datcontent.ptbin );
         histvars.bins.SetEta( datcontent.etabin );
         histvars.bins.SetJet( datcontent.jetbin );
-        
+
+        // for ptbin > 19, use 19 to add statistics.
+        if ( datcontent.ptbin > 19 ) histvars.bins.SetPt( 19 );
+
         TH1* loadhist;
 
         // change to use step3 result. Change loading naming.
-        for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
+        for ( int ivar = 0; ivar < VARList::totvars; ++ivar )
         {
-            loadhist = (TH1*) fdata->Get( histvars.data_sideband(varidx) );
+            int histidx = histvars.bins.HistIdx(ivar);
+            loadhist = (TH1*) fdata->Get( histvars.data_sideband(ivar) );
+
             ScaleHist( loadhist, datcontent.fityield );
-            if (!outputs[varidx] ) outputs[varidx] = (TH1*)loadhist->Clone();
-            else                   outputs[varidx]->Add(loadhist);
-                
+            if (!outputs[histidx] ) outputs[histidx] = (TH1*)loadhist->Clone();
+            else                   outputs[histidx]->Add(loadhist);
         }
     }
+    for ( TH1* hist : outputs ) ReNames(hist);
+
 
     return outputs;
-}
-
-
-int main()
-{
-    TFile* fdata = TFile::Open("../step2.makehistos/storeroot/makehisto_data.root");
-    TFile* f_sig = TFile::Open("../step2.makehistos/storeroot/makehisto_sig_madgraph.root");
-    TFile* f_bkg = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
-
-    VARList histvars;
-    histvars.bins.SetEta(1);
-
-    //std::cout << ( (TH1*)fdata->Get( histvars.HistName(VARList::subVtxMass, 15, 0, 0, 0) ) ) ->GetMean() << std::endl;
-
-    //DATTree fakePho_barrelJet("../step4.DrawYield/data_bkg_barrelJet.dat");
-    //DATTree fakePho_endcapJet("../step4.DrawYield/data_bkg_endcapJet.dat");
-    //DATTree fakePho_jetVeto  ("../step4.DrawYield/data_bkg_inclusivepho.dat");
-
-    //DATTree signPho_barrelJet("../step4.DrawYield/data_yield_barrelJet.dat");
-    //DATTree signPho_endcapJet("../step4.DrawYield/data_yield_endcapJet.dat");
-    //DATTree signPho_jetVeto  ("../step4.DrawYield/data_yield_inclusivepho.dat");
-
-
-    return 0;
 }
 
 void FakeEstimation()
 {
     TFile* fin = TFile::Open("../step3.DrawIsoBDT/storeroot/isovsbdt_template.root");
-    /*
-    TFile* fdata = TFile::Open("../step2.makehistos/storeroot/makehisto_data.root");
-    TFile* f_sig = TFile::Open("../step2.makehistos/storeroot/makehisto_sig_madgraph.root");
-    TFile* f_bkg = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
-    */
-    std::vector<TH1*> hi = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_barrelJet.dat");
-    std::vector<TH1*> hj = GetFakeTemplates(fin, "../step4.DrawYield/data_yield_barrelJet.dat");
+
+    std::vector<TH1*> barrel = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_barrelJet.dat");
+    std::vector<TH1*> endcap = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_endcapJet.dat");
+    //std::vector<TH1*> allpho = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_inclusivepho.dat"); // need to be refined
+
+    TFile* fout = new TFile("output.root", "recreate");
+    fout->cd();
+    for ( auto hist : barrel ) hist->Write();
+    for ( auto hist : endcap ) hist->Write();
+    fout->Close();
 }
