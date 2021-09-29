@@ -280,7 +280,7 @@ public :
 #endif
 
 #ifdef MakeHisto_cxx
-MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(false), fitVarNames( fitVar::_totFitVar )
+MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), fitVarNames( fitVar::_totFitVar )
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
@@ -291,8 +291,10 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(false), fitVarNames( fitVa
   TChain *tc = new TChain("t");
     //tc->Add("");
 
+  //fkMC = tc->GetBranch("mcPt") ? kTRUE : kFALSE;
   if(option == 1) { // data
     tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
+    fkMC = false;
   };
   if(option == 2) { // madgraph sig MC
     tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root");
@@ -316,7 +318,6 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(false), fitVarNames( fitVa
 
   OPTION = option;
 
-  fkMC = tc->GetBranch("mcPt") ? kTRUE : kFALSE;
   fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";                   
   fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
   fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
@@ -407,7 +408,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("recoPhi", &recoPhi, &b_recoPhi);
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
    fChain->SetBranchAddress("r9", &r9, &b_r9);
-   fChain->SetBranchAddress("s4", &s4, &b_s4);
+   // fChain->SetBranchAddress("s4", &s4, &b_s4);
    if ( IsMC() )
    {
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
@@ -479,11 +480,11 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB, &b_jetDeepCSVDiscriminatorTags_CvsB);
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL, &b_jetDeepCSVDiscriminatorTags_CvsL);
    fChain->SetBranchAddress("jetPartonID", &jetPartonID, &b_jetPartonID);
+   if ( IsMC() )
+   {
    fChain->SetBranchAddress("jetGenPartonID", &jetGenPartonID, &b_jetGenPartonID);
    fChain->SetBranchAddress("jetHadFlvr", &jetHadFlvr, &b_jetHadFlvr);
    fChain->SetBranchAddress("jetGenPartonMomID", &jetGenPartonMomID, &b_jetGenPartonMomID);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("calib_scEtaWidth", &calib_scEtaWidth, &b_calib_scEtaWidth);
    fChain->SetBranchAddress("calib_r9Full5x5", &calib_r9Full5x5, &b_calib_r9Full5x5);
    fChain->SetBranchAddress("calib_s4", &calib_s4, &b_calib_s4);
@@ -496,8 +497,8 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("lhePz", lhePz, &b_lhePz);
    fChain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
    }
-   fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
-   fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
+   // fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
+   // fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
    if (!IsMC() )
    {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
