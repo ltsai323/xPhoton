@@ -39,7 +39,14 @@ public:
     Float_t  Float (int varId);
     Double_t Double(int varId);
 private:
+    explicit readMgr(
+            const char* filepath,
+            const char* treename,
+            std::map<int, std::string> rBranches );
     std::vector<const char*> bnames;
+    std::map<int, const char*> readbranches;
+protected:
+    void _accessbranch( const std::map<int, const char*>& b);
 };
 
 

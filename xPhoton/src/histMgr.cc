@@ -5,22 +5,20 @@ void histMgr::Create( const std::string& name, int nbin, double min, double max 
 {
     if ( hMap.find( name ) != hMap.end() )
     { LOG_WARNING( "%s histogram1D duplicated! Please check the createHisto function", name.c_str() ); return; }
-    LOG_CRITICAL( "Creating histogram1D : %s", name.c_str() );
+    LOG_INFO( "Creating histogram1D : %s", name.c_str() );
 
     // hMap[name] = new TH1F( name.c_str(), name.c_str(), nbin, min, max );
     hMap[name] = new TH1F( name.c_str(), "", nbin, min, max );
     hMap[name]->GetXaxis()->SetTitle(name.c_str());
 
-    //LOG_INFO( "histogram1D append : %s", name.c_str() );
 }
 void histMgr::Create( const std::string& name, int nbin, double min, double max , int nbin2, double min2, double max2)
 {
     if ( hMap2D.find( name ) != hMap2D.end() )
     { LOG_WARNING( "%s histogram2D duplicated! Please check the createHisto function", name.c_str() ); return; }
-    LOG_CRITICAL( "Creating histogram2D : %s", name.c_str() );
+    LOG_INFO( "Creating histogram2D : %s", name.c_str() );
 
     hMap2D[name] = new TH2F( name.c_str(), name.c_str(), nbin, min, max, nbin2, min2, max2 );
-    //LOG_INFO( "histogram2D append : %s", name.c_str() );
 }
 // search name and fill TH1F & TH2F
 void histMgr::FillStatus( const std::string& name, double value )

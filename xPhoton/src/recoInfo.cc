@@ -1,16 +1,149 @@
 #include "xPhoton/xPhoton/interface/recoInfo.h"
-#include "xPhoton/xPhoton/interface/readMgr.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
 
 #include <TLorentzVector.h>
+#include <TAxis.h>
 #include <TMath.h>
 #include <vector>
-int  TLorentzDATA::idxInEvt() const { return _idx; }
-bool TLorentzDATA::isZombie() const { return _idx == NOCANDFOUND; }
+/*
+int  TLorentzDATA::idx() const { return _idx; }
+int  TLorentzDATA::charge() const { return _charge; }
+bool TLorentzDATA::IsZombie() const { return _idx == NOCANDFOUND; }
      TLorentzDATA::TLorentzDATA() : TLorentzVector() { _idx = NOCANDFOUND; }
-     TLorentzDATA::TLorentzDATA(int idx) : TLorentzVector() { _idx = idx; }
+     TLorentzDATA::TLorentzDATA(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
+     */
+int  TLorentzCand::idx() const { return _idx; }
+int  TLorentzCand::genidx() const { return _genidx; }
+int  TLorentzCand::charge() const { return _charge; }
+bool TLorentzCand::IsZombie() const { return _deadcand; }
+     TLorentzCand::TLorentzCand() :
+         TLorentzVector(), _idx(NOCANDFOUND),_genidx(-1),_charge(0),_deadcand(true)
+{}
+     TLorentzCand::TLorentzCand(int idx_, int charge_) :
+         TLorentzVector(), _idx(idx_),_genidx(-1),_charge(charge_),_deadcand(false)
+{}
+     TLorentzCand::TLorentzCand(int idx_, int charge_, float pt_, float eta_, float phi_, float mass_) :
+         TLorentzVector(), _idx(idx_),_genidx(-1),_charge(charge_),_deadcand(false)
+{ this->SetPtEtaPhiM(pt_,eta_,phi_,mass_); }
+TLorentzCand TLorentzCand::operator+(const TLorentzCand& cand_) const
+{
+    TLorentzCand sumup;
+    TLorentzVector tmpP4 = TLorentzVector(*this) + TLorentzVector(cand_);
+
+    sumup = tmpP4;
+    sumup._charge = this->charge() + cand_.charge();
+    sumup.adddaughter(*this);
+    sumup.adddaughter(cand_);
+
+    return sumup;
+}
+TLorentzCand TLorentzCand::operator=(const TLorentzVector& vec_)
+{
+    this->SetPtEtaPhiE(
+            vec_.Pt(),
+            vec_.Eta(),
+            vec_.Phi(),
+            vec_.E()
+            );
+    this->_deadcand=true;
+
+    return *this;
+}
+TLorentzCand TLorentzCand::operator=(const TLorentzCand& vec_)
+{
+    this->SetPtEtaPhiE(
+            vec_.Pt(),
+            vec_.Eta(),
+            vec_.Phi(),
+            vec_.E()
+            );
+    this->_idx=             vec_._idx;
+    this->_genidx=          vec_._genidx;
+    this->_charge=          vec_._charge;
+    this->_deadcand=        vec_._deadcand;
+    this->_daughterCands=    vec_._daughterCands;
+
+    return *this;
+}
+
+void TLorentzCand::SetAlive(bool stat) { _deadcand =!stat; }
+void TLorentzCand::SetGenIdx(int idx) { _genidx = idx; }
+void TLorentzCand::adddaughter( const TLorentzCand& d_ )
+{ this->_daughterCands.push_back(d_); }
+std::vector<TLorentzCand> TLorentzCand::daughters() const { return _daughterCands; }
+
+     /*
+void TLorentzCompCand::AddDaughter( const TLorentzCand& d_ ) { daugs.push_back(d_); }
+bool TLorentzCompCand::IsZombie() const { return _deadcand; }
+void TLorentzCompCand::SetAlive() { _deadcand = true; }
+     //TLorentzCompCand::TLorentzCompCand() : TLorentzVector(), _deadcand(false) { }
+     TLorentzCompCand::TLorentzCompCand() : TLorentzCand(), _deadcand(false) { }
+     */
+     //TLorentzCompCand::TLorentzCompCand(int idx, int charge_) : TLorentzVector() { _idx = idx; _charge = charge_;}
+ std::map<int,TLorentzVector> recoInfo::PreselectedElectron_2016(TreeReader* data)
+{
+    int nEle = data->GetInt("nEle");
+    
+    Float_t* pt    = data->GetPtrFloat("");
+    Float_t* eta   = data->GetPtrFloat("");
+    Float_t* phi   = data->GetPtrFloat("");
+
+    std::map<int,TLorentzVector> selectedElectrons;
+    for ( int iEle = 0; iEle < nEle; ++iEle )
+    {
+        TLorentzVector particle;
+
+        particle.SetPtEtaPhiM( pt[iEle], eta[iEle], phi[iEle], 0.511*0.001 );
+        selectedElectrons[iEle] = particle;
+    }
+    return selectedElectrons;
+}
+
+/*
+TLorentzCand recoInfo::BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int charge )
+{
+    TLorentzCand particle(idx,charge);
+    particle.SetPtEtaPhiM(pt,eta,phi,mass);
+    return particle;
+}
+*/
+bool recoInfo::ordering_pt(const TLorentzCand& cand1, const TLorentzCand& cand2)
+{ return cand1.Pt() > cand2.Pt(); }
+bool recoInfo::ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 )
+{ return candpair1.second.Pt() > candpair2.second.Pt(); }
+
+bool recoInfo::InFiducialRegion(const TLorentzCand& cand_)
+{
+    float abseta = fabs(cand_.Eta());
+    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
+    if ( abseta > 2.5 ) return false;
+    if ( cand_.Pt() < 12 ) return false;
+    return true;
+}
+bool recoInfo::ValidEtaRegion(float eta)
+{
+    float abseta = fabs(eta);
+    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
+    if ( abseta > 2.5 ) return false;
+    return true;
+}
+bool recoInfo::IsEE(float eta)
+{
+    if (!recoInfo::ValidEtaRegion(eta) ) throw std::range_error("intput eta is out of range\n");
+    return fabs(eta) > 1.5; }
+float recoInfo::CorrectedValue( TGraph* correctionFunc, float val )
+{
+    if ( correctionFunc )
+        if ( val > correctionFunc->GetXaxis()->GetXmin() && val < correctionFunc->GetXaxis()->GetXmax() )
+        {
+            LOG_DEBUG("corrected value : before %.5f, after %.5f", val, correctionFunc->Eval(val) );
+            return correctionFunc->Eval(val);
+        }
+    LOG_DEBUG("nothing corrected : return original value %.5f", val );
+    return val;
+}
 /*
 std::vector<recoInfo::TLorentzDATA> recoInfo::triggeredJets(readMgr* evtInfo, bool isGJetprocess=false)
 {

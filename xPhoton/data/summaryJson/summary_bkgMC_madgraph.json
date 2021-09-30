@@ -1,0 +1,276 @@
+{
+  "QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        1215.0, 
+        11.73, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.8233, 
+        0.007992, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        1201.0, 
+        11.58, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.8325, 
+        0.008068, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        26.14, 
+        0.2496, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        38.26, 
+        0.3673, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        25.02, 
+        0.2405, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        39.97, 
+        0.3864, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        32260.0, 
+        310.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.03099, 
+        0.0002994, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        32690.0, 
+        313.8, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.03059, 
+        0.0002952, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v1": {
+      "xs": [
+        27800000.0, 
+        258300.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        3.597e-05, 
+        3.362e-07, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        347600.0, 
+        3311.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.002877, 
+        2.755e-05, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        351700.0, 
+        3360.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.002843, 
+        2.731e-05, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3-v2": {
+      "xs": [
+        247400000.0, 
+        2176000.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        4.042e-06, 
+        3.579e-08, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        1691000.0, 
+        15960.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.0005913, 
+        5.612e-06, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        1698000.0, 
+        16090.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.000589, 
+        5.613e-06, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        6730.0, 
+        64.44, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.1486, 
+        0.001431, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        6776.0, 
+        65.23, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.1476, 
+        0.001428, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": {
+    "v3_ext1-v2": {
+      "xs": [
+        120.0, 
+        1.149, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        8.331, 
+        0.08019, 
+        "1/fb"
+      ]
+    }, 
+    "v3-v2": {
+      "xs": [
+        118.3, 
+        1.142, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        8.451, 
+        0.08204, 
+        "1/fb"
+      ]
+    }
+  }
+}

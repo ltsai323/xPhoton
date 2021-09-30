@@ -6,84 +6,23 @@
 #include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
+#include "xPhoton/xPhoton/interface/recoInfo.h"
+#include "xPhoton/xPhoton/interface/histMgr.h"
+#include "xPhoton/xPhoton/interface/puweicalc.h"
+#include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
+#include <TLorentzVector.h>
 #include <map>
-
-enum candF
-{
-    mcE,
-    mcPt,
-    mcEta,
-    mcPhi,
-    recoE,
-    recoPt,
-    recoEta,
-    recoPhi,
-    totCandF
-};
-enum recoF
-{
-    recoPtCalib,
-    recoSCEta,
-    r9,
-    HoverE,
-    chIsoRaw,
-    phoIsoRaw,
-    nhIsoRaw,
-    chWorstIso,
-    rho,
-    rawE,
-    scEtaWidth,
-    scPhiWidth,
-    esRR,
-    esEn,
-    mva,
-    mva_nocorr,
-    officalIDmva,
-    r9Full5x5,
-    sieieFull5x5,
-    sieipFull5x5,
-    sipipFull5x5,
-    e2x2Full5x5,
-    e2x5Full5x5,
-    totRecoF
-};
-enum recoI
-{
-    isMatched,
-    firedTrgs,
-    hasPixelSeed,
-    IDbits,
-    totRecoI
-};
-enum recoL
-{
-    firedTrgsL,
-    totRecoL
-};
-
-enum evtI
-{
-    Run,
-    xsweight,
-    puwei,
-    pthat,
-    MET,
-    METPhi,
-    nVtx,
-    nPU,
-    totEvtI
-};
-
-enum evtL
-{
-    HLT,
-    HLTPhoIsPrescaled,
-    event,
-    totEvtL
-};
+#include <TNtuple.h>
 
 
-
+static histMgr hists;
+std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
+std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr);
+TLorentzCand              TriggeredElectron(TreeReader* dataptr);
+int                      FindMatchedIdx(TreeReader* dataptr, const TLorentzCand& recoCand);
+bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
+bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand);
+bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -94,209 +33,330 @@ void xElectrons(
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_ = new TTree("t", "mini tree");
+    TNtuple* nt_sumupgenweight = new TNtuple("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    Float_t overallGenweight = 0;
+    Float_t hasNon1Val = 0;
     
+    rec_Electron record_electrons[2];
+    rec_Z record_Z;
+    rec_Event record_evt;
 
-    std::map<int, Float_t > ele1CandF,ele2CandF, ZCandF;
-    std::map<int, Float_t > ele1RecoF,ele2RecoF;
-    std::map<int, Int_t   > ele1RecoI,ele2RecoI;
-    std::map<int, Long64_t> ele1RecoL,ele2RecoL;
-    std::map<int, Int_t   > eventI;
-    std::map<int, Long64_t> eventL;
+    RegBranch( outtree_, "electron_tag.", &record_electrons[0] );
+    RegBranch( outtree_, "", &record_electrons[1] ); // probe electron, like a photon
+    RegBranch( outtree_, "Z", &record_Z );
+    RegBranch( outtree_, "Events", &record_evt );
 
-    /*
-    std::map<candF, Float_t > ele1CandF,ele2CandF, ZCandF;
-    std::map<recoF, Float_t > ele1RecoF,ele2RecoF;
-    std::map<recoI, Int_t   > ele1RecoI,ele2RecoI;
-    std::map<recoL, Long64_t> ele1RecoL,ele2RecoL;
-    std::map<evtI , Int_t   > eventI;
-    std::map<evtL , Long64_t> eventL;
-    */
-    for ( int i=0; i<totCandF; ++i )
-    { ele1CandF[i] = 0; ele2CandF[i] = 0; ZCandF[i] = 0; }
-    for ( int i=0; i<totRecoF; ++i )
-    { ele1RecoF[i] = 0; ele2RecoF[i] = 0; }
-    for ( int i=0; i<totRecoI; ++i )
-    { ele1RecoI[i] = 0; ele2RecoI[i] = 0; }
-    for ( int i=0; i<totRecoL; ++i )
-    { ele1RecoL[i] = 0; ele2RecoL[i] = 0; }
-    for ( int i=0; i<totEvtI; ++i )
-    { eventI[i] = 0; }
-    for ( int i=0; i<totEvtL; ++i )
-    { eventL[i] = 0; }
-
-
-    /*
-    Float_t ele1CandF[totCandF], ele2CandF[totCandF], ZCandF[totCandF];
-    Float_t ele1RecoF[totRecoF], ele2RecoF[totRecoF];
-    Int_t   ele1RecoI[totRecoI], ele2RecoI[totRecoI];
-    Int_t   eventI[totEvtI];
-
-    Long64_t ele1RecoL[totRecoL], ele2RecoL[totRecoL];
-    Long64_t eventL[totEvtL];
-    */
-
-
-    //ele1
-// candF
-outtree_->Branch("ele1.mcE",&ele1CandF[candF::mcE],"ele1.mcE/F");
-outtree_->Branch("ele1.mcPt",&ele1CandF[candF::mcPt],"ele1.mcPt/F");
-outtree_->Branch("ele1.mcEta",&ele1CandF[candF::mcEta],"ele1.mcEta/F");
-outtree_->Branch("ele1.mcPhi",&ele1CandF[candF::mcPhi],"ele1.mcPhi/F");
-outtree_->Branch("ele1.recoE",&ele1CandF[candF::recoE],"ele1.recoE/F");
-outtree_->Branch("ele1.recoPt",&ele1CandF[candF::recoPt],"ele1.recoPt/F");
-outtree_->Branch("ele1.recoEta",&ele1CandF[candF::recoEta],"ele1.recoEta/F");
-outtree_->Branch("ele1.recoPhi",&ele1CandF[candF::recoPhi],"ele1.recoPhi/F");
-// recoF
-outtree_->Branch("ele1.recoPtCalib",&ele1RecoF[recoF::recoPtCalib],"ele1.recoPtCalib/F");
-outtree_->Branch("ele1.recoSCEta",&ele1RecoF[recoF::recoSCEta],"ele1.recoSCEta/F");
-outtree_->Branch("ele1.r9",&ele1RecoF[recoF::r9],"ele1.r9/F");
-outtree_->Branch("ele1.HoverE",&ele1RecoF[recoF::HoverE],"ele1.HoverE/F");
-outtree_->Branch("ele1.chIsoRaw",&ele1RecoF[recoF::chIsoRaw],"ele1.chIsoRaw/F");
-outtree_->Branch("ele1.phoIsoRaw",&ele1RecoF[recoF::phoIsoRaw],"ele1.phoIsoRaw/F");
-outtree_->Branch("ele1.nhIsoRaw",&ele1RecoF[recoF::nhIsoRaw],"ele1.nhIsoRaw/F");
-outtree_->Branch("ele1.chWorstIso",&ele1RecoF[recoF::chWorstIso],"ele1.chWorstIso/F");
-outtree_->Branch("ele1.rho",&ele1RecoF[recoF::rho],"ele1.rho/F");
-outtree_->Branch("ele1.rawE",&ele1RecoF[recoF::rawE],"ele1.rawE/F");
-outtree_->Branch("ele1.scEtaWidth",&ele1RecoF[recoF::scEtaWidth],"ele1.scEtaWidth/F");
-outtree_->Branch("ele1.scPhiWidth",&ele1RecoF[recoF::scPhiWidth],"ele1.scPhiWidth/F");
-outtree_->Branch("ele1.esRR",&ele1RecoF[recoF::esRR],"ele1.esRR/F");
-outtree_->Branch("ele1.esEn",&ele1RecoF[recoF::esEn],"ele1.esEn/F");
-outtree_->Branch("ele1.mva",&ele1RecoF[recoF::mva],"ele1.mva/F");
-outtree_->Branch("ele1.mva_nocorr",&ele1RecoF[recoF::mva_nocorr],"ele1.mva_nocorr/F");
-outtree_->Branch("ele1.officalIDmva",&ele1RecoF[recoF::officalIDmva],"ele1.officalIDmva/F");
-outtree_->Branch("ele1.r9Full5x5",&ele1RecoF[recoF::r9Full5x5],"ele1.r9Full5x5/F");
-outtree_->Branch("ele1.sieieFull5x5",&ele1RecoF[recoF::sieieFull5x5],"ele1.sieieFull5x5/F");
-outtree_->Branch("ele1.sieipFull5x5",&ele1RecoF[recoF::sieipFull5x5],"ele1.sieipFull5x5/F");
-outtree_->Branch("ele1.sipipFull5x5",&ele1RecoF[recoF::sipipFull5x5],"ele1.sipipFull5x5/F");
-outtree_->Branch("ele1.e2x2Full5x5",&ele1RecoF[recoF::e2x2Full5x5],"ele1.e2x2Full5x5/F");
-outtree_->Branch("ele1.e2x5Full5x5",&ele1RecoF[recoF::e2x5Full5x5],"ele1.e2x5Full5x5/F");
-// recoI
-outtree_->Branch("ele1.isMatched",&ele1RecoI[recoI::isMatched],"ele1.isMatched/I");
-outtree_->Branch("ele1.firedTrgs",&ele1RecoI[recoI::firedTrgs],"ele1.firedTrgs/I");
-outtree_->Branch("ele1.hasPixelSeed",&ele1RecoI[recoI::hasPixelSeed],"ele1.hasPixelSeed/I");
-outtree_->Branch("ele1.IDbits",&ele1RecoI[recoI::IDbits],"ele1.IDbits/I");
-
-// ele1 end
-
-// Z
-// candF
-outtree_->Branch("Z.mcE",&ZCandF[candF::mcE],"Z.mcE/F");
-outtree_->Branch("Z.mcPt",&ZCandF[candF::mcPt],"Z.mcPt/F");
-outtree_->Branch("Z.mcEta",&ZCandF[candF::mcEta],"Z.mcEta/F");
-outtree_->Branch("Z.mcPhi",&ZCandF[candF::mcPhi],"Z.mcPhi/F");
-outtree_->Branch("Z.recoE",&ZCandF[candF::recoE],"Z.recoE/F");
-outtree_->Branch("Z.recoPt",&ZCandF[candF::recoPt],"Z.recoPt/F");
-outtree_->Branch("Z.recoEta",&ZCandF[candF::recoEta],"Z.recoEta/F");
-outtree_->Branch("Z.recoPhi",&ZCandF[candF::recoPhi],"Z.recoPhi/F");
-
-
-// evt
-// evtI
-outtree_->Branch("evt.Run",&eventI[evtI::Run],"evt.Run/I");
-outtree_->Branch("evt.xsweight",&eventI[evtI::xsweight],"evt.xsweight/I");
-outtree_->Branch("evt.puwei",&eventI[evtI::puwei],"evt.puwei/I");
-outtree_->Branch("evt.pthat",&eventI[evtI::pthat],"evt.pthat/I");
-outtree_->Branch("evt.MET",&eventI[evtI::MET],"evt.MET/I");
-outtree_->Branch("evt.METPhi",&eventI[evtI::METPhi],"evt.METPhi/I");
-outtree_->Branch("evt.nVtx",&eventI[evtI::nVtx],"evt.nVtx/I");
-outtree_->Branch("evt.nPU",&eventI[evtI::nPU],"evt.nPU/I");
-
-// evtL
-outtree_->Branch("evt.HLT",&eventL[evtL::HLT],"evt.HLT/L");
-outtree_->Branch("evt.HLTPhoIsPrescaled",&eventL[evtL::HLTPhoIsPrescaled],"evt.HLTPhoIsPrescaled/L");
-outtree_->Branch("evt.event",&eventL[evtL::event],"evt.event/L");
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-
-
-
-// recoL
-outtree_->Branch("BRAHfiredTrgsL",&firedTrgsL,"BRAHfiredTrgsL/L");
-
-// evtL
-outtree_->Branch("BRAHHLT",&HLT,"BRAHHLT/L");
-outtree_->Branch("BRAHHLTPhoIsPrescaled",&HLTPhoIsPrescaled,"BRAHHLTPhoIsPrescaled/L");
-outtree_->Branch("BRAHevent",&event,"BRAHevent/L");
-
-// recoI
-outtree_->Branch("BRAHisMatched",&isMatched,"BRAHisMatched/I");
-outtree_->Branch("BRAHfiredTrgs",&firedTrgs,"BRAHfiredTrgs/I");
-outtree_->Branch("BRAHhasPixelSeed",&hasPixelSeed,"BRAHhasPixelSeed/I");
-outtree_->Branch("BRAHIDbits",&IDbits,"BRAHIDbits/I");
-
-// evtI
-outtree_->Branch("BRAHRun",&Run,"BRAHRun/I");
-outtree_->Branch("BRAHxsweight",&xsweight,"BRAHxsweight/I");
-outtree_->Branch("BRAHpuwei",&puwei,"BRAHpuwei/I");
-outtree_->Branch("BRAHpthat",&pthat,"BRAHpthat/I");
-outtree_->Branch("BRAHMET",&MET,"BRAHMET/I");
-outtree_->Branch("BRAHMETPhi",&METPhi,"BRAHMETPhi/I");
-outtree_->Branch("BRAHnVtx",&nVtx,"BRAHnVtx/I");
-outtree_->Branch("BRAHnPU",&nPU,"BRAHnPU/I");
-
-// candF
-outtree_->Branch("BRAHmcE",&mcE,"BRAHmcE/F");
-outtree_->Branch("BRAHmcPt",&mcPt,"BRAHmcPt/F");
-outtree_->Branch("BRAHmcEta",&mcEta,"BRAHmcEta/F");
-outtree_->Branch("BRAHmcPhi",&mcPhi,"BRAHmcPhi/F");
-outtree_->Branch("BRAHrecoE",&recoE,"BRAHrecoE/F");
-outtree_->Branch("BRAHrecoPt",&recoPt,"BRAHrecoPt/F");
-outtree_->Branch("BRAHrecoEta",&recoEta,"BRAHrecoEta/F");
-outtree_->Branch("BRAHrecoPhi",&recoPhi,"BRAHrecoPhi/F");
-
-// recoF
-outtree_->Branch("BRAHrecoPtCalib",&recoPtCalib,"BRAHrecoPtCalib/F");
-outtree_->Branch("BRAHrecoSCEta",&recoSCEta,"BRAHrecoSCEta/F");
-outtree_->Branch("BRAHr9",&r9,"BRAHr9/F");
-outtree_->Branch("BRAHHoverE",&HoverE,"BRAHHoverE/F");
-outtree_->Branch("BRAHchIsoRaw",&chIsoRaw,"BRAHchIsoRaw/F");
-outtree_->Branch("BRAHphoIsoRaw",&phoIsoRaw,"BRAHphoIsoRaw/F");
-outtree_->Branch("BRAHnhIsoRaw",&nhIsoRaw,"BRAHnhIsoRaw/F");
-outtree_->Branch("BRAHchWorstIso",&chWorstIso,"BRAHchWorstIso/F");
-outtree_->Branch("BRAHrho",&rho,"BRAHrho/F");
-outtree_->Branch("BRAHrawE",&rawE,"BRAHrawE/F");
-outtree_->Branch("BRAHscEtaWidth",&scEtaWidth,"BRAHscEtaWidth/F");
-outtree_->Branch("BRAHscPhiWidth",&scPhiWidth,"BRAHscPhiWidth/F");
-outtree_->Branch("BRAHesRR",&esRR,"BRAHesRR/F");
-outtree_->Branch("BRAHesEn",&esEn,"BRAHesEn/F");
-outtree_->Branch("BRAHmva",&mva,"BRAHmva/F");
-outtree_->Branch("BRAHmva_nocorr",&mva_nocorr,"BRAHmva_nocorr/F");
-outtree_->Branch("BRAHofficalIDmva",&officalIDmva,"BRAHofficalIDmva/F");
-outtree_->Branch("BRAHr9Full5x5",&r9Full5x5,"BRAHr9Full5x5/F");
-outtree_->Branch("BRAHsieieFull5x5",&sieieFull5x5,"BRAHsieieFull5x5/F");
-outtree_->Branch("BRAHsieipFull5x5",&sieipFull5x5,"BRAHsieipFull5x5/F");
-outtree_->Branch("BRAHsipipFull5x5",&sipipFull5x5,"BRAHsipipFull5x5/F");
-outtree_->Branch("BRAHe2x2Full5x5",&e2x2Full5x5,"BRAHe2x2Full5x5/F");
-outtree_->Branch("BRAHe2x5Full5x5",&e2x5Full5x5,"BRAHe2x5Full5x5/F");
-*/
     
-    for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++)
+    // check the reason why event failed
+    // 0: all event record in ROOT file
+    // 1: passed if the preselected electrons >= 2
+    // 2: passed if Z->ee candidate found
+    hists.Create("eventStat", 3.,0.,3.);
+
+    // preselection cut applied for select electron candidate
+    // 0: number of electron in event.
+    // 1: electron pt > 12
+    // 2: |eta| < 2.5
+    // 3: eta is not in barrel - endcap gap.
+    // 4: pass electron id bit in data
+    hists.Create("elePreselectStat", 5., 0., 5.);
+
+    // number of electron selected.
+    hists.Create("Nele", 4,0.,4.);
+
+    // Filling condition to reconstruct Z->ee channel.
+    // 0: number of electron pairs
+    // 1: pass HLT in data
+    // 2: pass single electron HLT pt threshold
+    // 3: pass single electron HLT work point threshold
+    // 4: electron pair with opposite charge
+    // 5: Z candidate mass > 90 - 40
+    // 6: Z candidate mass < 90 + 40
+    hists.Create("ZRecoStat", 7, 0., 7.);
+
+    // matched electrons in each event.
+    // -1: the total number of events.
+    //  n: n electrons matched in each event.
+    hists.Create("nEleMatched", 5, 0, 5);
+
+    hists.Create("DeltaR", BINNING, 0., 0.10);
+    hists.Create("ptratio", BINNING, 0., 2.0);
+
+    hists.Create("Zmass", BINNING, 50., 110.);
+
+    // check how much reco electrons in Zee
+    hists.Create("nEleInZee", 5,0.,5.);
+    // check how much gen Zee in MC.
+    // 0 : number of gen Zee.
+    // 1 : number of gen Zee, all electrons belongs to fiducial region.
+    // 2 : number of gen Zee, with all electrons are reco matched.
+    hists.Create("numGenZee", 4, 0., 4.);
+
+    TFile* f_showershapecorrection;
+    TGraph *tgr[8];
+    PUWeightCalculator pucalc;
+    std::map<std::string, TGraph*> endcapCorrections;
+    std::map<std::string, TGraph*> barrelCorrections;
+    if ( data.HasMC() )
     {
-        data.GetEntry(ev);
-        // 1. load data
-        // 2. build electron 4mom and pass electron preselection
-        // 3. build Z candidate and reject event.
-        // 4. mc truth matching.
-        // 5. fill tree
-        outtree_->Fill();
+    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
+    endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
+    endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
+    endcapCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE");
+
+    barrelCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB");
+    barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
+    barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
+    barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
+    tgr[0] = (TGraph*) f_showershapecorrection->Get("transfEtaWidthEB");
+    tgr[1] = (TGraph*) f_showershapecorrection->Get("transfS4EB");
+    tgr[2] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EB");
+    tgr[3] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEB");
+
+    tgr[4] = (TGraph*) f_showershapecorrection->Get("transfEtaWidthEE");
+    tgr[5] = (TGraph*) f_showershapecorrection->Get("transfS4EE");
+    tgr[6] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EE");
+    tgr[7] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEE");
+
+    pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
     }
 
 
+    
+    for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++)
+    {
+        // 1. match reco electron and gen electron if MC used
+        // 2. pass electron preselection
+        // 3. build reco Z candidate
+        // 4. fill tree
+        // 5. load photon mva
+        data.GetEntry(ev);
+        if ( data.HasMC() )
+        {
+            overallGenweight += data.GetFloat("genWeight");
+            if ( hasNon1Val < 0.1 )
+                if ( data.GetFloat("genWeight") != 1. )
+                    hasNon1Val = 1;
+        }
+
+        LOG_DEBUG(" check point 01");
+        //std::vector<TLorentzCand> electronpool = RecoElectrons(&data);
+        std::vector<TLorentzCand> electronpool = RecoElectronsInPhotonCollection(&data);
+        TLorentzCand tag_electron = TriggeredElectron(&data);
+        if ( tag_electron.IsZombie() ) continue;
+
+        LOG_DEBUG(" check point 02");
+        for ( TLorentzCand& electron : electronpool )
+        {
+            int genIdx = FindMatchedIdx( &data, electron );
+            if ( genIdx < 0 ) continue;
+            electron.SetGenIdx(genIdx);
+        }
+        LOG_DEBUG(" check point 03");
+
+        //for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
+        for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassPhotonPreselection(&data, cand) );
+        hists.FillStatus("eventStat", 0);
+        LOG_DEBUG(" check point 04");
+
+        int aliveEleNum = 0;
+        for ( auto ele : electronpool )
+            if (!ele.IsZombie() )
+                ++aliveEleNum;
+
+        hists.Fill("Nele", aliveEleNum);
+        //if ( aliveEleNum < 2 ) continue;
+        if ( aliveEleNum == 0 ) continue;
+
+        hists.FillStatus("eventStat", 1);
+
+        TLorentzCand ZcandP4;
+        TLorentzCand probe_electron;
+        LOG_DEBUG( "ELECTRON (0,1) = Pt(%.2f,%.2f), Eta(%.2f,%.2f), charge(%d,%d)",
+                electronpool[0].Pt(), electronpool[1].Pt(),
+                electronpool[0].Eta(), electronpool[1].Eta(),
+                electronpool[0].charge(), electronpool[1].charge() );
+        for ( auto& fake_photon : electronpool )
+        {
+            if ( fake_photon.IsZombie() ) continue;
+            ZcandP4 = tag_electron + fake_photon;
+            ZcandP4.SetAlive(false);
+            if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
+            hists.FillStatus("ZRecoStat", 5);
+            if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
+            hists.FillStatus("ZRecoStat", 6);
+            ZcandP4.SetAlive(true);
+            probe_electron = fake_photon;
+
+            break;
+        }
+
+
+        if ( ZcandP4.IsZombie() ) continue;
+        hists.FillStatus("eventStat", 2);
+        if ( data.HasMC() )
+        { LOG_DEBUG("reco Z candidate contains matched gen electron in idx (%d,%d)", ZcandP4.daughters().at(0).genidx(), ZcandP4.daughters().at(1).genidx()); }
+
+
+
+    // clear everything.
+        LOG_DEBUG("starting to fill event");
+        ClearStruct(&record_electrons[0]);
+        ClearStruct(&record_electrons[1]);
+        ClearStruct(&record_Z);
+        ClearStruct(&record_evt);
+
+        { // fillin tag electron information
+            int recoIdx = tag_electron.idx();
+            rec_Electron& eleRecording = record_electrons[0];
+          
+            eleRecording.recoPt       = data.GetPtrFloat("elePt")[recoIdx];
+            eleRecording.recoEta      = data.GetPtrFloat("eleEta")[recoIdx];
+            eleRecording.recoPhi      = data.GetPtrFloat("elePhi")[recoIdx];
+            eleRecording.recoPtCalib  = data.GetPtrFloat("eleCalibPt")[recoIdx];
+            eleRecording.recoSCEta    = data.GetPtrFloat("eleSCEta")[recoIdx];
+            eleRecording.r9           = data.GetPtrFloat("eleR9")[recoIdx];
+            eleRecording.HoverE       = data.GetPtrFloat("eleHoverE")[recoIdx];
+            eleRecording.chIsoRaw     = data.GetPtrFloat("elePFChIso")[recoIdx];
+            eleRecording.phoIsoRaw    = data.GetPtrFloat("elePFPhoIso")[recoIdx];
+            eleRecording.nhIsoRaw     = data.GetPtrFloat("elePFNeuIso")[recoIdx];
+            eleRecording.rawE         = data.GetPtrFloat("eleSCRawEn")[recoIdx];
+            eleRecording.scEtaWidth   = data.GetPtrFloat("eleSCEtaWidth")[recoIdx];
+            eleRecording.scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
+            eleRecording.esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
+            eleRecording.esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
+                                        data.GetPtrFloat("eleESEnP2")[recoIdx];
+            eleRecording.mva          = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
+            eleRecording.r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
+            eleRecording.sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
+            eleRecording.sieipFull5x5 = 0; // = data.GetPtrFloat("eleSigmaIEtaIPhiFull5x5")[recoIdx]; no sieip in electron
+            eleRecording.sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
+            //eleRecording.e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+            //eleRecording.e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
+
+            eleRecording.isMatched    = tag_electron.genidx() >= 0;
+
+        }
+        { // fill in probe electron information
+            int recoIdx = probe_electron.idx();
+            rec_Electron& eleRecording = record_electrons[1];
+                    
+            eleRecording.recoPt       = data.GetPtrFloat("phoEt")[recoIdx];
+            eleRecording.recoEta      = data.GetPtrFloat("phoEta")[recoIdx];
+            eleRecording.recoPhi      = data.GetPtrFloat("phoPhi")[recoIdx];
+            eleRecording.recoPtCalib  = data.GetPtrFloat("phoCalibEt")[recoIdx];
+            eleRecording.recoSCEta    = data.GetPtrFloat("phoSCEta")[recoIdx];
+            eleRecording.r9           = data.GetPtrFloat("phoR9")[recoIdx];
+            eleRecording.HoverE       = data.GetPtrFloat("phoHoverE")[recoIdx];
+            eleRecording.chIsoRaw     = data.GetPtrFloat("phoPFChIso")[recoIdx];
+            eleRecording.phoIsoRaw    = data.GetPtrFloat("phoPFPhoIso")[recoIdx];
+            eleRecording.nhIsoRaw     = data.GetPtrFloat("phoPFNeuIso")[recoIdx];
+            eleRecording.rawE         = data.GetPtrFloat("phoSCRawE")[recoIdx];
+            eleRecording.scEtaWidth   = data.GetPtrFloat("phoSCEtaWidth")[recoIdx];
+            eleRecording.scPhiWidth   = data.GetPtrFloat("phoSCPhiWidth")[recoIdx];
+            eleRecording.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
+            eleRecording.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
+                                        data.GetPtrFloat("phoESEnP2")[recoIdx];
+            eleRecording.mva          = select_photon_mvanoIso(data, recoIdx, tgr);
+            eleRecording.mva_nocorr   = select_photon_mvanoIso(data, recoIdx, nullptr);
+            eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
+            eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
+            eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
+            eleRecording.sieipFull5x5 = data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[recoIdx];
+            eleRecording.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
+            eleRecording.s4           = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
+                                        data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
+
+            eleRecording.isMatched    = probe_electron.genidx() >= 0;
+            eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
+            eleRecording.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
+
+            if ( data.HasMC() )
+            {
+                int genIdx = probe_electron.genidx();
+            eleRecording.mcE          = genIdx < 0 ? 0 : data.GetPtrFloat("mcE")[genIdx];
+            eleRecording.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
+            eleRecording.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
+            eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
+            
+            
+            std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(eleRecording.recoSCEta) ? &endcapCorrections : &barrelCorrections;
+            eleRecording.scEtaWidth_corrected      = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , eleRecording.scEtaWidth );
+
+            eleRecording.r9Full5x5_corrected       = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , eleRecording.r9Full5x5 );
+            eleRecording.s4_corrected              = recoInfo::CorrectedValue( corrections->at("s4")          , eleRecording.s4 );
+            eleRecording.sieieFull5x5_corrected    = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), eleRecording.sieieFull5x5 );
+            }
+        }
+
+        if ( data.HasMC() )
+        {
+            int ZMCidx = data.GetPtrInt("mcMomPID")[ZcandP4.daughters().at(0).idx()];
+        record_Z.mcE       = 0;
+        record_Z.mcPt      = 0;
+        record_Z.mcEta     = 0;
+        record_Z.mcPhi     = 0;
+        }
+        record_Z.recoMass  = ZcandP4.M();
+        record_Z.recoE     = ZcandP4.Energy();
+        record_Z.recoPt    = ZcandP4.Pt();
+        record_Z.recoEta   = ZcandP4.Eta();
+        record_Z.recoPhi   = ZcandP4.Phi();
+        record_Z.isMatched = ZcandP4.daughters().at(0).genidx() >= 0 && ZcandP4.daughters().at(1).genidx() >= 0;
+
+        record_evt.run               = data.GetInt("run"); 
+        if ( data.HasMC() )
+        {
+            Float_t* puTrue = data.GetPtrFloat("puTrue");
+            Int_t npuInfo = data.GetInt("nPUInfo");
+            int _purec = 0;
+            for ( int i=0; i<npuInfo; ++i ) if ( data.GetPtrInt("puBX")[i] == 0 ) _purec = puTrue[i];
+            
+        record_evt.xsweight          = 0;
+        record_evt.genweight         = data.HasMC() ? data.GetFloat("genWeight") : 1;
+        record_evt.puwei             = (float) pucalc.GetWeight(record_evt.run, puTrue[1]);
+        record_evt.pthat             = data.GetFloat("pthat");
+        record_evt.nPU               = _purec;
+        }
+
+        record_evt.MET               = data.GetFloat("pfMET");
+        record_evt.METPhi            = data.GetFloat("pfMETPhi");
+        record_evt.rho               = data.GetFloat("rho");
+        record_evt.fixedGridRhoAll   = data.GetFloat("rhoAll");
+
+        record_evt.nVtx              = data.GetInt("nVtx");
+        record_evt.HLT               = data.GetLong64("HLTPho");
+        record_evt.HLTPhoIsPrescaled = data.GetLong64("HLTPhoIsPrescaled");
+        record_evt.event             = data.GetLong64("event"); 
+
+
+        outtree_->Fill();
+        LOG_DEBUG("one event ended");
+    }
+    LOG_DEBUG("event loop ended");
+    
+
+
+    LOG_INFO("event looping end. Storing everything into root file");
     fout_->cd();
+    LOG_DEBUG("writing tree");
     outtree_->Write();
+    LOG_DEBUG("writing ntuples");
+    if ( data.HasMC() )
+    {
+    	nt_sumupgenweight->Fill(overallGenweight,hasNon1Val);
+    	nt_sumupgenweight->Write();
+    }
+    LOG_DEBUG("writing histograms");
+    hists.WriteTo(fout_);
+    LOG_DEBUG("closing output ROOT file");
     fout_->Close();
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
+    if ( data.HasMC() )
+	    f_showershapecorrection->Close();
 }
 void xElectrons(std::string ipath, int outID)
 {
@@ -310,4 +370,260 @@ void xElectrons(std::string ipath, int outID)
 
    xElectrons(pathes, oname);
 }
+std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
+{
+    std::vector<TLorentzCand> outputs;
+    for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
+        outputs.emplace_back(
+                    idx,
+                    dataptr->GetPtrInt  ("eleCharge")[idx],
+                    dataptr->GetPtrFloat("elePt")[idx],
+                    dataptr->GetPtrFloat("eleEta")[idx],
+                    dataptr->GetPtrFloat("elePhi")[idx],
+                    MASS_ELECTRON
+                );
+    return outputs;
+}
+std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr)
+{
+    std::vector<TLorentzCand> outputs;
+    for ( Int_t idx = 0; idx < dataptr->GetInt("nPho"); ++idx )
+        outputs.emplace_back(
+                    idx,
+                    0,
+                    //dataptr->GetPtrFloat("phoPt")[idx],
+                    dataptr->GetPtrFloat("phoCalibEt")[idx], // for photon, et is equiv to pt
+                    dataptr->GetPtrFloat("phoEta")[idx],
+                    dataptr->GetPtrFloat("phoPhi")[idx],
+                    MASS_ELECTRON
+                );
+    return outputs;
+}
+TLorentzCand TriggeredElectron(TreeReader* dataptr)
+{
+    // HLT_Ele27_WPTight_Gsf
+    const int PASS_HLTBIT = 12;
+    const int HLTWP = 3;
 
+    for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
+    {
+        if ( dataptr->GetPtrFloat("elePt")[idx] < 27. ) continue;
+        UShort_t* id_bits = (UShort_t*)dataptr->GetPtrShort("eleIDbit");
+        if (!(id_bits[idx]>>HLTWP&1) ) continue;
+        if (!dataptr->HasMC() )
+        {
+            ULong64_t* hlt_bits = (ULong64_t*) dataptr->GetPtrLong64("eleFiredSingleTrgs");
+            if (!(hlt_bits[idx]>>PASS_HLTBIT&1) ) continue;
+        }
+
+        TLorentzCand output(
+                    idx,
+                    dataptr->GetPtrInt  ("eleCharge")[idx],
+                    dataptr->GetPtrFloat("elePt")[idx],
+                    dataptr->GetPtrFloat("eleEta")[idx],
+                    dataptr->GetPtrFloat("elePhi")[idx],
+                    MASS_ELECTRON
+                );
+        int genIdx = FindMatchedIdx( dataptr, output );
+        if ( genIdx >= 0 ) output.SetGenIdx( genIdx );
+        return output;
+    }
+    return TLorentzCand();
+}
+
+bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand)
+{
+    int idx = cand.idx();
+    hists.FillStatus("elePreselectStat", 0);
+    if ( dataptr->GetPtrFloat("elePt")[idx] < 12. ) return false;
+    hists.FillStatus("elePreselectStat", 1);
+    float abseta = fabs(dataptr->GetPtrFloat("eleSCEta")[idx]);
+    if ( abseta > 2.5 ) return false;
+    hists.FillStatus("elePreselectStat", 2);
+    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
+    hists.FillStatus("elePreselectStat", 3);
+    if ( WP >= 0 ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
+    //if (!dataptr->HasMC() ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
+    hists.FillStatus("elePreselectStat", 4);
+    return true;
+}
+void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
+{
+    t->Branch( (name+"mcE").c_str()                ,&var->mcE          , (name+"mcE/F").c_str()              );
+    t->Branch( (name+"mcPt").c_str()               ,&var->mcPt         , (name+"mcPt/F").c_str()             );
+    t->Branch( (name+"mcEta").c_str()              ,&var->mcEta        , (name+"mcEta/F").c_str()            );
+    t->Branch( (name+"mcPhi").c_str()              ,&var->mcPhi        , (name+"mcPhi/F").c_str()            );
+    t->Branch( (name+"recoPt").c_str()             ,&var->recoPt       , (name+"recoPt/F").c_str()           );
+    t->Branch( (name+"recoEta").c_str()            ,&var->recoEta      , (name+"recoEta/F").c_str()          );
+    t->Branch( (name+"recoPhi").c_str()            ,&var->recoPhi      , (name+"recoPhi/F").c_str()          );
+    t->Branch( (name+"recoPtCalib").c_str()        ,&var->recoPtCalib  , (name+"recoPtCalib/F").c_str()      );
+    t->Branch( (name+"recoSCEta").c_str()          ,&var->recoSCEta    , (name+"recoSCEta/F").c_str()        );
+    t->Branch( (name+"r9").c_str()                 ,&var->r9           , (name+"r9/F").c_str()               );
+    t->Branch( (name+"HoverE").c_str()             ,&var->HoverE       , (name+"HoverE/F").c_str()           );
+    t->Branch( (name+"chIsoRaw").c_str()           ,&var->chIsoRaw     , (name+"chIsoRaw/F").c_str()         );
+    t->Branch( (name+"phoIsoRaw").c_str()          ,&var->phoIsoRaw    , (name+"phoIsoRaw/F").c_str()        );
+    t->Branch( (name+"nhIsoRaw").c_str()           ,&var->nhIsoRaw     , (name+"nhIsoRaw/F").c_str()         );
+    t->Branch( (name+"chWorstIso").c_str()         ,&var->chWorstIso   , (name+"chWorstIso/F").c_str()       );
+    t->Branch( (name+"rawE").c_str()               ,&var->rawE         , (name+"rawE/F").c_str()             );
+    t->Branch( (name+"scEtaWidth").c_str()         ,&var->scEtaWidth   , (name+"scEtaWidth/F").c_str()       );
+    t->Branch( (name+"scPhiWidth").c_str()         ,&var->scPhiWidth   , (name+"scPhiWidth/F").c_str()       );
+    t->Branch( (name+"esRR").c_str()               ,&var->esRR         , (name+"esRR/F").c_str()             );
+    t->Branch( (name+"esEn").c_str()               ,&var->esEn         , (name+"esEn/F").c_str()             );
+    t->Branch( (name+"mva").c_str()                ,&var->mva          , (name+"mva/F").c_str()              );
+    t->Branch( (name+"mva_nocorr").c_str()         ,&var->mva_nocorr   , (name+"mva_nocorr/F").c_str()       );
+    t->Branch( (name+"officalIDmva").c_str()       ,&var->officalIDmva , (name+"officalIDmva/F").c_str()     );
+    t->Branch( (name+"r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+"r9Full5x5/F").c_str()        );
+    t->Branch( (name+"sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+"sieieFull5x5/F").c_str()     );
+    t->Branch( (name+"sieipFull5x5").c_str()       ,&var->sieipFull5x5 , (name+"sieipFull5x5/F").c_str()     );
+    t->Branch( (name+"sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+"sipipFull5x5/F").c_str()     );
+    //t->Branch( (name+"e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+"e2x2Full5x5/F").c_str()      );
+    //t->Branch( (name+"e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+"e2x5Full5x5/F").c_str()      );
+    t->Branch( (name+"s4").c_str()                 ,&var->s4           , (name+"s4/F").c_str()               );
+    t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F").c_str()      );
+    t->Branch( (name+"calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+"calib_r9Full5x5/F").c_str()      );
+    t->Branch( (name+"calib_s4"          ).c_str(), &var->s4_corrected             , (name+"calib_s4/F").c_str()      );
+    t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F").c_str()      );
+
+
+    t->Branch( (name+"isMatched").c_str()          ,&var->isMatched    , (name+"isMatched/I").c_str()        );
+
+    t->Branch( (name+"firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+"firedTrgsL/L").c_str()       );
+    t->Branch( (name+"idbit").c_str()              ,&var->idbit        , (name+"idbit/I").c_str()            );
+}
+void RegBranch( TTree* t, const std::string& name, rec_Z* var )
+{
+    t->Branch( (name+".mcE").c_str()            ,&var->mcE       , (name+".mcE/F").c_str()        );
+    t->Branch( (name+".mcPt").c_str()           ,&var->mcPt      , (name+".mcPt/F").c_str()       );
+    t->Branch( (name+".mcEta").c_str()          ,&var->mcEta     , (name+".mcEta/F").c_str()      );
+    t->Branch( (name+".mcPhi").c_str()          ,&var->mcPhi     , (name+".mcPhi/F").c_str()      );
+    t->Branch( (name+".recoMass").c_str()       ,&var->recoMass  , (name+".recoMass/F").c_str()   );
+    t->Branch( (name+".recoE").c_str()          ,&var->recoE     , (name+".recoE/F").c_str()      );
+    t->Branch( (name+".recoPt").c_str()         ,&var->recoPt    , (name+".recoPt/F").c_str()     );
+    t->Branch( (name+".recoEta").c_str()        ,&var->recoEta   , (name+".recoEta/F").c_str()    );
+    t->Branch( (name+".recoPhi").c_str()        ,&var->recoPhi   , (name+".recoPhi/F").c_str()    );
+
+    t->Branch( (name+".isMatched").c_str()      ,&var->isMatched , (name+".isMatched/I").c_str()  );
+}
+void RegBranch( TTree* t, const string& name, rec_Event* var )
+{
+    t->Branch("run"               , &var->run,                     "run/I");
+    t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
+    t->Branch("puwei"             , &var->puwei,                   "puwei/I");
+    t->Branch("pthat"             , &var->pthat,                   "pthat/I");
+    t->Branch("nVtx"              , &var->nVtx,                    "nVtx/I");
+    t->Branch("nPU"               , &var->nPU,                     "nPU/I");
+
+    t->Branch("rho"               , &var->rho,                     "rho/F");
+    t->Branch("fixedGridRhoAll"   , &var->fixedGridRhoAll,         "fixedGridRhoAll/F");
+    t->Branch("genWeight"         , &var->genweight,               "genWeight/F");
+    t->Branch("MET"               , &var->MET,                     "MET/F");
+    t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");
+    
+    t->Branch("HLT"               , &var->HLT,                     "HLT/L");
+    t->Branch("HLTPhoIsPres.caled", &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
+    t->Branch("event"             , &var->event,                   "event/L");
+}
+
+bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
+{
+    // HLT_Ele27_WPTight_Gsf
+    //const int PASS_HLTBIT = 12;
+    //const int HLTWP = 3;
+
+    unsigned idx = cand.idx();
+    LOG_DEBUG("cand idx = %d / %d", idx , dataptr->GetInt("nPho") );
+    Float_t Et            = dataptr->GetPtrFloat("phoCalibEt")[idx];
+    Float_t Eta           = dataptr->GetPtrFloat("phoSCEta")[idx];
+    Float_t SigmaIetaIeta = dataptr->GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[idx];
+    Float_t HoverE        = dataptr->GetPtrFloat("phoHoverE")[idx];
+    Float_t ChWorstIso    = dataptr->GetPtrFloat("phoPFChWorstIso")[idx];
+    Float_t PhoIso        = dataptr->GetPtrFloat("phoPFPhoIso")[idx];
+
+
+    if ( Et < 10 ) return false;
+    //if ( fabs(Eta) > 1.4442 && fabs(Eta) < 1.566 ) return false;
+    //if ( fabs(Eta) > 3.0 ) return false;
+    if (!recoInfo::ValidEtaRegion(Eta) ) return false;
+
+    if ( recoInfo::IsEE(Eta) )
+    { // EE
+        if ( ChWorstIso > 15.        ) return false;
+        if ( PhoIso > 15.            ) return false;
+        if ( SigmaIetaIeta > 0.045   ) return false;
+        if ( HoverE > 0.05           ) return false;
+    }
+    else
+    { // EB
+        if ( ChWorstIso > 15.        ) return false;
+        if ( PhoIso > 15.            ) return false;
+        if ( SigmaIetaIeta > 0.015   ) return false;
+        if ( HoverE > 0.08           ) return false;
+    }
+    
+    return true;
+}
+bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand)
+{
+    unsigned idx = cand.idx();
+    // HLT_Ele27_WPTight_Gsf
+    const int PASS_HLTBIT = -1; // HLT selected afterward
+
+    ULong64_t Trigs =  ((ULong64_t*) dataptr->GetPtrLong64("phoFiredSingleTrgs") ) [idx];
+    Int_t EleVeto = dataptr->GetPtrInt("phoEleVeto")[idx];
+
+
+
+    if (!dataptr->HasMC() )
+    { // HLT selections
+        if ( Trigs == 0 ) return false;
+
+        if ( PASS_HLTBIT > 0 )
+        { // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
+            int hltbit = PASS_HLTBIT;
+            if ( ((Trigs>>hltbit)&1) == 0 ) return false;
+        }
+    }
+    if ( EleVeto == 1 ) return false; // select electron
+  
+
+    return true;
+}
+int FindMatchedIdx(TreeReader* dataptr, const TLorentzCand& recoCand)
+{
+    const int NOTHING_MATCHED=-1;
+    const double CUT_DELTA_R = 0.20;
+    const double CUT_PT_RATIO = 1.0;
+    const int PID_Z = 23;
+    const int PID_ELECTRON = 11;
+    const int STATUS_FINALSTATE = 3;
+    if (!dataptr->HasMC() ) return NOTHING_MATCHED;
+
+    Int_t  nMC_         = dataptr->GetInt("nMC");
+    Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
+    Int_t* genMomPID_   = dataptr->GetPtrInt("mcMomPID");
+    Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
+
+    Float_t* genpt_     = dataptr->GetPtrFloat("mcPt");
+    Float_t* geneta_    = dataptr->GetPtrFloat("mcEta");
+    Float_t* genphi_    = dataptr->GetPtrFloat("mcPhi");
+
+
+    for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
+        if ( abs(genPID_[iMC]) == PID_ELECTRON && genStatus_[iMC] <= STATUS_FINALSTATE && genMomPID_[iMC] == PID_Z )
+        {
+            TLorentzCand genCand(iMC,
+                    genPID_[iMC] == PID_ELECTRON ? -1 : 1, // charge
+                    genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_ELECTRON );
+        
+            if (!recoInfo::InFiducialRegion(genCand) ) continue;
+    
+
+            double deltaR = genCand.DeltaR(recoCand);
+            double ptratio = (recoCand.Pt()-genCand.Pt()) / genCand.Pt();
+            hists.Fill("DeltaR", deltaR);
+            hists.Fill("ptratio", ptratio);
+            if ( deltaR < CUT_DELTA_R && ptratio < CUT_PT_RATIO )
+                return iMC;
+        }
+    return NOTHING_MATCHED;
+}

@@ -22,3 +22,30 @@ dev           : developing codes. Compile by makefile only<br/>
 
 # data/pythonparser
 Use it to analyze the log file of getXsec.py.
+
+# bin/allexecutefiles
+* ./bin/exe.AppendEventInfo 3.14e1 in.root out.root
+Append information into events. Currently xs weight (31.4 as example) and BTagging corrections are appended in event.
+
+* ./bin/exe.xElectronsRunner inputggNtuple.root 3
+input a ggNtuple and run all events. The output name will be append a number "3". For electron. Zee event.
+* ./bin/exe.xPhotonRunner inputggNtuple.root 3
+input a ggNtuple and run all events. The output name will be append a number "3". For photon
+
+## some variables in xPhoton outputs
+* JetID : 1 = passed and 0 = fail
+* PUJetIDbit : 1<<0 : loose, 1<<1), tight(1<<2)
+* phoIDbit : loose(1<<0), medium(1<<1), tight(1<<2)
+
+(Only valid after AppendEventInfo.cc)
+* genWeight = gen weight from MC
+* xsweight = xs or -1 * xs
+* crossSection = xs
+* integratedLuminosity = lumi in data
+* integratedGenWeight = sum of all gen weight in this primary dataset. Note that this result merges the extended MC sample and standard samples.
+
+* mcweight = cross section * data lumi * genweight / (Integrated genweight)
+
+
+TNtuple nt_sumupgenweight records the integration of gen weight at each job. So once you need to get the full integrated gen weight, you need to sum up all events. ( The number of entries is the number of jobs)
+

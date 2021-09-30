@@ -1,6 +1,7 @@
 #ifndef __RECOINFO_H__
 #define __RECOINFO_H__
 #include "xPhoton/xPhoton/interface/readMgr.h"
+//#include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
@@ -8,16 +9,56 @@
 #include <TLorentzVector.h>
 #include <TMath.h>
 #include <vector>
+#include <map>
 #define NOCANDFOUND -999
 #define ELEIDENTIFICATION 3 // tight
 
 
+/*
 struct TLorentzDATA : public TLorentzVector {
     int _idx;
-    int idxInEvt() const;
-    bool isZombie() const;
+    int _charge;
+    int idx() const;
+    int charge() const;
+    bool IsZombie() const;
     TLorentzDATA();
-    TLorentzDATA(int idx);
+    TLorentzDATA(int idx, int charge_=0);
+};
+*/
+struct TLorentzCand : public TLorentzVector {
+    TLorentzCand();
+    TLorentzCand(int idx_, int charge_=0);
+    TLorentzCand(int idx_, int charge_, float pt_, float eta_, float phi_, float mass_);
+    bool IsZombie() const;
+    void SetAlive(bool stat);
+    void SetGenIdx(int idx);
+    int idx() const;
+    int genidx() const;
+    int charge() const;
+    std::vector<TLorentzCand> daughters() const;
+
+    TLorentzCand operator+(const TLorentzCand& cand_) const;
+    TLorentzCand operator=(const TLorentzVector& vec_);
+    TLorentzCand operator=(const TLorentzCand& vec_);
+    private:
+    void adddaughter( const TLorentzCand& d_ );
+    int _idx;
+    int _genidx;
+    int _charge;
+    bool _deadcand;
+    std::vector<TLorentzCand> _daughterCands;
+};
+
+namespace recoInfo
+{
+    std::map<int, TLorentzVector> PreselectedElectron_2016(TreeReader* data);
+    //TLorentzCand BuildSelectedParticles( int idx, float pt, float eta, float phi, float mass, int chargs=0 );
+    bool ordering_pt( const TLorentzCand& cand1, const TLorentzCand& cand2 ); // used for sorting
+    bool ordering_recopt( const std::pair<TLorentzCand,TLorentzCand>& candpair1, const std::pair<TLorentzCand,TLorentzCand>& candpair2 ); // used for sorting
+    bool InFiducialRegion(const TLorentzCand& cand_);
+    bool ValidEtaRegion(float eta);
+    bool IsEE(float eta);
+    float CorrectedValue( TGraph* correctionFunc, float val );
 };
 
 /*

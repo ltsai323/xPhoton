@@ -14,20 +14,25 @@ testSummaryFile='../data/mcInformation/summary_sigMC_madgraph.json'
 def GetXsection(db): return db['xs'][0]
 
 import json
-def GetXS(primarydataset, SummaryFile=testSummaryFile):
-    with open(SummaryFile,'r') as f:
-        database=json.load(f)
-        for db in database:
-            if primarydataset == db['pd']:
-                return GetXsection(db)
-    raise ValueError('primary dataset {%s} is not found in database\nIs file corrected? {%s}'%(primarydataset, fileinfo['path']))
+def FindXSInfo( primarydataset_, version_ ,summaryjson_):
+    with open(summaryjson_,'r') as ifile:
+        xsinfo=json.load(ifile)
+        if primarydataset_ in xsinfo:
+            if version_ in xsinfo[primarydataset_]:
+                return xsinfo[primarydataset_][version_]['xs']
+            else:
+                raise IOError( 'version %s not found in primary dataset %s at file %s' % (version_, primarydataset_, summaryjson_) )
+        else:
+            raise IOError( 'primary dataset %s is not found at file %s' % (primarydataset_, summaryjson_) )
+
 
 import os
 def nodir(path):
     return path.split('/')[-1]
 def ShowPD(SummaryFile):
     with open(SummaryFile,'r') as f:
-        for db in json.load(f): print db['pd']
+        #for db in json.load(f): print db['pd']
+        for pd, info in json.load(f).iteritems(): print pd
 def ShowDetail(SummaryFile):
     with open(SummaryFile,'r') as f:
         for db in json.load(f): print db

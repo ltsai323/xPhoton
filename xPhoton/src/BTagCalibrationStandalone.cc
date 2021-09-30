@@ -384,7 +384,7 @@ public:
     TF1 func;
   };
 
-private:
+//private:
   BTagCalibrationReaderImpl(BTagEntry::OperatingPoint op,
                             const std::string & sysType,
                             const std::vector<std::string> & otherSysTypes={});
@@ -513,17 +513,20 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     ){
       if (use_discr) {                                    // discr. reshaping?
         if (e.discrMin <= discr && discr < e.discrMax) {  // check discr
-            LOG_DEBUG("jet scale factor is sucessfully calculated!");
+            if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG(" C jet in %s func name is  Use input discr to calculate weight",e.func.GetName());
           return e.func.Eval(discr);
         }
       } else {
+            if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG(" C jet in %s func name is  Use input   pt  to calculate weight",e.func.GetName());
+        //LOG_DEBUG("Use pt to calculate weight");
         return e.func.Eval(pt);
       }
     }
   }
 
-  LOG_DEBUG("return default jetSF");
-  return 0.;  // default value
+  LOG_INFO("No any scale factor found. return default jetSF = 0. discr = %.3f, flavour = %d (0:B,1:C,2:L), (pt,eta)=(%.3f,%.3f)", discr, jf, pt, eta);
+  //return 1.;  // If nothing found, just return a non weighted result.
+  return 0.;  // If nothing found, just return a non weighted result.
 }
 
 double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
@@ -536,13 +539,15 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
   auto sf_bounds_eta = min_max_eta(jf, discr);
   bool eta_is_out_of_bounds = false;
 
+  if ( useAbsEta_[jf] && eta < 0 ) eta = -eta;
+
   if (sf_bounds_eta.first < 0) sf_bounds_eta.first = -sf_bounds_eta.second;   
   if (eta <= sf_bounds_eta.first || eta > sf_bounds_eta.second ) {
     eta_is_out_of_bounds = true;
   }
    
   if (eta_is_out_of_bounds) {
-      LOG_WARNING(" eta is out of bounds! please check");
+      LOG_WARNING(" eta(=%.3f) is out of bounds! { Abs eta range = [ %.3f, %.3f ], jet flavor = %d and discr = %.4f }",eta, sf_bounds_eta.first, sf_bounds_eta.second, jf, discr);
     return 1.;
   }
 
@@ -562,6 +567,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
   // get central SF (and maybe return)
   double sf = eval(jf, eta, pt_for_eval, discr);
   if (sys == sysType_) {
+      if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG( "Found a category in %s. Return sf = %.5f", sys.c_str(),sf );
     return sf;
   }
 
@@ -574,10 +580,12 @@ throw std::exception();
   }
   double sf_err = otherSysTypeReaders_.at(sys)->eval(jf, eta, pt_for_eval, discr);
   if (!is_out_of_bounds) {
+      if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG( "Found a category in %s. Return sf_err = %.5f", otherSysTypeReaders_.at(sys)->sysType_.c_str(),sf_err );
     return sf_err;
   }
 
   // double uncertainty on out-of-bounds and return
+  if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG( "Nothing found. Return sf_err = sf + 2*(sferr-sf) = %.5f+ 2*(%.5f-%.5f) = %.5f", sf, sf_err, sf, sf+2*(sf_err-sf) );
   sf_err = sf + 2*(sf_err - sf);
   return sf_err;
 }

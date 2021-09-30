@@ -1,21 +1,21 @@
 #!/usr/bin/env python2
 myArgs=[
-            { 'reqName':'sigMC_Pt100To250_13TeV-amcatnlo-pythia8_v3-v3-v2_sub01'  , 'dataset':'/G1Jet_Pt-100To250_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt100To250_13TeV-amcatnlo-pythia8_v3-ext1-v2_sub01', 'dataset':'/G1Jet_Pt-100To250_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt100To250_13TeV-amcatnlo-pythia8_v3-ext2-v2_sub01', 'dataset':'/G1Jet_Pt-100To250_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt100To250_13TeV-amcatnlo-pythia8_v3-v3-v2'  , 'dataset':'/G1Jet_Pt-100To250_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt100To250_13TeV-amcatnlo-pythia8_v3-ext1-v2', 'dataset':'/G1Jet_Pt-100To250_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt100To250_13TeV-amcatnlo-pythia8_v3-ext2-v2', 'dataset':'/G1Jet_Pt-100To250_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM' },
 
-            { 'reqName':'sigMC_Pt250To400_13TeV-amcatnlo-pythia8_v3-v2_sub01'     , 'dataset':'/G1Jet_Pt-250To400_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt250To400_13TeV-amcatnlo-pythia8_v3-ext1-v2_sub01', 'dataset':'/G1Jet_Pt-250To400_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt250To400_13TeV-amcatnlo-pythia8_v3-ext2-v1_sub01', 'dataset':'/G1Jet_Pt-250To400_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt250To400_13TeV-amcatnlo-pythia8_v3-v2'     , 'dataset':'/G1Jet_Pt-250To400_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt250To400_13TeV-amcatnlo-pythia8_v3-ext1-v2', 'dataset':'/G1Jet_Pt-250To400_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt250To400_13TeV-amcatnlo-pythia8_v3-ext2-v1', 'dataset':'/G1Jet_Pt-250To400_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM' },
 
-            { 'reqName':'sigMC_Pt400To650_13TeV-amcatnlo-pythia8_v3-v2_sub01'     , 'dataset':'/G1Jet_Pt-400To650_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt400To650_13TeV-amcatnlo-pythia8_v3-ext1-v2_sub01', 'dataset':'/G1Jet_Pt-400To650_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt400To650_13TeV-amcatnlo-pythia8_v3-v2'     , 'dataset':'/G1Jet_Pt-400To650_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt400To650_13TeV-amcatnlo-pythia8_v3-ext1-v2', 'dataset':'/G1Jet_Pt-400To650_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
 
-            { 'reqName':'sigMC_Pt50To100_13TeV-amcatnlo-pythia8_v3-v2_sub01'      , 'dataset':'/G1Jet_Pt-50To100_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt50To100_13TeV-amcatnlo-pythia8_v3-ext1-v1_sub01' , 'dataset':'/G1Jet_Pt-50To100_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt50To100_13TeV-amcatnlo-pythia8_v3-v2'      , 'dataset':'/G1Jet_Pt-50To100_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt50To100_13TeV-amcatnlo-pythia8_v3-ext1-v1' , 'dataset':'/G1Jet_Pt-50To100_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM' },
 
-            { 'reqName':'sigMC_Pt650ToInf_13TeV-amcatnlo-pythia8_v3-v2_sub01'     , 'dataset':'/G1Jet_Pt-650ToInf_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
-            { 'reqName':'sigMC_Pt650ToInf_13TeV-amcatnlo-pythia8_v3-ext1-v2_sub01', 'dataset':'/G1Jet_Pt-650ToInf_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt650ToInf_13TeV-amcatnlo-pythia8_v3-v2'     , 'dataset':'/G1Jet_Pt-650ToInf_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM' },
+            { 'reqName':'sigMC_Pt650ToInf_13TeV-amcatnlo-pythia8_v3-ext1-v2', 'dataset':'/G1Jet_Pt-650ToInf_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM' },
 ]
 if __name__ == '__main__':
 

@@ -46,7 +46,8 @@ def InitFileLogger(file='log', level='debug'):
 if __name__ == '__main__':
     # example usage
 
-    LoadLoggerConfig(confPath='../data/logger_fileConsole.config', fromCurrentDir=True)
+    #LoadLoggerConfig(confPath='../data/logger_fileConsole.config', fromCurrentDir=True)
+    InitLogger(level='debug')
     mylog=GetLogger('LogMgr')
 
     mylog.debug('this is debug')

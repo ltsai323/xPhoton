@@ -6,4 +6,5 @@
 <export>
     <bin name="exec_xPhotonRunner"           file="xPhotonRunner.cc"/>
     <bin name="exec_AppendEventInfo"         file="AppendEventInfo.cc"/>
+    <bin name="exec_AppendBTagCalibration"   file="AppendBTagCalibration.cc"/>
 </export>

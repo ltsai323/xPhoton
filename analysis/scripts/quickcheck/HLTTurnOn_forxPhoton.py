@@ -10,21 +10,28 @@ def triggerNames_():
         ]
 def xAxis_():
     return array('d',
-            [ 22, 30, 36, 50, 60, 85, 100, 115, 135, 155, 175, 200, 250, 300, 400, 500, 750, 1000, 1200 ]
+            #[ 22, 30, 36, 50, 60, 85, 100, 115, 135, 155, 175, 200, 250, 300, 400, 500, 750, 1000, 1200 ]
             #[ 22, 30, 36, 50, 60, 85, 100, 115, 135, 155, 175, 200, 250, 300, 400, 500, 750, 1000 ]
+            [ 25,34,40,55,70,85,100,115,135,155,175,200,220,250,300,1000 ]
             )
 def getTree_(tfile):
     t=tfile.Get('t') # for xphoton
     # t=tfile.Get('EventTree') # for ggtree
     return t
-outfignametemplate='storefig/hltcompare_{0}over{1}'
+outputdir='storefig'
+outfignametemplate='%s/hltcompare_{0}over{1}' % outputdir
 
 
 
 if __name__ == '__main__':
     import sys
-    hltbit_goal=int(sys.argv[2])
-    hltbit_base=int(sys.argv[1])
+    inputfile=sys.argv[1]
+    hltbit_goal=int(sys.argv[3])
+    hltbit_base=int(sys.argv[2])
+
+
+    import os
+    if not os.path.isdir(outputdir): os.mkdir(outputdir)
     print hltbit_goal
     print hltbit_base
     outfigname=outfignametemplate.format(hltbit_goal,hltbit_base) + '.png'
@@ -39,7 +46,7 @@ if __name__ == '__main__':
     yaxis_both=array( 'd', [0]*(len(xaxis)-1) )
     '''
 
-    file=ROOT.TFile.Open('/home/ltsai/Work/workspaceGammaPlusJet/totdata.root')
+    file=ROOT.TFile.Open(inputfile)
     tree=getTree_(file)
 
     hist_goal=ROOT.TH1F('bit%d'%hltbit_goal,triggers[hltbit_goal], len(xaxis)-1, xaxis)
