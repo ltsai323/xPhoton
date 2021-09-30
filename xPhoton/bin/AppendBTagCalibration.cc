@@ -14,8 +14,8 @@
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 // usage :
 //   ./exec_thisfile input.root outfile.root 3.283
-bool useDeepCSV = false;
-bool useDeepJet = false;
+bool useDeepCSV = true;
+bool useDeepJet = true;
 
 void PrintHelp()
 {

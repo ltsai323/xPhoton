@@ -6,4 +6,4 @@ root -b <<EOF
 MakeHisto t(3)
 t.Loop()
 EOF
-mv output.root makehisto_QCD_madgraph.root
+cp output.root makehisto_QCD_madgraph.root
