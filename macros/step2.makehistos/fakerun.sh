@@ -8,6 +8,6 @@ do
 MakeHisto t(-10${iBin})
 t.Loop()
 EOF
-    mv output.root storerooe/makehisto_fakedata${iBin}.root
+    mv output.root storeroot/makehisto_fakedata${iBin}.root
 done
 
