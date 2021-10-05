@@ -33,7 +33,7 @@ struct DATTree
     {
         _tree->ReadFile(datfile);
 
-        if (!_tree->FindBranch("bkg") ) throw std::runtime_error("input dat file is not fake yield. Please check input dat file\n");
+        if (!_tree->FindBranch("bkg") ) throw std::runtime_error("DATTree::DATTree(); input dat file is not loaded or not fake yield. Please check input dat file\n");
         _tree->SetBranchAddress("ptbin"  , &ptbin);
         _tree->SetBranchAddress("EBEE"   , &etabin);
         _tree->SetBranchAddress("jetbin" , &jetbin);
@@ -167,7 +167,7 @@ std::vector<TH1*> GetFakeTemplates( TFile* fdata, const char* datfile )
         histvars.bins.SetJet( datcontent.jetbin );
 
         // for ptbin > 19, use 19 to add statistics.
-        if ( datcontent.ptbin > 19 ) histvars.bins.SetPt( 19 );
+        if ( datcontent.ptbin > 17 ) histvars.bins.SetPt( 17 );
 
         TH1* loadhist;
 
@@ -175,10 +175,10 @@ std::vector<TH1*> GetFakeTemplates( TFile* fdata, const char* datfile )
         for ( int ivar = 0; ivar < VARList::totvars; ++ivar )
         {
             int histidx = histvars.bins.HistIdx(ivar);
-            loadhist = (TH1*) fdata->Get( histvars.data_sideband(ivar) );
+            loadhist = (TH1*) fdata->Get( histvars.data_sideband(ivar) )->Clone();
 
             ScaleHist( loadhist, datcontent.fityield );
-            if (!outputs[histidx] ) outputs[histidx] = (TH1*)loadhist->Clone();
+            if (!outputs[histidx] ) outputs[histidx] = (TH1*)loadhist;
             else                   outputs[histidx]->Add(loadhist);
         }
     }
@@ -192,8 +192,8 @@ void FakeEstimation()
 {
     TFile* fin = TFile::Open("../step3.DrawIsoBDT/storeroot/isovsbdt_template.root");
 
-    std::vector<TH1*> barrel = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_barrelJet.dat");
-    std::vector<TH1*> endcap = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_endcapJet.dat");
+    std::vector<TH1*> barrel = GetFakeTemplates(fin, "../step4.DrawYield/storeroot/data_bkg_barrelJet.dat");
+    std::vector<TH1*> endcap = GetFakeTemplates(fin, "../step4.DrawYield/storeroot/data_bkg_endcapJet.dat");
     //std::vector<TH1*> allpho = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_inclusivepho.dat"); // need to be refined
 
     TFile* fout = new TFile("output.root", "recreate");
