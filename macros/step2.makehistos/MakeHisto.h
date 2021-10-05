@@ -312,13 +312,40 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), fitVarNames( fitVar
     //HLTOPTION=1; // prevent to use HLT
   }
 
-  if(option == 15) tc->Add("../qcd/job_spring*_qcd*.root");
-  if(option == 8) tc->Add("../output_job_fall15_gjet_pt15to6000_miniAOD.root");
-  if(option == 16) tc->Add("../gjet_MG.root");
+  if ( option == -100 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample0.root");
+  }
+  if ( option == -101 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample1.root");
+  }
+  if ( option == -102 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample2.root");
+  }
+  if ( option == -103 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample3.root");
+  }
+  if ( option == -104 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample4.root");
+  }
+  if ( option == -105 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample5.root");
+  }
+  if ( option == -106 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample6.root");
+  }
+  if ( option == -107 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample7.root");
+  }
+  if ( option == -108 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample8.root");
+  }
+  if ( option == -109 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
+  }
 
   OPTION = option;
 
-  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";                   
+  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";
   fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
   fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
   fitVarNames[fitVar::_deepCSVTags_udsg]                   = "deepCSVTags_udsg";
@@ -386,11 +413,13 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
    
+   /* asdf temperally disabled for fake data
    if (!IsMC() )
    {
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
    }
+   */
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
    if ( IsMC() )
    {
@@ -499,12 +528,14 @@ void MakeHisto::Init(TTree *tree)
    }
    // fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    // fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
+   /* asdf temporally disabled for fake data
    if (!IsMC() )
    {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
    }
+   */
 
    if ( IsMC() )
    {
