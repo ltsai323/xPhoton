@@ -180,90 +180,18 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
         hsig=(TH1F*)fhisto_sig->Get(hname);
 
         sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-        if(ptbin >=20) sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, 19);
+        //if(ptbin >=20) sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, 19);
+        if(ptbin > 17) sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, 17);
         hbkg=(TH1F*)ff->Get(hname);      
     }
-    /*
-    }else if(fit_data==0){
-        sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);    
-
-        hsig_toymc=(TH1F*)fhisto_sig->Get(hname);
-        //hsig=(TH1F*)ff->Get(hname);    
-
-        //hsig_toymc=(TH1F*)ff->Get(hname);    
-        hsig = (TH1F*)hsig_toymc->Clone();
-        //hsig_toymc=(TH1F*)fhisto_sigalt->Get(hname);        
-
-        //sprintf(hname,"qcd_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-        sprintf(hname,"qcd_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-        hbkg_toymc=(TH1F*)ff->Get(hname);
-        //hbkg=(TH1F*)hbkg_toymc->Clone();
-        //sprintf(hname,"qcd_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-        sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-        hbkg=(TH1F*)ff->Get(hname);    
-
-    }else if(fit_data==2){
-        sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-        hsig=(TH1F*)fhisto_sig->Get(hname);
-        // sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-        // hsig=(TH1F*)ff->Get(hname);
-        sprintf(hname,"qcd_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-        hbkg=(TH1F*)ff->Get(hname);
-    }else if(fit_data==3){
-        sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-        hsig=(TH1F*)ff->Get(hname);
-        sprintf(hname,"qcd_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
-        hbkg=(TH1F*)ff->Get(hname);
-    }else if(fit_data==4){ // fit phoIso
-        sprintf(hname,"gjet_%d_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-        hsig=(TH1F*)ff->Get(hname);
-        //sprintf(hname,"data_%d_%d_%d_px2_phoIso",ebee, jetbin, ptbin);
-        sprintf(hname,"qcd_%d_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-        hbkg=(TH1F*)ff->Get(hname);
-    }else if(fit_data==5){ // fit phoIso
-        sprintf(hname,"gjet_%d_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-        hsig=(TH1F*)ff->Get(hname);
-        hsig_toymc = (TH1F*)hsig->Clone();
-        sprintf(hname,"qcd_%d_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-        hbkg_toymc=(TH1F*)ff->Get(hname);    
-        sprintf(hname,"qcd_%d_%d_%d_px2_phoIso",ebee, jetbin, ptbin);
-        hbkg=(TH1F*)ff->Get(hname);    
-    }
-       else if(fit_data==99){
-       sprintf(hname,"h_BDT_%d_%d_%d_%d_0",ebee, 0, ptbin);
-       hsig=(TH1F*)fhisto_gjet6000->Get(hname);
-       sprintf(hname,"h_BDT_%d_%d_%d_%d_0",ebee, 1, ptbin);
-       hsig->Add((TH1F*)fhisto_gjet6000->Get(hname));
-       sprintf(hname,"h_BDT_%d_%d_%d_%d_1",ebee, 0, ptbin);
-       hbkg=(TH1F*)fhisto_qcd->Get(hname);
-       sprintf(hname,"h_BDT_%d_%d_%d_%d_1",ebee, 1, ptbin);
-       hbkg->Add((TH1F*)fhisto_qcd->Get(hname));
-       }
-       */
 
 
-    // hsig->Draw();
-    // // // hbkg_toymc->Draw();
-    // return fitted;
 
     TH1F *hEGdata;
     {
         sprintf(hname,"data_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
         hEGdata=(TH1F*)ff->Get(hname);
     }
-    /*
-    if(fit_data==99){
-        sprintf(hname,"h_BDT_%d_%d_%d_0",ebee, jetbin,  ptbin);
-        hEGdata = (TH1F*)fhisto_data->Get(hname);
-    } else if(fit_data<=3 || fit_data==11){
-        sprintf(hname,"data_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
-        hEGdata=(TH1F*)ff->Get(hname);
-    }//  else {
-    //   sprintf(hname,"data_%d_%d_%d_px1_phoIso",ebee, jetbin, ptbin);
-    //   hEGdata=(TH1F*)ff->Get(hname);
-    // }    
-
-    */
 
 
     hsig->Rebin(10);
