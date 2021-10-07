@@ -235,8 +235,9 @@ public :
    TBranch        *b_integratedGenWeight;   //!
    TBranch        *b_mcweight;   //!
 
-   //MakeHisto(TTree *tree=0);
    MakeHisto(Int_t option=0);
+   MakeHisto(const char* fname, bool isMC);
+   void fitVarsInit();
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -280,16 +281,27 @@ public :
 #endif
 
 #ifdef MakeHisto_cxx
-MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), fitVarNames( fitVar::_totFitVar )
+void MakeHisto::fitVarsInit()
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
-
+  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";
+  fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
+  fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
+  fitVarNames[fitVar::_deepCSVTags_udsg]                   = "deepCSVTags_udsg";
+  fitVarNames[fitVar::_deepFlavourTags_b]                  = "deepFlavourTags_b";
+  fitVarNames[fitVar::_deepFlavourTags_c]                  = "deepFlavourTags_c";
+  fitVarNames[fitVar::_deepFlavourTags_g]                  = "deepFlavourTags_g";
+  fitVarNames[fitVar::_deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
+  fitVarNames[fitVar::_deepFlavourTags_bb]                 = "deepFlavourTags_bb";
+  fitVarNames[fitVar::_deepFlavourTags_uds]                = "deepFlavourTags_uds";
+  fitVarNames[fitVar::_deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
+  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
+  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
+  fitVarNames[fitVar::_subVtxMass]                         = "subVtxMass";
+}
+MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0), fitVarNames( fitVar::_totFitVar )
+{
   printf("option %d \n", option);
-  HLTOPTION = 0;
-  /* Init(tree); */
   TChain *tc = new TChain("t");
-    //tc->Add("");
 
   //fkMC = tc->GetBranch("mcPt") ? kTRUE : kFALSE;
   if(option == 1) { // data
@@ -343,23 +355,16 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), fitVarNames( fitVar
     tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
   }
 
-  OPTION = option;
+  fitVarsInit();
+  Init(tc);
+}
+MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), fitVarNames( fitVar::_totFitVar )
+{
+  printf("Input file name is : %s", fname);
+  TChain *tc = new TChain("t");
+  tc->Add(fname);
 
-  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";
-  fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
-  fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
-  fitVarNames[fitVar::_deepCSVTags_udsg]                   = "deepCSVTags_udsg";
-  fitVarNames[fitVar::_deepFlavourTags_b]                  = "deepFlavourTags_b";
-  fitVarNames[fitVar::_deepFlavourTags_c]                  = "deepFlavourTags_c";
-  fitVarNames[fitVar::_deepFlavourTags_g]                  = "deepFlavourTags_g";
-  fitVarNames[fitVar::_deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
-  fitVarNames[fitVar::_deepFlavourTags_bb]                 = "deepFlavourTags_bb";
-  fitVarNames[fitVar::_deepFlavourTags_uds]                = "deepFlavourTags_uds";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
-  fitVarNames[fitVar::_subVtxMass]                         = "subVtxMass";
-   
+  fitVarsInit();
   Init(tc);
 }
 
