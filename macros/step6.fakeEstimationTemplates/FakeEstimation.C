@@ -196,7 +196,7 @@ void FakeEstimation()
     std::vector<TH1*> endcap = GetFakeTemplates(fin, "../step4.DrawYield/storeroot/data_bkg_endcapJet.dat");
     //std::vector<TH1*> allpho = GetFakeTemplates(fin, "../step4.DrawYield/data_bkg_inclusivepho.dat"); // need to be refined
 
-    TFile* fout = new TFile("output.root", "recreate");
+    TFile* fout = new TFile("FakeHistograms.root", "recreate");
     fout->cd();
     for ( auto hist : barrel ) hist->Write();
     for ( auto hist : endcap ) hist->Write();
