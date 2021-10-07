@@ -200,8 +200,8 @@ const char* GetFile( int fileopt )
 
 
 
-int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, int fileID=fileid::data){
-  TFile *fdata = TFile::Open( GetFile(fileID             ) );
+int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, const char* datafilename=""){
+  TFile *fdata = TFile::Open( datafilename                 );
   
   TFile *fqcd  = TFile::Open( GetFile(fileid::qcdmadgraph) );
   TFile *fgjet = TFile::Open( GetFile(fileid::sigmadgraph) );
@@ -570,6 +570,10 @@ void Draw_Isoeff(){
 void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, int fakefileidx=0){
     int fileID = fileid::data;
     if ( fakefileidx != 0 ) fileID = fakefileidx; // Use data or fake sample.
+    const char* filename = GetFile(fileID);
 
-    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, fileID);
+    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, filename);
+}
+void Draw_IsovsBDT(const char* ifilename, int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, ifilename);
 }
