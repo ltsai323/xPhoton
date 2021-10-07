@@ -58,3 +58,6 @@
 # system running file
 */.nfs*
 */*/.nfs*
+storeroot
+storefig
+*.dat
