@@ -235,8 +235,9 @@ public :
    TBranch        *b_integratedGenWeight;   //!
    TBranch        *b_mcweight;   //!
 
-   //MakeHisto(TTree *tree=0);
    MakeHisto(Int_t option=0);
+   MakeHisto(const char* fname, bool isMC);
+   void fitVarsInit();
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -280,16 +281,27 @@ public :
 #endif
 
 #ifdef MakeHisto_cxx
-MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), fitVarNames( fitVar::_totFitVar )
+void MakeHisto::fitVarsInit()
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
-
+  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";
+  fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
+  fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
+  fitVarNames[fitVar::_deepCSVTags_udsg]                   = "deepCSVTags_udsg";
+  fitVarNames[fitVar::_deepFlavourTags_b]                  = "deepFlavourTags_b";
+  fitVarNames[fitVar::_deepFlavourTags_c]                  = "deepFlavourTags_c";
+  fitVarNames[fitVar::_deepFlavourTags_g]                  = "deepFlavourTags_g";
+  fitVarNames[fitVar::_deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
+  fitVarNames[fitVar::_deepFlavourTags_bb]                 = "deepFlavourTags_bb";
+  fitVarNames[fitVar::_deepFlavourTags_uds]                = "deepFlavourTags_uds";
+  fitVarNames[fitVar::_deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
+  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
+  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
+  fitVarNames[fitVar::_subVtxMass]                         = "subVtxMass";
+}
+MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0), fitVarNames( fitVar::_totFitVar )
+{
   printf("option %d \n", option);
-  HLTOPTION = 0;
-  /* Init(tree); */
   TChain *tc = new TChain("t");
-    //tc->Add("");
 
   //fkMC = tc->GetBranch("mcPt") ? kTRUE : kFALSE;
   if(option == 1) { // data
@@ -312,27 +324,47 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), fitVarNames( fitVar
     //HLTOPTION=1; // prevent to use HLT
   }
 
-  if(option == 15) tc->Add("../qcd/job_spring*_qcd*.root");
-  if(option == 8) tc->Add("../output_job_fall15_gjet_pt15to6000_miniAOD.root");
-  if(option == 16) tc->Add("../gjet_MG.root");
+  if ( option == -100 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample0.root");
+  }
+  if ( option == -101 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample1.root");
+  }
+  if ( option == -102 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample2.root");
+  }
+  if ( option == -103 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample3.root");
+  }
+  if ( option == -104 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample4.root");
+  }
+  if ( option == -105 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample5.root");
+  }
+  if ( option == -106 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample6.root");
+  }
+  if ( option == -107 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample7.root");
+  }
+  if ( option == -108 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample8.root");
+  }
+  if ( option == -109 ) { // fake datasample 0
+    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
+  }
 
-  OPTION = option;
+  fitVarsInit();
+  Init(tc);
+}
+MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), fitVarNames( fitVar::_totFitVar )
+{
+  printf("Input file name is : %s", fname);
+  TChain *tc = new TChain("t");
+  tc->Add(fname);
 
-  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";                   
-  fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
-  fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
-  fitVarNames[fitVar::_deepCSVTags_udsg]                   = "deepCSVTags_udsg";
-  fitVarNames[fitVar::_deepFlavourTags_b]                  = "deepFlavourTags_b";
-  fitVarNames[fitVar::_deepFlavourTags_c]                  = "deepFlavourTags_c";
-  fitVarNames[fitVar::_deepFlavourTags_g]                  = "deepFlavourTags_g";
-  fitVarNames[fitVar::_deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
-  fitVarNames[fitVar::_deepFlavourTags_bb]                 = "deepFlavourTags_bb";
-  fitVarNames[fitVar::_deepFlavourTags_uds]                = "deepFlavourTags_uds";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
-  fitVarNames[fitVar::_subVtxMass]                         = "subVtxMass";
-   
+  fitVarsInit();
   Init(tc);
 }
 
@@ -386,11 +418,13 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
    
+   /* asdf temperally disabled for fake data
    if (!IsMC() )
    {
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
    }
+   */
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
    if ( IsMC() )
    {
@@ -499,12 +533,14 @@ void MakeHisto::Init(TTree *tree)
    }
    // fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    // fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
+   /* asdf temporally disabled for fake data
    if (!IsMC() )
    {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
    }
+   */
 
    if ( IsMC() )
    {

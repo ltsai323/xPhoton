@@ -150,13 +150,61 @@ TH2F* GetBkgVarHistFromFile(TFile* infile, const char* var,
         int ebee, int jetbin, int ptbin )
 { return GetHistFromFile_General(infile, var, 1, ebee, jetbin, ptbin); }
 
+const char* GetQCD_madgraph()
+{ return "../step2.makehistos/storeroot/makehisto_QCD_madgraph.root"; }
+const char* GetData()
+{ return "../step2.makehistos/storeroot/makehisto_data.root"; }
+const char* GetSig_madgraph()
+{ return "../step2.makehistos/storeroot/makehisto_sig_madgraph.root"; }
+const char* FakeDataSample(int opt)
+{
+    switch ( opt )
+    {
+        case -100: return "../step2.makehistos/storeroot/makehisto_fakedata0.root";
+        case -101: return "../step2.makehistos/storeroot/makehisto_fakedata1.root";
+        case -102: return "../step2.makehistos/storeroot/makehisto_fakedata2.root";
+        case -103: return "../step2.makehistos/storeroot/makehisto_fakedata3.root";
+        case -104: return "../step2.makehistos/storeroot/makehisto_fakedata4.root";
+        case -105: return "../step2.makehistos/storeroot/makehisto_fakedata5.root";
+        case -106: return "../step2.makehistos/storeroot/makehisto_fakedata6.root";
+        case -107: return "../step2.makehistos/storeroot/makehisto_fakedata7.root";
+        case -108: return "../step2.makehistos/storeroot/makehisto_fakedata8.root";
+        case -109: return "../step2.makehistos/storeroot/makehisto_fakedata9.root";
+    }
+    char mesg[200];
+    sprintf( mesg, "FakeDataSample() : Input argument %d is invalid\n", opt );
+    throw std::range_error(mesg);
+    return "";
+    }
 
 
-int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+enum fileid
+{ data, sigmadgraph, qcdmadgraph };
+
+const char* GetFile( int fileopt )
+{
+    switch ( fileopt )
+    {
+        case fileid::data        : return GetData();
+        case fileid::sigmadgraph : return GetSig_madgraph();
+        case fileid::qcdmadgraph : return GetQCD_madgraph();
+
+        default: return FakeDataSample(fileopt);
+    }
+    char mesg[200];
+    sprintf( mesg, "GetFile() : Input argument %d is invalid\n", fileopt );
+    throw std::range_error(mesg);
+    return "";
+}
+
+
+
+
+int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, const char* datafilename=""){
+  TFile *fdata = TFile::Open( datafilename                 );
   
-  TFile *fqcd  = TFile::Open("../step2.makehistos/storeroot/makehisto_QCD_madgraph.root");
-  TFile *fdata = TFile::Open("../step2.makehistos/storeroot/makehisto_data.root");
-  TFile *fgjet = TFile::Open("../step2.makehistos/storeroot/makehisto_sig_madgraph.root");
+  TFile *fqcd  = TFile::Open( GetFile(fileid::qcdmadgraph) );
+  TFile *fgjet = TFile::Open( GetFile(fileid::sigmadgraph) );
   fqcd->Print();
   char hname[100];
   // int ebee=0;
@@ -519,6 +567,13 @@ void Draw_Isoeff(){
   gPad->RedrawAxis();
 
 }
-void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
-    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2);
+void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, int fakefileidx=0){
+    int fileID = fileid::data;
+    if ( fakefileidx != 0 ) fileID = fakefileidx; // Use data or fake sample.
+    const char* filename = GetFile(fileID);
+
+    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, filename);
+}
+void Draw_IsovsBDT(const char* ifilename, int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+    mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, ifilename);
 }
