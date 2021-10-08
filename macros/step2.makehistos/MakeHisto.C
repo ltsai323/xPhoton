@@ -65,61 +65,63 @@ void MakeHisto::Loop()
   TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][4]; //ebee,jetbin, ptbin, truth/fake, isovar;
 
 
-  //printf("eta bins %d \n", 8);
-  char txt[100];
-  char hname[100];
   
   
   for(int ii=0; ii<NUMBIN_PHOETA; ii++){
     for(int mm=0; mm<NUMBIN_JETETA; mm++){
       for(int jj=0; jj<NUMBIN_PHOPT; jj++){
 	for(int kk=0; kk<2; kk++){
-	  sprintf(txt,"BDT all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk);
-	  sprintf(hname,"h_BDT_all_%d_%d_%d_%d",ii,mm,jj,kk);
-	  h_BDT_all[ii][mm][jj][kk] = new TH1F(hname,txt,100, -1., 1.);
-	  sprintf(txt,"BDT selected EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk);
-	  sprintf(hname,"h_BDT_%d_%d_%d_%d",ii,mm,jj,kk);
-	  h_BDT[ii][mm][jj][kk] = new TH1F(hname,txt,100, -1., 1.);
+	  h_BDT_all[ii][mm][jj][kk] = new TH1F(
+                Form("h_BDT_all_%d_%d_%d_%d",ii,mm,jj,kk),
+                Form("BDT all  EBEE_%d_Jet_%d_ptbin_%d_true_%d", ii,mm,jj,kk),
+                100,-1.,1.);
+	  h_BDT[ii][mm][jj][kk] = new TH1F(
+	            Form("h_BDT_%d_%d_%d_%d",ii,mm,jj,kk),
+	            Form("BDT selected EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk),
+                100,-1.,1.);
 
 	  for(int nn=0; nn<4; nn++){
-	    sprintf(txt,"Iso vs BDT EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d",ii,mm,jj,kk,nn);
-	    sprintf(hname,"h_IsovsBDT_%d_%d_%d_%d_%d",ii,mm,jj,kk,nn);
-	    h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(hname,txt,100, -1., 1., 30, 0., 15);
+	    h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(
+	            Form("h_IsovsBDT_%d_%d_%d_%d_%d",ii,mm,jj,kk,nn),
+	            Form("Iso vs BDT EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d",ii,mm,jj,kk,nn),
+                100, -1., 1., 30, 0., 15);
 	    h_IsovsBDT[ii][mm][jj][kk][nn]->Sumw2();
 	  }
       {
           for ( int nn = 0; nn <= fitVar::_deepCSVDiscriminatorTags_CvsL; ++nn )
           {
-            sprintf(txt,"%s vs chIso EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[nn],ii,mm,jj,kk);
-            sprintf(hname,"h_%s_%d_%d_%d_%d"                    , fitVarNames[nn],ii,mm,jj,kk);
-            h_fitvar[ii][mm][jj][kk][nn] = new TH2F(hname,txt,10,0.,1., 30,0.,15.);
+            h_fitvar[ii][mm][jj][kk][nn] = new TH2F(
+                    Form("h_%s_%d_%d_%d_%d"                    , fitVarNames[nn],ii,mm,jj,kk),
+                    Form("%s vs chIso EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[nn],ii,mm,jj,kk),
+                    10,0.,1., 30,0.,15.);
             h_fitvar[ii][mm][jj][kk][nn]->Sumw2();
           }
-            sprintf(txt,"%s vs chIso EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk);
-            sprintf(hname,"h_%s_%d_%d_%d_%d"                , fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk);
-            h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] = new TH2F(hname,txt,100,0.,5.,30,0.,15.);
+            h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] = new TH2F(
+                    Form("h_%s_%d_%d_%d_%d", fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk),
+                    Form("%s vs chIso EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk),
+                    100,0.,5.,30,0.,15.);
             h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] -> Sumw2();
       }
 
 
-	  sprintf(txt,"Pt all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk);
-	  sprintf(hname,"h_Pt_all_%d_%d_%d_%d",ii,mm,jj,kk);
-	  h_Pt_all[ii][mm][jj][kk] = new TH1F(hname,txt, 2000, 0., 2000.);
-	  sprintf(txt,"Pt selected EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk);
-	
-	  h_BDT[ii][mm][jj][kk]->Sumw2(); 
-	  h_Pt_all[ii][mm][jj][kk]->Sumw2();
+	  h_Pt_all[ii][mm][jj][kk] = new TH1F(
+	            Form("h_Pt_all_%d_%d_%d_%d",ii,mm,jj,kk),
+	            Form("Pt all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk),
+                2000, 0., 2000.);
 	}
       }
     }
     for(int kk=0; kk<2; kk++){
-      sprintf(txt,"Pt EBEE_%d_true_%d",ii,kk);
-      sprintf(hname,"h_Pt_spec_%d_%d",ii,kk);
-      h_Ptspec[ii][kk] = new TH1F(hname,txt, 200, 0., 2000.);
+      h_Ptspec[ii][kk] = new TH1F(
+                Form("h_Pt_spec_%d_%d",ii,kk),
+                Form("Pt EBEE_%d_true_%d",ii,kk),
+                200, 0., 2000.);
       h_Ptspec[ii][kk]->Sumw2();
 
-      sprintf(hname,"h_Pt_%d_%d",ii,kk);
-      h_Pt[ii][kk] = new TH1F(hname,txt, 200, 0., 2000.);
+      h_Pt[ii][kk] = new TH1F(
+                Form("h_Pt_%d_%d",ii,kk),
+                Form("Pt EBEE_%d_true_%d",ii,kk),
+                200, 0., 2000.);
       h_Pt[ii][kk]->Sumw2();
     }
   }
@@ -133,12 +135,14 @@ void MakeHisto::Loop()
   TH1F *h_HLT[NUMBIN_PHOETA][NUMBIT_HLT][2];
   for (int jj=0; jj<NUMBIN_PHOETA; jj++){
     for(int ii=0; ii<NUMBIT_HLT; ii++){
-      sprintf(txt,"HLT ebee %d bit %d all",jj, ii);
-      sprintf(hname,"h_HLT_ebee_%d_bit%d",jj, ii);
-      h_HLT[jj][ii][0] = new TH1F(hname,txt, 2000, 0., 2000.);
-      sprintf(txt,"HLT ebee %d bit %d pass",jj, ii);
-      sprintf(hname,"h_HLT_ebee_%d_bit%d_pass",jj, ii);
-      h_HLT[jj][ii][1] = new TH1F(hname,txt, 2000, 0., 2000.);
+      h_HLT[jj][ii][0] = new TH1F(
+                Form("h_HLT_ebee_%d_bit%d",jj, ii),
+                Form("HLT ebee %d bit %d all",jj, ii),
+                2000, 0., 2000.);
+      h_HLT[jj][ii][1] = new TH1F(
+                Form("h_HLT_ebee_%d_bit%d_pass",jj, ii),
+                Form("HLT ebee %d bit %d pass",jj, ii),
+                2000, 0., 2000.);
     }
   }
   float binning[10]={0,200,300, 400, 500, 100000};
