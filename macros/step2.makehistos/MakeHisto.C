@@ -85,7 +85,6 @@ void MakeHisto::Loop()
 	    sprintf(txt,"Iso vs BDT EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d",ii,mm,jj,kk,nn);
 	    sprintf(hname,"h_IsovsBDT_%d_%d_%d_%d_%d",ii,mm,jj,kk,nn);
 	    h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(hname,txt,100, -1., 1., 30, 0., 15);
-	    //h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(hname,txt,90, -0.8, 1., 30, 0., 15);
 	    h_IsovsBDT[ii][mm][jj][kk][nn]->Sumw2();
 	  }
       {
@@ -161,17 +160,15 @@ void MakeHisto::Loop()
     if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
     if(TMath::Abs(recoEta)>2.5) continue;
 
-    //if(MET/photonpt > 0.7) continue;
     if(MET/photonpt > 0.7) continue;
 
     //test new mva with isolation smearing
     //if(isData!=1) 
     Float_t bdt_score = mva;// norminall
-    photonIDmva = mva;
-    // photonIDmva = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
-    // photonIDmva = mva - trd->Gaus(0.025,0.05);
+    // bdt_score = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
+    // bdt_score = mva - trd->Gaus(0.025,0.05);
     // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
-    // photonIDmva = mva - tmp_shift;// - trd->Gaus(0.025,0.05);
+    // bdt_score = mva - tmp_shift;// - trd->Gaus(0.025,0.05);
 
     //jetY =jetEta;
 
@@ -189,7 +186,7 @@ void MakeHisto::Loop()
     int jetbin = JetEtaBin(jetY);
 
 
-    if(eleVeto==1 && photonIDmva>0.35 && chIsoRaw<2.){
+    if(eleVeto==1 && bdt_score>0.35 && chIsoRaw<2.){
       if(ebee>1 && HoverE > 0.01) continue;
       /*  asdf Modified needed !!!! asdf */
       for(int ibit=0; ibit<NUMBIT_HLT; ibit++){
@@ -230,7 +227,7 @@ void MakeHisto::Loop()
     //if(isData!=1 && isMatched!=1 && isConverted!=1 && isMatchedEle!=1) mctruth=1; //fake
     if( IsMC() &&  isMatched!=1 && isConverted!=1 && isMatchedEle!=1) mctruth=1; //fake
 
-    h_BDT_all[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, eventweight); //<-default 
+    h_BDT_all[ebee][jetbin][ptbin][mctruth]->Fill(bdt_score, eventweight); //<-default 
     h_Pt_all[ebee][jetbin][ptbin][mctruth]->Fill(photonpt, eventweight);
 
     //if(isData==1 && ((phoFiredTrgs>>8)&1)==0) continue;
@@ -247,11 +244,11 @@ void MakeHisto::Loop()
     if(TMath::Abs(recoEta)<1.4442){
       if(sieieFull5x5 > 0.015) continue;
 
-      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, eventweight);
+      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(bdt_score, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(bdt_score, chIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(bdt_score, phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(bdt_score, chWorstRaw, eventweight);
 
       h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_b]                      ->Fill(jetDeepCSVTags_b                  , chIsoRaw, eventweight);
       h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_bb]                     ->Fill(jetDeepCSVTags_bb                 , chIsoRaw, eventweight);
@@ -276,11 +273,11 @@ void MakeHisto::Loop()
       }
     }else{
       if(sieieFull5x5>0.045)  continue;
-      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(photonIDmva, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(photonIDmva, chIsoRaw, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(photonIDmva, phoIsoRaw, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(photonIDmva, chIsoRaw+phoIsoRaw, eventweight);
-      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(photonIDmva, chWorstRaw, eventweight);
+      h_BDT[ebee][jetbin][ptbin][mctruth]->Fill(bdt_score, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][0]->Fill(bdt_score, chIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][1]->Fill(bdt_score, phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][2]->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
+      h_IsovsBDT[ebee][jetbin][ptbin][mctruth][3]->Fill(bdt_score, chWorstRaw, eventweight);
 
       h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_b]                      ->Fill(jetDeepCSVTags_b                  , chIsoRaw, eventweight);
       h_fitvar[ebee][jetbin][ptbin][mctruth][fitVar::_deepCSVTags_bb]                     ->Fill(jetDeepCSVTags_bb                 , chIsoRaw, eventweight);
