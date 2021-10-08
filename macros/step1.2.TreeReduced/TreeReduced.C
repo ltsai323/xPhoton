@@ -13,7 +13,7 @@ TTree* skim( TTree* tree )
 
     for (Long64_t ievt = 0; ievt < tree->GetEntries(); ++ievt )
     {
-        tree->GetEntry(n);
+        tree->GetEntry(ievt);
 
         // put your selection here
         if ( isMatched != 1 ) continue;
