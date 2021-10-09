@@ -11,6 +11,7 @@
 #define NUMBIN_PHOETA 2
 #define NUMBIN_JETETA 3
 #define NUMBIT_HLT 9 // 0~8
+#define NUMBIN_ISOVAR 4
 
 std::vector<float> ptbin_ranges()
 {
@@ -51,26 +52,19 @@ void MakeHisto::Loop()
 
     TFile *fout = new TFile("output.root","recreate");
 
-    TH1F *h_BDT_all[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2]; //ebee, jetbin, ptbin, true/fake;
-    TH1F *h_BDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
-
-    //TH1F *h_BDTvar[20][NUMBIN_PHOETA][NUMBIN_PHOPT][2]; // var, ebee, ptbin, true/fake;
-
-    TH1F *h_Pt_all[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
-    TH1F *h_Pt[NUMBIN_PHOETA][2];
-    TH1F *h_Ptspec[NUMBIN_PHOETA][2];
-    //TH1F *h_Wmn_mt[NUMBIN_PHOETA][2]; MTm var
-    TH2F *h_fitvar[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][fitVar::_totFitVar];
-
-    TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][4]; //ebee,jetbin, ptbin, truth/fake, isovar;
-
-
-
+    //ebee, jetbin, ptbin, true/fake;
+    TH1F *h_BDT_all [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
+    TH1F *h_BDT     [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
+    TH1F *h_Pt_all  [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
+    TH1F *h_Pt      [NUMBIN_PHOETA]                             [2];
+    TH1F *h_Ptspec  [NUMBIN_PHOETA]                             [2];
+    TH2F *h_fitvar  [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][fitVar::_totFitVar];
+    TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][NUMBIN_ISOVAR];
 
     for(int ii=0; ii<NUMBIN_PHOETA; ii++){
         for(int mm=0; mm<NUMBIN_JETETA; mm++){
-        for(int jj=0; jj<NUMBIN_PHOPT; jj++){
-        for(int kk=0; kk<2; kk++){
+        for(int jj=0; jj<NUMBIN_PHOPT ; jj++){
+        for(int kk=0; kk<NUMBIN_ISOVAR; kk++){
             h_BDT_all[ii][mm][jj][kk] = new TH1F(
                 Form("h_BDT_all_%d_%d_%d_%d",ii,mm,jj,kk),
                 Form("BDT all  EBEE_%d_Jet_%d_ptbin_%d_true_%d", ii,mm,jj,kk),
