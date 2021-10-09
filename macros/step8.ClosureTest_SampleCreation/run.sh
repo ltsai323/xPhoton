@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 root -b > log.execfile <<EOF
-.L step7.ClosureTest/FakeDataCreation.C+
+.L FakeDataCreation.C+
 FakeDataCreation()
 EOF
+python logTranslator.py

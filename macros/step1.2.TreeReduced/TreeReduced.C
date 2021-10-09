@@ -1,10 +1,14 @@
 TTree* skim( TTree* tree )
 {
-    if ( toEvt_ < 0 ) toEvt_ = tree->GetEntries();
+    bool IsMC = t_load->GetBranch("mcPt") ? kTRUE : kFALSE;
 
     // add selection variables here
     int isMatched;
-    tree->SetBranchAddress("isMatched", &isMatched);
+    Long64_t phoFiredTrgs;
+    if ( IsMC )
+    {
+        tree->SetBranchAddress("isMatched", &isMatched);
+    }
     
     // please not to delete this line
     tree->SetBranchStatus("*",1);
@@ -28,6 +32,7 @@ void TreeReduced( const char* loadedFile )
 {
     TFile* f_load = TFile::Open(loadedFile);
     TTree* t_load = (TTree*) f_load->Get("t");
+
 
     TFile* f_out = new TFile("reducedTree.root", "recreate");
     TTree* t_out = skim(t_load);

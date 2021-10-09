@@ -851,9 +851,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             for (Int_t i=0; i<nPho; ++i) {
                 if(phoEt[i]<15.) continue;
-                int tmp_isMatched = -99;
-                int tmp_isMatchedEle = -99;
-                int tmp_isConverted = -99;
+                int tmp_isMatched = 0;
+                int tmp_isMatchedEle = 0;
+                int tmp_isConverted = 0;
 
                 double tmp_mcPt_ = -999.;
                 double tmp_mcEta_ = -999.;
