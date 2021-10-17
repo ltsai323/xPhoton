@@ -283,7 +283,8 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   
   int zone1_low = 1;
   int zone1_high = 4; 
-  if(ebee>=2) { //EE
+  //if(ebee>=2) { //EE
+  if(ebee) { //EE
     if(IsoOption==0) zone1_high=3;
     else if(IsoOption==1) zone1_high=5;
     else if(IsoOption==2) zone1_high=7;
