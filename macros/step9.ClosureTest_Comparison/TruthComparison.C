@@ -53,33 +53,114 @@ struct DATTree
     Int_t  _jetmax;
 };
 
-TH1** check()
+void Visualize_RatioPlot(TH1* hist, const char* ytitle)
 {
-    TH1* h[10];
-    for ( int i=0; i<10; ++i )
-        h[i] = new TH1F("kk", "", 10,0,10);
-    return h;
+    hist->GetYaxis()->SetTitle(ytitle);
+    hist->SetNdivisions(510, "X");
+    hist->SetNdivisions(505, "Y");
+
+    hist->SetLineWidth(0);
+    hist->SetMarkerSize(2);
+    hist->GetYaxis()->SetLabelSize(0.1);
+    hist->GetYaxis()->SetTitleSize(0.15);
+    hist->GetYaxis()->SetTitleOffset(0.30);
+    hist->GetXaxis()->SetLabelSize(0.1);
+
+    return hist;
 }
-
-
-void TruthComparison()
+TH1* devhist(TH1* h_target, TH1* h_base, const char* ytitle="#frac{|data-truth|}{err_data}")
 {
-    DATTree fityields("../step4.DrawYield/storeroot/fakesample0_yield_barrelJet.dat");
-    DATTree fitbkgs  ("../step4.DrawYield/storeroot/fakesample0_bkg_barrelJet.dat");
-    TFile* sigfile = TFile::Open("../step7.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_sig.root");
-    //TFile* bkgfile = TFile::Open("../step7.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_bkg.root");
+    TH1* hist = (TH1*) h_target->Clone();
+    std::vector<float> val;
+    for ( int i=0; i < h_target->GetNbinsX(); ++i )
+    {
+        float diff = fabs( h_target->GetBinContent(i+1)-h_base->GetBinContent(i+1) );
+        float err = h_target->GetBinError(i+1);
+        if ( err > 1e-3 )
+            val.push_back( diff / err );
+        else
+            val.push_back( -1. );
+        std::cout << i << " : " << diff / err << std::endl;
+    }
+    for ( int i=0; i < val.size(); ++i )
+    {
+        hist->SetBinContent( i+1, val[i] );
+        hist->SetBinError( i+1, 0 );
+    }
+    
+    hist->SetMinimum( 0. );
+    hist->SetMaximum( 5. );
+    Visualize_RatioPlot(hist, ytitle);
+    return hist;
+}
+TH1* ratiohist(TH1* h_numerator, TH1* h_denumerator, const char* ytitle="fit/truth")
+{
+    TH1* hist = (TH1*) h_numerator->Clone();
+    hist->Divide(h_denumerator);
+    hist->GetYaxis()->SetTitle(ytitle);
+    hist->SetMinimum(0.5);
+    hist->SetMaximum(1.5);
+
+    Visualize_RatioPlot(hist, ytitle);
+    return hist;
+}
+TPad* UpperPad()
+{
+    TPad* pad = new TPad("upperpad", "", 0., 0.245, 1., 0.98);
+    pad->SetTicks(1.,1.);
+    pad->SetTopMargin(0.05);
+    pad->SetBottomMargin(0.019);
+    pad->SetLeftMargin(0.135);//0.12
+    pad->SetRightMargin(0.06);//0.12
+
+	return pad;
+}
+TPad* LowerPad()
+{
+    TPad* pad = new TPad("lowerpad","",0.,0.0,1.,0.258);
+    pad->SetTicks(1.,1.);
+    pad->SetTopMargin(0.0);
+    pad->SetBottomMargin(0.35);
+    pad->SetLeftMargin(0.135);
+    pad->SetRightMargin(0.06);
+
+	return pad;
+}
+const char* File_DATRec(int fakeidx, int isendcapjet )
+{ return Form("../step4.DrawYield/storeroot/fakesample%d_yield_%sJet.dat", fakeidx, isendcapjet?"endcap":"barrel"); }
+const char* File_DATRecBkg(int fakeidx, int isendcapjet )
+{ return Form("../step4.DrawYield/storeroot/fakesample%d_bkg_%sJet.dat", fakeidx, isendcapjet?"endcap":"barrel"); }
+
+const char* File_Source_Sig(int fakeidx)
+{ return Form("../step8.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample%d_sig.root", fakeidx); }
+const char* File_Source_Bkg(int fakeidx)
+{ return Form("../step8.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample%d_bkg.root",fakeidx); }
+const char* File_Source_Overall(int fakeidx)
+{ return Form("../step8.ClosureTest_SampleCreation/storeroot/iso_fakesample%d.root", fakeidx); }
+
+
+void TruthComparison(int fakeid, int isendcappho, int isendcapjet)
+{
+    DATTree fityields( File_DATRec(fakeid, isendcapjet) );
+    DATTree fitbkgs  ( File_DATRecBkg(fakeid, isendcapjet) );
+    TFile* sigfile = TFile::Open( File_Source_Sig(fakeid) );
+    TFile* bkgfile = TFile::Open( File_Source_Bkg(fakeid) );
+    TFile* totfile = TFile::Open( File_Source_Overall(fakeid) );
+
     std::vector<float> ptranges = ptbin_ranges();
-    std::cout << ptranges.front();
-    for ( auto range : ptranges ) std::cout << range << ", "; std::cout << "\n";
     int nbin = 16;
+
     TH1F* h_fit_sig = new TH1F( "fitsig", "", nbin, &ptranges.front() );
     TH1F* h_fit_bkg = new TH1F( "fitbkg", "", nbin, &ptranges.front() );
     TH1F* h_mc_sig = new TH1F( "sig", "", nbin, &ptranges.front() );
     TH1F* h_mc_bkg = new TH1F( "bkg", "", nbin, &ptranges.front() );
+    TH1F* h_mc_tot = new TH1F( "tot", "", nbin, &ptranges.front() );
     h_fit_sig->Sumw2();
     h_fit_bkg->Sumw2();
     h_mc_sig->Sumw2();
     h_mc_bkg->Sumw2();
+    h_mc_tot->Sumw2();
+
 
     TTree* t = fityields.GetTree();
     for ( int ievt = 0; ievt != t->GetEntries(); ++ievt )
@@ -87,40 +168,106 @@ void TruthComparison()
         t->GetEntry(ievt);
 
         // only use barrel photon
-        if ( fityields.etabin == 1 ) continue;
+        if ( isendcappho )
+        { if ( fityields.etabin == 0 ) continue; }
+        else
+        { if ( fityields.etabin == 1 ) continue; }
         if ( fityields.ptbin > 18 ) continue;
         h_fit_sig->SetBinContent( fityields.ptbin+1, fityields.fityield );
         h_fit_sig->SetBinError( fityields.ptbin+1, fityields.fityield_err );
         
         char histname[100];
-        sprintf( histname, "data_0_0_%d_px1_chIso", fityields.ptbin );
+        sprintf( histname, "data_%d_%d_%d_px1_chIso", fityields.etabin, fityields.jetbin, fityields.ptbin );
         TH1* horig = (TH1*) sigfile->Get(histname);
         h_mc_sig->SetBinContent( fityields.ptbin+1, horig->GetEntries() );
     }
+    t = fitbkgs.GetTree();
+    for ( int ievt = 0; ievt != t->GetEntries(); ++ievt )
+    {
+        t->GetEntry(ievt);
 
+        // only use barrel photon
+        if ( isendcappho )
+        { if ( fitbkgs.etabin == 0 ) continue; }
+        else
+        { if ( fitbkgs.etabin == 1 ) continue; }
+        if ( fitbkgs.ptbin > 18 ) continue;
+        h_fit_bkg->SetBinContent( fitbkgs.ptbin+1, fitbkgs.fityield );
+        h_fit_bkg->SetBinError( fitbkgs.ptbin+2, fitbkgs.fityield_err );
+        
+        char histname[100];
+        sprintf( histname, "data_%d_%d_%d_px1_chIso", fitbkgs.etabin, fitbkgs.jetbin, fitbkgs.ptbin );
+        TH1* horig = (TH1*) bkgfile->Get(histname);
+        h_mc_bkg->SetBinContent( fitbkgs.ptbin+1, horig->GetEntries() );
+
+        sprintf( histname, "data_%d_%d_%d_px1_chIso", fitbkgs.etabin, fitbkgs.jetbin, fitbkgs.ptbin );
+             horig = (TH1*) totfile->Get(histname);
+        h_mc_tot->SetBinContent( fitbkgs.ptbin+1, horig->GetEntries() );
+    }
+
+    float maxval = h_mc_tot->GetMaximum() * 1.5;
+    h_mc_tot ->SetMaximum( maxval );
+    h_mc_sig ->SetMaximum( maxval );
+    h_mc_bkg ->SetMaximum( maxval );
+    h_fit_sig->SetMaximum( maxval );
+    h_fit_bkg->SetMaximum( maxval );
 
     
     
-    //h_fit_sig->SetMarkerColor(2);
-    //h_fit_bkg->SetMarkerColor(2);
+    h_fit_sig->SetMarkerColor(kRed);
+    h_fit_bkg->SetMarkerColor(kBlue);
+    h_fit_sig->SetMarkerStyle(20);
+    h_fit_bkg->SetMarkerStyle(34);
+    h_fit_sig->SetMarkerSize(2);
+    h_fit_bkg->SetMarkerSize(2);
+    h_fit_sig->SetLineColor(kRed);
+    h_fit_bkg->SetLineColor(kBlue);
     h_mc_sig->SetLineColor(48);
-    h_mc_bkg->SetLineColor(48);
-    //h_mc_sig->SetFillColor(48);
-    //h_mc_bkg->SetFillColor(48);
+    h_mc_bkg->SetLineColor(38);
+    h_mc_tot->SetFillColor(29);
+    h_mc_tot->SetLineColor(29);
 
     TCanvas* c1 = new TCanvas("c1","",1200,1000);
-    std::cout << "1. " << h_mc_sig->GetNbinsX() << ". 2. " << h_fit_sig->GetNbinsX() << std::endl;
-    TRatioPlot* ratiosig = new TRatioPlot(h_fit_sig, h_mc_sig, "divsym");
-    //TRatioPlot* ratiobkg = new TRatioPlot(h_fit_bkg, h_mc_bkg);
+	c1->cd();
+    TPad* upperpad = UpperPad();
+    upperpad->Draw();
+    upperpad->cd();
 
-    ratiosig->Draw();
-    ratiosig->GetLowerRefGraph()->SetMaximum(1.4);
-    ratiosig->GetLowerRefGraph()->SetMinimum(0.6);
-    ratiosig->GetUpperPad()->cd();
-    ratiosig->GetUpperPad()->Clear();
-    h_mc_sig->Draw();
+    h_mc_tot->Draw("hist");
+    h_mc_sig->Draw("hist same");
+    h_mc_bkg->Draw("hist same");
     h_fit_sig->Draw("p same");
-    c1->Update();
-    c1->SaveAs("h_cmp_barrelpho_barreljet.png");
-}
+    h_fit_bkg->Draw("p same");
 
+    TLegend* leg = new TLegend(0.20, 0.70, 0.89, 0.89);
+    leg->AddEntry(h_mc_sig, "Signal truth", "l");
+    leg->AddEntry(h_mc_bkg, "Background truth", "l");
+    leg->AddEntry(h_fit_sig, "Signal fitted", "p");
+    leg->AddEntry(h_fit_bkg, "Background fitted", "p");
+    leg->AddEntry(h_mc_tot, "Overall Candidates", "f");
+    leg->SetNColumns(2);
+    leg->Draw();
+    leg->SetBorderSize(0);
+
+    TPad* lowerpad = LowerPad();
+    c1->Update();
+    c1->cd();
+    lowerpad->Draw();
+    lowerpad->cd();
+    
+
+    TH1* ratiosig = ratiohist( h_fit_sig, h_mc_sig, "#frac{Fit}{Truth}" );
+    TH1* ratiobkg = ratiohist( h_fit_bkg, h_mc_bkg, "#frac{Fit}{Truth}" );
+    //TH1* ratiosig = devhist( h_fit_sig, h_mc_sig, "#frac{|Fit-Truth|}{FitError}");
+    //TH1* ratiobkg = devhist( h_fit_bkg, h_mc_bkg, "#frac{|Fit-Truth|}{FitError}");
+    ratiosig->Draw("p");
+    ratiobkg->Draw("p same");
+
+    c1->Update();
+
+    c1->SaveAs( Form("plots_fakesample%d/h_truthComp_%sPho_%sJet.pdf",
+                fakeid,
+                isendcappho?"barrel":"endcap",
+                isendcapjet?"barrel":"endcap") );
+    delete c1;
+}
