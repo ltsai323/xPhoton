@@ -1,4 +1,6 @@
 #!/usr/bin/env python2
+# check histogram is valid or not.
+# Ideally, fake data is needed to be exactly the same as sig component and bkg component.
 
 import ROOT
 
@@ -51,27 +53,26 @@ if __name__ == '__main__':
     import os
     os.system( 'touch {d} ; /bin/rm -r {d}; mkdir {d}'.format(d=mydir) )
 
-    sigfile=ROOT.TFile.Open('../step7.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_sig.root')
-    bkgfile=ROOT.TFile.Open('../step7.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_bkg.root')
-    totfile=ROOT.TFile.Open('../step7.ClosureTest_SampleCreation/storeroot/iso_fakesample0.root')
+    sigfile=ROOT.TFile.Open('../step8.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_sig.root')
+    bkgfile=ROOT.TFile.Open('../step8.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_bkg.root')
+    totfile=ROOT.TFile.Open('../step8.ClosureTest_SampleCreation/storeroot/iso_fakesample0.root')
     canv=ROOT.TCanvas('c','',600,500)
+
     for etabin in range(2):
-        for jetbin in range(3):
+        for jetbin in range(2):
             for ptbin in range(20):
-                histname='data_%d_%d_%d_px1_chIso' % (etabin,jetbin,ptbin)
-                figname='cmp_%d_%d_%d' % (etabin,jetbin,ptbin)
-
-                '''
-                DrawComp(
-                        figname,
-                    sigfile.Get(histname),
-                    bkgfile.Get(histname),
-                    totfile.Get(histname),
-                    )
-                '''
-                hhname='gjet_%d_%d_%d_px1_chIso' % (etabin,jetbin,ptbin)
+                totname='data_%d_%d_%d_px1_chIso' % (etabin,jetbin,ptbin)
+                signame='gjet_%d_%d_%d_px1_chIso' % (etabin,jetbin,ptbin)
+                bkgname='data_%d_%d_%d_px2_chIso' % (etabin,jetbin,ptbin)
                 figname='%s/sigmodel_%d_%d_%d.png' % (mydir,etabin,jetbin,ptbin)
-                h=totfile.Get(hhname)
-                h.Draw()
-                canv.SaveAs(figname)
+                hsigTruth=sigfile.Get(totname)
+                hbkgTruth=bkgfile.Get(totname)
 
+                htot=totfile.Get(totname)
+                for ibin in range(htot.GetNbinsX()):
+                    bincontT=htot.GetBinContent(ibin+1)
+                    bincontS=hsigTruth.GetBinContent(ibin+1)
+                    bincontB=hbkgTruth.GetBinContent(ibin+1)
+                    netval=abs((bincontS+bincontB)-bincontT)
+                    if abs((bincontS+bincontB)-bincontT) > 1e-2:
+                        print 'error : bin info is not matched in %s -- val=%f @ bin %d'%(totname,netval, ibin)
