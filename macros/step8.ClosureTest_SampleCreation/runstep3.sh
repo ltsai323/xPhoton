@@ -29,7 +29,7 @@ echo $fname
     for phoPtBin in {0..24}; do
     for phoEtaIdx in {0..1}; do
     for jetEtaIdx in {0..2}; do
-     root -b > storeroot/logs/log_fakesample${fname}_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin} 2> /dev/null <<EOF
+    root -b > storeroot/logs/log_fakesample${fname}_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin} 2> /dev/null <<EOF
 .L ../step3.DrawIsoBDT/Draw_IsovsBDT.C
 Draw_IsovsBDT("${infile}",${phoEtaIdx},${jetEtaIdx},${phoPtBin},1, 14, 20)
 EOF
