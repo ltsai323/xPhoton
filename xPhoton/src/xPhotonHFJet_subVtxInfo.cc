@@ -290,13 +290,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Int_t nLHE;
     Int_t lhePID[MAX_LHEPARTICLE];
     Float_t lheE[MAX_LHEPARTICLE], lhePx[MAX_LHEPARTICLE], lhePy[MAX_LHEPARTICLE], lhePz[MAX_LHEPARTICLE];
-    /*
-    std::map<int, Float_t> jetWeight;
-    for ( int cIdx = 0; cIdx < calibs.size(); ++cIdx )
-        for ( int fIdx = 0; fIdx < totFlavs; ++fIdx )
-            for ( int sIdx = 0; sIdx < systematicTypes[cIdx].size(); ++sIdx )
-                jetWeight[ jetWeightIdx(cIdx,fIdx,sIdx) ] = 0.;
-                */
 
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
@@ -307,15 +300,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetSubVtx3DVal", &jetSubVtx3DVal_, "jetSubVtx3DVal/F");
         outtree_->Branch("jetSubVtx3DErr"  , &jetSubVtx3DErr_  , "jetSubVtx3DErr/F"  );
         outtree_->Branch("jetSubVtxNtrks", &jetSubVtxNtrks_, "jetSubVtxNtrks/I");
-
     //}
 
     outtree_->Branch("run", &run, "run/I");
     outtree_->Branch("event", &event, "event/L");
     outtree_->Branch("isData",         &isData,        "isData/O");
+    if (!data.HasMC() )
+    {
     outtree_->Branch("HLT",         &HLT,        "HLT/L");
     outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
+    }
     outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
+    if ( data.HasMC() )
+    {
     outtree_->Branch("pthat",        &pthat_,       "pthat/F");
     outtree_->Branch("genHT",        &genHT_,       "genHT/F");
     outtree_->Branch("mcPt",         &mcPt_,        "mcPt/F");
@@ -323,6 +320,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("mcPhi",        &mcPhi_,       "mcPhi/F");
     outtree_->Branch("mcCalIso04",   &mcCalIso04_,   "mcCalIso04/F");
     outtree_->Branch("mcTrkIso04",   &mcTrkIso04_,   "mcTrkIso04/F");
+    }
     outtree_->Branch("recoPt",       &recoPt,       "recoPt/F");
     outtree_->Branch("recoPtCalib",  &recoPtCalib,  "recoPtCalib/F");
     outtree_->Branch("recoEta",      &recoEta,      "recoEta/F");
@@ -330,12 +328,18 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
     outtree_->Branch("r9",           &r9,           "r9/F");
     outtree_->Branch( "s4"          , &s4             , "s4/F"               );
+    if ( data.HasMC() )
+    {
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
     outtree_->Branch("isMatchedEle", &isMatchedEle, "isMatchedEle/I");
     outtree_->Branch("isConverted",    &isConverted,    "isConverted/I");
+    }
     outtree_->Branch("nVtx",         &nVtx,         "nVtx/I");
+    if ( data.HasMC() )
+    {
     outtree_->Branch("nPU",          &nPU,          "nPU/I");
     outtree_->Branch("puwei",        &puwei_,        "puwei/F");
+    }
     outtree_->Branch("eleVeto",      &eleVeto,      "eleVeto/I");
     outtree_->Branch("HoverE",       &HoverE,       "HoverE/F");
 
@@ -351,11 +355,17 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("esRR",         &esRR,         "esRR/F");   
     outtree_->Branch("esEn",         &esEn,         "esEn/F");   
     outtree_->Branch("mva",          &mva,          "mva/F");  
+    if ( data.HasMC() )
+    {
     outtree_->Branch("mva_nocorr",   &mva_nocorr,   "mva_nocorr/F");  
+    }
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
     outtree_->Branch("MET",    &MET,    "MET/F");  
+    if (!data.HasMC() )
+    {
     outtree_->Branch("metFilters",    &metFilters,    "metFilters/I");  
+    }
     outtree_->Branch("METPhi",    &METPhi,    "METPhi/F");  
     outtree_->Branch("phohasPixelSeed", &phohasPixelSeed_, "phohasPixelSeed/I");
 
@@ -371,10 +381,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("jetPhi", &jetPhi_, "jetPhi/F");
     outtree_->Branch("jetY", &jetY_, "jetY/F");
     outtree_->Branch("jetJECUnc", &jetJECUnc_, "jetJECUnc/F");
+    if ( data.HasMC() )
+    {
     outtree_->Branch("jetGenJetPt", &jetGenJetPt_, "jetGenJetPt/F");
     outtree_->Branch("jetGenJetEta", &jetGenJetEta_, "jetGenJetEta/F");
     outtree_->Branch("jetGenJetPhi", &jetGenJetPhi_, "jetGenJetPhi/F");
     outtree_->Branch("jetGenJetY", &jetGenJetY_, "jetGenJetY/F");
+    }
 
     if ( testJetSF )
     {
@@ -414,19 +427,22 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("lhePx"              ,  lhePx                , "lhePx [nLHE]/F"           );
         outtree_->Branch("lhePy"              ,  lhePy                , "lhePy [nLHE]/F"           );
         outtree_->Branch("lhePz"              ,  lhePz                , "lhePz [nLHE]/F"           );
-    }
-
-
     outtree_->Branch("xsweight",  &xsweight, "xsweight/F");
     outtree_->Branch( "genWeight", &mygenweight, "genWeight/F");
     //outtree_->Branch("photon_jetID", &photon_jetID_, "photon_jetID/I");
+    }
+
+
     outtree_->Branch("jetID", &jetID, "jetID/I");
     // PUbit : 0 -- loose, 1 -- medium, 2 -- tight
     outtree_->Branch("jetPUIDbit", &jetPUIDbit, "jetPUIDbit/I");
 
+    if (!data.HasMC() )
+    {
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
     outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
     outtree_->Branch("MIPTotEnergy", &MIPTotEnergy_, "MIPTotEnergy/F");
+    }
 
 
     //get weight for gjetpt15to6000
@@ -835,9 +851,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             for (Int_t i=0; i<nPho; ++i) {
                 if(phoEt[i]<15.) continue;
-                int tmp_isMatched = -99;
-                int tmp_isMatchedEle = -99;
-                int tmp_isConverted = -99;
+                int tmp_isMatched = 0;
+                int tmp_isMatchedEle = 0;
+                int tmp_isConverted = 0;
 
                 double tmp_mcPt_ = -999.;
                 double tmp_mcEta_ = -999.;
