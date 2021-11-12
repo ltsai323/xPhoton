@@ -47,6 +47,58 @@ void MakeHisto::Loop()
   //    fChain->GetEntry(jentry);       //read all branches
   //by  b_branchname->GetEntry(ientry); //read only this branch
   if (fChain == 0) return;
+	
+   // EBEE ; recoPt ; isMatched ; jetflvr ; tagger
+   // EBEE      : 0 for EB ; 1 for EE
+   // recoPt    : 
+   // isMatched : 0 for matched, 1 for not-matched, 2 for matched(qcd-sideband), 3 for matched(qcd-signal), 4 for not-matched(qcd) 
+   // jetflv    : 0 for light ; 1 for c ; 2 for b
+   // tagger    : 0 for bvsall ; 1 for cvsl ; 2 for cvsb ; 3 for svxmass
+  TH1F *h_jettag[2][24][5][3][4];
+  TH1F *h_jettag_up[2][24][5][3][4];
+  TH1F *h_jettag_down[2][24][5][3][4];
+
+  char hname[50];
+  Float_t ptcut[25] = {25, 34, 40, 55, 70, 85, 100, 115, 135, 155, 175, 190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000};
+	  
+  for(int ii=0; ii<2; ii++){
+     for(int jj=0; jj<24; jj++){
+       for(int kk=0; kk<5; kk++){
+	 for(int mm=0; mm<3; mm++){
+	   for(int nn=0; nn<3; nn++){
+	     	sprintf(hname,"h_jettag_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+	     	h_jettag[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 10, 0., 1.);
+	     if(mm == 0){
+		sprintf(hname,"h_jettag_sigmaUp_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+	    	h_jettag_up[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 10, 0., 1.);
+             	sprintf(hname,"h_jettag_sigmaDown_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+             	h_jettag_down[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 10, 0., 1.);		
+	     }else if(mm == 1){
+		sprintf(hname,"h_jettag_alphaUp_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+                h_jettag_up[ii][jj][kk][mm][nn] = new TH1F(hname, hname, Nbin, 0., 1.);
+                sprintf(hname,"h_jettag_alphaDown_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+                h_jettag_down[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 10, 0., 1.);
+	     }else if(mm == 2){
+                sprintf(hname,"h_jettag_betaUp_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+                h_jettag_up[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 10, 0., 1.);
+                sprintf(hname,"h_jettag_betaDown_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+                h_jettag_down[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 10, 0., 1.);
+             }
+	   }
+	   for(int nn=3; nn<4; nn++){ //secondary vertex mass
+	     sprintf(hname,"h_jettag_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+	     h_jettag[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 20, 0., 5.);
+	     sprintf(hname,"h_jettag_up_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+	     h_jettag_up[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 20, 0., 5.);
+	     sprintf(hname,"h_jettag_down_%d_%d_%d_%d_%d", ii, jj, kk, mm, nn);
+	     h_jettag_down[ii][jj][kk][mm][nn] = new TH1F(hname, hname, 20, 0., 5.);
+	   }
+	 }
+       }
+     }
+   }
+
+
   TRandom3 *trd = new TRandom3();
 
   TFile *fout = new TFile("output.root","recreate");
@@ -154,6 +206,9 @@ void MakeHisto::Loop()
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
 
+    
+	  
+	  
     Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
     Float_t photonpt = recoPtCalib;
 
