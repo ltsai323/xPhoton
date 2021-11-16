@@ -12,6 +12,9 @@
 #define NUMBIN_JETETA 3
 #define NUMBIT_HLT 9 // 0~8
 #define NUMBIN_ISOVAR 4
+#define NUMBIN_MATCHEDPHOTONSTATUS 5
+#define NUMBIN_JETFLVR 3
+#define NUM_BTAGVAR 4
 
 std::vector<float> ptbin_ranges()
 {
@@ -58,63 +61,52 @@ void MakeHisto::Loop()
     TH1F *h_Pt_all  [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
     TH1F *h_Pt      [NUMBIN_PHOETA]                             [2];
     TH1F *h_Ptspec  [NUMBIN_PHOETA]                             [2];
-    TH2F *h_fitvar  [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][fitVar::_totFitVar];
     TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][NUMBIN_ISOVAR];
 
-    for(int ii=0; ii<NUMBIN_PHOETA; ii++){
-        for(int mm=0; mm<NUMBIN_JETETA; mm++){
-        for(int jj=0; jj<NUMBIN_PHOPT ; jj++){
-        for(int kk=0; kk<NUMBIN_ISOVAR; kk++){
-            h_BDT_all[ii][mm][jj][kk] = new TH1F(
-                Form("h_BDT_all_%d_%d_%d_%d",ii,mm,jj,kk),
-                Form("BDT all  EBEE_%d_Jet_%d_ptbin_%d_true_%d", ii,mm,jj,kk),
-                100,-1.,1.);
-            h_BDT[ii][mm][jj][kk] = new TH1F(
-                Form("h_BDT_%d_%d_%d_%d",ii,mm,jj,kk),
-                Form("BDT selected EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk),
-                100,-1.,1.);
 
-            for(int nn=0; nn<4; nn++){
-                h_IsovsBDT[ii][mm][jj][kk][nn] = new TH2F(
-                    Form("h_IsovsBDT_%d_%d_%d_%d_%d",ii,mm,jj,kk,nn),
-                    Form("Iso vs BDT EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d",ii,mm,jj,kk,nn),
-                    100, -1., 1., 30, 0., 15);
-                    h_IsovsBDT[ii][mm][jj][kk][nn]->Sumw2();
-            }
-            for ( int nn = 0; nn <= fitVar::_deepCSVDiscriminatorTags_CvsL; ++nn )
-            {
-                h_fitvar[ii][mm][jj][kk][nn] = new TH2F(
-                    Form("h_%s_%d_%d_%d_%d"                    , fitVarNames[nn],ii,mm,jj,kk),
-                    Form("%s vs chIso EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[nn],ii,mm,jj,kk),
-                    10,0.,1., 30,0.,15.);
-                h_fitvar[ii][mm][jj][kk][nn]->Sumw2();
-            }
-            h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] = new TH2F(
-                Form("h_%s_%d_%d_%d_%d", fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk),
-                Form("%s vs chIso EBEE_%d_Jet_%d_ptbin_%d_true_%d", fitVarNames[fitVar::_subVtxMass],ii,mm,jj,kk),
-                100,0.,5.,30,0.,15.);
-            h_fitvar[ii][mm][jj][kk][fitVar::_subVtxMass] -> Sumw2();
+    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
+    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT ; pPtIdx++) {
+    for(int isFakePho=0; isFakePho<2; isFakePho++) {
+        h_BDT_all[pEtaIdx][jEtaIdx][pPtIdx][isFakePho] = new TH1F(
+            Form("h_BDT_all_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
+            Form("BDT all  EBEE_%d_Jet_%d_ptbin_%d_true_%d", pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
+            100,-1.,1.);
+        h_BDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho] = new TH1F(
+            Form("h_BDT_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
+            Form("BDT selected EBEE_%d_Jet_%d_ptbin_%d_true_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
+            100,-1.,1.);
+
+        for(int varIsoIdx=0; varIsoIdx<NUMBIN_ISOVAR; varIsoIdx++)
+        {
+            h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][varIsoIdx] = new TH2F(
+                Form("h_IsovsBDT_%d_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho,varIsoIdx),
+                Form("Iso vs BDT EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho,varIsoIdx),
+                100, -1., 1., 30, 0., 15);
+                h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][varIsoIdx]->Sumw2();
+        }
 
 
-            h_Pt_all[ii][mm][jj][kk] = new TH1F(
-                Form("h_Pt_all_%d_%d_%d_%d",ii,mm,jj,kk),
-                Form("Pt all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",ii,mm,jj,kk),
-                2000, 0., 2000.);
-        } } } // loop end for kk, jj, mm
-        for(int kk=0; kk<2; kk++){
-            h_Ptspec[ii][kk] = new TH1F(
-                Form("h_Pt_spec_%d_%d",ii,kk),
-                Form("Pt EBEE_%d_true_%d",ii,kk),
-                200, 0., 2000.);
-            h_Ptspec[ii][kk]->Sumw2();
+        h_Pt_all[pEtaIdx][jEtaIdx][pPtIdx][isFakePho] = new TH1F(
+            Form("h_Pt_all_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
+            Form("Pt all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
+            2000, 0., 2000.);
+    } } } }
 
-            h_Pt[ii][kk] = new TH1F(
-                Form("h_Pt_%d_%d",ii,kk),
-                Form("Pt EBEE_%d_true_%d",ii,kk),
-                200, 0., 2000.);
-            h_Pt[ii][kk]->Sumw2();
-        } // loop end for kk
-    } // loop end for ii
+    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for(int isFakePho=0; isFakePho<2; isFakePho++) {
+        h_Ptspec[pEtaIdx][isFakePho] = new TH1F(
+            Form("h_Pt_spec_%d_%d",pEtaIdx,isFakePho),
+            Form("Pt EBEE_%d_true_%d",pEtaIdx,isFakePho),
+            200, 0., 2000.);
+        h_Ptspec[pEtaIdx][isFakePho]->Sumw2();
+
+        h_Pt[pEtaIdx][isFakePho] = new TH1F(
+            Form("h_Pt_%d_%d",pEtaIdx,isFakePho),
+            Form("Pt EBEE_%d_true_%d",pEtaIdx,isFakePho),
+            200, 0., 2000.);
+        h_Pt[pEtaIdx][isFakePho]->Sumw2();
+    } }
     TH1F *h_EB_HLTall = new TH1F("h_EB_HLTall","all HLT photon", 1000, 0., 1000.);
     TH1F *h_EE_HLTall = new TH1F("h_EE_HLTall","all HLT photon", 1000, 0., 1000.);
 
@@ -123,22 +115,55 @@ void MakeHisto::Loop()
 
 
     TH1F *h_HLT[NUMBIN_PHOETA][NUMBIT_HLT][2];
-    for (int jj=0; jj<NUMBIN_PHOETA; jj++){
-        for(int ii=0; ii<NUMBIT_HLT; ii++){
-            h_HLT[jj][ii][0] = new TH1F(
-                    Form("h_HLT_ebee_%d_bit%d",jj, ii),
-                    Form("HLT ebee %d bit %d all",jj, ii),
-                    2000, 0., 2000.);
-            h_HLT[jj][ii][1] = new TH1F(
-                    Form("h_HLT_ebee_%d_bit%d_pass",jj, ii),
-                    Form("HLT ebee %d bit %d pass",jj, ii),
-                    2000, 0., 2000.);
-        }
-    }
-    float binning[10]={0,200,300, 400, 500, 100000};
+    for (int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for (int HLTIdx=0; HLTIdx<NUMBIT_HLT; HLTIdx++) {
+        h_HLT[pEtaIdx][HLTIdx][0] = new TH1F(
+                Form("h_HLT_ebee_%d_bit%d",pEtaIdx, HLTIdx),
+                Form("HLT ebee %d bit %d all",pEtaIdx, HLTIdx),
+                2000, 0., 2000.);
+        h_HLT[pEtaIdx][HLTIdx][1] = new TH1F(
+                Form("h_HLT_ebee_%d_bit%d_pass",pEtaIdx, HLTIdx),
+                Form("HLT ebee %d bit %d pass",pEtaIdx, HLTIdx),
+                2000, 0., 2000.);
+    } }
+
+    // EBEE ; recoPt ; isMatched ; jetflvr ; tagger
+    // EBEE      : 0 for EB ; 1 for EE
+    // recoPt    : 
+    // isMatched : 0 for matched, 1 for not-matched, 2 for matched(qcd-sideband), 3 for matched(qcd-signal), 4 for not-matched(qcd) 
+    // jetflv    : 0 for light ; 1 for c ; 2 for b
+    // tagger    : 0 for bvsall ; 1 for cvsl ; 2 for cvsb ; 3 for svxmass
+    // yi-shou's variables
+    TH1F *h_jettag     [NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR];
+    TH1F *h_jettag_up  [NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR];
+    TH1F *h_jettag_down[NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR];
+    const int varBTagIdx_svxmass=3;
+
+
+    const std::vector< const char* > jetFlvrNames = { "sigma", "alpha", "beta" };
+    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
+    for(int phoMatchStatIdx=0; phoMatchStatIdx<NUMBIN_MATCHEDPHOTONSTATUS; phoMatchStatIdx++) {
+    for(int jFlvrIdx=0; jFlvrIdx<NUMBIN_JETFLVR; jFlvrIdx++) {
+    for(int varBTagIdx=0; varBTagIdx<NUM_BTAGVAR; varBTagIdx++) {
+        float upperboundary = varBTagIdx == varBTagIdx_svxmass ? 5. : 1.; // idx goes to svxmass, change upper boundary.
+
+        h_jettag[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx] = new TH1F(
+                Form("h_jettag_%d_%d_%d_%d_%d", pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx),
+                Form("h_jettag_%d_%d_%d_%d_%d", pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx),
+                10, 0., upperboundary);
+        h_jettag_up[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx] = new TH1F(
+                Form("h_jettag_%sUp_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx),
+                Form("h_jettag_%sUp_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx),
+                10, 0., upperboundary);
+        h_jettag_down[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx] = new TH1F(
+                Form("h_jettag_%sDown_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx),
+                Form("h_jettag_%sDown_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx),
+                10, 0., upperboundary);
+    } } } } }
 
     Long64_t nentries = fChain->GetEntries();   
-    printf("nentries %li \n", nentries);
+    printf("nentries %lli \n", nentries);
     printf("HLT option %d \n", HLTOPTION);
 
     Long64_t nbytes = 0, nb = 0;
@@ -171,18 +196,18 @@ void MakeHisto::Loop()
         //if(recoEta>-1.8 && recoEta<-1.5) printf("ebee bin %d \n", ebee);
         int ptbin = Ptbin(photonpt);
         //int ptbin = Ptbin(photonpt*0.99); //playing with photon energy scale
+        int hltbit = HLTbit(photonpt);
+        int jetbin = JetEtaBin(jetY);
 
         //smearing due to gain switching (G6->G1)    
         TLorentzVector phoP4Orig;
         TLorentzVector *phop4 = &phoP4Orig;
         phop4->SetPtEtaPhiM(photonpt, recoEta, recoPhi,0.);
 
-        int hltbit = HLTbit(photonpt);
-        int jetbin = JetEtaBin(jetY);
 
 
         if(eleVeto==1 && bdt_score>0.35 && chIsoRaw<2.){
-            if(ebee>1 && HoverE > 0.01) continue;
+            if(ebee==1 && HoverE > 0.01) continue;
             /*  asdf Modified needed !!!! asdf */
             for(int ibit=0; ibit<NUMBIT_HLT; ibit++){
                 int basebit=ibit-1;
@@ -191,9 +216,9 @@ void MakeHisto::Loop()
                 if(ibit==6) basebit=5;
                 if(ibit>=7) basebit=6;
                 if(ibit>=9) basebit=8;
-                if( (phoFiredTrgs >>basebit) & 1 == 1 ) {
+                if( (phoFiredTrgs >>basebit) & 1 ) {
                     h_HLT[ebee][ibit][0]->Fill(phop4->Et());
-                    if( (phoFiredTrgs >>(ibit)) & 1 == 1 ) {
+                    if( (phoFiredTrgs >>(ibit)) & 1 ) {
                         h_HLT[ebee][ibit][1]->Fill(phop4->Et());
                     }
                 }	  
@@ -225,8 +250,15 @@ void MakeHisto::Loop()
         h_Pt_all[ebee][jetbin][ptbin][isfakephoton]->Fill(photonpt, eventweight);
 
         // asdf selections
-        if     (TMath::Abs(recoEta)<1.4442 && sieieFull5x5 > 0.015 ) continue;
-        else if(TMath::Abs(recoEta)>1.4442 && sieieFull5x5 > 0.045 ) continue;
+        if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
+        if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
+
+        // jet selections
+        if ( jetPt < 30. ) continue;
+        if ( fabs(jetEta) > 2.5 ) continue;
+        if ( jetDeepCSVTags_c < -0.99 ) continue;
+        if ( jetID != 1 ) continue;
+        if ( jetPUIDbit != 7 ) continue;
 
         h_BDT[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][0]->Fill(bdt_score, chIsoRaw, eventweight);
@@ -234,20 +266,6 @@ void MakeHisto::Loop()
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][2]->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][3]->Fill(bdt_score, chWorstRaw, eventweight);
 
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVTags_b]                      ->Fill(jetDeepCSVTags_b                  , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVTags_bb]                     ->Fill(jetDeepCSVTags_bb                 , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVTags_c]                      ->Fill(jetDeepCSVTags_c                  , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVTags_udsg]                   ->Fill(jetDeepCSVTags_udsg               , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepFlavourTags_b]                  ->Fill(jetDeepFlavourTags_b              , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepFlavourTags_c]                  ->Fill(jetDeepFlavourTags_c              , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepFlavourTags_g]                  ->Fill(jetDeepFlavourTags_g              , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepFlavourTags_lepb]               ->Fill(jetDeepFlavourTags_lepb           , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepFlavourTags_bb]                 ->Fill(jetDeepFlavourTags_bb             , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepFlavourTags_uds]                ->Fill(jetDeepFlavourTags_uds            , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVDiscriminatorTags_BvsAll]    ->Fill(jetDeepCSVDiscriminatorTags_BvsAll, chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVDiscriminatorTags_CvsB]      ->Fill(jetDeepCSVDiscriminatorTags_CvsB  , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_deepCSVDiscriminatorTags_CvsL]      ->Fill(jetDeepCSVDiscriminatorTags_CvsL  , chIsoRaw, eventweight);
-        h_fitvar[ebee][jetbin][ptbin][isfakephoton][fitVar::_subVtxMass]                         ->Fill(jetSubVtxMass, chIsoRaw, eventweight);
 
         h_Pt[ebee][isfakephoton]->Fill(photonpt, eventweight);
         h_Ptspec[ebee][isfakephoton]->Fill( phop4->Et(), eventweight);
@@ -257,52 +275,99 @@ void MakeHisto::Loop()
                 h_chiso_sg->Fill(chIsoRaw);
                 h_chworst_sg->Fill(chWorstRaw+phoIsoRaw);
             }
+        //jetflvr
+        int jetflvBin = JetFlavourBin(jetHadFlvr);
+        int phoMatchStatIdx = 0;
+        // need to be modified asdf
+        if ( isMatched==1 )
+        {
+            if ( chIsoRaw<2.0   ) phoMatchStatIdx = 0;
+            else                  phoMatchStatIdx = 1;
+        }
+        else
+        {
+            if ( chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
+            else if ( chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
+            else                  phoMatchStatIdx = 4;
+        }
+
+
+        float evtws=0.;
+        float evtws_up=0.;
+        float evtws_down=0.;
+
+        if(jetflvBin==0){
+            evtws      =  mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;
+            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+        }else if(jetflvBin==1){
+            evtws      =  mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  mcweight* jetSF_DeepCSV_up_cferr1;
+            evtws_down =  mcweight* jetSF_DeepCSV_down_cferr1;
+        }else {
+            evtws      =  mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;  
+            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+        }
+
+        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][0]->Fill(jetDeepCSVDiscriminatorTags_BvsAll, evtws);
+        h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][0]->Fill(jetDeepCSVDiscriminatorTags_BvsAll, evtws_up);
+        h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][0]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws_down);
+
+        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][1]->Fill(jetDeepCSVDiscriminatorTags_CvsL,evtws);
+        h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][1]->Fill(jetDeepCSVDiscriminatorTags_CvsL,evtws_up);
+        h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][1]->Fill(jetDeepCSVDiscriminatorTags_CvsL,evtws_down);
+
+        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][2]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws);
+        h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][2]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws_up);
+        h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][2]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws_down);
+
+        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][3]->Fill(jetSubVtxMass);
+
     }
 
     fout->cd();
 
-    for(int ii=0; ii<NUMBIN_PHOETA; ii++){
-        for(int mm=0; mm<NUMBIN_JETETA; mm++){
-            for(int jj=0; jj<NUMBIN_PHOPT; jj++){
-                for(int kk=0; kk<2; kk++){
-                    h_BDT[ii][mm][jj][kk]->Write();
-                    h_IsovsBDT[ii][mm][jj][kk][0]->Write();
-                    h_IsovsBDT[ii][mm][jj][kk][1]->Write();
-                    h_IsovsBDT[ii][mm][jj][kk][2]->Write();
-                    h_IsovsBDT[ii][mm][jj][kk][3]->Write();
-                    h_BDT_all[ii][mm][jj][kk]->Write();
-                    h_Pt_all[ii][mm][jj][kk]->Write();
-                }
-            }
-        }
-        for(int kk=0; kk<2; kk++){
-            h_Pt[ii][kk]->Write();
-            h_Ptspec[ii][kk]->Write();
-        }
-    }
+    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
+    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
+    for(int isFakePho=0; isFakePho<2; isFakePho++) {
+        h_BDT     [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
+        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][0]->Write();
+        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][1]->Write();
+        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][2]->Write();
+        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][3]->Write();
+        h_BDT_all [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
+        h_Pt_all  [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
+    } } } }
+    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for(int isFakePho=0; isFakePho<2; isFakePho++) {
+        h_Pt    [pEtaIdx][isFakePho]->Write();
+        h_Ptspec[pEtaIdx][isFakePho]->Write();
+    } }
 
     h_EB_HLTall->Write();
     h_EE_HLTall->Write();
 
-    for (int jj=0; jj<NUMBIN_PHOETA; jj++){
-        for(int ii=0; ii<NUMBIT_HLT; ii++){
-            h_HLT[jj][ii][0]->Write();
-            h_HLT[jj][ii][1]->Write();
-        }
-    }
+    for (int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++){
+    for (int HLTIdx=0; HLTIdx<NUMBIT_HLT; HLTIdx++){
+            h_HLT[pEtaIdx][HLTIdx][0]->Write();
+            h_HLT[pEtaIdx][HLTIdx][1]->Write();
+    } }
 
     h_chiso_sg->Write();
     h_chworst_sg->Write();
 
-    TDirectory* dir = (TDirectory*) fout->mkdir("fitVars");
-    dir->cd();
-    for(int ii=0; ii<NUMBIN_PHOETA; ii++){
-        for(int mm=0; mm<NUMBIN_JETETA; mm++){
-            for(int jj=0; jj<NUMBIN_PHOPT; jj++){
-                for(int kk=0; kk<2; kk++){
-                    for ( int varIdx=0; varIdx<fitVar::_totFitVar; ++varIdx )
-                        h_fitvar[ii][mm][jj][kk][varIdx]->Write();
-                }}}}
+    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
+    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
+    for(int phoMatchStatIdx=0; phoMatchStatIdx<NUMBIN_MATCHEDPHOTONSTATUS; phoMatchStatIdx++) {
+    for(int jFlvrIdx=0; jFlvrIdx<NUMBIN_JETFLVR; jFlvrIdx++) {
+    for(int varBTagIdx=0; varBTagIdx<NUM_BTAGVAR; varBTagIdx++) {
+        h_jettag     [pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx]->Write();
+        h_jettag_up  [pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx]->Write();
+        h_jettag_down[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx]->Write();
+    } } } } }
+
 
     fout->Close();
 }
@@ -336,6 +401,7 @@ Int_t MakeHisto::HLTbit(Float_t pt){
     }
     if(pt>175) return 8;
     if(pt<22.) return -1;
+    return -1;
 }
 
 Int_t MakeHisto::JetEtaBin(Float_t eta) {  
@@ -360,5 +426,11 @@ Int_t MakeHisto::triggerbit(Int_t ptbin){
     if ( ptbin ==13 ) return 7;  // 220-250
     if ( ptbin ==14 ) return 7;  // 250-300
     if ( ptbin ==15 ) return 7;  // 300-inf
+    return 0;
+}
+Int_t MakeHisto::JetFlavourBin( int jethadflvr )
+{
+    if     (fabs(jethadflvr)==5) return 2;
+    else if(fabs(jethadflvr)==4) return 1;
     return 0;
 }

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Fri Sep 17 21:03:02 2021 by ROOT version 6.10/09
+// Tue Nov 16 15:02:11 2021 by ROOT version 6.10/09
 // from TTree t/mini tree
 // found on file: /home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root
 //////////////////////////////////////////////////////////
@@ -127,6 +127,33 @@ public :
    Float_t         integratedLuminosity;
    Float_t         integratedGenWeight;
    Float_t         mcweight;
+   Float_t         jetSF_DeepCSV_central;
+   Float_t         jetSF_DeepCSV_down_cferr1;
+   Float_t         jetSF_DeepCSV_down_cferr2;
+   Float_t         jetSF_DeepCSV_down_hf;
+   Float_t         jetSF_DeepCSV_down_lf;
+   Float_t         jetSF_DeepCSV_up_cferr1;
+   Float_t         jetSF_DeepCSV_up_cferr2;
+   Float_t         jetSF_DeepCSV_up_hf;
+   Float_t         jetSF_DeepCSV_up_lf;
+   Float_t         jetSF_DeepFlavour_central;
+   Float_t         jetSF_DeepFlavour_down_cferr1;
+   Float_t         jetSF_DeepFlavour_down_cferr2;
+   Float_t         jetSF_DeepFlavour_down_hf;
+   Float_t         jetSF_DeepFlavour_down_lf;
+   Float_t         jetSF_DeepFlavour_up_cferr1;
+   Float_t         jetSF_DeepFlavour_up_cferr2;
+   Float_t         jetSF_DeepFlavour_up_hf;
+   Float_t         jetSF_DeepFlavour_up_lf;
+   Float_t         jetSF_DeepFlavour_JESReduced_central;
+   Float_t         jetSF_DeepFlavour_JESReduced_down_cferr1;
+   Float_t         jetSF_DeepFlavour_JESReduced_down_cferr2;
+   Float_t         jetSF_DeepFlavour_JESReduced_down_hf;
+   Float_t         jetSF_DeepFlavour_JESReduced_down_lf;
+   Float_t         jetSF_DeepFlavour_JESReduced_up_cferr1;
+   Float_t         jetSF_DeepFlavour_JESReduced_up_cferr2;
+   Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
+   Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
 
    // List of branches
    TBranch        *b_jetSubVtxPt;   //!
@@ -234,6 +261,33 @@ public :
    TBranch        *b_integratedLuminosity;   //!
    TBranch        *b_integratedGenWeight;   //!
    TBranch        *b_mcweight;   //!
+   TBranch        *b_jetSF_DeepCSV_central;   //!
+   TBranch        *b_jetSF_DeepCSV_down_cferr1;   //!
+   TBranch        *b_jetSF_DeepCSV_down_cferr2;   //!
+   TBranch        *b_jetSF_DeepCSV_down_hf;   //!
+   TBranch        *b_jetSF_DeepCSV_down_lf;   //!
+   TBranch        *b_jetSF_DeepCSV_up_cferr1;   //!
+   TBranch        *b_jetSF_DeepCSV_up_cferr2;   //!
+   TBranch        *b_jetSF_DeepCSV_up_hf;   //!
+   TBranch        *b_jetSF_DeepCSV_up_lf;   //!
+   TBranch        *b_jetSF_DeepFlavour_central;   //!
+   TBranch        *b_jetSF_DeepFlavour_down_cferr1;   //!
+   TBranch        *b_jetSF_DeepFlavour_down_cferr2;   //!
+   TBranch        *b_jetSF_DeepFlavour_down_hf;   //!
+   TBranch        *b_jetSF_DeepFlavour_down_lf;   //!
+   TBranch        *b_jetSF_DeepFlavour_up_cferr1;   //!
+   TBranch        *b_jetSF_DeepFlavour_up_cferr2;   //!
+   TBranch        *b_jetSF_DeepFlavour_up_hf;   //!
+   TBranch        *b_jetSF_DeepFlavour_up_lf;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_central;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr1;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr2;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_hf;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_lf;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr1;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr2;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
+   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
 
    MakeHisto(Int_t option=0);
    MakeHisto(const char* fname, bool isMC);
@@ -251,6 +305,7 @@ public :
    virtual Int_t    HLTbit(Float_t pt);
    virtual Int_t    JetEtaBin(Float_t eta);
    virtual Int_t    triggerbit(Int_t ptbin);
+   virtual Int_t    JetFlavourBin( int jetHadFlvr );
 
    bool IsMC();
 
@@ -275,30 +330,12 @@ public :
    _subVtxMass,
    _totFitVar
    };
-   std::vector<const char*> fitVarNames;
 };
 
 #endif
 
 #ifdef MakeHisto_cxx
-void MakeHisto::fitVarsInit()
-{
-  fitVarNames[fitVar::_deepCSVTags_b]                      = "deepCSVTags_b";
-  fitVarNames[fitVar::_deepCSVTags_bb]                     = "deepCSVTags_bb";
-  fitVarNames[fitVar::_deepCSVTags_c]                      = "deepCSVTags_c";
-  fitVarNames[fitVar::_deepCSVTags_udsg]                   = "deepCSVTags_udsg";
-  fitVarNames[fitVar::_deepFlavourTags_b]                  = "deepFlavourTags_b";
-  fitVarNames[fitVar::_deepFlavourTags_c]                  = "deepFlavourTags_c";
-  fitVarNames[fitVar::_deepFlavourTags_g]                  = "deepFlavourTags_g";
-  fitVarNames[fitVar::_deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
-  fitVarNames[fitVar::_deepFlavourTags_bb]                 = "deepFlavourTags_bb";
-  fitVarNames[fitVar::_deepFlavourTags_uds]                = "deepFlavourTags_uds";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
-  fitVarNames[fitVar::_deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
-  fitVarNames[fitVar::_subVtxMass]                         = "subVtxMass";
-}
-MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0), fitVarNames( fitVar::_totFitVar )
+MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0)
 {
   printf("option %d \n", option);
   TChain *tc = new TChain("t");
@@ -355,16 +392,14 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLT
     tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
   }
 
-  fitVarsInit();
   Init(tc);
 }
-MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), fitVarNames( fitVar::_totFitVar )
+MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0)
 {
   printf("Input file name is : %s", fname);
   TChain *tc = new TChain("t");
   tc->Add(fname);
 
-  fitVarsInit();
   Init(tc);
 }
 
@@ -417,7 +452,6 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
-   
    /* asdf temperally disabled for fake data
    if (!IsMC() )
    {
@@ -442,7 +476,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("recoPhi", &recoPhi, &b_recoPhi);
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
    fChain->SetBranchAddress("r9", &r9, &b_r9);
-   // fChain->SetBranchAddress("s4", &s4, &b_s4);
+   fChain->SetBranchAddress("s4", &s4, &b_s4);
    if ( IsMC() )
    {
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
@@ -531,8 +565,8 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("lhePz", lhePz, &b_lhePz);
    fChain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
    }
-   // fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
-   // fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
+   fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
+   fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
    /* asdf temporally disabled for fake data
    if (!IsMC() )
    {
@@ -541,7 +575,6 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
    }
    */
-
    if ( IsMC() )
    {
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
@@ -550,6 +583,33 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
    }
+   fChain->SetBranchAddress("jetSF.DeepCSV.central", &jetSF_DeepCSV_central, &b_jetSF_DeepCSV_central);
+   fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr1", &jetSF_DeepCSV_down_cferr1, &b_jetSF_DeepCSV_down_cferr1);
+   fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr2", &jetSF_DeepCSV_down_cferr2, &b_jetSF_DeepCSV_down_cferr2);
+   fChain->SetBranchAddress("jetSF.DeepCSV.down_hf", &jetSF_DeepCSV_down_hf, &b_jetSF_DeepCSV_down_hf);
+   fChain->SetBranchAddress("jetSF.DeepCSV.down_lf", &jetSF_DeepCSV_down_lf, &b_jetSF_DeepCSV_down_lf);
+   fChain->SetBranchAddress("jetSF.DeepCSV.up_cferr1", &jetSF_DeepCSV_up_cferr1, &b_jetSF_DeepCSV_up_cferr1);
+   fChain->SetBranchAddress("jetSF.DeepCSV.up_cferr2", &jetSF_DeepCSV_up_cferr2, &b_jetSF_DeepCSV_up_cferr2);
+   fChain->SetBranchAddress("jetSF.DeepCSV.up_hf", &jetSF_DeepCSV_up_hf, &b_jetSF_DeepCSV_up_hf);
+   fChain->SetBranchAddress("jetSF.DeepCSV.up_lf", &jetSF_DeepCSV_up_lf, &b_jetSF_DeepCSV_up_lf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.central", &jetSF_DeepFlavour_central, &b_jetSF_DeepFlavour_central);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.down_cferr1", &jetSF_DeepFlavour_down_cferr1, &b_jetSF_DeepFlavour_down_cferr1);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.down_cferr2", &jetSF_DeepFlavour_down_cferr2, &b_jetSF_DeepFlavour_down_cferr2);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.down_hf", &jetSF_DeepFlavour_down_hf, &b_jetSF_DeepFlavour_down_hf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.down_lf", &jetSF_DeepFlavour_down_lf, &b_jetSF_DeepFlavour_down_lf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.up_cferr1", &jetSF_DeepFlavour_up_cferr1, &b_jetSF_DeepFlavour_up_cferr1);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.up_cferr2", &jetSF_DeepFlavour_up_cferr2, &b_jetSF_DeepFlavour_up_cferr2);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.up_hf", &jetSF_DeepFlavour_up_hf, &b_jetSF_DeepFlavour_up_hf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour.up_lf", &jetSF_DeepFlavour_up_lf, &b_jetSF_DeepFlavour_up_lf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.central", &jetSF_DeepFlavour_JESReduced_central, &b_jetSF_DeepFlavour_JESReduced_central);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr1", &jetSF_DeepFlavour_JESReduced_down_cferr1, &b_jetSF_DeepFlavour_JESReduced_down_cferr1);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr2", &jetSF_DeepFlavour_JESReduced_down_cferr2, &b_jetSF_DeepFlavour_JESReduced_down_cferr2);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_hf", &jetSF_DeepFlavour_JESReduced_down_hf, &b_jetSF_DeepFlavour_JESReduced_down_hf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_lf", &jetSF_DeepFlavour_JESReduced_down_lf, &b_jetSF_DeepFlavour_JESReduced_down_lf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr1", &jetSF_DeepFlavour_JESReduced_up_cferr1, &b_jetSF_DeepFlavour_JESReduced_up_cferr1);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
+   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
    Notify();
 }
 
