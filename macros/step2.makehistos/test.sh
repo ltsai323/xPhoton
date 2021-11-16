@@ -1,20 +1,25 @@
 #!/usr/bin/env sh
 
-ifile=../step7.ClosureTest_SampleCreation/storeroot/fakesample0.root
-# root -b <<EOF
-# .L MakeHisto.C
-# MakeHisto t("${ifile}", false)
-# t.Loop()
-# EOF
-# mv output.root orig.root
+ifile=../step8.ClosureTest_SampleCreation/storeroot/fakesample0.root
 #root -b <<EOF
-#.L aaa.C
+#.L MakeHisto.C
 #MakeHisto t("${ifile}", false)
 #t.Loop()
 #EOF
-#mv output.root new.root
+#mv output.root orig.root
+root -b <<EOF
+.L origmakehist.C+
+MakeHisto t("${ifile}", false)
+t.Loop()
+EOF
+echo 'new file processed'
 
-root -b orig.root > log.orig <<EOF
+if [ "$?" != "0" ]; then exit; fi
+     
+mv output.root new.root
+
+echo 'start checking'
+root -b orig.root > log.old <<EOF
 char hname[50];
 
 for ( int etabin = 0; etabin < 2; ++etabin ) {
@@ -36,5 +41,5 @@ for ( int  ptbin = 0;  ptbin <20; ++ ptbin ) {
     std::cout << "histname : " << h->GetName() << " with " << h->GetEntries() << " entries and mean=" << h->GetMean() << std::endl;
 }}}
 EOF
+diff log.old log.new
 
-diff log.orig log.new
