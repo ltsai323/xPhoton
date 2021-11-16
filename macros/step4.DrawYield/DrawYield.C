@@ -183,7 +183,25 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
         //if(ptbin >=20) sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, 19);
         if(ptbin > 17) sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, 17);
         hbkg=(TH1F*)ff->Get(hname);      
-    }
+    } else if(fit_data==0){
+    sprintf(hname,"gjet_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);    
+
+    hsig_toymc=(TH1F*)fhisto_sig->Get(hname);
+    //hsig=(TH1F*)ff->Get(hname);    
+
+    //hsig_toymc=(TH1F*)ff->Get(hname);    
+    hsig = (TH1F*)hsig_toymc->Clone();
+    //hsig_toymc=(TH1F*)fhisto_sigalt->Get(hname);        
+
+    //sprintf(hname,"qcd_%d_%d_%d_px1_chIso",ebee, jetbin, ptbin);
+    sprintf(hname,"qcd_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
+    hbkg_toymc=(TH1F*)ff->Get(hname);
+    //hbkg=(TH1F*)hbkg_toymc->Clone();
+    //sprintf(hname,"qcd_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
+    sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
+    hbkg=(TH1F*)ff->Get(hname);    
+
+  }
 
 
 
@@ -290,7 +308,7 @@ Double_t* Ifit(Int_t ptbin=13, int ebee=0, int fit_data=1, int jetbin=0)
         hdata = (TH1F*)hsss->Clone();
         ndata=toymc_sig+toymc_bkg;
         hdata->Add(hbbb);
-        printf("toymc sig %f, bkg %f, total %f, generated %f \n", toymc_sig, toymc_bkg, ndata, hdata->Integral());   
+        printf("toymc sig %f, bkg %f, total %f, generated %f \n", toymc_sig, toymc_bkg, ndata, hdata->Integral());
 
     }
     if(ndata==0) {
@@ -754,7 +772,7 @@ void DrawYield(int ebee=0, int jetbin=0){
    void Draw_yield_treeeff(int ebee=0, int jetbin=0){
    char EBEE[20]="EB";
    if(ebee>1) sprintf(EBEE,"EE");
-   int ptbin_int=0;
+   int ptbin=0;
    std::vector<float> vec_ptcut = ptbin_ranges();
    float* ptcut = &vec_ptcut.front();
 

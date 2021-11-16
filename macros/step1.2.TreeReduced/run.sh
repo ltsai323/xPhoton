@@ -5,7 +5,7 @@ newfile=hi.root
 
 root -b <<EOF
 .L TreeReduced.C
-TreeReduced("${origfile}");
+EventSelection("${origfile}");
 EOF
 
 mv output.root $newfile 

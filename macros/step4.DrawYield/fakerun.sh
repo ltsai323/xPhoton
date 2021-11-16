@@ -4,11 +4,10 @@
 # 2. run the script.
 # 3. move outputs into storage
 
-for infile in `echo ../step3.DrawIsoBDT/storeroot/isovsbdt_template_fakesample*.root`;
+for infile in `echo ../step7.ClosureTest_SampleCreation/storeroot/iso_fakesample*.root`;
 do
-    outname=`echo $infile | rev | cut -d'/' -f1 | cut -d'.' -f2-10 | rev | cut -d'_' -f3-10`
-    touch isovsbdt_template.root;
-    unlink isovsbdt_template.root || rm isovsbdt_template.root
+    outname=`echo $infile | rev | cut -d'/' -f1 | cut -d'.' -f2-10 | rev | cut -d'_' -f2-10`
+    touch isovsbdt_template.root; unlink isovsbdt_template.root || rm isovsbdt_template.root
     ln -s $infile isovsbdt_template.root
 
     touch plots ; /bin/rm -r plots

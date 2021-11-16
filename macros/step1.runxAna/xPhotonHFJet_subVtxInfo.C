@@ -15,13 +15,18 @@ using namespace std;
 #include <iostream>
 #include <TProfile.h>
 
-#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/untuplizer.h"
-#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/PhotonSelections.h"
-#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/MuonSelections.h"
-#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/ElectronSelections.h"
-#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/puweicalc.h"
+//#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/untuplizer.h"
+//#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/PhotonSelections.h"
+//#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/MuonSelections.h"
+//#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/ElectronSelections.h"
+//#include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/puweicalc.h"
 #include "/home/ltsai/Work/github/xPhoton/xPhoton/src/usefulFuncs.cc"
 #include "/home/ltsai/Work/github/xPhoton/xPhoton/interface/LogMgr.h"
+#include "untuplizer.h"
+#include "PhotonSelections.h"
+#include "MuonSelections.h"
+#include "ElectronSelections.h"
+#include "puweicalc.h"
 
 
 Int_t MINITREE=1;
