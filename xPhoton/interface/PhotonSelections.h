@@ -23,4 +23,5 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]);
 
 
 float select_photon_mva_hgg(TreeReader &data, Int_t i);
+bool passSelection_PhotonKinematicParameters( float pt, float eta );
 #endif
