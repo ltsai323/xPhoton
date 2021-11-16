@@ -129,7 +129,3 @@ if __name__ == '__main__':
             executeCommandToTmp( xs, integratedgenweights[pd], rootfile )
         MergeOutputs(pd, info)
 
-
-
-
-

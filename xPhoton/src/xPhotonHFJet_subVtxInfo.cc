@@ -1262,8 +1262,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if ( data.HasMC() )
             {
                 isMatched = match[ipho];
-                //isMatchedEle = match_ele[ipho];
-                isMatchedEle = ipho; // asdf temperaly used as different mission;
+                isMatchedEle = match_ele[ipho];
                 isConverted = converted[ipho];
 
                 pthat_    = pthat;
