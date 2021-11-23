@@ -35,6 +35,7 @@ void PrintHelp()
     printf("------              * cross section of MC --------\n");
     printf("------              * gen weight each evt --------\n");
     printf("------              / integrated gen W    --------\n");
+    printf("------           6. isQCD = true or false --------\n");
     printf("--------------------------------------------------\n");
 }
 float GetWeight(const char* argv[])
@@ -47,10 +48,20 @@ const char* GetInputFile(const char* argv[])
 { return argv[4]; }
 const char* GetOutputFile(const char* argv[])
 { return argv[5]; }
+bool IsQCDSample(const char* argv[])
+{
+    if ( argv[6] == nullptr ) return false;
+    if      ( strcmp(argv[6], "true" ) == 0 ) return true;
+    else if ( strcmp(argv[6], "false") == 0 ) return false;
+    char mesg[200];
+    sprintf(mesg, "input argument 6 is invalid! [%s]\n", argv[6]);
+    throw std::invalid_argument(mesg);
+}
+    
 void CheckArgs(int argc, const char* argv[])
 {
-    if ( argc != 6 )
-    { PrintHelp(); throw std::invalid_argument(" --- Need 5 input arguments ---\n"); }
+    if ( argc < 6 )
+    { PrintHelp(); throw std::invalid_argument(" --- Need at least 5 input arguments ---\n"); }
 }
 
 
@@ -64,11 +75,14 @@ int main(int argc, const char* argv[])
     const float new_xs = GetWeight(argv);
     const float integratedGenWeight = GetIntegratedGenWeight(argv);
     const float integratedLumi = GetIntegratedLuminosity(argv);
+    int isQCDsample = int(IsQCDSample(argv));
+
     std::cout << "in file : " << iFile << std::endl;
     std::cout << "out file : " << oFile << std::endl;
     std::cout << "in x-sec : " << new_xs << std::endl;
     std::cout << "input integrated genweights : " << integratedGenWeight << std::endl;
     std::cout << "input integrated luminosity : " << integratedLumi << std::endl;
+    if ( isQCDsample ) std::cout << "is QCD sample \n";
     
 
     TFile* iF = TFile::Open(iFile);
@@ -85,11 +99,13 @@ int main(int argc, const char* argv[])
     Float_t xs;
     Float_t mcweight;
     Float_t sumGenWeight;
+    Int_t isQCD;
     oT->Branch("xsweight", &xsweight, "xsweight/F"); // xsweight is the variable serve for original RS code.
     oT->Branch("crossSection", &xs, "crossSection/F");
     oT->Branch("integratedLuminosity", &lumi, "integratedLuminosity/F");
     oT->Branch("integratedGenWeight", &sumGenWeight, "integratedGenWeight/F");
     oT->Branch("mcweight", &mcweight, "mcweight/F");
+    oT->Branch("isQCD", &isQCD, "isQCD/I");
 
     Float_t genweight;
 
@@ -98,6 +114,7 @@ int main(int argc, const char* argv[])
     xs = new_xs;
     lumi = integratedLumi;
     sumGenWeight = integratedGenWeight;
+    isQCD = isQCDsample;
     
     
     unsigned int nevt = iT->GetEntries();

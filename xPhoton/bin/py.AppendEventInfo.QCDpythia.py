@@ -2,6 +2,7 @@
 summaryfile='../data/summaryJson/summary_bkgMC_pythia.json'
 workingpath='step1.xsinfoAppended'
 destinypath='step2.mergePDversion'
+isQCD=True
 datalumi={ 2016: 35.9, 2017:20, 2018:30 }
 
 fDict={
@@ -140,16 +141,7 @@ def MergeOutputs( primarydataset, inputlist ):
 
 def executeCommandToTmp( xsweight_, integratedGenWeight_, inputfile_ ):
     execfile='./exe.AppendEventInfo'
-    execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} ' % (execfile,workingpath)
-    #execcommand='{exefile %.10f %f %s {outfolder}/%s'.format(exefile=execfile, outfolder=oldfolder)
-    #os.system( '%s %.10f %f %s tmp/%s' %( xsweight_, integratedGenWeight_, inputfile_, nodir(inputfile_) ) )
-    print inputfile_
-    print nodir(inputfile_)
-    print type(xsweight_)
-    print type(integratedGenWeight_)
-    print type(datalumi[2016])
-    print type(inputfile_)
-    print type(nodir(inputfile_))
+    execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} %s' % (execfile,workingpath, 'true' if isQCD else 'false' )
     execcommand.format(
         xs=xsweight_,
         integratedGenWeight=integratedGenWeight_,
