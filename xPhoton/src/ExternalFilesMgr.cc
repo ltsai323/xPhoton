@@ -109,6 +109,16 @@ const char* ExternalFilesMgr::csvFile_BTagCalib_DeepCSV(std::string era)
     return "";
 }
 
+const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name, std::string era)
+{
+    //if ( name == "CSVv2"                  ) return csvFile_BTagCalib_CSVv2(era);
+    if ( name == "DeepCSV"                ) return csvFile_BTagCalib_DeepCSV(era);
+    if ( name == "DeepFlavour"            ) return csvFile_BTagCalib_DeepFlavour(era);
+    //if ( name == "DeepFlavour_JESReduced" ) return csvFile_BTagCalib_DeepFlavour_JESreduced(era);
+    LOG_FATAL( "Unknown input argument name '%s'", name.c_str() );
+    //throw std::invalid_argument("ExternalFilesMgr : Unknown input argument name ");
+    return "";
+}
 
 const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name)
 {

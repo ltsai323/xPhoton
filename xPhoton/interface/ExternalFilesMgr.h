@@ -20,6 +20,7 @@ namespace ExternalFilesMgr
 
     const char* xmlFile_MVAweight(int isEndcap, std::string era);
     const char* RooFile_PileUp(std::string era);
+    const char* csvFile_BTagCalibs(std::string name, std::string era);
     const char* csvFile_BTagCalib_DeepFlavour(std::string era);
     const char* csvFile_BTagCalib_DeepCSV(std::string era);
     const char* RooFile_ShowerShapeCorrection(std::string era);
