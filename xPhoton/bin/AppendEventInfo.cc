@@ -65,21 +65,43 @@ void CheckArgs(int argc, const char* argv[])
 }
 
 
+void CloneOtherObjects(TFile* iF)
+{
+    TIter keyList(iF->GetListOfKeys());
+    TKey *key;
+    while ((key = (TKey*)keyList())) {
+        if ( key->GetName() == std::string("t") ) continue;
+        if ( key->ReadObj()->IsZombie() ) continue;
+        TClass *cl = gROOT->GetClass(key->GetClassName());
+        if      (cl->InheritsFrom("TNtupleD"))
+            ((TNtupleD*)key->ReadObj())->CloneTree(-1)->Write();
+        else if (cl->InheritsFrom("TNtuple"))
+            ((TNtuple* )key->ReadObj())->CloneTree(-1)->Write();
+        else if (cl->InheritsFrom("TTree"))
+            continue;
+        else
+            key->ReadObj()->Write();
+    }
+}
+void DisableBranch(TTree* t)
+{
+    t->SetBranchStatus("xsweight", 0);
+}
 
 
 int main(int argc, const char* argv[])
 {
     CheckArgs(argc,argv);
-    const char* iFile = GetInputFile(argv);
-    const char* oFile = GetOutputFile(argv);
-    const float new_xs = GetWeight(argv);
+    const char* iFile               = GetInputFile(argv);
+    const char* oFile               = GetOutputFile(argv);
+    const float new_xs              = GetWeight(argv);
     const float integratedGenWeight = GetIntegratedGenWeight(argv);
-    const float integratedLumi = GetIntegratedLuminosity(argv);
-    int isQCDsample = int(IsQCDSample(argv));
+    const float integratedLumi      = GetIntegratedLuminosity(argv);
+    const int   isQCDsample         = int(IsQCDSample(argv));
 
     std::cout << "in file : " << iFile << std::endl;
     std::cout << "out file : " << oFile << std::endl;
-    std::cout << "in x-sec : " << new_xs << std::endl;
+    std::cout << "in x-sec : " << new_xs << " fb inv" << std::endl;
     std::cout << "input integrated genweights : " << integratedGenWeight << std::endl;
     std::cout << "input integrated luminosity : " << integratedLumi << std::endl;
     if ( isQCDsample ) std::cout << "is QCD sample \n";
@@ -87,7 +109,7 @@ int main(int argc, const char* argv[])
 
     TFile* iF = TFile::Open(iFile);
     TTree* iT = (TTree*) iF->Get("t");
-    iT->SetBranchStatus("xsweight", 0);
+    DisableBranch(iT);
 
     
     TFile* oF = new TFile(oFile,"recreate");
@@ -129,21 +151,7 @@ int main(int argc, const char* argv[])
     }
 
     oT->Write();
-    TIter keyList(iF->GetListOfKeys());
-    TKey *key;
-    while ((key = (TKey*)keyList())) {
-        if ( key->GetName() == std::string("t") ) continue;
-        if ( key->ReadObj()->IsZombie() ) continue;
-        TClass *cl = gROOT->GetClass(key->GetClassName());
-        if      (cl->InheritsFrom("TNtupleD"))
-            ((TNtupleD*)key->ReadObj())->CloneTree(-1)->Write();
-        else if (cl->InheritsFrom("TNtuple"))
-            ((TNtuple* )key->ReadObj())->CloneTree(-1)->Write();
-        else if (cl->InheritsFrom("TTree"))
-            continue;
-        else
-            key->ReadObj()->Write();
-    }
+    CloneOtherObjects(iF);
     oF->Close();
     iF->Close();
 
