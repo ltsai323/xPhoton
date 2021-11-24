@@ -279,18 +279,17 @@ void MakeHisto::Loop()
         int jetflvBin = JetFlavourBin(jetHadFlvr);
         int phoMatchStatIdx = 0;
         // need to be modified asdf
-        if ( isMatched==1 )
+        if ( isQCD )
         {
-            if ( chIsoRaw<2.0   ) phoMatchStatIdx = 0;
-            else                  phoMatchStatIdx = 1;
+            if ( isMatched==-99 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
+            else if ( isMatched==-99 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
+            else    phoMatchStatIdx = 4;
         }
         else
         {
-            if ( chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
-            else if ( chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
-            else                  phoMatchStatIdx = 4;
+            if ( isMatched==1 && chIsoRaw<2.0   ) phoMatchStatIdx = 0;
+            else    phoMatchStatIdx = 1;
         }
-
 
         float evtws=0.;
         float evtws_up=0.;
