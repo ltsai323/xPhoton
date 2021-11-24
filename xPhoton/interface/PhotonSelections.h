@@ -6,6 +6,7 @@
 #include <TFile.h>
 #include <TGraph.h>
 #include <string>
+#include <map>
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 
         
@@ -20,6 +21,7 @@ void select_photon(Int_t iWP, TreeReader &data, std::vector<int>& accepted);
 float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]);
 
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]);
+float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TGraph *> barrelCorr, std::map<std::string, TGraph *> endcapCorr);
 
 
 float select_photon_mva_hgg(TreeReader &data, Int_t i);

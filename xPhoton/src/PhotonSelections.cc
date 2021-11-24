@@ -334,6 +334,20 @@ float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]) {
 }
 */
 
+float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TGraph *> barrelCorr, std::map<std::string, TGraph *> endcapCorr) {
+    TGraph* tttgr[20];
+    tttgr[0] = barrelCorr["scEtaWidth"  ];
+    tttgr[1] = barrelCorr["s4"          ];
+    tttgr[2] = barrelCorr["r9Full5x5"   ];
+    tttgr[3] = barrelCorr["sieieFull5x5"];
+
+    tttgr[4] = endcapCorr["scEtaWidth"  ];
+    tttgr[5] = endcapCorr["s4"          ];
+    tttgr[6] = endcapCorr["r9Full5x5"   ];
+    tttgr[7] = endcapCorr["sieieFull5x5"];
+
+    return select_photon_mvanoIso(data, i, tttgr);
+}
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   /* Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
    *
