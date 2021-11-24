@@ -9,6 +9,7 @@ TTree* skim( TTree* tree )
     int jetHadFlvr;
     int phoFiredTrgs;
     Bool_t isData;
+    Bool_t isQCD;
     float jetPt;
     float jetEta;
     float recoPt;
@@ -40,6 +41,7 @@ TTree* skim( TTree* tree )
     tree->SetBranchAddress("jetHadFlvr", &jetHadFlvr);
     tree->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs);
     tree->SetBranchAddress("isData", &isData);
+    tree->SetBranchAddress("isQCD", &isQCD);
     tree->SetBranchAddress("jetPt", &jetPt);
     tree->SetBranchAddress("jetEta", &jetEta);
     tree->SetBranchAddress("recoPt", &recoPt);
@@ -75,7 +77,7 @@ TTree* skim( TTree* tree )
         tree->GetEntry(ievt);
 
         // put your selection here
-        if( jetPt<30. ) continue;
+            if( jetPt<30. ) continue;
 	    if( fabs(jetEta)>2.5 ) continue;
 	    if( jetDeepCSVTags_c<-0.99 ) continue;
 	    if( jetID != 1 ) continue;
