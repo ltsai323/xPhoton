@@ -10,7 +10,7 @@ void Visualization( TH1* h, int color=2, int fillstyle=0, int markersize=0 );
 TTree* datReader( const char* filename );
 double FindMaximum(TH1*);
 double FindMinimum(TH1*);
-void ENVSetup();
+// void ENVSetup();
 
 
 TPad* UpperPad();
@@ -201,7 +201,7 @@ void DrawRatio( TH1* hNumerator, TH1* hDenominator, float fitVal, TCanvas* c1, c
 
 void ComparisonPlot_FitOverTruth()
 {
-    ENVSetup();
+    // ENVSetup();
     TFile* truthsigFile=TFile::Open("isovsbdt_fragments.sig.root");
     TFile* truthbkgFile=TFile::Open("isovsbdt_fragments.bkg.root");
     TFile* origfragFile=TFile::Open("isovsbdt_template.root");
@@ -365,10 +365,10 @@ double FindMaximum(TH1* h)
     return val;
 }
 
-void ENVSetup()
-{
-    MESG("Cleaning 'plots/fragments' folder");
-    system("touch plots/fragments && /bin/rm -r plots/fragments && mkdir plots/fragments ");
-}
+// void ENVSetup()
+// {
+//     MESG("Cleaning 'plots/fragments' folder");
+//     system("touch plots/fragments && /bin/rm -r plots/fragments && mkdir plots/fragments ");
+// }
 
 // function definitions end }}}
