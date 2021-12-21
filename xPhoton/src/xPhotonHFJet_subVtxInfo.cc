@@ -77,9 +77,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     hpthat_wide = new TH1F("hpthat_wide","pt hat wide window", 600, 0., 6000.);
     
     hdpt = new TH1F("hdpt","dpt", 100, 0., 1.);
+    hdpt_signed = new TH1F("hdpt_signed","dpt_signed", 200, -1., 1.);
     hdR = new TH1F("hdR","dR", 100, 0., 2.);
     
     hdpt_ele = new TH1F("hdpt_ele","dpt", 100, 0., 1.);
+    hdpt_ele_signed = new TH1F("hdpt_ele_signed","dpt", 200, -1., 1.);
     hdR_ele = new TH1F("hdR_ele","dR", 100, 0., 2.);
     
     hdR_genjet = new TH1F("hdR_genjet","dR", 100, 0., 2.);
@@ -974,7 +976,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             //if(phoEt[i]<100.) continue;
             if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
             if(TMath::Abs(phoSCEta[i])>2.5) continue;
-            if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
+            if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
                 if ( USEHLT )
@@ -1341,7 +1343,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 
 
-            mva = select_photon_mvanoIso(data, ipho, tgr);
+            mva = select_photon_mvanoIso(data, ipho, barrelCorrections, endcapCorrections);
             mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
             photonIDmva = phoIDMVA[ipho];
 
@@ -1388,8 +1390,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     hdR->Write();
     hdpt->Write();
+    hdpt_signed->Write();
     hdR_ele->Write();
     hdpt_ele->Write();
+    hdpt_ele_signed->Write();
     hdR_genjet->Write();
     hmcTrkIso->Write();
     hmcTrkIsoMini->Write();
@@ -1613,9 +1617,9 @@ int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> ph
 
     for ( int mcIdx : phomcid ) {
         float dr = usefulFuncs::deltaR(phoEta[recoPhoIdx], phoPhi[recoPhoIdx], mcEta[mcIdx], mcPhi[mcIdx]);
-        float dpt = fabs((phoEt[recoPhoIdx] - mcPt[mcIdx])/mcPt[mcIdx]);
+        float dpt = (phoEt[recoPhoIdx] - mcPt[mcIdx])/mcPt[mcIdx];
         if(dpt<CUT_DELTAPT)hdR->Fill(dr);
-        if(dr<CUT_DELTAR)hdpt->Fill(dpt);
+        if(dr<CUT_DELTAR)hdpt->Fill( fabs(dpt) );
         hmcCalIso->Fill(mcCalIsoDR04[mcIdx]); 
         hmcCalIsoMini->Fill(mcCalIsoDR04[mcIdx]); 
         hmcCalIsoMicro->Fill(mcCalIsoDR04[mcIdx]); 
@@ -1655,9 +1659,9 @@ int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<i
     for ( int mcIdx : elemcid ) {
         if (mcMomPID[mcIdx] == 22) {
             float dr = usefulFuncs::deltaR(phoEta[recoPhoIdx], phoPhi[recoPhoIdx], mcEta[mcIdx], mcPhi[mcIdx]);
-            float dpt = fabs((phoEt[recoPhoIdx] - mcMomPt[mcIdx])/mcMomPt[mcIdx]);
+            float dpt = (phoEt[recoPhoIdx] - mcMomPt[mcIdx])/mcMomPt[mcIdx];
             hdR_ele->Fill(dr);
-            hdpt_ele->Fill(dpt);
+            hdpt_ele->Fill( fabs(dpt) );
             if (dr < CUT_DELTAR && dpt < CUT_DELTAPT && (mcCalIsoDR04[mcIdx]+mcTrkIsoDR04[mcIdx])<5.0 ){
                 return mcIdx;
             }
