@@ -8,10 +8,8 @@
 
 // pre-selection of photon.
 Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
-  Int_t phoID=1;
 
   // load relevant branches from TTree/TChain
-  //Int_t    nPho                = data.GetInt("nPho");
   Float_t* phoEt               = data.GetPtrFloat("phoEt");
   Float_t* phoSCEta            = data.GetPtrFloat("phoSCEta");
   Int_t*   phoEleVeto          = data.GetPtrInt("phoEleVeto");
@@ -22,30 +20,24 @@ Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
   Float_t* phoPFChWorstIso   = data.GetPtrFloat("phoPFChWorstIso");
 
   
-  if (phoEt[ipho] < 10.) phoID = 0;
-  if (TMath::Abs(phoSCEta[ipho]) > 1.4442 && TMath::Abs(phoSCEta[ipho]) < 1.566) phoID = 0;
-  //if (TMath::Abs(phoSCEta[ipho]) > 2.5) phoID = 0;
-  if (TMath::Abs(phoSCEta[ipho]) > 3.) phoID = 0;
-  if (!passSelection_PhotonKinematicParameters(phoEt[ipho],phoSCEta[ipho]) ) phoID=0;
-  if (eleVeto && phoEleVeto[ipho] == 0) phoID = 0;  
+  if (!passSelection_PhotonKinematicParameters(phoEt[ipho],phoSCEta[ipho]) ) return 0;
+  if (eleVeto && phoEleVeto[ipho] == 0) return 0;
 
   //return phoID; //for X750 analysis
   
-  //for EB
-  if (TMath::Abs(phoSCEta[ipho]) < 1.5) {
-    if(phoPFChWorstIso[ipho] > 15.) phoID=0;
-    if(phoPFPhoIso[ipho] > 15.) phoID=0;
-    if(phoSigmaIEtaIEta[ipho] > 0.015) phoID=0;
-    if(phoHoverE[ipho] > 0.08) phoID=0;
+  if (TMath::Abs(phoSCEta[ipho]) < 1.5) { //for EB
+    if(phoPFChWorstIso[ipho] > 15.)     return 0;
+    if(phoPFPhoIso[ipho] > 15.)         return 0;
+    if(phoSigmaIEtaIEta[ipho] > 0.015)  return 0;
+    if(phoHoverE[ipho] > 0.08)          return 0;
   }else{ //EE
-    if(phoPFChWorstIso[ipho] > 15.) phoID=0;
-    if(phoPFPhoIso[ipho] > 15.) phoID=0;
-    if(phoSigmaIEtaIEta[ipho] > 0.045) phoID=0;
-    if(phoHoverE[ipho] > 0.05) phoID=0;
+    if(phoPFChWorstIso[ipho] > 15.)     return 0;
+    if(phoPFPhoIso[ipho] > 15.)         return 0;
+    if(phoSigmaIEtaIEta[ipho] > 0.045)  return 0;
+    if(phoHoverE[ipho] > 0.05)          return 0;
     //if(phoR9[ipho] < 0.85) phoID=0; //disable this for Zg analysis
   }    
-  return phoID; 
-
+  return 1;
 }
 
 Int_t PhotonSkimPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {

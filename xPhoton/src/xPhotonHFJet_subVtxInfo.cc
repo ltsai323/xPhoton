@@ -971,7 +971,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         }
 
 
-        for (Int_t i=0; i<nPho; ++i) {      
+        for (Int_t i=0; i<nPho; ++i) {
             if(phoEt[i]<15.) continue;       
             //if(phoEt[i]<100.) continue;
             if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
@@ -990,12 +990,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
 
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
-            int pho_presel = 1;
-            /*
-            int pho_presel = 0;
-            pho_presel = PhotonPreselection(data, i, kTRUE);
-            */
-            //check CSEV eff vs pt
+            //int pho_presel = 1;
+            int pho_presel = PhotonPreselection(data, i, kFALSE);
+            // only for check CSEV eff vs pt {{{
             if( data.HasMC()) { 
                 if(i==0 && match[i]==1){
 
@@ -1009,7 +1006,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         }
                     }
 
-                    if( PhotonPreselection(data, i, kFALSE) ==1){
+                    if( pho_presel == 1 ){
                         if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
                         else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
 
@@ -1023,6 +1020,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
             }
+            // only for check CSEV eff vs pt end }}}
 
 
 
@@ -1030,8 +1028,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
             photon_list.push_back(i); 
             if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
-
-
         }
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
