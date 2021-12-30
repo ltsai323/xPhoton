@@ -33,7 +33,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 
-const std::string dataEra = "2016ReReco";
+//const std::string dataEra = "2016ReReco";
 const float CUT_DELTAR  = 0.2;
 const float CUT_DELTAPT = 0.35;
 std::vector<int> GenPhoIdxs( TreeReader* event );
@@ -44,7 +44,7 @@ int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<i
 void FillStatus(TH1* hist, float val) { hist->Fill(val+0.001); }
 
 
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
+void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string dataEra){
     LOG_INFO("end of loading csv file");
     
 
@@ -1518,6 +1518,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 }
 
+void xPhotonHFJet(vector<string> pathes, Char_t oname[200] )
+{ xPhotonHFJet(pathes, oname, "2016ReReco"); }
+
 
 void xPhotonHFJet(Int_t dataset) {
   Char_t fname[200];
@@ -1550,7 +1553,8 @@ void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection, i
   
 }
 
-void xPhotonHFJet(std::string ipath, int outID)
+//void xPhotonHFJet(std::string ipath, int outID)
+void xPhotonHFJet(std::string ipath, int outID, const std::string dataEra)
 {
    Char_t fname[200];
    XS=1.;
@@ -1565,7 +1569,7 @@ void xPhotonHFJet(std::string ipath, int outID)
    Char_t oname[200];
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
-   xPhotonHFJet(pathes, oname);
+   xPhotonHFJet(pathes, oname, dataEra);
 
 }
 std::vector<int> GenPhoIdxs( TreeReader* event )

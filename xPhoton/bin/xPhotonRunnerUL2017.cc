@@ -1,4 +1,4 @@
-#include "xPhoton/xPhoton/bin/xPhotonRunner.h"
+#include "xPhoton/xPhoton/bin/xPhotonRunnerUL2017.h"
 #include "xPhoton/xPhoton/interface/xPhotonHFJet_subVtxInfo.h"
 #include <iostream>
 #include <sstream>
@@ -33,7 +33,6 @@ int main(int argc, char* argv[])
 
     xPhotonHFJet(
             GetFileName(argc,argv),
-            GetOption  (argc,argv),
-            "2016ReReco"
+            GetOption  (argc,argv)
             );
 }
