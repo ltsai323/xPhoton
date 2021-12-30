@@ -4,22 +4,25 @@
 # 2. run the script.
 # 3. move outputs into storage
 
-for infile in `echo ../step7.ClosureTest_SampleCreation/storeroot/iso_fakesample*.root`;
-do
-    outname=`echo $infile | rev | cut -d'/' -f1 | cut -d'.' -f2-10 | rev | cut -d'_' -f2-10`
-    touch isovsbdt_template.root; unlink isovsbdt_template.root || rm isovsbdt_template.root
-    ln -s $infile isovsbdt_template.root
+# define fit source
+ifile=isovsbdt_template.root
+unlink $ifile || rm $ifile
+ifile=isovsbdt_fragments.sig.root
+unlink $ifile || rm $ifile
+ifile=isovsbdt_fragments.bkg.root
+unlink $ifile || rm $ifile
 
-    touch plots ; /bin/rm -r plots
-    mkdir plots
-    sh run.sh
+sigfragment=../step8.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_sig.root
+bkgfragment=../step8.ClosureTest_SampleCreation/storeroot/fragmentsIsovsBDT/iso_fakesample0_bkg.root
+originalfit=../step8.ClosureTest_SampleCreation/storeroot/iso_fakesample0.root                      
 
-    mv data_bkg_allphoton.dat    storeroot/${outname}_bkg_allphoton.dat
-    mv data_bkg_barrelJet.dat    storeroot/${outname}_bkg_barrelJet.dat
-    mv data_bkg_endcapJet.dat    storeroot/${outname}_bkg_endcapJet.dat
-    mv data_yield_allphoton.dat  storeroot/${outname}_yield_allphoton.dat
-    mv data_yield_barrelJet.dat  storeroot/${outname}_yield_barrelJet.dat
-    mv data_yield_endcapJet.dat  storeroot/${outname}_yield_endcapJet.dat
-    mv plots storefig/${outname}_plots
-    /bin/rm log*
-done
+ln -s $sigfragment isovsbdt_fragments.sig.root
+ln -s $bkgfragment isovsbdt_fragments.bkg.root
+ln -s $originalfit isovsbdt_template.root
+# define fit source end
+
+
+python FitYields.allbinning.py > log.fittingres
+python logInfoExtraction.py log.fittingres
+
+sh ./ComparisonPlot_FitOverTruth.sh

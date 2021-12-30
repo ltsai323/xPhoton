@@ -3,6 +3,7 @@
 #include <stdio.h>
 //#include <stdexcept>
 
+/*
 const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, int year)
 {
     switch ( year )
@@ -32,6 +33,8 @@ const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, int year)
     }
     return "";
 }
+*/
+/*
 const char* ExternalFilesMgr::RooFile_PileUp()
 {
     return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root";
@@ -40,6 +43,8 @@ const char* ExternalFilesMgr::RooFile_PileUp_Run2016_69200nb_Moriond17()
 {
     return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/94X/summer16/PUweight_2016Legacy_forMoriond17_69200nb.root";
 }
+*/
+/*
 const char* ExternalFilesMgr::RooFile_PileUp(int year)
 {
     switch ( year )
@@ -58,13 +63,17 @@ const char* ExternalFilesMgr::RooFile_PileUp(int year)
     return "";
     
 }
+*/
+/*
 const char* ExternalFilesMgr::RooFile_ShowerShapeCorrection()
 {
     //return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation_76X_v2.root";
     return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root";
 }
+*/
 
 
+/*
 const char* ExternalFilesMgr::csvFile_BTagCalib_CSVv2()
 { return ""; }
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepCSV()
@@ -73,6 +82,7 @@ const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour()
 { return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/2016Legacy/DeepJet_2016LegacySF_V1_TuneCP5.csv"; }
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour_JESreduced()
 { return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/2016Legacy/DeepJet_2016LegacySF_V1_TuneCP5_JESreduced.csv"; }
+*/
 
 
 
@@ -120,6 +130,7 @@ const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name, std::string e
     return "";
 }
 
+/*
 const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name)
 {
     if ( name == "CSVv2"                  ) return csvFile_BTagCalib_CSVv2();
@@ -130,6 +141,7 @@ const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name)
     //throw std::invalid_argument("ExternalFilesMgr : Unknown input argument name ");
     return "";
 }
+*/
 std::string ExternalFilesMgr::csvFile_testing()
 { return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/CSVv2_94XSF_V2_B_F.csv"; }
 
@@ -137,11 +149,11 @@ std::string ExternalFilesMgr::csvFile_testing()
 const char* ExternalFilesMgr::RooFile_PileUp(std::string era)
 {
     if      ( era == "2016ReReco" )
-        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/94X/summer16/PUweight_2016Legacy_forMoriond17_69200nb.root";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/summer16/PU_histo_13TeV_2016_GoldenJSON_69200nb.root";
     else if ( era == "2017ReReco" )
-        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/fall17/PU_histo_13TeV_2018_GoldenJSON_69200nb.root";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/fall17_corrected/PU_correctedPU_13TeV_2017_GoldenJSON_69200nb.root";
     else if ( era == "2018ReReco" )
-        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/puweights/102X/autum18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/autumn18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root";
     else if ( era == "UL2016"     )
         return "";
     else if ( era == "UL2017"     )
@@ -152,9 +164,8 @@ const char* ExternalFilesMgr::RooFile_PileUp(std::string era)
 }
 const char* ExternalFilesMgr::RooFile_ShowerShapeCorrection(std::string era)
 {
-    return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root";
     if      ( era == "2016ReReco" )
-        return "";
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/rootfiles/external/transformation5x5_Legacy2016_v1.root";
     else if ( era == "2017ReReco" )
         return "";
     else if ( era == "2018ReReco" )

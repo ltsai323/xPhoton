@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-for fakeidx in {0..9};
+for fakeidx in 0;
 do
 echo $fakeidx
 touch plots_fakesample${fakeidx} ; /bin/rm -r plots_fakesample${fakeidx}

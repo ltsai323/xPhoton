@@ -92,14 +92,14 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
-    TFile* f_showershapecorrection;
+    TFile* f_showershapecorrection = nullptr;
     TGraph *tgr[8];
     PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
     std::map<std::string, TGraph*> barrelCorrections;
     if ( data.HasMC() )
     {
-    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection("2016ReReco") );
     endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
     endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
     endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
@@ -119,7 +119,7 @@ void xElectrons(
     tgr[6] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EE");
     tgr[7] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEE");
 
-    pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+    pucalc.Init( ExternalFilesMgr::RooFile_PileUp("2016ReReco") );
     }
 
 

@@ -349,7 +349,6 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
    * data = handle providing access to an input event;
    * i = index of a photon candidate to consider.
    */
-  Int_t run                  = data.GetInt("run");
   // load necessary tree branches
   Float_t* phoEt             = data.GetPtrFloat("phoEt");
   Float_t* phoEta            = data.GetPtrFloat("phoEta");
@@ -373,7 +372,8 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   Float_t* phoE5x5Full5x5            = data.GetPtrFloat("phoE5x5Full5x5");
 
   // classification variables
-  static float phoEt_, phoEta_, phoPhi_, phoR9_;
+  //static float phoEt_, phoEta_;
+  static float phoPhi_, phoR9_;
   static float phoSCEtaWidth_, phoSCPhiWidth_, rho_;
   static float phoSCEta_, phoSCRawE_;
   //static float phoPFPhoIso_, phoPFChIso_, phoPFChIsoWorst_;
@@ -418,8 +418,8 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
     //tmvaReader[iBE]->AddSpectator("recoPt", &phoEt_);
     //tmvaReader[iBE]->AddSpectator("recoEta", &phoEta_);
 
-    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) << std::endl;
-    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, 2016) );
+    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, "2016ReReco") << std::endl;
+    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, "2016ReReco") );
   } // one-time initialization
   
   //get etawidth, s4, R9  reweighting for 76x
@@ -434,8 +434,8 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]) {
   rho_ = rho;
   phoESEnToRawE_ = (phoESEnP1[i]+phoESEnP2[i])/phoSCRawE[i];
   phoESEffSigmaRR_= phoESEffSigmaRR[i];
-  phoEt_ = phoEt[i];
-  phoEta_ = phoEta[i];
+  // phoEt_ = phoEt[i];
+  //phoEta_ = phoEta[i];
   
   sieieFull5x5 = phoSigmaIEtaIEtaFull5x5[i];
   sieipFull5x5 = phoSigmaIEtaIPhiFull5x5[i];

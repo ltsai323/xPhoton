@@ -1,36 +1,35 @@
 #include <cstdlib>
 
-//#define MESG(format, args...)     fprintf(stderr, "-MESG-  %s\n  ->  " format "\n", __PRETTY_FUNCTION__,  ##args)
-#define MESG(format, args...)     fprintf(stderr, "MESG:%s -> " format "\n", __PRETTY_FUNCTION__,  ##args)
+//#define MESG(format, args...)     fprintf(stderr, "MESG:%s -> " format "\n", __PRETTY_FUNCTION__,  ##args)
+#define MESG(format, args...)
 #define MAXPTBIN 25
 void ck();
 double sumEntries( TH1* h );
 double Chi2(TH1* hFit, TH1* hTruth);
-void Visualization( TH1* h, int color=2, int fillstyle=0, int markersize=0 );
+static void Visualization( TH1* h, int color=2, int fillstyle=0, int markersize=0 );
 TTree* datReader( const char* filename );
 double FindMaximum(TH1*);
 double FindMinimum(TH1*);
-// void ENVSetup();
+void ENVSetup();
 
 
 TPad* UpperPad();
 TPad* LowerPad();
 
 
-class MyBin
+struct MyBin
 {
 public:
     MyBin( int phoeta, int jeteta, int phopt )
-        : _phoEbin(phoeta), _jetEbin(jeteta), _phoPbin(phopt) {}
+        : phoEbin(phoeta), jetEbin(jeteta), phoPbin(phopt) {}
     const char* naming( const char* nametemplate )
-    { return Form(nametemplate, _phoEbin, _jetEbin, _phoPbin); }
+    { return Form(nametemplate, phoEbin, jetEbin, phoPbin); }
     int EncodedBin()
-    { return MAXPTBIN * 2 * _jetEbin + MAXPTBIN * _phoEbin + _phoPbin; }
+    { return MAXPTBIN * 2 * jetEbin + MAXPTBIN * phoEbin + phoPbin; }
     static int EncodedBin( int phoeta, int jeteta, int phopt )
     { return MAXPTBIN * 2 * jeteta + MAXPTBIN * phoeta + phopt; }
 
-    private:
-    int _phoEbin, _jetEbin, _phoPbin;
+    int phoEbin, jetEbin, phoPbin;
 };
 struct FitVal
 {
@@ -47,19 +46,12 @@ class MyRatioPlot
 public:
     MyRatioPlot( TH1* numeratorhist, TH1* denominatorhist, TLegend* legend = nullptr ) :
         _numeratorHist(numeratorhist),_denominatorHist(denominatorhist),_leg(legend),
-        _upperpad( UpperPad() ), _lowerpad( LowerPad() )
+        _upperpad( UpperPad() ), _lowerpad( LowerPad() ),
+        logy(false)
     {
-        float M0 = FindMaximum(_numeratorHist);
-        float M1 = FindMaximum(_denominatorHist);
-        float MVal = M0 > M1 ? M0 * 1.5 : M1 * 1.5;
-        if ( MVal < 1. ) MVal = 2.;
-        _numeratorHist->SetMaximum(MVal);
-        _denominatorHist->SetMaximum(MVal);
-        _numeratorHist->SetMinimum(0.);
-        _denominatorHist->SetMinimum(0.);
-        
+        _numeratorHist->SetStats(false);
+        _denominatorHist->SetStats(false);
         GetDividedHist();
-        _centerline = GetLine(1.00);
     }
     ~MyRatioPlot()
     {
@@ -68,10 +60,44 @@ public:
         delete _lowerpad;
         delete _centerline;
     }
+    void UseLogy(bool val = true)
+    {
+        logy=val;
+
+        float M0 = FindMaximum(_numeratorHist);
+        float M1 = FindMaximum(_denominatorHist);
+        float MVal = M0 > M1 ? M0 * 1000. : M1 * 1000.;
+        _denominatorHist->SetMinimum(1e-1);
+        _denominatorHist->SetMaximum(MVal);
+
+        _numeratorHist->SetMinimum(1e-1);
+        _numeratorHist->SetMaximum(MVal);
+    }
 
     void PlotOn(TPad* p)
     {
         p->cd();
+
+        float M0 = FindMaximum(_numeratorHist);
+        float M1 = FindMaximum(_denominatorHist);
+        float maxScaler = logy ? 1000. : 1.5;
+        float MVal = M0 > M1 ? M0 * maxScaler : M1 * maxScaler;
+        if ( MVal < 1. ) MVal = 2.;
+        _denominatorHist->SetMinimum(1e-1);
+        _denominatorHist->SetMaximum(MVal);
+
+        _numeratorHist->SetMinimum(1e-1);
+        _numeratorHist->SetMaximum(MVal);
+
+        _denominatorHist->GetXaxis()->SetLabelSize(0);
+        _denominatorHist->GetYaxis()->SetTitleOffset(0.95);
+        _denominatorHist->GetYaxis()->SetTitleSize(0.06);
+
+        _numeratorHist->GetXaxis()->SetLabelSize(0);
+        _numeratorHist->GetYaxis()->SetTitleOffset(0.95);
+        _numeratorHist->GetYaxis()->SetTitleSize(0.06);
+
+        _centerline = GetLine(1.00);
         _upperpad->Draw();
         _lowerpad->Draw();
 
@@ -80,6 +106,7 @@ public:
         _denominatorHist->Draw("hist same");
         _numeratorHist->Draw("ep same");
         if ( _leg ) _leg->Draw();
+        _upperpad->SetLogy(1);
 
         _lowerpad->cd();
         _ratioHist->Draw("e0p");
@@ -94,6 +121,7 @@ private:
     TPad*  _upperpad;
     TPad*  _lowerpad;
     TLine* _centerline;
+    bool logy;
 
     void GetDividedHist()
     {
@@ -124,26 +152,22 @@ private:
             if ( _v < minVal ) minVal = _v;
         }
 
-        if ( minVal > maxVal ) { maxVal = 1.0; minVal = 0.0; }
-        if ( maxVal < 1e-3 || maxVal > 100. ) maxVal = 1.0;
-        if ( minVal < 1e-3 || minVal > 100. ) minVal = 0.0;
-        double interval = maxVal - minVal;
-        minVal -= interval*0.1;
-        maxVal += interval*0.1;
-        _ratioHist->SetMaximum(maxVal);
-        _ratioHist->SetMinimum(minVal);
-        const int windowgap = 0.2;
-        minVal = windowgap *   (minVal/windowgap);
-        maxVal = windowgap * ( (maxVal/windowgap)+1 );
-        //if ( minVal < 1e-3 && maxVal < 1e-3 )
-        //{ _ratioHist->SetMaximum(1.0); _ratioHist->SetMinimum(0.0); }
+        auto yranges = findSuitableYrange(minVal,maxVal);
+        _ratioHist->SetMinimum(yranges.first );
+        _ratioHist->SetMaximum(yranges.second);
 
-        _ratioHist->SetMarkerColor(1);
-        _ratioHist->SetLineColor(1);
-        _ratioHist->SetMarkerSize(0);
-        _ratioHist->GetXaxis()->SetLabelSize(0.2);
+        // _ratioHist->SetMarkerColor(1);
+        // _ratioHist->SetLineColor(1);
+        // _ratioHist->SetMarkerSize(2);
+        _ratioHist->GetXaxis()->SetLabelSize(0.1);
+        _ratioHist->GetXaxis()->SetTitleSize(0.2);
+        _ratioHist->GetXaxis()->SetTitleOffset(0.70);
+
         _ratioHist->GetYaxis()->SetNdivisions(505);
         _ratioHist->GetYaxis()->SetLabelSize(0.1);
+        _ratioHist->GetYaxis()->SetTitle("ratio");
+        _ratioHist->GetYaxis()->SetTitleOffset(0.3);
+        _ratioHist->GetYaxis()->SetTitleSize(0.2);
     }
     TLine* GetLine(double yval_ = 1.0, int color_ = 1, int width_ = 1)
     {
@@ -155,6 +179,20 @@ private:
         line->SetLineStyle(7);
 
         return line;
+    }
+    std::pair<float,float> findSuitableYrange(float minVal, float maxVal)
+    {
+        bool keepgoingon = true;
+        if ( minVal > maxVal ) keepgoingon = false;
+        if ( maxVal < 1e-3 || maxVal > 100. ) keepgoingon = false;
+        if ( minVal < 1e-3 || minVal > 100. ) keepgoingon = false;
+        if (!keepgoingon ) return std::pair<float,float>(0.,1.);
+
+        float separator = 20.;
+
+        float Mval = float(int(separator*maxVal)+2)/separator - 0.1/separator; // to avoid upper y label at lower pad
+        float mval = float(int(separator*minVal)  )/separator;
+        return std::pair<float,float>(mval,Mval);
     }
 };
 class MyLegend : public TLegend
@@ -170,7 +208,7 @@ public :
 };
 
 
-void DrawRatio( TH1* hNumerator, TH1* hDenominator, float fitVal, TCanvas* c1, const char* oname )
+void DrawRatio_withScaleFactor( TH1* hNumerator, TH1* hDenominator, float fitVal, TCanvas* c1, const char* oname )
 {
     c1->cd();
     TH1* hFit   = (TH1*) hNumerator  ->Clone();
@@ -194,6 +232,9 @@ void DrawRatio( TH1* hNumerator, TH1* hDenominator, float fitVal, TCanvas* c1, c
     MyRatioPlot totalPlot( hFit, hTruth, leg.PassLegend() );
     totalPlot.PlotOn(c1);
     c1->SaveAs(oname);
+
+    delete hFit;
+    delete hTruth;
 }
 
 
@@ -223,13 +264,13 @@ void ComparisonPlot_FitOverTruth()
     {
         MyBin binning( phoEbin, jetEbin, phoPbin );
 
-        DrawRatio(
+        DrawRatio_withScaleFactor(
                 (TH1*) origfragFile->Get( binning.naming("gjet_%d_%d_%d_px1_chIso") ),
                 (TH1*) truthsigFile->Get( binning.naming("data_%d_%d_%d_px1_chIso") ),
                 sigPool[ binning.EncodedBin() ].val,
                 c1,
                 binning.naming("plots/fragments/plot_sig_%d_%d_%d.pdf"));
-        DrawRatio(
+        DrawRatio_withScaleFactor(
                 (TH1*) origfragFile->Get( binning.naming("data_%d_%d_%d_px2_chIso") ),
                 (TH1*) truthbkgFile->Get( binning.naming("data_%d_%d_%d_px1_chIso") ),
                 bkgPool[ binning.EncodedBin() ].val,
@@ -247,7 +288,8 @@ double sumEntries( TH1* h )
     return integral;
 }
 
-void Visualization( TH1* h, int color=2, int fillstyle=0, int markersize=0 )
+static
+void Visualization( TH1* h, int color, int fillstyle, int markersize )
 {
     h->Rebin(10);
     h->SetStats(false);
@@ -327,7 +369,8 @@ TPad* UpperPad()
     TPad* pad = new TPad("Pad","Pad",0.,0.245,1.,0.98);
     pad->SetTicks(1.,1.);
     pad->SetTopMargin(0.05);
-    pad->SetBottomMargin(0.019);
+    //pad->SetBottomMargin(0.019);
+    pad->SetBottomMargin(0.021);
     pad->SetLeftMargin(0.135);//0.12
     pad->SetRightMargin(0.06);//0.12
 
@@ -365,10 +408,10 @@ double FindMaximum(TH1* h)
     return val;
 }
 
-// void ENVSetup()
-// {
-//     MESG("Cleaning 'plots/fragments' folder");
-//     system("touch plots/fragments && /bin/rm -r plots/fragments && mkdir plots/fragments ");
-// }
+void ENVSetup()
+{
+    MESG("Cleaning 'plots/fragments' folder");
+    system("touch plots/fragments && /bin/rm -r plots/fragments && mkdir plots/fragments ");
+}
 
 // function definitions end }}}

@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
 root -b > log.execfile <<EOF
-.L FakeDataCreation.C+
-FakeDataCreation()
+  //.L FakeDataCreation.C+
+  .L fakedatacreation.C+
+  FakeDataCreation()
 EOF
-python logTranslator.py
+python logTranslater.py

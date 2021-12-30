@@ -76,4 +76,4 @@ void CheckFitter(int ebee=0, int jetbin=0)
     tleg->AddEntry(h_yield,text,"pl");
     tleg->Draw();
     c10->SaveAs("k.png");
-} // end of DrawYield
+}

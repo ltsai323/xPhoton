@@ -2,6 +2,7 @@
 <use name="rootcore"/>
 <use name="roofit"/>
 <use name="xPhoton/xPhoton"/>
+<use name="ShowerShapeCorrection/CQR_framework"/>
 
 <export>
     <bin name="exec_xPhotonRunner"           file="xPhotonRunner.cc"/>

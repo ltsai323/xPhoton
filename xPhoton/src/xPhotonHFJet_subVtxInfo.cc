@@ -31,6 +31,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
+#include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 
 const std::string dataEra = "2016ReReco";
 const float CUT_DELTAR  = 0.2;
@@ -53,6 +54,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     fout_ = new TFile(oname,"recreate");
 
     TTree *outtree_;
+    ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
+
 
     float ptcut[] = {
            15,    20,    40,    60,    75, // 0
@@ -1334,6 +1337,18 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
                     calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
                     calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
+
+                    SScorr.CalculateCorrections(&data, ipho);
+                    //calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
+                    //calib_s4                      = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
+                    //calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+                    //calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+                    //calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+                    //calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+                    //calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+
+                    if ( calib_r9Full5x5 != SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     ) ) printf("Failed R9! : %.5f -- %.5f \n", calib_r9Full5x5, SScorr.Corrected(ShowerShapeCorrectionAdapter::r9) );
+                    
                     LOG_DEBUG("calibrated s4 %.6f and r9 %.6f", calib_s4, calib_r9Full5x5);
             }
 
@@ -1626,13 +1641,10 @@ int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> ph
         if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
         if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatusFlag[mcIdx], mcCalIsoDR04[mcIdx], mcTrkIsoDR04[mcIdx]);
         if (dr < CUT_DELTAR && dpt < CUT_DELTAPT){
-            return mcIdx;
-            /*
             if ( mcCalIsoDR04[mcIdx]<5.0 ){ //for gammajet photon pythia	      
                 if(verbose) LOG_DEBUG("  mc matched !!! \n");	    
                 return mcIdx;
             }
-            */
         }
     }
     return -1;

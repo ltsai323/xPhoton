@@ -50,9 +50,10 @@ fDict={
 
         },
 }
-from AppendEventInfoPythonHelper import *
 
 if __name__ == '__main__':
+    from AppendEventInfoPythonHelper import *
+    from xPhoton.xPhoton.Managers.LogMgr import InitLogger, GetLogger
     InitLogger(level='warning')
     mylog=GetLogger(__name__)
     CheckWorkingDir()

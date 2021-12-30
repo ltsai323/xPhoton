@@ -2,6 +2,7 @@
 #define __ShowerShapeCorrectionAdapter_H__
 #include <string>
 #include <vector>
+#include <map>
 #include "ShowerShapeCorrection/CQR_framework/interface/ShowerShapeCorrector.h"
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 
@@ -15,18 +16,13 @@ public:
     // note: the variable ordering follows ShowerShapeCorrector
     enum SSvars
     {
-        pt,                       
-        etaSC,                    
-        phi,                      
-        rho,                      
-        r9,                       
-        s4,                       
-        sieie,                    
-        sieip,                    
-        etaWidth,                 
-        phiWidth,                 
-        esEnergyOverSCRawEnergy,
-        totvar
+        r9,
+        s4,
+        sieie,
+        sieip,
+        etaWidth,
+        phiWidth,
+        esEnergyOverSCRawEnergy
     };
 
 
@@ -34,14 +30,15 @@ public:
     void Cleaning();
 
     void ShowInfo();
-    float ptCalb();
+    float Corrected( SSvars idx );
 private:
     std::string campaign;
 
     ShowerShapeCorrector* corr;
     std::vector<float> correctedvars;
     void loadVars(TreeReader* data, int varidx);
-    float origvar[SSvars::totvar];
+    //float origvar[SSvars::totvar];
+    std::map<const char*, float> origvar;
 };
 
 

@@ -3,7 +3,7 @@ summaryfile='../data/summaryJson/summary_18QCDMadgraph.json'
 ARG_tmpdir='step1.xsinfoAppended'
 ARG_outdir='step2.mergePDversion'
 ARG_datalumi={ 2016: 35.9, 2017:41.54, 2018:59.96 }
-TESTmode=True
+TESTmode=False
 testDict={
   "QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v15-v1":

@@ -1,9 +1,10 @@
 #!/usr/bin/env python2
+TESTmode=False
 shmesg='Process local file by sh'
 shcommand='"cd /home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/test ;sh xphoton_simple_idxReordered_abspath.sh  {file}"'
 import os
 # unchecked
-dataflist=[
+local_dataflist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016B_94X.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016C_94X.txt',
 '/home/ltsai/ReceivedFile/GJet/listedPaths/data16_94X/Run2016D_94X.txt',
@@ -85,16 +86,53 @@ localQCD_madgraphlist=[
 '/home/ltsai/ReceivedFile/GJet/listedPaths/QCDmadgraph/crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_v3_ext1-v2.txt',
 ]
 
+import os
+def CheckExistancce(pathlist):
+    if len( NotExistFiles(pathlist) ):
+        raise IOError(
+                'files not found : \n%s' % '\n   -> '.join(
+                    NotExistFiles(pathlist)
+                    ) )
+
+    terminatecode=False
+    for pathfile in pathlist:
+        fin=open(pathfile,'r')
+
+        notexistedFile=NotExistFiles( [l.strip() for l in fin.readlines()] )
+
+        if len(notexistedFile)>0 :
+            terminatecode=True
+            print 'files not found:\n%s' % '\n   -> '.join(notexistedFile)
+        fin.close()
+    if terminatecode: raise IOError('terminated')
+
+
+
+def NotExistFiles(files):
+    return [ f for f in files if not os.path.isfile(f) ]
+
 
 if __name__ == '__main__':
     command=shcommand
     mesg=shmesg
 
     print mesg
+    flist=local_dataflist
     #flist=local_madgraphflist
     #flist=localQCD_madgraphlist
     #flist=local_pythiaflist
-    flist=localQCD_pythiaflist
+    #flist=localQCD_pythiaflist
+    if TESTmode:
+        print 'checking paths...'
+        CheckExistancce(local_madgraphflist)
+        CheckExistancce(local_pythiaflist)
+        CheckExistancce(localQCD_madgraphlist)
+        CheckExistancce(localQCD_pythiaflist)
+        CheckExistancce(local_dataflist)
+
+        exit(1)
+    print 'Related path checking...'
+    CheckExistancce(flist)
     for f in flist:
         folder=f.split('/')[-1].split('.')[0]
         print folder

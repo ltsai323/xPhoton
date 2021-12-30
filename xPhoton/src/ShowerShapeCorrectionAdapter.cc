@@ -22,32 +22,32 @@ ShowerShapeCorrectionAdapter::~ShowerShapeCorrectionAdapter()
 
 void ShowerShapeCorrectionAdapter::loadVars(TreeReader* data, int varidx)
 {
-    float varpt = data->GetPtrFloat("phoCalibEt")[varidx];
-    float varSCeta = data->GetPtrFloat("phoSCEta")[varidx];
-    float varphi = data->GetPtrFloat("phoPhi")[varidx];
-    float varrho = data->GetFloat("rho");
-    float varr9Full5x5 = data->GetPtrFloat("phoR9Full5x5")[varidx];
-    float vare2x2Full5x5 = data->GetPtrFloat("phoE2x2Full5x5")[varidx];
-    float vare5x5Full5x5 = data->GetPtrFloat("phoE5x5Full5x5")[varidx];
-    float varsieieFull5x5 = data->GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[varidx];
-    float varsieipFull5x5 = data->GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[varidx];
-    float varetaWidth = data->GetPtrFloat("phoSCEtaWidth")[varidx];
-    float varphiWidth = data->GetPtrFloat("phoSCPhiWidth")[varidx];
-    float varSCRawE = data->GetPtrFloat("phoSCRawE")[varidx];
-    float varESEnP1 = data->GetPtrFloat("phoESEnP1")[varidx];
-    float varESEnP2 = data->GetPtrFloat("phoESEnP2")[varidx];
+    float varpt             = data->GetPtrFloat("phoCalibEt")[varidx];
+    float varSCeta          = data->GetPtrFloat("phoSCEta")[varidx];
+    float varphi            = data->GetPtrFloat("phoPhi")[varidx];
+    float varrho            = data->GetFloat("rho");
+    float varr9Full5x5      = data->GetPtrFloat("phoR9Full5x5")[varidx];
+    float vare2x2Full5x5    = data->GetPtrFloat("phoE2x2Full5x5")[varidx];
+    float vare5x5Full5x5    = data->GetPtrFloat("phoE5x5Full5x5")[varidx];
+    float varsieieFull5x5   = data->GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[varidx];
+    float varsieipFull5x5   = data->GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[varidx];
+    float varetaWidth       = data->GetPtrFloat("phoSCEtaWidth")[varidx];
+    float varphiWidth       = data->GetPtrFloat("phoSCPhiWidth")[varidx];
+    float varSCRawE         = data->GetPtrFloat("phoSCRawE")[varidx];
+    float varESEnP1         = data->GetPtrFloat("phoESEnP1")[varidx];
+    float varESEnP2         = data->GetPtrFloat("phoESEnP2")[varidx];
     
-    origvar[SSvars::pt                       ] = varpt;
-    origvar[SSvars::etaSC                    ] = varSCeta;
-    origvar[SSvars::phi                      ] = varphi;
-    origvar[SSvars::rho                      ] = varrho;
-    origvar[SSvars::r9                       ] = varr9Full5x5;
-    origvar[SSvars::s4                       ] = vare2x2Full5x5 / vare5x5Full5x5;
-    origvar[SSvars::sieie                    ] = varsieieFull5x5;
-    origvar[SSvars::sieip                    ] = varsieipFull5x5;
-    origvar[SSvars::etaWidth                 ] = varetaWidth;
-    origvar[SSvars::phiWidth                 ] = varphiWidth;
-    origvar[SSvars::esEnergyOverSCRawEnergy  ] =(varESEnP1+varESEnP2) / varSCRawE;
+    origvar["pt"                      ] = varpt;
+    origvar["etaSC"                   ] = varSCeta;
+    origvar["phi"                     ] = varphi;
+    origvar["rho"                     ] = varrho;
+    origvar["r9"                      ] = varr9Full5x5;
+    origvar["s4"                      ] = vare2x2Full5x5 / vare5x5Full5x5;
+    origvar["sieie"                   ] = varsieieFull5x5;
+    origvar["sieip"                   ] = varsieipFull5x5;
+    origvar["etaWidth"                ] = varetaWidth;
+    origvar["phiWidth"                ] = varphiWidth;
+    origvar["esEnergyOverSCRawEnergy" ] =(varESEnP1+varESEnP2) / varSCRawE;
     return;
 }
 
@@ -55,46 +55,57 @@ void ShowerShapeCorrectionAdapter::CalculateCorrections(TreeReader* data, int va
 {
     Cleaning();
     loadVars(data,varidx);
+    corr->InputFeatures(
+        origvar["pt"                      ],
+        origvar["etaSC"                   ],
+        origvar["phi"                     ],
+        origvar["rho"                     ],
+        origvar["r9"                      ],
+        origvar["s4"                      ],
+        origvar["sieie"                   ],
+        origvar["sieip"                   ],
+        origvar["etaWidth"                ],
+        origvar["phiWidth"                ],
+        origvar["esEnergyOverSCRawEnergy" ]
+    );
     correctedvars = corr->GetSSCorr();
 }
 void ShowerShapeCorrectionAdapter::Cleaning()
 {
     correctedvars.clear();
-    for ( int i=0; i< SSvars::totvar; ++i )
-    {
-        origvar[i] = -999.;
-    }
+    //for ( int i=0; i< SSvars::totvar; ++i )
+    //{
+    //    origvar[i] = -999.;
+    //}
+    for ( auto iter = origvar.begin(); iter != origvar.end(); ++iter )
+        iter->second = -999.;
 }
 void ShowerShapeCorrectionAdapter::ShowInfo()
 {
     printf("Showing the stored content of this ShowerShapeCorrectionAdapter :\n");
-    printf(" -> origvar[SSvars::pt                       ] = %.3f\n",origvar[SSvars::pt                       ]);
-    printf(" -> origvar[SSvars::etaSC                    ] = %.3f\n",origvar[SSvars::etaSC                    ]);
-    printf(" -> origvar[SSvars::phi                      ] = %.3f\n",origvar[SSvars::phi                      ]);
-    printf(" -> origvar[SSvars::rho                      ] = %.3f\n",origvar[SSvars::rho                      ]);
-    printf(" -> origvar[SSvars::r9                       ] = %.3f\n",origvar[SSvars::r9                       ]);
-    printf(" -> origvar[SSvars::s4                       ] = %.3f\n",origvar[SSvars::s4                       ]);
-    printf(" -> origvar[SSvars::sieie                    ] = %.3f\n",origvar[SSvars::sieie                    ]);
-    printf(" -> origvar[SSvars::sieip                    ] = %.3f\n",origvar[SSvars::sieip                    ]);
-    printf(" -> origvar[SSvars::etaWidth                 ] = %.3f\n",origvar[SSvars::etaWidth                 ]);
-    printf(" -> origvar[SSvars::phiWidth                 ] = %.3f\n",origvar[SSvars::phiWidth                 ]);
-    printf(" -> origvar[SSvars::esEnergyOverSCRawEnergy  ] = %.3f\n",origvar[SSvars::esEnergyOverSCRawEnergy  ]);
+    printf(" -> origvar[pt                       ] = %.3f\n",origvar["pt"                      ]);
+    printf(" -> origvar[etaSC                    ] = %.3f\n",origvar["etaSC"                   ]);
+    printf(" -> origvar[phi                      ] = %.3f\n",origvar["phi"                     ]);
+    printf(" -> origvar[rho                      ] = %.3f\n",origvar["rho"                     ]);
+    printf(" -> origvar[r9                       ] = %.3f\n",origvar["r9"                      ]);
+    printf(" -> origvar[s4                       ] = %.3f\n",origvar["s4"                      ]);
+    printf(" -> origvar[sieie                    ] = %.3f\n",origvar["sieie"                   ]);
+    printf(" -> origvar[sieip                    ] = %.3f\n",origvar["sieip"                   ]);
+    printf(" -> origvar[etaWidth                 ] = %.3f\n",origvar["etaWidth"                ]);
+    printf(" -> origvar[phiWidth                 ] = %.3f\n",origvar["phiWidth"                ]);
+    printf(" -> origvar[esEnergyOverSCRawEnergy  ] = %.3f\n",origvar["esEnergyOverSCRawEnergy" ]);
     printf("\n\n");
 
     if ( correctedvars.size() == 0 ) { printf(" -> nothing in correctedvars\n"); return; }
-    printf(" -> correctedvars[SSvars::pt                       ] = %.3f\n",correctedvars[SSvars::pt                       ]);
-    printf(" -> correctedvars[SSvars::etaSC                    ] = %.3f\n",correctedvars[SSvars::etaSC                    ]);
-    printf(" -> correctedvars[SSvars::phi                      ] = %.3f\n",correctedvars[SSvars::phi                      ]);
-    printf(" -> correctedvars[SSvars::rho                      ] = %.3f\n",correctedvars[SSvars::rho                      ]);
-    printf(" -> correctedvars[SSvars::r9                       ] = %.3f\n",correctedvars[SSvars::r9                       ]);
-    printf(" -> correctedvars[SSvars::s4                       ] = %.3f\n",correctedvars[SSvars::s4                       ]);
-    printf(" -> correctedvars[SSvars::sieie                    ] = %.3f\n",correctedvars[SSvars::sieie                    ]);
-    printf(" -> correctedvars[SSvars::sieip                    ] = %.3f\n",correctedvars[SSvars::sieip                    ]);
-    printf(" -> correctedvars[SSvars::etaWidth                 ] = %.3f\n",correctedvars[SSvars::etaWidth                 ]);
-    printf(" -> correctedvars[SSvars::phiWidth                 ] = %.3f\n",correctedvars[SSvars::phiWidth                 ]);
-    printf(" -> correctedvars[SSvars::esEnergyOverSCRawEnergy  ] = %.3f\n",correctedvars[SSvars::esEnergyOverSCRawEnergy  ]);
+    printf(" -> correctedvars[SSvars::r9                     ] = %.3f\n",correctedvars[SSvars::r9                     ]);
+    printf(" -> correctedvars[SSvars::s4                     ] = %.3f\n",correctedvars[SSvars::s4                     ]);
+    printf(" -> correctedvars[SSvars::sieie                  ] = %.3f\n",correctedvars[SSvars::sieie                  ]);
+    printf(" -> correctedvars[SSvars::sieip                  ] = %.3f\n",correctedvars[SSvars::sieip                  ]);
+    printf(" -> correctedvars[SSvars::etaWidth               ] = %.3f\n",correctedvars[SSvars::etaWidth               ]);
+    printf(" -> correctedvars[SSvars::phiWidth               ] = %.3f\n",correctedvars[SSvars::phiWidth               ]);
+    printf(" -> correctedvars[SSvars::esEnergyOverSCRawEnergy] = %.3f\n",correctedvars[SSvars::esEnergyOverSCRawEnergy]);
 }
 
 
-float ShowerShapeCorrectionAdapter::ptCalb() { return correctedvars[SSvars::pt]; }
+float ShowerShapeCorrectionAdapter::Corrected( ShowerShapeCorrectionAdapter::SSvars idx ) { return correctedvars[idx]; }
 

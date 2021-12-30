@@ -64,9 +64,11 @@ static TH1F *h_hasGoodVtx ;
 static TH1F *hpthat ;
 static TH1F *hpthat_wide ;
 static TH1F *hdpt ;
+static TH1F *hdpt_signed ;
 static TH1F *hdR ;
 
-static TH1F *hdpt_ele ;
+static TH1F *hdpt_ele_signed ;
+static TH1F *hdpt_ele;
 static TH1F *hdR_ele ;
 
 static TH1F *hdR_genjet ;
