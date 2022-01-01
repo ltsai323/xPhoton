@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 
     xPhotonHFJet(
             GetFileName(argc,argv),
-            GetOption  (argc,argv)
+            GetOption  (argc,argv),
+            "UL2018"
             );
 }

@@ -491,6 +491,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
         tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
     }
+    PhotonMVACalculator mvaloader( &data, dataEra );
 
     TFile* f_showershapecorrection;
     //PUWeightCalculator pucalc;
@@ -518,6 +519,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
+        if ( ev == 100 ) break; //asdf
         if ( data.HasMC() )
         {
             overallGenweight += data.GetFloat("genWeight");
@@ -1347,15 +1349,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     //calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
                     //calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
 
-                    if ( calib_r9Full5x5 != SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     ) ) printf("Failed R9! : %.5f -- %.5f \n", calib_r9Full5x5, SScorr.Corrected(ShowerShapeCorrectionAdapter::r9) );
                     
-                    LOG_DEBUG("calibrated s4 %.6f and r9 %.6f", calib_s4, calib_r9Full5x5);
             }
 
 
 
-            mva = select_photon_mvanoIso(data, ipho, barrelCorrections, endcapCorrections);
+            //mva = select_photon_mvanoIso(data, ipho, barrelCorrections, endcapCorrections);
+            mva = select_photon_mvanoIso(data, ipho, tgr);
             mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
+            float newmva = mvaloader.GetMVA_noIso(ipho, tgr);
+            float newmva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            printf( "old mva : %.5f and new mva = %.5f\n", mva, newmva );
+            printf( "(NO correction ) old mva : %.5f and new mva = %.5f\n", mva_nocorr, newmva_nocorr );
+            
             photonIDmva = phoIDMVA[ipho];
 
             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
