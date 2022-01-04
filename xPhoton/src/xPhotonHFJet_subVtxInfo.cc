@@ -291,8 +291,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t jetDeepCSVDiscriminatorTags_CvsB_;
     Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
-    Float_t s4;
-    Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
+    Float_t esEnergyOverSCRawEnergy;
+    Float_t s4Full5x5;
+    Float_t calib_s4Full5x5,calib_r9Full5x5;
+    Float_t calib_sieieFull5x5,calib_sieipFull5x5;
+    Float_t calib_scEtaWidth,calib_scPhiWidth;
+    Float_t calib_esEnergyOverSCRawEnergy;
 
     Int_t    run;
     Long64_t event;
@@ -351,7 +355,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
     outtree_->Branch("r9",           &r9,           "r9/F");
-    outtree_->Branch( "s4"          , &s4             , "s4/F"               );
+    outtree_->Branch("s4Full5x5"          , &s4Full5x5             , "s4Full5x5/F"               );
+    outtree_->Branch("esEnergyOverSCRawEnergy", &esEnergyOverSCRawEnergy, "esEnergyOverSCRawEnergy/F");
     if ( data.HasMC() )
     {
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
@@ -441,9 +446,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
         outtree_->Branch( "calib_scEtaWidth"  , &calib_scEtaWidth     , "calib_scEtaWidth/F"       );
+        outtree_->Branch( "calib_scPhiWidth"  , &calib_scPhiWidth     , "calib_scPhiWidth/F"       );
         outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
-        outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
+        outtree_->Branch( "calib_s4Full5x5"          , &calib_s4Full5x5             , "calib_s4Full5x5/F"               );
         outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
+        outtree_->Branch( "calib_sieipFull5x5", &calib_sieipFull5x5   , "calib_sieipFull5x5/F"     );
+        outtree_->Branch( "calib_esEnergyOverSCRawEnergy", &calib_esEnergyOverSCRawEnergy, "calib_esEnergyOverSCRawEnergy/F");
 
         outtree_->Branch("nLHE"               , &nLHE                 , "nLHE/I"                   );
         outtree_->Branch("lhePID"             ,  lhePID               , "lhePID[nLHE]/I"           );
@@ -519,7 +527,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
-        if ( ev == 100 ) break; //asdf
         if ( data.HasMC() )
         {
             overallGenweight += data.GetFloat("genWeight");
@@ -1171,8 +1178,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
-            s4=0.;
-            calib_s4=calib_r9Full5x5=calib_scEtaWidth=calib_sieieFull5x5 = 0.;
+            s4Full5x5=0.;
+            calib_s4Full5x5=calib_r9Full5x5=calib_scPhiWidth=calib_scEtaWidth=calib_sieieFull5x5=calib_sieipFull5x5=calib_esEnergyOverSCRawEnergy = 0.;
             mygenweight = 0;
             for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
                 lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
@@ -1329,38 +1336,40 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             r9Full5x5        = phoR9Full5x5[ipho];
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
-            s4 = e2x2Full5x5 / e5x5Full5x5;
+            s4Full5x5 = e2x2Full5x5 / e5x5Full5x5;
+            esEnergyOverSCRawEnergy = esEn / rawE;
 
             phoIDbit_ = phoIDbit[ipho];
             if ( data.HasMC() )
             {
                     std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
-                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
+                    calib_s4Full5x5     = recoInfo::CorrectedValue( corrections->at("s4")          , s4Full5x5 );
                     calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
                     calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
                     calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
 
                     SScorr.CalculateCorrections(&data, ipho);
-                    //calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
-                    //calib_s4                      = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
-                    //calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
-                    //calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
-                    //calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
-                    //calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
-                    //calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
-
-                    
+                    calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
+                    calib_s4Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
+                    calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+                    calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+                    calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+                    calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+                    calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
 
 
 
             //mva = select_photon_mvanoIso(data, ipho, barrelCorrections, endcapCorrections);
-            mva = select_photon_mvanoIso(data, ipho, tgr);
-            mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
+            //mva        = select_photon_mvanoIso(data, ipho, tgr);
+            mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
+            mva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            /*
             float newmva = mvaloader.GetMVA_noIso(ipho, tgr);
             float newmva_nocorr = mvaloader.GetMVA_noIso(ipho);
             printf( "old mva : %.5f and new mva = %.5f\n", mva, newmva );
             printf( "(NO correction ) old mva : %.5f and new mva = %.5f\n", mva_nocorr, newmva_nocorr );
+            */
             
             photonIDmva = phoIDMVA[ipho];
 

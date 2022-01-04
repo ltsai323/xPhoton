@@ -35,9 +35,9 @@ class PhotonMVACalculator
         PhotonMVACalculator( TreeReader* data_, std::string dataEra_ );
        ~PhotonMVACalculator();
 
-        float GetMVA      ( Int_t iPho_, ShowerShapeCorrectionAdapter* SSCorr_ );
+        //float GetMVA      ( Int_t iPho_, ShowerShapeCorrectionAdapter* SSCorr_ );
         float GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapter* SScorr_ );
-        float GetMVA      ( Int_t iPho_, TGraph* tgr[8]);
+        //float GetMVA      ( Int_t iPho_, TGraph* tgr[8]);
         float GetMVA_noIso( Int_t iPho_, TGraph* tgr[8]);
         float GetMVA_noIso( Int_t iPho_ );
     private:

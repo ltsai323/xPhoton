@@ -36,9 +36,13 @@ private:
 
     ShowerShapeCorrector* corr;
     std::vector<float> correctedvars;
+    bool isSameEvent(TreeReader* data, int varidx);
     void loadVars(TreeReader* data, int varidx);
     //float origvar[SSvars::totvar];
     std::map<const char*, float> origvar;
+
+    int tmpidx;
+    float tmppt, tmpeta, tmpphi;
 };
 
 

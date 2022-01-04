@@ -3,7 +3,9 @@
 
 // note: the variable ordering follows ShowerShapeCorrector
 
-ShowerShapeCorrectionAdapter::ShowerShapeCorrectionAdapter(std::string era, bool isMC) : campaign(""), corr(nullptr)
+bool same(float a, float b) { return fabs(a-b) < 1e-8; }
+ShowerShapeCorrectionAdapter::ShowerShapeCorrectionAdapter(std::string era, bool isMC) : campaign(""), corr(nullptr),
+    tmpidx(-999.),tmppt(-999.),tmpeta(-999.),tmpphi(-999.)
 {
     // note: the campaign naming follows ShowerShapeCorrector
     if ( era == "2016ReReco" ) campaign = "2016";
@@ -22,6 +24,9 @@ ShowerShapeCorrectionAdapter::~ShowerShapeCorrectionAdapter()
 
 void ShowerShapeCorrectionAdapter::loadVars(TreeReader* data, int varidx)
 {
+    if ( isSameEvent(data,varidx) ) return;
+
+    Cleaning();
     float varpt             = data->GetPtrFloat("phoCalibEt")[varidx];
     float varSCeta          = data->GetPtrFloat("phoSCEta")[varidx];
     float varphi            = data->GetPtrFloat("phoPhi")[varidx];
@@ -53,7 +58,6 @@ void ShowerShapeCorrectionAdapter::loadVars(TreeReader* data, int varidx)
 
 void ShowerShapeCorrectionAdapter::CalculateCorrections(TreeReader* data, int varidx)
 {
-    Cleaning();
     loadVars(data,varidx);
     corr->InputFeatures(
         origvar["pt"                      ],
@@ -109,3 +113,20 @@ void ShowerShapeCorrectionAdapter::ShowInfo()
 
 float ShowerShapeCorrectionAdapter::Corrected( ShowerShapeCorrectionAdapter::SSvars idx ) { return correctedvars[idx]; }
 
+bool ShowerShapeCorrectionAdapter::isSameEvent( TreeReader* data, int varidx )
+{
+    float loadpt  = data->GetPtrFloat("phoCalibEt")  [varidx];
+    float loadeta = data->GetPtrFloat("phoEta")      [varidx];
+    float loadphi = data->GetPtrFloat("phoPhi")      [varidx];
+    if ( tmpidx == varidx &&
+         same(tmppt ,loadpt ) &&
+         same(tmpeta,loadeta) &&
+         same(tmpphi,loadphi)
+       ) return true;
+
+    tmpidx = varidx;
+    tmppt  = loadpt;
+    tmpeta = loadeta;
+    tmpphi = loadphi;
+    return false;
+}

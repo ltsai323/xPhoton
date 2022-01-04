@@ -447,14 +447,26 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
      tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) );
    }
 }
-PhotonMVACalculator::~PhotonMVACalculator() { _data = nullptr; }
-
-float PhotonMVACalculator::GetMVA      ( Int_t iPho_, ShowerShapeCorrectionAdapter* SSCorr_ )
+PhotonMVACalculator::~PhotonMVACalculator()
 {
-    return 1.;
+    _data = nullptr;
+    delete tmvaReader[0]; tmvaReader[0] = nullptr;
+    delete tmvaReader[1]; tmvaReader[1] = nullptr;
 }
+
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapter* SScorr_ )
 {
+    LoadingVars( iPho_);
+
+    SScorr_->CalculateCorrections( _data, iPho_ );
+    phoR9		    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       );
+    s4Full5x5       = SScorr_->Corrected( ShowerShapeCorrectionAdapter::s4       );
+    sieieFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieie    );
+    sieipFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieip    );
+    phoSCEtaWidth	= SScorr_->Corrected( ShowerShapeCorrectionAdapter::etaWidth );
+    phoSCPhiWidth	= SScorr_->Corrected( ShowerShapeCorrectionAdapter::etaWidth );
+    phoESEnToRawE   = SScorr_->Corrected( ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+
     return tmvaReader[isEE]->EvaluateMVA("BDT");
 }
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, TGraph* tgr[8] )
@@ -462,22 +474,19 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, TGraph* tgr[8] )
     LoadingVars( iPho_);
     ShowerShapeCorrection( tgr );
 
-
     return tmvaReader[isEE]->EvaluateMVA("BDT");
 }
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_ )
 {
     LoadingVars( iPho_);
-    //ShowerShapeCorrection( tgr );
-
-
     return tmvaReader[isEE]->EvaluateMVA("BDT");
 }
 void PhotonMVACalculator::LoadingVars( Int_t iPho_ )
 {
   // load necessary tree branches
   Float_t  DATAphoPhi                    = _data->GetPtrFloat("phoPhi")[iPho_];
-  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_];
+  //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_]; // is phoR9Full5x5 needed?
+  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // is phoR9Full5x5 needed?
   Float_t  DATAphoSCEta                  = _data->GetPtrFloat("phoSCEta")[iPho_];
   Float_t  DATAphoSCRawE                 = _data->GetPtrFloat("phoSCRawE")[iPho_];
   Float_t  DATAphoSCEtaWidth             = _data->GetPtrFloat("phoSCEtaWidth")[iPho_];
@@ -516,7 +525,7 @@ void PhotonMVACalculator::LoadingVars( Int_t iPho_ )
   rho                   = DATArho;
   
   
-  isEE = DATAphoSCEta>1.4442 || DATAphoSCEta < -1.4442;
+  isEE = fabs(DATAphoSCEta) > 1.5;
 }
 void PhotonMVACalculator::ShowerShapeCorrection( TGraph* tgr[8] )
 {
