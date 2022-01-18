@@ -1,5 +1,6 @@
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 #include "xPhoton/xPhoton/interface/untuplizer.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 
 // note: the variable ordering follows ShowerShapeCorrector
 
@@ -11,9 +12,9 @@ ShowerShapeCorrectionAdapter::ShowerShapeCorrectionAdapter(std::string era, bool
     if ( era == "2016ReReco" ) campaign = "2016";
     if ( era == "2017ReReco" ) campaign = "2017";
     if ( era == "2018ReReco" ) campaign = "2018";
-    if ( era == "UL2016"     ) campaign = "2016Legacy";
-    if ( era == "UL2017"     ) campaign = "2017Legacy";
-    if ( era == "UL2018"     ) campaign = "2018Legacy";
+    if ( era == "UL2016"     ) campaign = "2016_Legacy";
+    if ( era == "UL2017"     ) campaign = "2017_Legacy";
+    if ( era == "UL2018"     ) campaign = "2018_Legacy";
     if ( campaign == "" ) throw "ShowerShapeCorrectionAdapter : input data era is not valid!\n";
 
 
@@ -53,12 +54,15 @@ void ShowerShapeCorrectionAdapter::loadVars(TreeReader* data, int varidx)
     origvar["etaWidth"                ] = varetaWidth;
     origvar["phiWidth"                ] = varphiWidth;
     origvar["esEnergyOverSCRawEnergy" ] =(varESEnP1+varESEnP2) / varSCRawE;
+    LOG_DEBUG("Calculating esEn/RawEn : %.4f/%.4f = %.6f", varESEnP1+varESEnP2, varSCRawE, origvar["esEnergyOverSCRawEnergy"] );
     return;
 }
 
 void ShowerShapeCorrectionAdapter::CalculateCorrections(TreeReader* data, int varidx)
 {
+    LOG_DEBUG("loading variables");
     loadVars(data,varidx);
+    LOG_DEBUG("input variables to corrector");
     corr->InputFeatures(
         origvar["pt"                      ],
         origvar["etaSC"                   ],
@@ -72,7 +76,9 @@ void ShowerShapeCorrectionAdapter::CalculateCorrections(TreeReader* data, int va
         origvar["phiWidth"                ],
         origvar["esEnergyOverSCRawEnergy" ]
     );
+    LOG_DEBUG("GetSSCorr functioning");
     correctedvars = corr->GetSSCorr();
+    LOG_DEBUG("GetSSCorr functioned");
 }
 void ShowerShapeCorrectionAdapter::Cleaning()
 {
