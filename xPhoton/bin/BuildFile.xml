@@ -5,6 +5,7 @@
 <use name="ShowerShapeCorrection/CQR_framework"/>
 
 <export>
+    <bin name="exec_xElectronRunner"         file="xElectronsRunner.cc"/>
     <bin name="exec_xPhotonRunner"           file="xPhotonRunner.cc"/>
     <bin name="exec_xPhotonRunnerGeneral"    file="xPhotonRunnerGeneral.cc"/>
     <bin name="exec_xPhotonRunner2016ReReco" file="xPhotonRunner2016ReReco.cc"/>
