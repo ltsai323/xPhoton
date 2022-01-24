@@ -51,7 +51,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     TreeReader data(pathes);
 
     TFile *fout_;
+    LOG_DEBUG("output name is %s" ,oname);
     fout_ = new TFile(oname,"recreate");
+    LOG_DEBUG("output tfile is opened");
 
     TTree *outtree_;
     ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
@@ -482,12 +484,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    TGraph *tgr[8];
+    //TGraph *tgr[8];
     if(data.HasMC())
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
-        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection(dataEra) );
+        /*
         LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
+        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection(dataEra) );
+        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ended ---");
 
         tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
         tgr[1] = (TGraph*) f->Get("transfS4EB");
@@ -498,9 +502,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         tgr[5] = (TGraph*) f->Get("transfS4EE");
         tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
         tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
+        */
     }
     PhotonMVACalculator mvaloader( &data, dataEra );
 
+    /*
     TFile* f_showershapecorrection;
     //PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
@@ -518,6 +524,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
     barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
     }
+    */
 
 
     LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
@@ -1342,11 +1349,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             phoIDbit_ = phoIDbit[ipho];
             if ( data.HasMC() )
             {
+                /*
                     std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
                     calib_s4Full5x5     = recoInfo::CorrectedValue( corrections->at("s4")          , s4Full5x5 );
                     calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
                     calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
                     calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
+                    */
 
                     SScorr.CalculateCorrections(&data, ipho);
                     calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
@@ -1593,6 +1602,8 @@ std::vector<int> GenPhoIdxs( TreeReader* event )
     Float_t* mcPt = event->GetPtrFloat("mcPt");
     Int_t* mcMomPID = event->GetPtrInt("mcMomPID");
     Int_t nMC = event->GetInt("nMC");
+    Float_t* mcEta  = event->GetPtrFloat("mcEta");
+    Float_t* mcPhi  = event->GetPtrFloat("mcPhi");
     std::vector<int> phomcid;
     for (Int_t k=0; k<nMC; ++k) {
         if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
@@ -1657,7 +1668,7 @@ int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> ph
         hmcTrkIsoMini->Fill(mcTrkIsoDR04[mcIdx]); 
         hmcTrkIsoMicro->Fill(mcTrkIsoDR04[mcIdx]); 
 
-        if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
+        if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", mcIdx, dr, dpt);
         if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatusFlag[mcIdx], mcCalIsoDR04[mcIdx], mcTrkIsoDR04[mcIdx]);
         if (dr < CUT_DELTAR && dpt < CUT_DELTAPT){
             if ( mcCalIsoDR04[mcIdx]<5.0 ){ //for gammajet photon pythia	      

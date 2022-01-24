@@ -149,17 +149,17 @@ std::string ExternalFilesMgr::csvFile_testing()
 const char* ExternalFilesMgr::RooFile_PileUp(std::string era)
 {
     if      ( era == "2016ReReco" )
-        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/summer16/PU_histo_13TeV_2016_GoldenJSON_69200nb.root";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/2016ReReco_Moriond17/puweights_PileupHistogram-goldenJSON-13tev-2016-69200ub.root";
     else if ( era == "2017ReReco" )
-        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/fall17_corrected/PU_correctedPU_13TeV_2017_GoldenJSON_69200nb.root";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/2017ReReco_WinterMC/puweights_PileupHistogram-goldenJSON-13tev-2017-69200ub.root";
     else if ( era == "2018ReReco" )
-        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/autumn18/PU_histo_13TeV_2018_GoldenJSON_69200nb.root";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/2018ReReco_JuneProjectionFull18/puweights_PileupHistogram-goldenJSON-13tev-2018-69200ub.root";
     else if ( era == "UL2016"     )
-        return "";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2016_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2016-69200ub-99bins.root";
     else if ( era == "UL2017"     )
-        return "";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2017_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2017-69200ub-99bins.root";
     else if ( era == "UL2018"     )
-        return "";
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2018_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2018-69200ub-99bins.root";
     return "";
 }
 const char* ExternalFilesMgr::RooFile_ShowerShapeCorrection(std::string era)
@@ -193,7 +193,7 @@ const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, std::string era)
         else if ( era == "UL2017"     )
             return "";
         else if ( era == "UL2018"     )
-            return "";
+            return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/autumn18_EE_TMVAnalysis_BDT.weights.xml";
     }
     else
     {
@@ -208,7 +208,7 @@ const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, std::string era)
         else if ( era == "UL2017"     )
             return "";
         else if ( era == "UL2018"     )
-            return "";
+            return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/xmlfiles/external/autumn18_EB_TMVAnalysis_BDT.weights.xml";
     }
     return "";
 }
