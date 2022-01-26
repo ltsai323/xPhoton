@@ -415,8 +415,8 @@ std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr)
 }
 TLorentzCand TriggeredElectron(TreeReader* dataptr)
 {
-    // HLT_Ele27_WPTight_Gsf
-    const int PASS_HLTBIT = 12;
+    // const int PASS_HLTBIT = 12; // HLT_Ele27_WPTight_Gsf @ 2016ReReco
+    const int PASS_HLTBIT = 13; // HLT_Ele32_eta2p1_WPTight_Gsf @ UL2018
     const int HLTWP = 3;
 
     for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
@@ -545,7 +545,7 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
     t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");
     
     t->Branch("HLT"               , &var->HLT,                     "HLT/L");
-    t->Branch("HLTPhoIsPres.caled", &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
+    t->Branch("HLTPhoIsPrescaled" , &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
     t->Branch("event"             , &var->event,                   "event/L");
 }
 
