@@ -1,0 +1,92 @@
+{
+  "GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8": {
+    "v11_L1v1-v1": {
+      "xs": [
+        2180.0, 
+        20.37, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.4586, 
+        0.004308, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8": {
+    "v11_L1v1-v1": {
+      "xs": [
+        86.56, 
+        0.8231, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        11.55, 
+        0.1104, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8": {
+    "v11_L1v1-v1": {
+      "xs": [
+        18240.0, 
+        165.3, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.05482, 
+        0.0004998, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8": {
+    "v11_L1v1-v1": {
+      "xs": [
+        8654.0, 
+        79.61, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.1155, 
+        0.001069, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8": {
+    "v11_L1v1-v1": {
+      "xs": [
+        261.5, 
+        2.466, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        3.824, 
+        0.03626, 
+        "1/fb"
+      ]
+    }
+  }
+}

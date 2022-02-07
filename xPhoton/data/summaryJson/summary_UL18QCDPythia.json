@@ -1,0 +1,272 @@
+{
+  "QCD_Pt_170to300_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1_ext1-v2": {
+      "xs": [
+        103100.0, 
+        504.4, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.009702, 
+        4.846e-05, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_600to800_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        155.7, 
+        0.7373, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        6.423, 
+        0.03109, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_2400to3200_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        0.005194, 
+        2.619e-05, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        192500.0, 
+        989.7, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_50to80_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1_ext1-v2": {
+      "xs": [
+        15780000.0, 
+        80580.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        6.337e-05, 
+        3.298e-07, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        7.427, 
+        0.03561, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        134.6, 
+        0.6596, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_80to120_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1_ext1-v2": {
+      "xs": [
+        2336000.0, 
+        12110.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.0004281, 
+        2.261e-06, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_1800to2400_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        0.08673, 
+        0.0004287, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        11530.0, 
+        58.14, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        0.0001339, 
+        7.032e-07, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        7466000.0, 
+        39900.0, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_30to50_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1_ext1-v2": {
+      "xs": [
+        107900000.0, 
+        557200.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        9.271e-06, 
+        4.878e-08, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_300to470_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        6753.0, 
+        32.96, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.1481, 
+        0.0007377, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_800to1000_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        26.09, 
+        0.1216, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        38.32, 
+        0.1826, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_1400to1800_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        0.6442, 
+        0.003082, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        1552.0, 
+        7.586, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_15to30_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        1231000000.0, 
+        6457000.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        8.12e-07, 
+        4.335e-09, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_120to170_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1_ext1-v2": {
+      "xs": [
+        407000.0, 
+        2015.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.002457, 
+        1.241e-05, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_Pt_470to600_TuneCP5_13TeV_pythia8": {
+    "v11_L1v1-v2": {
+      "xs": [
+        548.9, 
+        2.589, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        1.822, 
+        0.008783, 
+        "1/fb"
+      ]
+    }
+  }
+}
