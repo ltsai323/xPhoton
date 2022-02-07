@@ -10,6 +10,7 @@
 #include "xPhoton/xPhoton/interface/histMgr.h"
 #include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
+#include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 #include <TLorentzVector.h>
 #include <map>
 #include <TNtuple.h>
@@ -92,14 +93,19 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
-    TFile* f_showershapecorrection;
-    TGraph *tgr[8];
+    std::string dataEra = "UL2018";
+    ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
+    PhotonMVACalculator mvaloader( &data, dataEra );
+    //TFile* f_showershapecorrection;
+    //TGraph *tgr[8];
     PUWeightCalculator pucalc;
-    std::map<std::string, TGraph*> endcapCorrections;
-    std::map<std::string, TGraph*> barrelCorrections;
+
+    //std::map<std::string, TGraph*> endcapCorrections;
+    //std::map<std::string, TGraph*> barrelCorrections;
     if ( data.HasMC() )
     {
-    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    //f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
+    /*
     endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
     endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
     endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
@@ -118,8 +124,9 @@ void xElectrons(
     tgr[5] = (TGraph*) f_showershapecorrection->Get("transfS4EE");
     tgr[6] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EE");
     tgr[7] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEE");
+    */
 
-    pucalc.Init( ExternalFilesMgr::RooFile_PileUp() );
+    pucalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
     }
 
 
@@ -260,15 +267,18 @@ void xElectrons(
             eleRecording.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
             eleRecording.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
                                         data.GetPtrFloat("phoESEnP2")[recoIdx];
-            eleRecording.mva          = select_photon_mvanoIso(data, recoIdx, tgr);
-            eleRecording.mva_nocorr   = select_photon_mvanoIso(data, recoIdx, nullptr);
+            //eleRecording.mva          = select_photon_mvanoIso(data, recoIdx, tgr);
+            //eleRecording.mva_nocorr   = select_photon_mvanoIso(data, recoIdx, nullptr);
+            eleRecording.mva = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
+            eleRecording.mva_nocorr = mvaloader.GetMVA_noIso(recoIdx);
             eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
             eleRecording.sieipFull5x5 = data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[recoIdx];
             eleRecording.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
-            eleRecording.s4           = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
+            eleRecording.s4Full5x5    = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
+            eleRecording.esEnergyOverSCRawEnergy = eleRecording.esEn / eleRecording.rawE;
 
             eleRecording.isMatched    = probe_electron.genidx() >= 0;
             eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
@@ -283,12 +293,14 @@ void xElectrons(
             eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
             
             
-            std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(eleRecording.recoSCEta) ? &endcapCorrections : &barrelCorrections;
-            eleRecording.scEtaWidth_corrected      = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , eleRecording.scEtaWidth );
-
-            eleRecording.r9Full5x5_corrected       = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , eleRecording.r9Full5x5 );
-            eleRecording.s4_corrected              = recoInfo::CorrectedValue( corrections->at("s4")          , eleRecording.s4 );
-            eleRecording.sieieFull5x5_corrected    = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), eleRecording.sieieFull5x5 );
+            SScorr.CalculateCorrections(&data, recoIdx);
+            eleRecording.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
+            eleRecording.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
+            eleRecording.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+            eleRecording.sieipFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+            eleRecording.scEtaWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+            eleRecording.scPhiWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+            eleRecording.esEnergyOverSCRawEnergy_corrected = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
         }
 
@@ -355,8 +367,10 @@ void xElectrons(
     LOG_DEBUG("closing output ROOT file");
     fout_->Close();
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
+    /*
     if ( data.HasMC() )
 	    f_showershapecorrection->Close();
+    */
 }
 void xElectrons(std::string ipath, int outID)
 {
@@ -401,8 +415,8 @@ std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr)
 }
 TLorentzCand TriggeredElectron(TreeReader* dataptr)
 {
-    // HLT_Ele27_WPTight_Gsf
-    const int PASS_HLTBIT = 12;
+    // const int PASS_HLTBIT = 12; // HLT_Ele27_WPTight_Gsf @ 2016ReReco
+    const int PASS_HLTBIT = 13; // HLT_Ele32_eta2p1_WPTight_Gsf @ UL2018
     const int HLTWP = 3;
 
     for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
@@ -478,11 +492,22 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+"sipipFull5x5/F").c_str()     );
     //t->Branch( (name+"e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+"e2x2Full5x5/F").c_str()      );
     //t->Branch( (name+"e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+"e2x5Full5x5/F").c_str()      );
-    t->Branch( (name+"s4").c_str()                 ,&var->s4           , (name+"s4/F").c_str()               );
+    t->Branch( (name+"s4Full5x5").c_str()          ,&var->s4Full5x5    , (name+"s4Full5x5/F").c_str() );
+    t->Branch( (name+"esEnergyOverSCRawEnergy").c_str(),&var->esEnergyOverSCRawEnergy,(name+"esEnergyOverSCRawEnergy/F").c_str() );
+    /*
     t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F").c_str()      );
     t->Branch( (name+"calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+"calib_r9Full5x5/F").c_str()      );
     t->Branch( (name+"calib_s4"          ).c_str(), &var->s4_corrected             , (name+"calib_s4/F").c_str()      );
     t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F").c_str()      );
+    */
+
+    t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F"       ).c_str() );
+    t->Branch( (name+"calib_scPhiWidth"  ).c_str(), &var->scPhiWidth_corrected     , (name+"calib_scPhiWidth/F"       ).c_str() );
+    t->Branch( (name+"calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+"calib_r9Full5x5/F"        ).c_str() );
+    t->Branch( (name+"calib_s4Full5x5"   ).c_str(), &var->s4Full5x5_corrected      , (name+"calib_s4Full5x5/F"        ).c_str() );
+    t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F"     ).c_str() );
+    t->Branch( (name+"calib_sieipFull5x5").c_str(), &var->sieipFull5x5_corrected   , (name+"calib_sieipFull5x5/F"     ).c_str() );
+    t->Branch( (name+"calib_esEnergyOverSCRawEnergy").c_str(), &var->esEnergyOverSCRawEnergy_corrected, (name+"calib_esEnergyOverSCRawEnergy/F").c_str() );
 
 
     t->Branch( (name+"isMatched").c_str()          ,&var->isMatched    , (name+"isMatched/I").c_str()        );
@@ -520,7 +545,7 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
     t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");
     
     t->Branch("HLT"               , &var->HLT,                     "HLT/L");
-    t->Branch("HLTPhoIsPres.caled", &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
+    t->Branch("HLTPhoIsPrescaled" , &var->HLTPhoIsPrescaled,       "HLTPhoIsPrescaled/L");
     t->Branch("event"             , &var->event,                   "event/L");
 }
 

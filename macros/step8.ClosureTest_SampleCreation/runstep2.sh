@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+touch storeroot/fragmentsMakehisto ; /bin/rm -r storeroot/fragmentsMakehisto ; mkdir storeroot/fragmentsMakehisto
+touch storeroot/makehisto_hiiii.root ; /bin/rm storeroot/makehisto_*
+
 for ifile in `echo  storeroot/fragments/*.root`;
 do
 outname=`echo $ifile | rev | cut -d'/' -f1 | rev`
@@ -8,7 +11,7 @@ root -b <<EOF
 MakeHisto t("${ifile}",false)
 t.Loop()
 EOF
-    mv output.root storeroot/fragmentsHisto/makehisto_${outname}
+    mv output.root storeroot/fragmentsMakehisto/makehisto_${outname}
 done
 
 for ifile in `echo  storeroot/*.root`;

@@ -45,14 +45,23 @@ struct rec_Electron
         sieieFull5x5,
         sieipFull5x5,
         sipipFull5x5,
-        //e2x2Full5x5,
-        //e2x5Full5x5;
-        s4;
+        s4Full5x5,
+        esEnergyOverSCRawEnergy;
     Float_t
-        scEtaWidth_corrected,
-        r9Full5x5_corrected,
-        s4_corrected,
-        sieieFull5x5_corrected;
+        scEtaWidth_corrected     ,
+        scPhiWidth_corrected     ,
+        r9Full5x5_corrected      ,
+        s4Full5x5_corrected      ,
+        sieieFull5x5_corrected   ,
+        sieipFull5x5_corrected   ,
+        esEnergyOverSCRawEnergy_corrected;
+
+
+
+
+
+
+
 
 
     Int_t

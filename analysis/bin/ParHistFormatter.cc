@@ -96,7 +96,7 @@ int main( int argc, char* argv[])
 
         if (!selectedEvt(&data, argv[1]) ) continue;
         if (!checkevt ) checkevt=true;
-        if ( ievt%10000 == 0 ) LOG_DEBUG("At evt %d", ievt);
+        if ( ievt%10000 == 0 ) LOG_DEBUG("At evt %lli", ievt);
         data.GetEntry(ievt);
 
         hists.Fill("HoverE"      , data.Float(var::HoverE            ));

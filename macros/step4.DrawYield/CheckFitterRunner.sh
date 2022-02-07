@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # part 1 : fit and draw result and print informations to log
+#          drawing pt spectrum in Entries.
 # part 2 : collect the results and create TTree readable file.
 
 #   for isEE in 0; do

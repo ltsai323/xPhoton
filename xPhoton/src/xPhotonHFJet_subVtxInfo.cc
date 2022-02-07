@@ -31,8 +31,9 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
+#include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 
-const std::string dataEra = "2016ReReco";
+//const std::string dataEra = "2016ReReco";
 const float CUT_DELTAR  = 0.2;
 const float CUT_DELTAPT = 0.35;
 std::vector<int> GenPhoIdxs( TreeReader* event );
@@ -43,16 +44,20 @@ int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<i
 void FillStatus(TH1* hist, float val) { hist->Fill(val+0.001); }
 
 
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
+void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string dataEra){
     LOG_INFO("end of loading csv file");
     
 
     TreeReader data(pathes);
 
     TFile *fout_;
+    LOG_DEBUG("output name is %s" ,oname);
     fout_ = new TFile(oname,"recreate");
+    LOG_DEBUG("output tfile is opened");
 
     TTree *outtree_;
+    ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
+
 
     float ptcut[] = {
            15,    20,    40,    60,    75, // 0
@@ -77,9 +82,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     hpthat_wide = new TH1F("hpthat_wide","pt hat wide window", 600, 0., 6000.);
     
     hdpt = new TH1F("hdpt","dpt", 100, 0., 1.);
+    hdpt_signed = new TH1F("hdpt_signed","dpt_signed", 200, -1., 1.);
     hdR = new TH1F("hdR","dR", 100, 0., 2.);
     
     hdpt_ele = new TH1F("hdpt_ele","dpt", 100, 0., 1.);
+    hdpt_ele_signed = new TH1F("hdpt_ele_signed","dpt", 200, -1., 1.);
     hdR_ele = new TH1F("hdR_ele","dR", 100, 0., 2.);
     
     hdR_genjet = new TH1F("hdR_genjet","dR", 100, 0., 2.);
@@ -286,8 +293,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     Float_t jetDeepCSVDiscriminatorTags_CvsB_;
     Float_t jetDeepCSVDiscriminatorTags_CvsL_;
 
-    Float_t s4;
-    Float_t calib_s4,calib_r9Full5x5,calib_scEtaWidth,calib_sieieFull5x5;
+    Float_t esEnergyOverSCRawEnergy;
+    Float_t s4Full5x5;
+    Float_t calib_s4Full5x5,calib_r9Full5x5;
+    Float_t calib_sieieFull5x5,calib_sieipFull5x5;
+    Float_t calib_scEtaWidth,calib_scPhiWidth;
+    Float_t calib_esEnergyOverSCRawEnergy;
 
     Int_t    run;
     Long64_t event;
@@ -346,7 +357,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     outtree_->Branch("recoPhi",      &recoPhi,      "recoPhi/F");
     outtree_->Branch("recoSCEta",    &recoSCEta,    "recoSCEta/F");
     outtree_->Branch("r9",           &r9,           "r9/F");
-    outtree_->Branch( "s4"          , &s4             , "s4/F"               );
+    outtree_->Branch("s4Full5x5"          , &s4Full5x5             , "s4Full5x5/F"               );
+    outtree_->Branch("esEnergyOverSCRawEnergy", &esEnergyOverSCRawEnergy, "esEnergyOverSCRawEnergy/F");
     if ( data.HasMC() )
     {
     outtree_->Branch("isMatched",    &isMatched,    "isMatched/I");
@@ -436,9 +448,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         outtree_->Branch("jetHadFlvr",                  &jetHadFlvr_,                  "jetHadFlvr/I");
         outtree_->Branch("jetGenPartonMomID",           &jetGenPartonMomID_, 	   	      "jetGenPartonMomID/I"); 	        
         outtree_->Branch( "calib_scEtaWidth"  , &calib_scEtaWidth     , "calib_scEtaWidth/F"       );
+        outtree_->Branch( "calib_scPhiWidth"  , &calib_scPhiWidth     , "calib_scPhiWidth/F"       );
         outtree_->Branch( "calib_r9Full5x5"   , &calib_r9Full5x5      , "calib_r9Full5x5/F"        );
-        outtree_->Branch( "calib_s4"          , &calib_s4             , "calib_s4/F"               );
+        outtree_->Branch( "calib_s4Full5x5"          , &calib_s4Full5x5             , "calib_s4Full5x5/F"               );
         outtree_->Branch( "calib_sieieFull5x5", &calib_sieieFull5x5   , "calib_sieieFull5x5/F"     );
+        outtree_->Branch( "calib_sieipFull5x5", &calib_sieipFull5x5   , "calib_sieipFull5x5/F"     );
+        outtree_->Branch( "calib_esEnergyOverSCRawEnergy", &calib_esEnergyOverSCRawEnergy, "calib_esEnergyOverSCRawEnergy/F");
 
         outtree_->Branch("nLHE"               , &nLHE                 , "nLHE/I"                   );
         outtree_->Branch("lhePID"             ,  lhePID               , "lhePID[nLHE]/I"           );
@@ -469,12 +484,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     // // pileup reweighting for MC
     PUWeightCalculator puCalc;
-    TGraph *tgr[8];
+    //TGraph *tgr[8];
     if(data.HasMC())
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
-        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection(dataEra) );
+        /*
         LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
+        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection(dataEra) );
+        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ended ---");
 
         tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
         tgr[1] = (TGraph*) f->Get("transfS4EB");
@@ -485,8 +502,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         tgr[5] = (TGraph*) f->Get("transfS4EE");
         tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
         tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
+        */
     }
+    PhotonMVACalculator mvaloader( &data, dataEra );
 
+    /*
     TFile* f_showershapecorrection;
     //PUWeightCalculator pucalc;
     std::map<std::string, TGraph*> endcapCorrections;
@@ -504,6 +524,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
     barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
     barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
     }
+    */
 
 
     LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
@@ -969,12 +990,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
         }
 
 
-        for (Int_t i=0; i<nPho; ++i) {      
+        for (Int_t i=0; i<nPho; ++i) {
             if(phoEt[i]<15.) continue;       
             //if(phoEt[i]<100.) continue;
             if(TMath::Abs(phoSCEta[i])>1.4442 && TMath::Abs(phoSCEta[i])<1.566) continue;
             if(TMath::Abs(phoSCEta[i])>2.5) continue;
-            if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs==0) continue;
+            if(!data.HasMC() && JETPD_PHOTONHLT==0 && phoFiredTrgs[i]==0) continue;
             if(!data.HasMC() && JETPD_PHOTONHLT==0 ){
                 if(phoFiredTrgs[i]==0) continue;
                 if ( USEHLT )
@@ -988,12 +1009,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             }
 
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
-            int pho_presel = 1;
-            /*
-            int pho_presel = 0;
-            pho_presel = PhotonPreselection(data, i, kTRUE);
-            */
-            //check CSEV eff vs pt
+            //int pho_presel = 1;
+            int pho_presel = PhotonPreselection(data, i, kFALSE);
+            // only for check CSEV eff vs pt {{{
             if( data.HasMC()) { 
                 if(i==0 && match[i]==1){
 
@@ -1007,7 +1025,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                         }
                     }
 
-                    if( PhotonPreselection(data, i, kFALSE) ==1){
+                    if( pho_presel == 1 ){
                         if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
                         else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
 
@@ -1021,6 +1039,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
                     }
                 }
             }
+            // only for check CSEV eff vs pt end }}}
 
 
 
@@ -1028,8 +1047,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
             photon_list.push_back(i); 
             if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
-
-
         }
         h_npho->Fill(photon_list.size());
         if(photon_list.size() < 1) continue;
@@ -1168,8 +1185,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
-            s4=0.;
-            calib_s4=calib_r9Full5x5=calib_scEtaWidth=calib_sieieFull5x5 = 0.;
+            s4Full5x5=0.;
+            calib_s4Full5x5=calib_r9Full5x5=calib_scPhiWidth=calib_scEtaWidth=calib_sieieFull5x5=calib_sieipFull5x5=calib_esEnergyOverSCRawEnergy = 0.;
             mygenweight = 0;
             for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
                 lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
@@ -1326,23 +1343,43 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
             r9Full5x5        = phoR9Full5x5[ipho];
             e2x2Full5x5       = phoE2x2Full5x5[ipho];
             e5x5Full5x5       = phoE5x5Full5x5[ipho];
-            s4 = e2x2Full5x5 / e5x5Full5x5;
+            s4Full5x5 = e2x2Full5x5 / e5x5Full5x5;
+            esEnergyOverSCRawEnergy = esEn / rawE;
 
             phoIDbit_ = phoIDbit[ipho];
             if ( data.HasMC() )
             {
+                /*
                     std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
-                    calib_s4            = recoInfo::CorrectedValue( corrections->at("s4")          , s4 );
+                    calib_s4Full5x5     = recoInfo::CorrectedValue( corrections->at("s4")          , s4Full5x5 );
                     calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
                     calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
                     calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
-                    LOG_DEBUG("calibrated s4 %.6f and r9 %.6f", calib_s4, calib_r9Full5x5);
+                    */
+
+                    SScorr.CalculateCorrections(&data, ipho);
+                    calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
+                    calib_s4Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
+                    calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+                    calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+                    calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+                    calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+                    calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
 
 
 
-            mva = select_photon_mvanoIso(data, ipho, tgr);
-            mva_nocorr = select_photon_mvanoIso(data, ipho, nullptr);
+            //mva = select_photon_mvanoIso(data, ipho, barrelCorrections, endcapCorrections);
+            //mva        = select_photon_mvanoIso(data, ipho, tgr);
+            mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
+            mva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            /*
+            float newmva = mvaloader.GetMVA_noIso(ipho, tgr);
+            float newmva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            printf( "old mva : %.5f and new mva = %.5f\n", mva, newmva );
+            printf( "(NO correction ) old mva : %.5f and new mva = %.5f\n", mva_nocorr, newmva_nocorr );
+            */
+            
             photonIDmva = phoIDMVA[ipho];
 
             h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
@@ -1388,8 +1425,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
     hdR->Write();
     hdpt->Write();
+    hdpt_signed->Write();
     hdR_ele->Write();
     hdpt_ele->Write();
+    hdpt_ele_signed->Write();
     hdR_genjet->Write();
     hmcTrkIso->Write();
     hmcTrkIsoMini->Write();
@@ -1503,6 +1542,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200]){
 
 }
 
+void xPhotonHFJet(vector<string> pathes, Char_t oname[200] )
+{ xPhotonHFJet(pathes, oname, "2016ReReco"); }
+
 
 void xPhotonHFJet(Int_t dataset) {
   Char_t fname[200];
@@ -1535,7 +1577,8 @@ void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection, i
   
 }
 
-void xPhotonHFJet(std::string ipath, int outID)
+//void xPhotonHFJet(std::string ipath, int outID)
+void xPhotonHFJet(std::string ipath, int outID, const std::string dataEra)
 {
    Char_t fname[200];
    XS=1.;
@@ -1550,7 +1593,7 @@ void xPhotonHFJet(std::string ipath, int outID)
    Char_t oname[200];
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
-   xPhotonHFJet(pathes, oname);
+   xPhotonHFJet(pathes, oname, dataEra);
 
 }
 std::vector<int> GenPhoIdxs( TreeReader* event )
@@ -1559,6 +1602,8 @@ std::vector<int> GenPhoIdxs( TreeReader* event )
     Float_t* mcPt = event->GetPtrFloat("mcPt");
     Int_t* mcMomPID = event->GetPtrInt("mcMomPID");
     Int_t nMC = event->GetInt("nMC");
+    Float_t* mcEta  = event->GetPtrFloat("mcEta");
+    Float_t* mcPhi  = event->GetPtrFloat("mcPhi");
     std::vector<int> phomcid;
     for (Int_t k=0; k<nMC; ++k) {
         if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
@@ -1613,9 +1658,9 @@ int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> ph
 
     for ( int mcIdx : phomcid ) {
         float dr = usefulFuncs::deltaR(phoEta[recoPhoIdx], phoPhi[recoPhoIdx], mcEta[mcIdx], mcPhi[mcIdx]);
-        float dpt = fabs((phoEt[recoPhoIdx] - mcPt[mcIdx])/mcPt[mcIdx]);
+        float dpt = (phoEt[recoPhoIdx] - mcPt[mcIdx])/mcPt[mcIdx];
         if(dpt<CUT_DELTAPT)hdR->Fill(dr);
-        if(dr<CUT_DELTAR)hdpt->Fill(dpt);
+        if(dr<CUT_DELTAR)hdpt->Fill( fabs(dpt) );
         hmcCalIso->Fill(mcCalIsoDR04[mcIdx]); 
         hmcCalIsoMini->Fill(mcCalIsoDR04[mcIdx]); 
         hmcCalIsoMicro->Fill(mcCalIsoDR04[mcIdx]); 
@@ -1623,16 +1668,13 @@ int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> ph
         hmcTrkIsoMini->Fill(mcTrkIsoDR04[mcIdx]); 
         hmcTrkIsoMicro->Fill(mcTrkIsoDR04[mcIdx]); 
 
-        if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", k, dr, dpt);
+        if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", mcIdx, dr, dpt);
         if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatusFlag[mcIdx], mcCalIsoDR04[mcIdx], mcTrkIsoDR04[mcIdx]);
         if (dr < CUT_DELTAR && dpt < CUT_DELTAPT){
-            return mcIdx;
-            /*
             if ( mcCalIsoDR04[mcIdx]<5.0 ){ //for gammajet photon pythia	      
                 if(verbose) LOG_DEBUG("  mc matched !!! \n");	    
                 return mcIdx;
             }
-            */
         }
     }
     return -1;
@@ -1655,9 +1697,9 @@ int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<i
     for ( int mcIdx : elemcid ) {
         if (mcMomPID[mcIdx] == 22) {
             float dr = usefulFuncs::deltaR(phoEta[recoPhoIdx], phoPhi[recoPhoIdx], mcEta[mcIdx], mcPhi[mcIdx]);
-            float dpt = fabs((phoEt[recoPhoIdx] - mcMomPt[mcIdx])/mcMomPt[mcIdx]);
+            float dpt = (phoEt[recoPhoIdx] - mcMomPt[mcIdx])/mcMomPt[mcIdx];
             hdR_ele->Fill(dr);
-            hdpt_ele->Fill(dpt);
+            hdpt_ele->Fill( fabs(dpt) );
             if (dr < CUT_DELTAR && dpt < CUT_DELTAPT && (mcCalIsoDR04[mcIdx]+mcTrkIsoDR04[mcIdx])<5.0 ){
                 return mcIdx;
             }
