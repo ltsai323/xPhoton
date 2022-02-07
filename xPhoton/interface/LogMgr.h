@@ -5,8 +5,8 @@
 
 // current setting
 //#define __print_debug__
-//#define __print_info__
-#define __print_warning__
+#define __print_info__
+//#define __print_warning__
 
 
 
