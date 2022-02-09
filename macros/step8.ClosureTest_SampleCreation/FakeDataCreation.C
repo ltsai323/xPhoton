@@ -9,17 +9,19 @@ const char* GJet_madgraph()
 const char* QCD_madgraph()
 { return "/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root"; }
 
-bool SigPhotonSelection(int isMatched)
-{ return isMatched == 1; }
-bool BkgPhotonSelection(int isMatched)
+bool SigPhotonSelection(int isMatched, float chIso)
+{ return isMatched == 1 && chIso<2; }
+bool BkgPhotonSelection(int isMatched, float chIso)
 { return isMatched != 1; }
-typedef bool (*FunctionalSelection) (int);
+typedef bool (*FunctionalSelection) (int, float);
 
 TTree* skim( TTree* tree, Long64_t fromEvt_, Long64_t toEvt_, FunctionalSelection InterestedEvt) {
     if ( toEvt_ < 0 ) toEvt_ = tree->GetEntries();
 
     int isMatched;
+    Float_t chIso;
     tree->SetBranchAddress("isMatched", &isMatched);
+    tree->SetBranchAddress("chIsoRaw", &chIso);
     tree->SetBranchStatus("*",1);
 
     TTree *newtree = tree->CloneTree(0);
@@ -27,7 +29,7 @@ TTree* skim( TTree* tree, Long64_t fromEvt_, Long64_t toEvt_, FunctionalSelectio
     for (Long64_t n=fromEvt_; n<toEvt_; n++) {
         tree->GetEntry(n);
 
-        if ( InterestedEvt(isMatched) ) newtree->Fill();
+        if ( InterestedEvt(isMatched, chIso) ) newtree->Fill();
     }
 
     return newtree;

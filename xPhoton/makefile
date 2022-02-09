@@ -38,11 +38,12 @@ all: $(allexecfile)
 dirdev=dev
 sources_dev=$(wildcard    $(dirdev)/*.cc)
 objfile_dev=$(sources_dev:$(dirdev)/%.cc=$(dirobj)/test_%.o)
-dev: jet
+dev: simpleappend
 	@echo 'current dev target : checkning jetID'
 pho: dev/exe.test.xPhotonRunner
 ele: dev/exe.test.xElectronsRunner
 jet: dev/exe.test.checkJetIDRunner
+simpleappend:	dev/exe.test.AppendEvent
 
 dev/exe.test.xElectronsRunner: obj/xElectronsRunner.o $(objfile_src) $(objfile_dev)
 	$(Compiler) -o $@ $< $(objfile_dev) \
@@ -93,6 +94,21 @@ dev/exe.test.checkJetIDRunner: obj/checkJetIDRunner.o $(objfile_src) $(objfile_d
 	obj/BTaggingMgr.o \
 	obj/JetIDMgr.o
 	@echo "--- Successfully compiled " $@ " ---"
+dev/exe.test.AppendEvent: obj/test_AppendEvent.o $(objfile_dev) $(objfile_src)
+	$(Compiler) -o $@ $< \
+    obj/ElectronSelections.o \
+    obj/MuonSelections.o \
+    obj/PhotonSelections.o \
+    obj/histMgr.o \
+	obj/recoInfo.o \
+    obj/puweicalc.o \
+    obj/readMgr.o \
+    obj/ExternalFilesMgr.o \
+    obj/untuplizer.o \
+    obj/usefulFuncs.o \
+	obj/BTagCalibrationStandalone.o \
+	obj/BTaggingMgr.o \
+	obj/JetIDMgr.o
 ###### declare test end ###########
 #obj/PreselectionMgr.o \
 #obj/mcMatchInfo.o \

@@ -3,6 +3,7 @@
 <use name="rootcore"/>
 <use name="roofit"/>
 <use name="roottmva"/>
+<use name="ShowerShapeCorrection/CQR_framework"/>
 
 <export>
     <lib   name="1"/>

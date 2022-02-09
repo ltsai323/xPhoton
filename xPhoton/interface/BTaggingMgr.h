@@ -20,25 +20,26 @@
 class BTaggingMgr
 {
 public:
-    BTaggingMgr();
-    void UseAlgorithm(std::string algorithmName);
-    void RegisterSystTypes();
+    BTaggingMgr(const char* dataera, const char* algoname, std::vector<std::string> name );
     void InitVars();
     void RegBranch(TTree* t);
     void FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDis_ );
 
-
-    
-    std::vector< std::vector<std::string> > systematicTypes;
-    int systVarIdx( int iAlgo, int iSyst ) const { return MAXNSYST * iAlgo + iSyst; } // no flav needed
-
 private:
-    std::vector<std::string> _usedAlgorithmNames;
-    std::map<std::string, std::vector<std::string>> _usedSystTypes;
-    bool _systTypeRegisted;
-    std::vector< std::shared_ptr<BTagCalibration> > calibPTRs;
-    std::vector< std::shared_ptr<BTagCalibrationReader> > calibReaderPTRs;
-    std::map<int, Float_t> systVars;
-};
-#endif
+    const char* algorithm;
+    const char* _dataEra;
+    std::vector<std::string> _usedSystTypeNames;
+    std::vector<Float_t> _systVars;
+    BTagCalibration       _calib;
+    BTagCalibrationReader _calibReader;
 
+};
+
+// input era check is done in bin/AppendBTagCalibration and src/ExternalFile
+class BTaggingMgr_CSVv2       : public BTaggingMgr
+{ public: BTaggingMgr_CSVv2       ( const char* dataEra ); };
+class BTaggingMgr_DeepCSV     : public BTaggingMgr
+{ public: BTaggingMgr_DeepCSV     ( const char* dataEra ); };
+class BTaggingMgr_DeepFlavour : public BTaggingMgr
+{ public: BTaggingMgr_DeepFlavour ( const char* dataEra ); };
+#endif

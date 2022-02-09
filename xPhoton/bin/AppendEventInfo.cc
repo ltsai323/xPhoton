@@ -35,6 +35,7 @@ void PrintHelp()
     printf("------              * cross section of MC --------\n");
     printf("------              * gen weight each evt --------\n");
     printf("------              / integrated gen W    --------\n");
+    printf("------           6. isQCD = true or false --------\n");
     printf("--------------------------------------------------\n");
 }
 float GetWeight(const char* argv[])
@@ -47,71 +48,25 @@ const char* GetInputFile(const char* argv[])
 { return argv[4]; }
 const char* GetOutputFile(const char* argv[])
 { return argv[5]; }
+bool IsQCDSample(const char* argv[])
+{
+    if ( argv[6] == nullptr ) return false;
+    if      ( strcmp(argv[6], "true" ) == 0 ) return true;
+    else if ( strcmp(argv[6], "false") == 0 ) return false;
+    char mesg[200];
+    sprintf(mesg, "input argument 6 is invalid! [%s]\n", argv[6]);
+    throw std::invalid_argument(mesg);
+}
+    
 void CheckArgs(int argc, const char* argv[])
 {
-    if ( argc != 6 )
-    { PrintHelp(); throw std::invalid_argument(" --- Need 5 input arguments ---\n"); }
+    if ( argc < 6 )
+    { PrintHelp(); throw std::invalid_argument(" --- Need at least 5 input arguments ---\n"); }
 }
 
 
-
-
-int main(int argc, const char* argv[])
+void CloneOtherObjects(TFile* iF)
 {
-    CheckArgs(argc,argv);
-    const char* iFile = GetInputFile(argv);
-    const char* oFile = GetOutputFile(argv);
-    const float new_xs = GetWeight(argv);
-    const float integratedGenWeight = GetIntegratedGenWeight(argv);
-    const float integratedLumi = GetIntegratedLuminosity(argv);
-    std::cout << "in file : " << iFile << std::endl;
-    std::cout << "out file : " << oFile << std::endl;
-    std::cout << "in x-sec : " << new_xs << std::endl;
-    std::cout << "input integrated genweights : " << integratedGenWeight << std::endl;
-    std::cout << "input integrated luminosity : " << integratedLumi << std::endl;
-    
-
-    TFile* iF = TFile::Open(iFile);
-    TTree* iT = (TTree*) iF->Get("t");
-    iT->SetBranchStatus("xsweight", 0);
-
-    
-    TFile* oF = new TFile(oFile,"recreate");
-    oF->cd();
-    TTree* oT = (TTree*) iT->CloneTree(0);
-
-    Float_t xsweight;
-    Float_t lumi;
-    Float_t xs;
-    Float_t mcweight;
-    Float_t sumGenWeight;
-    oT->Branch("xsweight", &xsweight, "xsweight/F"); // xsweight is the variable serve for original RS code.
-    oT->Branch("crossSection", &xs, "crossSection/F");
-    oT->Branch("integratedLuminosity", &lumi, "integratedLuminosity/F");
-    oT->Branch("integratedGenWeight", &sumGenWeight, "integratedGenWeight/F");
-    oT->Branch("mcweight", &mcweight, "mcweight/F");
-
-    Float_t genweight;
-
-    iT->SetBranchAddress("genWeight", &genweight);
-
-    xs = new_xs;
-    lumi = integratedLumi;
-    sumGenWeight = integratedGenWeight;
-    
-    
-    unsigned int nevt = iT->GetEntries();
-    for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
-    {
-        iT->GetEntry(ievt);
-
-        xsweight = genweight > 0 ? new_xs : -1.*new_xs;
-        mcweight = new_xs * lumi * genweight / integratedGenWeight;
-
-        oT->Fill();
-    }
-
-    oT->Write();
     TIter keyList(iF->GetListOfKeys());
     TKey *key;
     while ((key = (TKey*)keyList())) {
@@ -127,6 +82,76 @@ int main(int argc, const char* argv[])
         else
             key->ReadObj()->Write();
     }
+}
+void DisableBranch(TTree* t)
+{
+    t->SetBranchStatus("xsweight", 0);
+}
+
+
+int main(int argc, const char* argv[])
+{
+    CheckArgs(argc,argv);
+    const char* iFile               = GetInputFile(argv);
+    const char* oFile               = GetOutputFile(argv);
+    const float new_xs              = GetWeight(argv);
+    const float integratedGenWeight = GetIntegratedGenWeight(argv);
+    const float integratedLumi      = GetIntegratedLuminosity(argv);
+    const int   isQCDsample         = int(IsQCDSample(argv));
+
+    std::cout << "in file : " << iFile << std::endl;
+    std::cout << "out file : " << oFile << std::endl;
+    std::cout << "in x-sec : " << new_xs << " fb inv" << std::endl;
+    std::cout << "input integrated genweights : " << integratedGenWeight << std::endl;
+    std::cout << "input integrated luminosity : " << integratedLumi << std::endl;
+    if ( isQCDsample ) std::cout << "is QCD sample \n";
+    
+
+    TFile* iF = TFile::Open(iFile);
+    TTree* iT = (TTree*) iF->Get("t");
+    DisableBranch(iT);
+
+    
+    TFile* oF = new TFile(oFile,"recreate");
+    oF->cd();
+    TTree* oT = (TTree*) iT->CloneTree(0);
+
+    Float_t xsweight;
+    Float_t lumi;
+    Float_t xs;
+    Float_t mcweight;
+    Float_t sumGenWeight;
+    Int_t isQCD;
+    oT->Branch("xsweight", &xsweight, "xsweight/F"); // xsweight is the variable serve for original RS code.
+    oT->Branch("crossSection", &xs, "crossSection/F");
+    oT->Branch("integratedLuminosity", &lumi, "integratedLuminosity/F");
+    oT->Branch("integratedGenWeight", &sumGenWeight, "integratedGenWeight/F");
+    oT->Branch("mcweight", &mcweight, "mcweight/F");
+    oT->Branch("isQCD", &isQCD, "isQCD/I");
+
+    Float_t genweight;
+
+    iT->SetBranchAddress("genWeight", &genweight);
+
+    xs = new_xs;
+    lumi = integratedLumi;
+    sumGenWeight = integratedGenWeight;
+    isQCD = isQCDsample;
+    
+    
+    unsigned int nevt = iT->GetEntries();
+    for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
+    {
+        iT->GetEntry(ievt);
+
+        xsweight = genweight > 0 ? new_xs : -1.*new_xs;
+        mcweight = new_xs * lumi * genweight / integratedGenWeight;
+
+        oT->Fill();
+    }
+
+    oT->Write();
+    CloneOtherObjects(iF);
     oF->Close();
     iF->Close();
 

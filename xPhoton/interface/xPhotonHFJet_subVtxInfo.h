@@ -39,7 +39,12 @@ static bool USEHLT = false;
 
 void xPhotonHFJet(
         vector<string> pathes,
-        Char_t oname[200]);
+        Char_t oname[200],
+        const std::string dataEra);
+void xPhotonHFJet(
+        vector<string> pathes,
+        Char_t oname[200]
+        );
 
 
 void xPhotonHFJet(
@@ -52,7 +57,8 @@ void xPhotonHFJet(
 
 void xPhotonHFJet(
         std::string ipath,
-        int outID);
+        int outID,
+        const std::string dataEra);
 
 static TH1F* h_subVtxPt    ;
 static TH1F* h_subVtxMass  ;
@@ -64,9 +70,11 @@ static TH1F *h_hasGoodVtx ;
 static TH1F *hpthat ;
 static TH1F *hpthat_wide ;
 static TH1F *hdpt ;
+static TH1F *hdpt_signed ;
 static TH1F *hdR ;
 
-static TH1F *hdpt_ele ;
+static TH1F *hdpt_ele_signed ;
+static TH1F *hdpt_ele;
 static TH1F *hdR_ele ;
 
 static TH1F *hdR_genjet ;
