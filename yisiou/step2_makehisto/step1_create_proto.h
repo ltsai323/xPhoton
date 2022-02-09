@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Tue Nov 16 15:02:11 2021 by ROOT version 6.10/09
+// Sat Nov 27 15:07:54 2021 by ROOT version 6.12/07
 // from TTree t/mini tree
-// found on file: /home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root
+// found on file: /wk_cms/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root
 //////////////////////////////////////////////////////////
 
-#ifndef MakeHisto_h
-#define MakeHisto_h
+#ifndef step1_create_proto_h
+#define step1_create_proto_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -14,7 +14,7 @@
 
 // Header file for the classes stored in the TTree if any.
 
-class MakeHisto {
+class step1_create_proto {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -111,18 +111,17 @@ public :
    Float_t         calib_s4;
    Float_t         calib_sieieFull5x5;
    Int_t           nLHE;
-   Int_t           lhePID[5];   //[nLHE]
-   Float_t         lheE[5];   //[nLHE]
-   Float_t         lhePx[5];   //[nLHE]
-   Float_t         lhePy[5];   //[nLHE]
-   Float_t         lhePz[5];   //[nLHE]
+   Int_t           lhePID[4];   //[nLHE]
+   Float_t         lheE[4];   //[nLHE]
+   Float_t         lhePx[4];   //[nLHE]
+   Float_t         lhePy[4];   //[nLHE]
+   Float_t         lhePz[4];   //[nLHE]
    Float_t         genWeight;
    Int_t           jetID;
    Int_t           jetPUIDbit;
    Float_t         SeedTime;
    Float_t         SeedEnergy;
    Float_t         MIPTotEnergy;
-   Float_t         xsweight;
    Float_t         crossSection;
    Float_t         integratedLuminosity;
    Float_t         integratedGenWeight;
@@ -257,7 +256,6 @@ public :
    TBranch        *b_SeedTime;   //!
    TBranch        *b_SeedEnergy;   //!
    TBranch        *b_MIPTotEnergy;   //!
-   TBranch        *b_xsweight;   //!
    TBranch        *b_crossSection;   //!
    TBranch        *b_integratedLuminosity;   //!
    TBranch        *b_integratedGenWeight;   //!
@@ -291,133 +289,48 @@ public :
    TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
    TBranch        *b_isQCD;   //!
 
-   MakeHisto(Int_t option=0);
-   MakeHisto(const char* fname, bool isMC);
-   void fitVarsInit();
-   virtual ~MakeHisto();
+   step1_create_proto(TTree *tree=0);
+   virtual ~step1_create_proto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop(Int_t extracut);
+   virtual void     Loop(Int_t cut);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   virtual Int_t    EBEE(Float_t eta);
-   virtual Int_t    Ptbin(Float_t pt);
-   virtual Int_t    HLTbit(Float_t pt);
-   virtual Int_t    JetEtaBin(Float_t eta);
-   virtual Int_t    triggerbit(Int_t ptbin);
-   virtual Int_t    JetFlavourBin( int jetHadFlvr );
-
-   bool IsMC();
-
-   Int_t           OPTION;
-   Int_t        HLTOPTION;
-   bool fkMC;
-
-   enum fitVar {
-   _deepCSVTags_b,
-   _deepCSVTags_bb,
-   _deepCSVTags_c,
-   _deepCSVTags_udsg,
-   _deepFlavourTags_b,
-   _deepFlavourTags_c,
-   _deepFlavourTags_g,
-   _deepFlavourTags_lepb,
-   _deepFlavourTags_bb,
-   _deepFlavourTags_uds,
-   _deepCSVDiscriminatorTags_BvsAll,
-   _deepCSVDiscriminatorTags_CvsB,
-   _deepCSVDiscriminatorTags_CvsL,
-   _subVtxMass,
-   _totFitVar
-   };
 };
 
 #endif
 
-#ifdef MakeHisto_cxx
-MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0)
+#ifdef step1_create_proto_cxx
+step1_create_proto::step1_create_proto(TTree *tree) : fChain(0) 
 {
-  printf("option %d \n", option);
-  TChain *tc = new TChain("t");
+// if parameter tree is not specified (or zero), connect the file
+// used to generate this class and read the Tree.
+   if (tree == 0) {
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../step1.TreeReduced/reduced_qcd.root");
+      if (!f || !f->IsOpen()) {
+         f = new TFile("../step1.TreeReduced/reduced_qcd.root");
+      }
+      f->GetObject("t",tree);
 
-  //fkMC = tc->GetBranch("mcPt") ? kTRUE : kFALSE;
-  if(option == 1) { // data
-    tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
-    fkMC = false;
-  };
-  if(option == 2) { // madgraph sig MC
-    tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root");
-    //HLTOPTION=1; // prevent to use HLT
-  }
-  if(option == 3) { // madgraph QCD MC
-    tc->Add("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root");
-    //HLTOPTION=1; // prevent to use HLT
-  }
-  if(option == -5) { // test sample of QCD pythiasig MC
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/bin/step1.xsinfoAppended/crab_bkgMC_Pt_1400to1800_13TeV_TuneCUETP8M1_pythia8_v3-v2.root");
-    //HLTOPTION=1; // prevent to use HLT
-  }
-  if(option == 5) { // pythia   QCD MC
-    //HLTOPTION=1; // prevent to use HLT
-  }
-
-  if ( option == -100 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample0.root");
-  }
-  if ( option == -101 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample1.root");
-  }
-  if ( option == -102 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample2.root");
-  }
-  if ( option == -103 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample3.root");
-  }
-  if ( option == -104 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample4.root");
-  }
-  if ( option == -105 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample5.root");
-  }
-  if ( option == -106 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample6.root");
-  }
-  if ( option == -107 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample7.root");
-  }
-  if ( option == -108 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample8.root");
-  }
-  if ( option == -109 ) { // fake datasample 0
-    tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
-  }
-
-  Init(tc);
-}
-MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0)
-{
-  printf("Input file name is : %s", fname);
-  TChain *tc = new TChain("t");
-  tc->Add(fname);
-
-  Init(tc);
+   }
+   Init(tree);
 }
 
-MakeHisto::~MakeHisto()
+step1_create_proto::~step1_create_proto()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
 
-Int_t MakeHisto::GetEntry(Long64_t entry)
+Int_t step1_create_proto::GetEntry(Long64_t entry)
 {
 // Read contents of entry.
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
-Long64_t MakeHisto::LoadTree(Long64_t entry)
+Long64_t step1_create_proto::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
    if (!fChain) return -5;
@@ -430,7 +343,7 @@ Long64_t MakeHisto::LoadTree(Long64_t entry)
    return centry;
 }
 
-void MakeHisto::Init(TTree *tree)
+void step1_create_proto::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -454,16 +367,9 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
-   /* asdf temperally disabled for fake data
-   if (!IsMC() )
-   {
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
-   }
-   */
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("pthat", &pthat, &b_pthat);
    fChain->SetBranchAddress("genHT", &genHT, &b_genHT);
    fChain->SetBranchAddress("mcPt", &mcPt, &b_mcPt);
@@ -471,7 +377,6 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mcPhi", &mcPhi, &b_mcPhi);
    fChain->SetBranchAddress("mcCalIso04", &mcCalIso04, &b_mcCalIso04);
    fChain->SetBranchAddress("mcTrkIso04", &mcTrkIso04, &b_mcTrkIso04);
-   }
    fChain->SetBranchAddress("recoPt", &recoPt, &b_recoPt);
    fChain->SetBranchAddress("recoPtCalib", &recoPtCalib, &b_recoPtCalib);
    fChain->SetBranchAddress("recoEta", &recoEta, &b_recoEta);
@@ -479,18 +384,12 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
    fChain->SetBranchAddress("r9", &r9, &b_r9);
    fChain->SetBranchAddress("s4", &s4, &b_s4);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
    fChain->SetBranchAddress("isMatchedEle", &isMatchedEle, &b_isMatchedEle);
    fChain->SetBranchAddress("isConverted", &isConverted, &b_isConverted);
-   }
    fChain->SetBranchAddress("nVtx", &nVtx, &b_nVtx);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("nPU", &nPU, &b_nPU);
    fChain->SetBranchAddress("puwei", &puwei, &b_puwei);
-   }
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
    fChain->SetBranchAddress("chIsoRaw", &chIsoRaw, &b_chIsoRaw);
@@ -504,17 +403,11 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("esRR", &esRR, &b_esRR);
    fChain->SetBranchAddress("esEn", &esEn, &b_esEn);
    fChain->SetBranchAddress("mva", &mva, &b_mva);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
-   }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
-   }
    fChain->SetBranchAddress("METPhi", &METPhi, &b_METPhi);
    fChain->SetBranchAddress("phohasPixelSeed", &phohasPixelSeed, &b_phohasPixelSeed);
    fChain->SetBranchAddress("sieieFull5x5", &sieieFull5x5, &b_sieieFull5x5);
@@ -528,13 +421,10 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetPhi", &jetPhi, &b_jetPhi);
    fChain->SetBranchAddress("jetY", &jetY, &b_jetY);
    fChain->SetBranchAddress("jetJECUnc", &jetJECUnc, &b_jetJECUnc);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("jetGenJetPt", &jetGenJetPt, &b_jetGenJetPt);
    fChain->SetBranchAddress("jetGenJetEta", &jetGenJetEta, &b_jetGenJetEta);
    fChain->SetBranchAddress("jetGenJetPhi", &jetGenJetPhi, &b_jetGenJetPhi);
    fChain->SetBranchAddress("jetGenJetY", &jetGenJetY, &b_jetGenJetY);
-   }
    fChain->SetBranchAddress("jetCSV2BJetTags", &jetCSV2BJetTags, &b_jetCSV2BJetTags);
    fChain->SetBranchAddress("jetDeepCSVTags_b", &jetDeepCSVTags_b, &b_jetDeepCSVTags_b);
    fChain->SetBranchAddress("jetDeepCSVTags_bb", &jetDeepCSVTags_bb, &b_jetDeepCSVTags_bb);
@@ -550,8 +440,6 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB, &b_jetDeepCSVDiscriminatorTags_CvsB);
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL, &b_jetDeepCSVDiscriminatorTags_CvsL);
    fChain->SetBranchAddress("jetPartonID", &jetPartonID, &b_jetPartonID);
-   if ( IsMC() )
-   {
    fChain->SetBranchAddress("jetGenPartonID", &jetGenPartonID, &b_jetGenPartonID);
    fChain->SetBranchAddress("jetHadFlvr", &jetHadFlvr, &b_jetHadFlvr);
    fChain->SetBranchAddress("jetGenPartonMomID", &jetGenPartonMomID, &b_jetGenPartonMomID);
@@ -566,25 +454,15 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("lhePy", lhePy, &b_lhePy);
    fChain->SetBranchAddress("lhePz", lhePz, &b_lhePz);
    fChain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
-   }
    fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
-   /* asdf temporally disabled for fake data
-   if (!IsMC() )
-   {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
-   }
-   */
-   if ( IsMC() )
-   {
-   fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
    fChain->SetBranchAddress("crossSection", &crossSection, &b_crossSection);
    fChain->SetBranchAddress("integratedLuminosity", &integratedLuminosity, &b_integratedLuminosity);
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
-   }
    fChain->SetBranchAddress("jetSF.DeepCSV.central", &jetSF_DeepCSV_central, &b_jetSF_DeepCSV_central);
    fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr1", &jetSF_DeepCSV_down_cferr1, &b_jetSF_DeepCSV_down_cferr1);
    fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr2", &jetSF_DeepCSV_down_cferr2, &b_jetSF_DeepCSV_down_cferr2);
@@ -616,7 +494,7 @@ void MakeHisto::Init(TTree *tree)
    Notify();
 }
 
-Bool_t MakeHisto::Notify()
+Bool_t step1_create_proto::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -627,21 +505,18 @@ Bool_t MakeHisto::Notify()
    return kTRUE;
 }
 
-void MakeHisto::Show(Long64_t entry)
+void step1_create_proto::Show(Long64_t entry)
 {
 // Print contents of entry.
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
 }
-Int_t MakeHisto::Cut(Long64_t entry)
+Int_t step1_create_proto::Cut(Long64_t entry)
 {
 // This function may be called from Loop.
 // returns  1 if entry is accepted.
 // returns -1 otherwise.
    return 1;
 }
-
-bool MakeHisto::IsMC()
-{ return fkMC; }
-#endif // #ifdef MakeHisto_cxx
+#endif // #ifdef step1_create_proto_cxx
