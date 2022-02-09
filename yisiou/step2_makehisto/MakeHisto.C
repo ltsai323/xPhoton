@@ -293,7 +293,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         int phoMatchStatIdx = 0;
 	int parityIdx = ( jentry % 2 == 0 ) ? 0 : 1;
         // need to be modified asdf
-        if ( isQCD )
+        if ( OPTION == 3 )
         {
             if ( isMatched==-99 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
             else if ( isMatched==-99 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
