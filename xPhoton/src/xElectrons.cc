@@ -533,7 +533,7 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
 {
     t->Branch("run"               , &var->run,                     "run/I");
     t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
-    t->Branch("puwei"             , &var->puwei,                   "puwei/I");
+    t->Branch("puwei"             , &var->puwei,                   "puwei/F");
     t->Branch("pthat"             , &var->pthat,                   "pthat/I");
     t->Branch("nVtx"              , &var->nVtx,                    "nVtx/I");
     t->Branch("nPU"               , &var->nPU,                     "nPU/I");
