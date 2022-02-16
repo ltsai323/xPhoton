@@ -8,7 +8,6 @@
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/histMgr.h"
-#include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 #include <TLorentzVector.h>
@@ -533,13 +532,13 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
 {
     t->Branch("run"               , &var->run,                     "run/I");
     t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
-    t->Branch("puwei"             , &var->puwei,                   "puwei/F");
     t->Branch("pthat"             , &var->pthat,                   "pthat/I");
     t->Branch("nVtx"              , &var->nVtx,                    "nVtx/I");
     t->Branch("nPU"               , &var->nPU,                     "nPU/I");
 
     t->Branch("rho"               , &var->rho,                     "rho/F");
     t->Branch("fixedGridRhoAll"   , &var->fixedGridRhoAll,         "fixedGridRhoAll/F");
+    t->Branch("puwei"             , &var->puwei,                   "puwei/F");
     t->Branch("genWeight"         , &var->genweight,               "genWeight/F");
     t->Branch("MET"               , &var->MET,                     "MET/F");
     t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");
