@@ -91,7 +91,6 @@ struct rec_Event
     Int_t
         run,
         xsweight,
-        puwei,
         pthat,
         nVtx,
         nPU;
@@ -100,6 +99,7 @@ struct rec_Event
         fixedGridRhoAll,
         MET,
         METPhi,
+        puwei,
         genweight;
 
     Long64_t
