@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 oldfolder='step2.mergePDversion'
 newfolder='step3.btagSFappended'
-dataera='2018ReReco'
+dataera='UL2018'
 
 import os
 from xPhoton.xPhoton.AppendEventInfo import FindXSInfo, nodir, ShowPD, ShowDetail
@@ -10,7 +10,7 @@ from xPhoton.xPhoton.Managers.LogMgr import InitLogger, GetLogger
 def executeCommand( inputfile_ ):
     #execfile='./exe.AppendBTagCalibration' # use makefile
     execfile='exec_AppendBTagCalibration' # use CMSSW
-    command='%s {era} {ifile} %s/{newfile}' %(execfile,newfolder)
+    command='%s {era} {ifile} %s/{newfile} true' %(execfile,newfolder) # add an option to update btagging
     os.system( command.format( era=dataera, ifile=inputfile_, newfile=nodir(inputfile_) ) )
 
 if __name__ == '__main__':
