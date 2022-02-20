@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <vector>
 #include <memory>
+#include <algorithm>
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 // usage :
@@ -37,6 +38,7 @@ void PrintHelp()
         printf("------    %20s       --------\n", validera);
     printf("------ 3. input root file            --------\n");
     printf("------ 4. output root file           --------\n");
+    printf("------ 5. need to clean up branch    --------\n");
     printf("---------------------------------------------\n");
     printf("------ Feature :    Scale Factor of  --------\n");
     printf("------              jet to calibrate --------\n");
@@ -49,6 +51,14 @@ const char* Arg_InputFile(const char* argv[])
 { return argv[2]; }
 const char* Arg_OutputFile(const char* argv[])
 { return argv[3]; }
+bool Arg_CleanUpBranch(int argc, const char* argv[])
+{
+    if ( argc < 5 ) return false;
+    std::string words(argv[4]);
+    std::for_each( words.begin(), words.end(), [](char& c) {c = ::tolower(c);} );
+    if ( words == "true" || words == "1" ) return true;
+    return false;
+}
 bool EraCheck(const char* inputera)
 {
     for ( const char* validera : validEra )
@@ -57,9 +67,17 @@ bool EraCheck(const char* inputera)
 }
 void CheckArgs(int argc, const char* argv[])
 {
-    if ( argc != 4 )
-    { PrintHelp(); throw std::invalid_argument(" --- Need 4 input arguments ---\n"); }
+    if ( argc < 4 )
+    { PrintHelp(); throw std::invalid_argument(" --- Need at least 4 input arguments ---\n"); }
     if (!EraCheck( Arg_DataEra(argv) ) ) { PrintHelp(); throw std::invalid_argument("\n\n### input data era is invalid ###\n"); }
+}
+// ReReco : old format csv file. UL : new format csv file
+bool UseNewFormat(const char* inputera)
+{
+    int eraIdx = -1;
+    for ( unsigned int idx = 0; idx < validEra.size() ; ++idx )
+        if ( strcmp(inputera,validEra[idx]) == 0 ) eraIdx = idx;
+    return eraIdx > 2;
 }
 
 
@@ -70,7 +88,9 @@ int main(int argc, const char* argv[])
     const char* iFile = Arg_InputFile(argv);
     const char* oFile = Arg_OutputFile(argv);
     const char* era   = Arg_DataEra(argv);
+    bool CleanUpNeeded = Arg_CleanUpBranch(argc,argv);
 
+    std::cout << "data era : " << era << std::endl;
     std::cout << "in file : " << iFile << std::endl;
     std::cout << "out file : " << oFile << std::endl;
     std::cout << "updating BTagging scale factors" << std::endl;
@@ -79,14 +99,19 @@ int main(int argc, const char* argv[])
     TFile* iF = TFile::Open(iFile);
     TTree* iT = (TTree*) iF->Get("t");
     
-    TFile* oF = new TFile(oFile,"recreate");
-    oF->cd();
-    TTree* oT = (TTree*) iT->CloneTree(0);
     
 
     std::map<const char*, std::shared_ptr<BTaggingMgr>> btagCalibs;
-    if ( useDeepCSV ) btagCalibs["deepcsv"] = std::unique_ptr<BTaggingMgr>(new BTaggingMgr_DeepCSV    ("2016ReReco"));
-    if ( useDeepJet ) btagCalibs["deepjet"] = std::unique_ptr<BTaggingMgr>(new BTaggingMgr_DeepFlavour("2016ReReco"));
+    if ( useDeepCSV )
+    {
+        btagCalibs["deepcsv"] = std::unique_ptr<BTaggingMgr>(new BTaggingMgr_DeepCSV    (era, UseNewFormat(era)));
+        if ( CleanUpNeeded ) { printf("old branch cleaned\n"); btagCalibs["deepcsv"]->DisableBranch(iT); }
+    }
+    if ( useDeepJet )
+    {
+        btagCalibs["deepjet"] = std::unique_ptr<BTaggingMgr>(new BTaggingMgr_DeepFlavour(era, UseNewFormat(era)));
+        if ( CleanUpNeeded ) { printf("old branch cleaned\n"); btagCalibs["deepjet"]->DisableBranch(iT); }
+    }
 
 
     Float_t jetPt, jetEta;
@@ -103,8 +128,13 @@ int main(int argc, const char* argv[])
     iT->SetBranchAddress("jetDeepFlavourTags_bb"  ,&deepjet_bb);
     iT->SetBranchAddress("jetDeepFlavourTags_lepb",&deepjet_lepb);
 
+    TFile* oF = new TFile(oFile,"recreate");
+    oF->cd();
+    TTree* oT = (TTree*) iT->CloneTree(0);
+
     if ( useDeepCSV ) btagCalibs["deepcsv"]->RegBranch(oT);
     if ( useDeepJet ) btagCalibs["deepjet"]->RegBranch(oT);
+
 
     
     unsigned int nevt = iT->GetEntries();
