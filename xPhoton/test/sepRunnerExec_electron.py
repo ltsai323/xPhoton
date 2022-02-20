@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-exeCMD='exec_xPhotonRunnerUL2018'
+exeCMD='exec_xElectronRunner'
 nThread=4
 
 
@@ -22,3 +22,4 @@ if __name__ == '__main__':
 
     print( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
     os.system( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+
