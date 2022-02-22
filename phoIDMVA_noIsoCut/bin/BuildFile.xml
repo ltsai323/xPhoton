@@ -1,0 +1,9 @@
+<use name="boost"/>
+<use name="rootcore"/>
+<use name="roofit"/>
+<use name="roottmva"/>
+
+<export>
+    <bin name="exec_ReweightTrainingSample"   file="ReweightTrainingSample.cc"/>
+    <bin name="exec_TMVATraining"             file="TMVATraining.cc"/>
+</export>
