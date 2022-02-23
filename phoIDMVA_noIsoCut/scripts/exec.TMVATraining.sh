@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-exec_TMVATraining BDT
+exec_TMVATraining ../data/TMVATrainingSetup.json
