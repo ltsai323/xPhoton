@@ -195,6 +195,7 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TG
     return select_photon_mvanoIso(data, i, tttgr);
 }
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
+    std::string dataera = "UL2018";
   /* Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
    *
    * Documentation:
@@ -252,14 +253,20 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
     tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
     tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
     //tmvaReader[iBE]->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",   &s13Full5x5 );	        
-    tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
+    if ( dataera == "2016ReReco" )
+        tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
+    if ( dataera == "UL2018" )
+        tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );	       
     //tmvaReader[iBE]->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",   &s25Full5x5 );	        
     tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta_);
     tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE_);
     tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth_);
     tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth_);
     if (iBE == 1) {
-      tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE_);
+        if ( dataera == "2016ReReco" )
+            tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE_);
+        if ( dataera == "UL2018" )
+            tmvaReader[iBE]->AddVariable("esEnergyOverSCRawEnergy", &phoESEnToRawE_);
       tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR_);
     }
     tmvaReader[iBE]->AddVariable("rho", &rho_);
@@ -272,8 +279,8 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
     //tmvaReader[iBE]->AddSpectator("recoPt", &phoEt_);
     //tmvaReader[iBE]->AddSpectator("recoEta", &phoEta_);
 
-    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, "2016ReReco") << std::endl;
-    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, "2016ReReco") );
+    std::cerr << ExternalFilesMgr::xmlFile_MVAweight(iBE, dataera) << std::endl;
+    tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, dataera) );
   } // one-time initialization
   
   //get etawidth, s4, R9  reweighting for 76x
@@ -422,28 +429,25 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
      tmvaReader[iBE]->AddVariable("r9", &phoR9);
      tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
      tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
-     //tmvaReader[iBE]->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",   &s13Full5x5 );	        
-     tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
-     //tmvaReader[iBE]->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",   &s25Full5x5 );	        
+     if ( _dataEra == "2016ReReco" )
+         tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
+        if ( _dataEra == "UL2018" )
+             tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );	       
      tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta);
      tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE);
      tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth);
      tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth);
      if (iBE == 1) {
+         if ( _dataEra == "2016ReReco" )
        tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE);
+         if ( _dataEra == "UL2018" )
+           tmvaReader[iBE]->AddVariable("esEnergyOverSCRawEnergy", &phoESEnToRawE);
        tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR);
      }
      tmvaReader[iBE]->AddVariable("rho", &rho);
-     /* tmvaReader[iBE]->AddVariable("phoIsoRaw", &phoPFPhoIso_); */
-     /* tmvaReader[iBE]->AddVariable("chIsoRaw", &phoPFChIso_); */
-     /* tmvaReader[iBE]->AddVariable("chWorstRaw", &phoPFChIsoWorst_); */
  
-     //tmvaReader[iBE]->AddVariable("recoPt", &phoEt_);
-     // FIXME: why do we need this?
-     //tmvaReader[iBE]->AddSpectator("recoPt", &phoEt_);
-     //tmvaReader[iBE]->AddSpectator("recoEta", &phoEta_);
  
-     std::cerr << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) << std::endl;
+     std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) << std::endl;
      tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) );
    }
 }
@@ -459,7 +463,7 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapt
     LoadingVars( iPho_);
 
     SScorr_->CalculateCorrections( _data, iPho_ );
-    phoR9		    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       );
+    //phoR9		    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       ); // in higgs->gg analysis, they correct r9Full5x5 instead of r9.
     s4Full5x5       = SScorr_->Corrected( ShowerShapeCorrectionAdapter::s4       );
     sieieFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieie    );
     sieipFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieip    );
@@ -485,16 +489,13 @@ void PhotonMVACalculator::LoadingVars( Int_t iPho_ )
 {
   // load necessary tree branches
   Float_t  DATAphoPhi                    = _data->GetPtrFloat("phoPhi")[iPho_];
-  //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_]; // is phoR9Full5x5 needed?
-  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // is phoR9Full5x5 needed?
+  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_]; // The MVA use phoR9 for training. Not phoR9Full5x5
+  //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // is phoR9Full5x5 needed?
   Float_t  DATAphoSCEta                  = _data->GetPtrFloat("phoSCEta")[iPho_];
   Float_t  DATAphoSCRawE                 = _data->GetPtrFloat("phoSCRawE")[iPho_];
   Float_t  DATAphoSCEtaWidth             = _data->GetPtrFloat("phoSCEtaWidth")[iPho_];
   Float_t  DATAphoSCPhiWidth             = _data->GetPtrFloat("phoSCPhiWidth")[iPho_];
   Float_t  DATArho                       = _data->GetFloat("rho");
-  /* Float_t  DATAphoPFPhoIso       = _data->GetPtrFloat("phoPFPhoIso")[iPho_]; */
-  /* Float_t  DATAphoPFChIso        = _data->GetPtrFloat("phoPFChIso")[iPho_]; */
-  /* Float_t  DATAphoPFChWorstIso   = _data->GetPtrFloat("phoPFChWorstIso")[iPho_]; */
   Float_t  DATAphoESEnP1                 = _data->GetPtrFloat("phoESEnP1")[iPho_];
   Float_t  DATAphoESEnP2                 = _data->GetPtrFloat("phoESEnP2")[iPho_];
   Float_t  DATAphoESEffSigmaRR           = _data->GetPtrFloat("phoESEffSigmaRR")[iPho_];
