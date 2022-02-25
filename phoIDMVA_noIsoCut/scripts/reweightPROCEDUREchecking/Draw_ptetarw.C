@@ -74,8 +74,4 @@ void Draw_ptetarw(){
   hbkg_etarw->SetMarkerStyle(27);
   //hbkg_etarw->Draw("p e same");
 
-
-
-
-
 }

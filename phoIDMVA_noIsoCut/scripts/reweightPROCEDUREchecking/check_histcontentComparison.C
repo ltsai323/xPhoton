@@ -70,13 +70,9 @@ bool Comparsion( const LoadedHists& hists0, const LoadedHists& hists1 )
 }
 
 
-void HistComparison()
+void check_histcontentComparison()
 {
     LoadedHists hists0("mytesting.root");
     LoadedHists hists1("rw_out.root");
     Comparsion(hists0, hists1);
-};
-void codeChecker()
-{
-    HistComparison();
 }
