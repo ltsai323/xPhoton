@@ -27,6 +27,18 @@ public:
 
 
     void CalculateCorrections(TreeReader* data, int varidx);
+    void CalculateCorrections( // temp function
+            float varpt           ,
+            float varSCeta        ,
+            float varphi          ,
+            float varrho          ,
+            float varr9Full5x5    ,
+            float vars4Full5x5    ,
+            float varsieieFull5x5 ,
+            float varsieipFull5x5 ,
+            float varetaWidth     ,
+            float varphiWidth     ,
+            float varesenergyoverscrawenergy );
     void Cleaning();
 
     void ShowInfo();

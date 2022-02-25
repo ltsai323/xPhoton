@@ -80,6 +80,54 @@ void ShowerShapeCorrectionAdapter::CalculateCorrections(TreeReader* data, int va
     correctedvars = corr->GetSSCorr();
     LOG_DEBUG("GetSSCorr functioned");
 }
+// temp functions
+void ShowerShapeCorrectionAdapter::CalculateCorrections(
+float varpt           ,
+float varSCeta        ,
+float varphi          ,
+float varrho          ,
+float varr9Full5x5    ,
+float vars4Full5x5    ,
+float varsieieFull5x5 ,
+float varsieipFull5x5 ,
+float varetaWidth     ,
+float varphiWidth     ,
+float varesenergyoverscrawenergy )
+{
+    LOG_DEBUG("loading variables");
+    Cleaning();
+    origvar["pt"                      ] = varpt;
+    origvar["etaSC"                   ] = varSCeta;
+    origvar["phi"                     ] = varphi;
+    origvar["rho"                     ] = varrho;
+    origvar["r9"                      ] = varr9Full5x5;
+    origvar["s4"                      ] = vars4Full5x5;
+    origvar["sieie"                   ] = varsieieFull5x5;
+    origvar["sieip"                   ] = varsieipFull5x5;
+    origvar["etaWidth"                ] = varetaWidth;
+    origvar["phiWidth"                ] = varphiWidth;
+    origvar["esEnergyOverSCRawEnergy" ] = varesenergyoverscrawenergy;
+
+
+    LOG_DEBUG("input variables to corrector");
+    corr->InputFeatures(
+        origvar["pt"                      ],
+        origvar["etaSC"                   ],
+        origvar["phi"                     ],
+        origvar["rho"                     ],
+        origvar["r9"                      ],
+        origvar["s4"                      ],
+        origvar["sieie"                   ],
+        origvar["sieip"                   ],
+        origvar["etaWidth"                ],
+        origvar["phiWidth"                ],
+        origvar["esEnergyOverSCRawEnergy" ]
+    );
+    LOG_DEBUG("GetSSCorr functioning");
+    correctedvars = corr->GetSSCorr();
+    LOG_DEBUG("GetSSCorr functioned");
+}
+
 void ShowerShapeCorrectionAdapter::Cleaning()
 {
     correctedvars.clear();
