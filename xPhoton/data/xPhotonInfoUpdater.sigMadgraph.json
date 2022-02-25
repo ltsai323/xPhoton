@@ -1,0 +1,9 @@
+{
+    "updateMVA": true,
+    "updatePU": false,
+    "updateBTagCalibration": false,
+    "isMC": true,
+    "dataera": "UL2018",
+    "InputFiles": ["/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/SigMadgraph.root"],
+    "OutputFileName":"mvaUpdated.sigMadgraph.root"
+}
