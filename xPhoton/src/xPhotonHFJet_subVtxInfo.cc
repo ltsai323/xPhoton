@@ -488,46 +488,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     if(data.HasMC())
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
-        /*
-        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ---");
-        TFile* f = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection(dataEra) );
-        LOG_INFO("--- shower correction : legacy 2016 use (need to be changed) ended ---");
-
-        tgr[0] = (TGraph*) f->Get("transfEtaWidthEB");
-        tgr[1] = (TGraph*) f->Get("transfS4EB");
-        tgr[2] = (TGraph*) f->Get("transffull5x5R9EB");
-        tgr[3] = (TGraph*) f->Get("transffull5x5sieieEB");
-
-        tgr[4] = (TGraph*) f->Get("transfEtaWidthEE");
-        tgr[5] = (TGraph*) f->Get("transfS4EE");
-        tgr[6] = (TGraph*) f->Get("transffull5x5R9EE");
-        tgr[7] = (TGraph*) f->Get("transffull5x5sieieEE");
-        */
     }
+    //PhotonMVACalculator mvaloader( new MVAParameters_ggAnalysis(&data), dataEra ); // asdf
     PhotonMVACalculator mvaloader( &data, dataEra );
 
-    /*
-    TFile* f_showershapecorrection;
-    //PUWeightCalculator pucalc;
-    std::map<std::string, TGraph*> endcapCorrections;
-    std::map<std::string, TGraph*> barrelCorrections;
-    if ( data.HasMC() )
-    {
-    f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection(dataEra) );
-    endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
-    endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
-    endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
-    endcapCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE");
-
-    barrelCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB");
-    barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
-    barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
-    barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
-    }
-    */
 
 
-    LOG_INFO(" processing entries %lli \n", data.GetEntriesFast());
+    LOG_INFO(" processing entries %lld \n", data.GetEntriesFast());
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
@@ -1349,13 +1316,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             phoIDbit_ = phoIDbit[ipho];
             if ( data.HasMC() )
             {
-                /*
-                    std::map<std::string, TGraph*>* corrections = recoInfo::IsEE(recoSCEta) ? &endcapCorrections : &barrelCorrections;
-                    calib_s4Full5x5     = recoInfo::CorrectedValue( corrections->at("s4")          , s4Full5x5 );
-                    calib_r9Full5x5     = recoInfo::CorrectedValue( corrections->at("r9Full5x5")   , r9Full5x5 );
-                    calib_scEtaWidth    = recoInfo::CorrectedValue( corrections->at("scEtaWidth")  , scEtaWidth );
-                    calib_sieieFull5x5  = recoInfo::CorrectedValue( corrections->at("sieieFull5x5"), sieieFull5x5 );
-                    */
 
                     SScorr.CalculateCorrections(&data, ipho);
                     calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
@@ -1368,17 +1328,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             }
 
 
-
-            //mva = select_photon_mvanoIso(data, ipho, barrelCorrections, endcapCorrections);
-            //mva        = select_photon_mvanoIso(data, ipho, tgr);
+            //asdf testing
+            //mvaParameters.LoadVar(ipho);
+            //mva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            //mvaParameters.UseCorrectedParameters(&SScorr);
+            //mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
             mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
             mva_nocorr = mvaloader.GetMVA_noIso(ipho);
-            /*
-            float newmva = mvaloader.GetMVA_noIso(ipho, tgr);
-            float newmva_nocorr = mvaloader.GetMVA_noIso(ipho);
-            printf( "old mva : %.5f and new mva = %.5f\n", mva, newmva );
-            printf( "(NO correction ) old mva : %.5f and new mva = %.5f\n", mva_nocorr, newmva_nocorr );
-            */
             
             photonIDmva = phoIDMVA[ipho];
 
