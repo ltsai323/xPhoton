@@ -26,8 +26,8 @@ public:
     };
 
 
-    void CalculateCorrections(TreeReader* data, int varidx);
-    void CalculateCorrections( // temp function
+    void CalculateCorrections();
+    void SetParameters(
             float varpt           ,
             float varSCeta        ,
             float varphi          ,
@@ -39,24 +39,33 @@ public:
             float varetaWidth     ,
             float varphiWidth     ,
             float varesenergyoverscrawenergy );
+
     void Cleaning();
 
     void ShowInfo();
     float Corrected( SSvars idx );
+    bool sameEvt( float pt_, float eta_, float phi_);
+
 private:
     std::string campaign;
 
     ShowerShapeCorrector* corr;
     std::vector<float> correctedvars;
-    bool isSameEvent(TreeReader* data, int varidx);
-    void loadVars(TreeReader* data, int varidx);
-    //float origvar[SSvars::totvar];
     std::map<const char*, float> origvar;
 
-    int tmpidx;
     float tmppt, tmpeta, tmpphi;
 };
 
+namespace ShowerShapeCorrectionParameters_ggNtuple
+{
+    bool isSameEvent(ShowerShapeCorrectionAdapter* sscAdapter, TreeReader* data, int varidx);
+    void loadVars   (ShowerShapeCorrectionAdapter* sscAdapter, TreeReader* data, int varidx);
+};
+namespace ShowerShapeCorrectionParameters_xPhoton
+{
+    bool isSameEvent(ShowerShapeCorrectionAdapter* sscAdapter, TreeReader* data);
+    void loadVars   (ShowerShapeCorrectionAdapter* sscAdapter, TreeReader* data);
+};
 
 
 #endif

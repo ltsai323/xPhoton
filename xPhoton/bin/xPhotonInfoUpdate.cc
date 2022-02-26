@@ -140,19 +140,8 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 
         if ( jobInfo.isMC )
         {
-            SScorr.CalculateCorrections(
-                    data.GetFloat("recoPtCalib"),
-                    data.GetFloat("recoSCEta"),
-                    data.GetFloat("recoPhi"),
-                    data.GetFloat("rho"),
-                    data.GetFloat("r9Full5x5"),
-                    data.GetFloat("s4Full5x5"),
-                    data.GetFloat("sieieFull5x5"),
-                    data.GetFloat("sieipFull5x5"),
-                    data.GetFloat("scEtaWidth"),
-                    data.GetFloat("scPhiWidth"),
-                    data.GetFloat("esEnergyOverSCRawEnergy")
-                    );
+            ShowerShapeCorrectionParameters_xPhoton::loadVars(&SScorr, &data);
+            SScorr.CalculateCorrections();
         }
 
         // TMVA used pars.

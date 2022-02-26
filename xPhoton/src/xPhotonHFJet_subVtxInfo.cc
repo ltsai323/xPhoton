@@ -1317,14 +1317,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             if ( data.HasMC() )
             {
 
-                    SScorr.CalculateCorrections(&data, ipho);
-                    calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
-                    calib_s4Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
-                    calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
-                    calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
-                    calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
-                    calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
-                    calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+                    //SScorr.CalculateCorrections(&data, ipho);
+                if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, ipho) )
+                {
+                    ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, ipho);
+                    SScorr.CalculateCorrections();
+                }
+                calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
+                calib_s4Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
+                calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+                calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+                calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+                calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+                calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
 
 

@@ -292,7 +292,11 @@ void xElectrons(
             eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
             
             
-            SScorr.CalculateCorrections(&data, recoIdx);
+                if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, recoIdx) )
+                {
+                    ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, recoIdx);
+                    SScorr.CalculateCorrections();
+                }
             eleRecording.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
             eleRecording.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
             eleRecording.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
