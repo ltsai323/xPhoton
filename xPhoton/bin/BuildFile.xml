@@ -16,4 +16,5 @@
     <bin name="exec_xPhotonRunnerUL2018"     file="xPhotonRunnerUL2018.cc"/>
     <bin name="exec_AppendEventInfo"         file="AppendEventInfo.cc"/>
     <bin name="exec_AppendBTagCalibration"   file="AppendBTagCalibration.cc"/>
+    <bin name="exec_xPhotonInfoUpdate"       file="xPhotonInfoUpdate.cc"/>
 </export>

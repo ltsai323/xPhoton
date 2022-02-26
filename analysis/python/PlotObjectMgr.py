@@ -98,8 +98,16 @@ def RatioPlot( hNumerator, hDenominator):
     th1_rp.SetMaximum(1.3)
     th1_rp.SetStats(False)
 
+    th1_rp.SetMarkerSize(4)
+    th1_rp.SetLineWidth(3)
+    th1_rp.SetTitle('')
+    th1_rp.SetMarkerStyle(34)
+    th1_rp.SetLineStyle(1)
+
     HistSetting_Clone( th1_rp, hDenominator)
     return th1_rp
+def DivPlot( hNumerator, hDenominator ):
+    return RatioPlot( hNumerator, hDenominator )
 
 class DisplayOnScreen(object):
     def __init__(self, displayed=True):
