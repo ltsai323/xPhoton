@@ -84,7 +84,6 @@ const char* GetJsonFromArg( int argc, char** argv )
 }
 int main( int argc, char** argv )
 {
-    // testing...
     pt::ptree root;
     pt::read_json(GetJsonFromArg(argc,argv), root);
     bool isEndcap = root.get<bool>("isEndcap", false);
@@ -95,9 +94,10 @@ int main( int argc, char** argv )
         usedAlgorithm.emplace_back( algo.second.data() );
     std::string outputtemplate = root.get<std::string>("OutputTemplate", "");
     std::string inputfile = root.get<std::string>("InputFile");
-    // tested...
 
 
+   ROOT::EnableImplicitMT(30);
+   printf("Using %d thread for this training\n", ROOT::GetImplicitMTPoolSize() );
 
    //---------------------------------------------------------------
    // Default MVA methods to be trained + tested
@@ -171,41 +171,10 @@ int main( int argc, char** argv )
 
    // use json file to configure what algorithm needed.
     for ( auto a : usedAlgorithm )
-        if ( Use.find( a ) != Use.end() )
-            Use[a] = 1;
+        if ( Use.find( a ) != Use.end() ) Use[a] = 1;
 
 
 
-
-
-   /* Use input arguments to be the switch of Algorithm.
-   bool batchMode(true);
-   // Select methods (don't look at this code - not of interest)
-   bool useDefaultMethods(true);
-   for (int i=1; i<argc; i++) {
-      std::string regMethod(argv[i]);
-      if(regMethod=="-b" || regMethod=="--batch") {
-         batchMode=true;
-         continue;
-      }
-      if (Use.find(regMethod) == Use.end()) {
-         std::cout << "Method \"" << regMethod << "\" not known in TMVA under this name. Choose among the following:" << std::endl;
-         for (std::map<std::string,int>::iterator it = Use.begin(); it != Use.end(); it++) std::cout << it->first << " ";
-         std::cout << std::endl;
-         return 1;
-      }
-      useDefaultMethods = false;
-   }
-
-   if (!useDefaultMethods) {
-      for (std::map<std::string,int>::iterator it = Use.begin(); it != Use.end(); it++) it->second = 0;
-      for (int i=1; i<argc; i++) {
-         std::string regMethod(argv[i]);
-         if(regMethod=="-b" || regMethod=="--batch") continue;
-         Use[regMethod] = 1;
-      }
-   }
-   */
 
    // --------------------------------------------------------------------------------------------------
 
@@ -259,7 +228,7 @@ int main( int argc, char** argv )
    //mcphoton
    dataloader->AddVariable( "recoPhi",   'F' );   // Use this to check the null hypothesis
    if(useShapeVars == 1){
-   dataloader->AddVariable( "r9",   'F' );   
+   dataloader->AddVariable( "r9Full5x5",   'F' );   
      //      dataloader->AddVariable( "sieie",   'F' );   
      //      dataloader->AddVariable( "sieip",   'F' );   
      //      dataloader->AddVariable( "s13 := e1x3/e5x5",  'F' );   
@@ -381,17 +350,17 @@ int main( int argc, char** argv )
    //    for background: factory->SetBackgroundWeightExpression("weight1*weight2");
       //factory->SetBackgroundWeightExpression("weight");
    //    for signal    : 
-      dataloader->SetSignalWeightExpression("puwei*mcweight * weight2d");
+      dataloader->SetSignalWeightExpression    ("puwei*mcweight*weight2d");
    //    for background: 
-      dataloader->SetBackgroundWeightExpression("puwei*mcweight * weight2d");
+      dataloader->SetBackgroundWeightExpression("puwei*mcweight*weight2d");
 
    // Apply additional cuts on the signal and background samples (can be different)
    
 //    TCut mycuts = "mcphoton==1&&TMath::Abs(SCEta)<1.5&&phoEt<30.";
 //    TCut mycutb = "mcphoton==0&&TMath::Abs(SCEta)<1.5&&phoEt<30.";
 
-   TCut mycuts = "(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoEta)<1.5"; // &&recoPt>25&&recoPt<35"; /* asdf */
-   TCut mycutb = "(isMatched!=1&&isConverted!=1)&&isMatchedEle!=1&&TMath::Abs(recoEta)<1.5"; // &&recoPt>25&&recoPt<35";
+   TCut mycuts = "(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoEta)<1.5";
+   TCut mycutb = "(isMatched!=1&&isConverted!=1)&&isMatchedEle!=1&&TMath::Abs(recoEta)<1.5";
    if (isEndcap == 1) {
      mycuts = "(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoEta)>1.5";
      mycutb = "(isMatched!=1&&isConverted!=1)&&isMatchedEle!=1&&TMath::Abs(recoEta)>1.5";

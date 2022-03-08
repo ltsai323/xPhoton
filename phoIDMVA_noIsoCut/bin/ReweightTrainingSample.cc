@@ -15,12 +15,15 @@ class ReweightHists
 public:
     ReweightHists()
     {
+        // pu & mc weighted
         h_pho_pt_eta = new TH2F("h_pho_pt_eta","pt eta distribution",500, 0., 2500., 50, -2.5, 2.5);
         h_pho_pt_eta_rw = new TH2F("h_pho_pt_eta_rw","pt eta distribution",500, 0., 2500., 50, -2.5, 2.5);
 
+        // pu & mc weighted
         h_fake_pt_eta = new TH2F("h_fake_pt_eta","pt eta distribution",500, 0., 2500., 50, -2.5, 2.5);
         h_fake_pt_eta_rw = new TH2F("h_fake_pt_eta_rw","pt eta distribution",500, 0., 2500., 50, -2.5, 2.5);
 
+        // derived value from h_pho_pt_eta
         h_weight_pt_eta = new TH2F("h_weight_pt_eta","pt eta weight distribution",500, 0., 2500., 50, -2.5, 2.5);
         h_weight_fake_pt_eta = new TH2F("h_weight_fake_pt_eta","pt eta fake weight distribution",500, 0., 2500., 50, -2.5, 2.5);
 
@@ -163,7 +166,7 @@ public:
         t->SetBranchAddress("puwei", &puwei);
         // declare tree variables end }}}
 
-        float totalEventWeight = totalEventWeight = 1.;
+        float totalEventWeight = 1.;
 
         Long64_t nentries = t->GetEntries();
         printf("nentries %lli \n", nentries);
@@ -404,6 +407,13 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
         //if(jentry%5!=0) continue;
         Long64_t nb = t->GetEntry(jentry);  
 
+        // initialize stored value.
+        weight2d_ = 1.;
+        weightpt_ = 1.;
+        tID=0;  
+        mID=0;
+        lID=0;
+
         if (jentry % 1000000 == 0){
             fprintf(stderr, "Processing event %lli of %lli (%.3f %%)\n", jentry + 1, nentries, (jentry+1)*100./float(nentries));
         }
@@ -423,7 +433,6 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
         // if(TMath::Abs(recoSCEta)>1.5 && sieieFull5x5 > 0.05) continue;    
         // if(HoverE>0.1) continue;
 
-        //weight2d_=1.;
         int ibin = h1x_t->FindBin(recoPt);
         int jbin = h1y_t->FindBin(recoEta);
         if(isMatched==1 || isConverted==1){ //photon
@@ -482,9 +491,6 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
         // float s25 = 1-(e2x5Full5x5/e5x5Full5x5);
 
         //tight
-        tID=0;  
-        mID=0;
-        lID=0;
 
         //     if( !(      1-r9 <= 0.226932)) tID += 1<<0   ;
         //     if( !(      sieieFull5x5 <= 0.010497)) tID += 1<<1   ;
@@ -577,7 +583,8 @@ void PrintHelp()
 std::vector< const char* > GetInputs(int argc, const char** argv)
 {
     std::vector< const char* > outputs;
-    for ( int i = 0; i < argc; ++i ) outputs.emplace_back(argv[i]);
+    // arg 0 is the executable. So the input root files come from 1 to N
+    for ( int i = 1; i < argc; ++i ) outputs.emplace_back(argv[i]);
     return outputs;
 }
 
