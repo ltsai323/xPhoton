@@ -398,7 +398,8 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLT
   _outputlabel="hi";
   Init(tc);
 }
-MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
+MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) :
+    fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
 {
   printf("Input file name is : %s", fname);
   TChain *tc = new TChain("t");

@@ -54,7 +54,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     if (fChain == 0) return;
     TRandom3 *trd = new TRandom3();
 
-    TFile *fout = new TFile( Form("makehisto_%s.root", outputlabel_),"recreate");
+    TFile *fout = new TFile( Form("makehisto_%s.root", _outputlabel),"recreate");
 
     //ebee, jetbin, ptbin, true/fake;
     TH1F *h_BDT_all [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
