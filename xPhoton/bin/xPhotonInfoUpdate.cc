@@ -5,15 +5,19 @@
 #include <boost/property_tree/json_parser.hpp>
 namespace pt = boost::property_tree;
 
+
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TChain.h"
+#include "TROOT.h"
 #include "TMVA/Reader.h"
 
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
+
 
 void PrintHelp()
 {
@@ -39,6 +43,7 @@ struct JsonInfo
     {
         pt::ptree root;
         pt::read_json(jsonfile, root);
+        nJobs                   = root.get<int> ("nJobs"                    , 4);
         updateMVA               = root.get<bool>("updateMVA"                , false);
         updatePU                = root.get<bool>("updatePU"                 , false);
         updateBTagCalibration   = root.get<bool>("updateBTagCalibration"    , false);
@@ -51,6 +56,7 @@ struct JsonInfo
     }
     JsonInfo( int argc, char** argv ) : JsonInfo( GetJsonFromArg(argc,argv) ) { }
 
+    unsigned nJobs;
     bool updateMVA;
     bool updatePU;
     bool updateBTagCalibration;
@@ -63,6 +69,7 @@ struct JsonInfo
 void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 {
     if (!jobInfo.updateMVA ) return;
+    inTree->SetBranchStatus("*", 1);
     inTree->SetBranchStatus("mva", 0);
     inTree->SetBranchStatus("mva_nocorr", 0);
     TreeReader data(inTree);
@@ -70,7 +77,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
     // declare MVA {{{
     float 
         recoPhi,
-        r9,
+        r9Full5x5,
         sieieFull5x5,
         sieipFull5x5,
         s4Full5x5,
@@ -89,18 +96,24 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 
         // add classification variables
         tmvaReader[iBE]->AddVariable("recoPhi", &recoPhi);
-        tmvaReader[iBE]->AddVariable("r9", &r9);
+        tmvaReader[iBE]->AddVariable("r9Full5x5", &r9Full5x5);
         tmvaReader[iBE]->AddVariable( "sieieFull5x5", &sieieFull5x5 );
         tmvaReader[iBE]->AddVariable( "sieipFull5x5", &sieipFull5x5 );     
         if ( jobInfo.dataEra == "2016ReReco" )
+        {
+            //tmvaReader[iBE]->AddVariable("r9", &r9Full5x5);
             tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5", &s4Full5x5 );	       
+        }
         if ( jobInfo.dataEra == "UL2018" )
+        {
             tmvaReader[iBE]->AddVariable( "s4Full5x5", &s4Full5x5 );	       
+        }
         tmvaReader[iBE]->AddVariable("recoSCEta", &recoSCEta );
         tmvaReader[iBE]->AddVariable("rawE", &rawE );
         tmvaReader[iBE]->AddVariable("scEtaWidth", &scEtaWidth );
         tmvaReader[iBE]->AddVariable("scPhiWidth", &scPhiWidth );
-        if (iBE == 1) {
+        if (iBE == 1)
+        {
             if ( jobInfo.dataEra == "2016ReReco" )
                 tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &esEnergyOverSCRawEnergy );
             if ( jobInfo.dataEra == "UL2018" )
@@ -120,7 +133,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
     TFile* outfile = new TFile( jobInfo.outputfilename.c_str(), "RECREATE" );
     outfile->cd();
     TTree* outtree = inTree->CloneTree(0);
-    const int ANNOUNSE_INTERVAL = 1000;
+    const int ANNOUNSE_INTERVAL = 100000;
     outtree->SetAutoSave(ANNOUNSE_INTERVAL);
 
     float mva = 0;
@@ -132,11 +145,12 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
     for ( Long64_t evtIdx = 0; evtIdx != data.GetEntriesFast(); ++evtIdx )
     {
         
-        if ( evtIdx % ANNOUNSE_INTERVAL == 0 ) LOG_INFO(" processing enty %lld / %lld = %.2f %% \n", evtIdx, data.GetEntriesFast(), float(10000*evtIdx/data.GetEntriesFast())/100.);
+        if ( evtIdx % ANNOUNSE_INTERVAL == 0 ) LOG_INFO(" processing enty %llu / %llu = %.2f %% \n", evtIdx, data.GetEntriesFast(), float(10000*evtIdx/data.GetEntriesFast())/100.);
         
+        inTree->GetEntry(evtIdx);
         data.GetEntry(evtIdx);
         // variables declare and data loader {{{
-        bool isEE = data.GetFloat("recoSCEta") > 1.5 ? 1 : 0;
+        bool isEE = fabs(data.GetFloat("recoSCEta")) > 1.5 ? 1 : 0;
 
         if ( jobInfo.isMC )
         {
@@ -146,7 +160,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 
         // TMVA used pars.
         recoPhi                  = data.GetFloat("recoPhi"                );
-        r9                       = data.GetFloat("r9"                     );
+        r9Full5x5                = data.GetFloat("r9Full5x5"              );
         sieieFull5x5             = data.GetFloat("sieieFull5x5"           );
         sieipFull5x5             = data.GetFloat("sieipFull5x5"           );
         s4Full5x5                = data.GetFloat("s4Full5x5"              );
@@ -164,7 +178,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
         mva_nocorr = tmvaReader[isEE]->EvaluateMVA("BDT");
         if ( jobInfo.isMC )
         {
-            // r9 = SScorr->Corrected( ShowerShapeCorrectionAdapter::r9       ); // in higgs->gg analysis, they correct r9Full5x5 instead of r9.
+            r9Full5x5               = SScorr.Corrected( ShowerShapeCorrectionAdapter::r9      );
             s4Full5x5               = SScorr.Corrected( ShowerShapeCorrectionAdapter::s4       );
             sieieFull5x5            = SScorr.Corrected( ShowerShapeCorrectionAdapter::sieie    );
             sieipFull5x5            = SScorr.Corrected( ShowerShapeCorrectionAdapter::sieip    );
@@ -184,6 +198,8 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 int main(int argc, char** argv)
 {
     JsonInfo inputvars(argc,argv);
+    //ROOT::EnableImplicitMT(inputvars.nJobs);
+    //printf("Using %d thread for this training\n", ROOT::GetImplicitMTPoolSize() );
 
     TChain* ch = new TChain("t");
     for ( const std::string& ifile : inputvars.inputfiles )
