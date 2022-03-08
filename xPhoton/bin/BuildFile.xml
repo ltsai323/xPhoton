@@ -18,3 +18,4 @@
     <bin name="exec_AppendBTagCalibration"   file="AppendBTagCalibration.cc"/>
     <bin name="exec_xPhotonInfoUpdate"       file="xPhotonInfoUpdate.cc"/>
 </export>
+<flags SKIP_FILES="*.root"/>
