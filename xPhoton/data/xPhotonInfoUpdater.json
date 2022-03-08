@@ -1,4 +1,5 @@
 {
+    "nJobs": 10,
     "updateMVA": true,
     "updatePU": false,
     "updateBTagCalibration": false,
