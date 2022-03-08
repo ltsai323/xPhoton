@@ -292,7 +292,7 @@ public :
    TBranch        *b_isQCD;   //!
 
    MakeHisto(Int_t option=0);
-   MakeHisto(const char* fname, bool isMC);
+   MakeHisto(const char* fname, const char* outputlabel_, bool isMC);
    void fitVarsInit();
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
@@ -314,6 +314,7 @@ public :
    Int_t           OPTION;
    Int_t        HLTOPTION;
    bool fkMC;
+   const char* _outputlabel;
 
    enum fitVar {
    _deepCSVTags_b,
@@ -394,9 +395,10 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLT
     tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
   }
 
+  _outputlabel="hi";
   Init(tc);
 }
-MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0)
+MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
 {
   printf("Input file name is : %s", fname);
   TChain *tc = new TChain("t");
@@ -454,13 +456,11 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
-   /* asdf temperally disabled for fake data
-   if (!IsMC() )
+   if (!IsMC() && fChain->GetListOfBranches()->FindObject("HLT") ) // for fake data, there is no HLT found
    {
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
    }
-   */
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
    if ( IsMC() )
    {
@@ -569,14 +569,12 @@ void MakeHisto::Init(TTree *tree)
    }
    fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
-   /* asdf temporally disabled for fake data
-   if (!IsMC() )
+   if (!IsMC() && fChain->GetListOfBranches()->FindObject("HLT") ) // for fake data, there is no HLT found
    {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
    }
-   */
    if ( IsMC() )
    {
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
