@@ -1,8 +1,0 @@
-Currently this training disabled the mcweight and puwei in each event.
-Trying to find out the bug in training.
-
-Updated : Mar 5 2022
--> RS said that the unwanted bump comes from physics. The phase space of output sample is larger than training sample. The result plot shows in the original phase space, the signal and fake distributed like blue and red.
-
--> Such that I found the bump comes from ENDCAP region. So I'm checking what's wrong in EE training.
-

@@ -226,7 +226,6 @@ int main( int argc, char** argv )
    // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
 
    //mcphoton
-   dataloader->AddVariable( "recoPhi",   'F' );   // Use this to check the null hypothesis
    if(useShapeVars == 1){
    dataloader->AddVariable( "r9Full5x5",   'F' );   
      //      dataloader->AddVariable( "sieie",   'F' );   
@@ -241,7 +240,6 @@ int main( int argc, char** argv )
      dataloader->AddVariable( "s4Full5x5",  'F' );   
      // dataloader->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",  'F' );   
    }
-   dataloader->AddVariable( "recoSCEta",   'F' );   
    dataloader->AddVariable( "rawE",   'F' );   
    if(useShapeVars == 1){
      dataloader->AddVariable( "scEtaWidth",   'F' );   
@@ -253,7 +251,6 @@ int main( int argc, char** argv )
      dataloader->AddVariable( "esEnergyOverSCRawEnergy",   'F' );   
      dataloader->AddVariable( "esRR",   'F' );   
    }
-   dataloader->AddVariable( "rho",   'F' );
 
    //to get corelation matrix
    if(useIsoVars == 1){
@@ -265,6 +262,9 @@ int main( int argc, char** argv )
      // dataloader->AddVariable("chafix3", 'F');
      // dataloader->AddVariable("chafix4", 'F');
    }
+   dataloader->AddSpectator( "recoPhi", "recoPhi", "none",   'F' );
+   dataloader->AddSpectator( "recoSCEta", "recoSCEta", "none",   'F' );   
+   dataloader->AddSpectator( "rho",  "rho", "GeV", 'F' );
 //    if(useShapeVars==1) {
 //      dataloader->AddVariable("phofix1", 'F');
 //    }
@@ -349,10 +349,20 @@ int main( int argc, char** argv )
    //    for signal    : factory->SetSignalWeightExpression    ("weight1*weight2");
    //    for background: factory->SetBackgroundWeightExpression("weight1*weight2");
       //factory->SetBackgroundWeightExpression("weight");
+   // //    for signal    : 
+   //    dataloader->SetSignalWeightExpression    ("puwei*mcweight*weight2d");
+   // //    for background: 
+   //    dataloader->SetBackgroundWeightExpression("puwei*mcweight*weight2d");
+
+
+
+
+
+   //  use weight2d only due to prevent increase statistics of hight energy particle.
    //    for signal    : 
-      dataloader->SetSignalWeightExpression    ("puwei*mcweight*weight2d");
+      dataloader->SetSignalWeightExpression    ("weight2d");
    //    for background: 
-      dataloader->SetBackgroundWeightExpression("puwei*mcweight*weight2d");
+      dataloader->SetBackgroundWeightExpression("weight2d");
 
    // Apply additional cuts on the signal and background samples (can be different)
    

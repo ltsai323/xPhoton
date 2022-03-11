@@ -1,5 +1,5 @@
 void Draw_ptetarw(){
-  TFile *f = new TFile("../rw_out.root");
+  TFile *f = new TFile("rw_out.root");
   
   TH2F *hsig = (TH2F*)f->Get("h_pho_pt_eta");
   TH2F *hsig_rw = (TH2F*)f->Get("h_pho_pt_eta_rw");

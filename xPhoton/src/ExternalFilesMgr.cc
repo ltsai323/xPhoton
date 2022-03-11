@@ -193,7 +193,7 @@ const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, std::string era)
         else if ( era == "UL2017"     )
             return "";
         else if ( era == "UL2018"     )
-            return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/BDT_EE/dataset/weights/TMVAnalysis_BDT.weights.xml";
+            return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml";
     }
     else
     {
@@ -208,7 +208,7 @@ const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, std::string era)
         else if ( era == "UL2017"     )
             return "";
         else if ( era == "UL2018"     )
-            return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/BDT_EB/dataset/weights/TMVAnalysis_BDT.weights.xml";
+            return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml";
     }
     return "";
 }

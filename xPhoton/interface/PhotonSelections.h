@@ -21,6 +21,7 @@ Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto=kTRUE);
 
 //float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]);
 
+// only for RS trained xml file!!!!!
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]);
 float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TGraph *> barrelCorr, std::map<std::string, TGraph *> endcapCorr);
 float select_photon_mvanoIso(TreeReader &data, Int_t i, ShowerShapeCorrectionAdapter& SScorr);
@@ -33,7 +34,7 @@ struct MVAVariables
 {
     float
         recoPhi,
-        r9,
+        r9Full5x5,
         sieieFull5x5,
         sieipFull5x5,
         s4Full5x5,
@@ -69,6 +70,7 @@ class PhotonMVACalculator
         void ShowerShapeCorrection( ShowerShapeCorrectionAdapter* SScorr_ );
 
         // mva variables
+        //float phoPhi, phoR9Full5x5;
         float phoPhi, phoR9;
         float phoSCEtaWidth, phoSCPhiWidth, rho;
         float phoSCEta, phoSCRawE;

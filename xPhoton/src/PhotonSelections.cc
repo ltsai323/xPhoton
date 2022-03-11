@@ -194,6 +194,7 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TG
 
     return select_photon_mvanoIso(data, i, tttgr);
 }
+
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
     std::string dataera = "UL2018";
   /* Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
@@ -426,7 +427,7 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
  
      // add classification variables
      tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi);
-     tmvaReader[iBE]->AddVariable("r9", &phoR9);
+     tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9);
      tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
      tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
      if ( _dataEra == "2016ReReco" )
@@ -468,7 +469,7 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapt
         ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr_, _data, iPho_);
         SScorr_->CalculateCorrections();
     }
-    //phoR9		    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       ); // in higgs->gg analysis, they correct r9Full5x5 instead of r9.
+    phoR9		    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       );
     s4Full5x5       = SScorr_->Corrected( ShowerShapeCorrectionAdapter::s4       );
     sieieFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieie    );
     sieipFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieip    );
@@ -494,8 +495,9 @@ void PhotonMVACalculator::LoadingVars( Int_t iPho_ )
 {
   // load necessary tree branches
   Float_t  DATAphoPhi                    = _data->GetPtrFloat("phoPhi")[iPho_];
-  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_]; // The MVA use phoR9 for training. Not phoR9Full5x5
+  //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_]; // The MVA use phoR9 for training. Not phoR9Full5x5
   //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // is phoR9Full5x5 needed?
+  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // Use this for new training
   Float_t  DATAphoSCEta                  = _data->GetPtrFloat("phoSCEta")[iPho_];
   Float_t  DATAphoSCRawE                 = _data->GetPtrFloat("phoSCRawE")[iPho_];
   Float_t  DATAphoSCEtaWidth             = _data->GetPtrFloat("phoSCEtaWidth")[iPho_];

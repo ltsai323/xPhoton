@@ -175,7 +175,8 @@ public:
         for (Long64_t jentry=0; jentry<nentries;jentry++) {
             //if(jentry%5!=0) continue;
             Long64_t nb = t->GetEntry(jentry);  
-            totalEventWeight = mcweight * puwei;
+            //totalEventWeight = mcweight * puwei;
+            totalEventWeight = 1.; // Not to use mcweight to increase statistics to high pt fake.
             if (jentry % 1000000 == 0){
                 fprintf(stderr, "Processing event %lli of %lli (%.3f %%)\n", jentry + 1, nentries, (jentry+1)*100./float(nentries));
             }
@@ -386,7 +387,6 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
     Int_t  lID;
 
 
-    //asdf need to add mcweight and puwei
     tt->Branch("weight2d", &weight2d_, "weight2d/F");
     tt->Branch("weightpt", &weightpt_, "weightpt/F");
     tt->Branch("tID", &tID, "tID/I");

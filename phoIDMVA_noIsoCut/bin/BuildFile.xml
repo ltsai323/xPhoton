@@ -6,4 +6,5 @@
 <export>
     <bin name="exec_ReweightTrainingSample"   file="ReweightTrainingSample.cc"/>
     <bin name="exec_TMVATraining"             file="TMVATraining.cc"/>
+    <bin name="test_TMVATraining"             file="TMVATrainingTEST.cc"/>
 </export>

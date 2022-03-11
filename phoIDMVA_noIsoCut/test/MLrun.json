@@ -4,10 +4,10 @@
     "updateBTagCalibration": false,
     "isMC": false,
     "dataera": "UL2018",
-    "InputFiles": ["/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/scripts/simpletest_0.root"],
+    "InputFiles": [ "../../xPhoton/scripts/simpletest_0.root" ],
     "OutputFileName":"mvaUpdated.noMCEvtWeight.root",
     "xmlFiles":[
-"/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
-"/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml"
+"../scripts/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
+"../scripts/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml"
     ]
 }
