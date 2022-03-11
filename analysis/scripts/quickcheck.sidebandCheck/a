@@ -1,0 +1,432 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.10/09                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 16 October 2017                                 |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+
+Attaching file /home/ltsai/ReceivedFile/GJet/UL2018/sigPythia/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root as _file0...
+(TFile *) 0x3155ad0
+******************************************************************************
+*Tree    :t         : mini tree                                              *
+*Entries :  8746388 : Total =      3660230818 bytes  File  Size = 1963514429 *
+*        :          : Tree compression factor =   1.86                       *
+******************************************************************************
+*Br    0 :jetSubVtxPt : jetSubVtxPt/F                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =    7800129 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.50     *
+*............................................................................*
+*Br    1 :jetSubVtxMass : jetSubVtxMass/F                                    *
+*Entries :  8746388 : Total  Size=   35107419 bytes  File Size  =    7778804 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.51     *
+*............................................................................*
+*Br    2 :jetSubVtx3DVal : jetSubVtx3DVal/F                                  *
+*Entries :  8746388 : Total  Size=   35108676 bytes  File Size  =    7921308 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.43     *
+*............................................................................*
+*Br    3 :jetSubVtx3DErr : jetSubVtx3DErr/F                                  *
+*Entries :  8746388 : Total  Size=   35108676 bytes  File Size  =    7869234 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.46     *
+*............................................................................*
+*Br    4 :jetSubVtxNtrks : jetSubVtxNtrks/I                                  *
+*Entries :  8746388 : Total  Size=   35108676 bytes  File Size  =    3080430 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=  11.39     *
+*............................................................................*
+*Br    5 :run       : run/I                                                  *
+*Entries :  8746388 : Total  Size=   35094849 bytes  File Size  =     298690 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 117.41     *
+*............................................................................*
+*Br    6 :event     : event/L                                                *
+*Entries :  8746388 : Total  Size=   70179844 bytes  File Size  =   26500409 *
+*Baskets :     2342 : Basket Size=      32000 bytes  Compression=   2.65     *
+*............................................................................*
+*Br    7 :isData    : isData/O                                               *
+*Entries :  8746388 : Total  Size=    8786190 bytes  File Size  =      83002 *
+*Baskets :      439 : Basket Size=      32000 bytes  Compression= 105.75     *
+*............................................................................*
+*Br    8 :phoFiredTrgs : phoFiredTrgs/I                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =    8000358 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.38     *
+*............................................................................*
+*Br    9 :pthat     : pthat/F                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =   30081008 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.17     *
+*............................................................................*
+*Br   10 :genHT     : genHT/F                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =     279832 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 125.33     *
+*............................................................................*
+*Br   11 :mcPt      : mcPt/F                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =   29151792 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.20     *
+*............................................................................*
+*Br   12 :mcEta     : mcEta/F                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =   31204602 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   13 :mcPhi     : mcPhi/F                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =   31137515 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.13     *
+*............................................................................*
+*Br   14 :mcCalIso04 : mcCalIso04/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =    5674482 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   6.18     *
+*............................................................................*
+*Br   15 :mcTrkIso04 : mcTrkIso04/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =    4666018 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   7.52     *
+*............................................................................*
+*Br   16 :mcMomPID  : mcMomPID/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =    7154042 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.90     *
+*............................................................................*
+*Br   17 :mcTrkIso  : mcTrkIso/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =     305421 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 114.84     *
+*............................................................................*
+*Br   18 :mcCalIso  : mcCalIso/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =     309839 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 113.21     *
+*............................................................................*
+*Br   19 :matchDR   : matchDR/F                                              *
+*Entries :  8746388 : Total  Size=   35099877 bytes  File Size  =     282338 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 124.23     *
+*............................................................................*
+*Br   20 :matchDPT  : matchDPT/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =     310068 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 113.12     *
+*............................................................................*
+*Br   21 :recoPt    : recoPt/F                                               *
+*Entries :  8746388 : Total  Size=   35098620 bytes  File Size  =   30464322 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.15     *
+*............................................................................*
+*Br   22 :recoPtCalib : recoPtCalib/F                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =   30471542 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.15     *
+*............................................................................*
+*Br   23 :recoEta   : recoEta/F                                              *
+*Entries :  8746388 : Total  Size=   35099877 bytes  File Size  =   32499134 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.08     *
+*............................................................................*
+*Br   24 :recoPhi   : recoPhi/F                                              *
+*Entries :  8746388 : Total  Size=   35099877 bytes  File Size  =   32421982 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.08     *
+*............................................................................*
+*Br   25 :recoSCEta : recoSCEta/F                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =   32497771 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.08     *
+*............................................................................*
+*Br   26 :r9        : r9/F                                                   *
+*Entries :  8746388 : Total  Size=   35093592 bytes  File Size  =   28567388 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.23     *
+*............................................................................*
+*Br   27 :s4Full5x5 : s4Full5x5/F                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =   28866518 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.22     *
+*............................................................................*
+*Br   28 :esEnergyOverSCRawEnergy : esEnergyOverSCRawEnergy/F                *
+*Entries :  8746388 : Total  Size=   35119989 bytes  File Size  =   14990508 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   2.34     *
+*............................................................................*
+*Br   29 :isMatched : isMatched/I                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =    2056662 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=  17.06     *
+*............................................................................*
+*Br   30 :isMatchedEle : isMatchedEle/I                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =     340158 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 103.13     *
+*............................................................................*
+*Br   31 :isConverted : isConverted/I                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =     338953 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 103.49     *
+*............................................................................*
+*Br   32 :nVtx      : nVtx/I                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =   10181487 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   3.44     *
+*............................................................................*
+*Br   33 :nPU       : nPU/I                                                  *
+*Entries :  8746388 : Total  Size=   35094849 bytes  File Size  =   10293821 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   3.41     *
+*............................................................................*
+*Br   34 :puwei     : puwei/F                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =   11397561 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   3.08     *
+*............................................................................*
+*Br   35 :eleVeto   : eleVeto/I                                              *
+*Entries :  8746388 : Total  Size=   35099877 bytes  File Size  =    1609980 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=  21.79     *
+*............................................................................*
+*Br   36 :HoverE    : HoverE/F                                               *
+*Entries :  8746388 : Total  Size=   35098620 bytes  File Size  =   15684825 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   2.24     *
+*............................................................................*
+*Br   37 :chIsoRaw  : chIsoRaw/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =   19781146 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.77     *
+*............................................................................*
+*Br   38 :chWorstRaw : chWorstIso/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =   31220710 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   39 :phoIsoRaw : phoIsoRaw/F                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =   26490853 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.32     *
+*............................................................................*
+*Br   40 :nhIsoRaw  : nhIsoRaw/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =   18310558 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.92     *
+*............................................................................*
+*Br   41 :rho       : rho/F                                                  *
+*Entries :  8746388 : Total  Size=   35094849 bytes  File Size  =   30530602 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.15     *
+*............................................................................*
+*Br   42 :rawE      : rawE/F                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =   31247291 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   43 :scEtaWidth : scEtaWidth/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =   30994914 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.13     *
+*............................................................................*
+*Br   44 :scPhiWidth : scPhiWidth/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =   31294931 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   45 :esRR      : esRR/F                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =   14319016 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   2.45     *
+*............................................................................*
+*Br   46 :esEn      : esEn/F                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =   14883356 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   2.36     *
+*............................................................................*
+*Br   47 :mva       : mva/F                                                  *
+*Entries :  8746388 : Total  Size=   35094849 bytes  File Size  =   30609624 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.15     *
+*............................................................................*
+*Br   48 :mva_nocorr : mva_nocorr/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =   30747876 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.14     *
+*............................................................................*
+*Br   49 :photonIDmva : photonIDmva/F                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =   30699989 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.14     *
+*............................................................................*
+*Br   50 :phoIDbit  : phoIDbit/I                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =    4741616 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   7.40     *
+*............................................................................*
+*Br   51 :MET       : MET/F                                                  *
+*Entries :  8746388 : Total  Size=   35094849 bytes  File Size  =   31270944 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   52 :METPhi    : METPhi/F                                               *
+*Entries :  8746388 : Total  Size=   35098620 bytes  File Size  =   32504029 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.08     *
+*............................................................................*
+*Br   53 :phohasPixelSeed : phohasPixelSeed/I                                *
+*Entries :  8746388 : Total  Size=   35109933 bytes  File Size  =    3034545 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=  11.56     *
+*............................................................................*
+*Br   54 :sieieFull5x5 : sieieFull5x5/F                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =   29703234 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.18     *
+*............................................................................*
+*Br   55 :sieipFull5x5 : sieipFull5x5/F                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =   33163133 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.06     *
+*............................................................................*
+*Br   56 :sipipFull5x5 : sipipFull5x5/F                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =   30289916 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.16     *
+*............................................................................*
+*Br   57 :r9Full5x5 : r9Full5x5/F                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =   28807877 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.22     *
+*............................................................................*
+*Br   58 :e2x2Full5x5 : e2x2Full5x5/F                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =   31319542 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   59 :e5x5Full5x5 : e5x5Full5x5/F                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =   31293188 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   60 :jetPt     : jetPt/F                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =   27738575 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.26     *
+*............................................................................*
+*Br   61 :jetEta    : jetEta/F                                               *
+*Entries :  8746388 : Total  Size=   35098620 bytes  File Size  =   29630512 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.18     *
+*............................................................................*
+*Br   62 :jetPhi    : jetPhi/F                                               *
+*Entries :  8746388 : Total  Size=   35098620 bytes  File Size  =   29601175 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.18     *
+*............................................................................*
+*Br   63 :jetY      : jetY/F                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =   29626687 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.18     *
+*............................................................................*
+*Br   64 :jetJECUnc : jetJECUnc/F                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =   27526181 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.27     *
+*............................................................................*
+*Br   65 :jetGenJetPt : jetGenJetPt/F                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =   27451572 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.28     *
+*............................................................................*
+*Br   66 :jetGenJetEta : jetGenJetEta/F                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =   29288200 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.20     *
+*............................................................................*
+*Br   67 :jetGenJetPhi : jetGenJetPhi/F                                      *
+*Entries :  8746388 : Total  Size=   35106162 bytes  File Size  =   29265977 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.20     *
+*............................................................................*
+*Br   68 :jetGenJetY : jetGenJetY/F                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =   29286722 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.20     *
+*............................................................................*
+*Br   69 :jetCSV2BJetTags : jetCSV2BJetTags/F                                *
+*Entries :  8746388 : Total  Size=   35109933 bytes  File Size  =   27822101 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.26     *
+*............................................................................*
+*Br   70 :jetDeepCSVTags_b : jetDeepCSVTags_b/F                              *
+*Entries :  8746388 : Total  Size=   35111190 bytes  File Size  =   25546973 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.37     *
+*............................................................................*
+*Br   71 :jetDeepCSVTags_bb : jetDeepCSVTags_bb/F                            *
+*Entries :  8746388 : Total  Size=   35112447 bytes  File Size  =   25746568 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.36     *
+*............................................................................*
+*Br   72 :jetDeepCSVTags_c : jetDeepCSVTags_c/F                              *
+*Entries :  8746388 : Total  Size=   35111190 bytes  File Size  =   25080162 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.40     *
+*............................................................................*
+*Br   73 :jetDeepCSVTags_udsg : jetDeepCSVTags_udsg/F                        *
+*Entries :  8746388 : Total  Size=   35114961 bytes  File Size  =   24298215 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.44     *
+*............................................................................*
+*Br   74 :jetDeepFlavourTags_b : Float_t                                     *
+*Entries :  8746388 : Total  Size=   35116216 bytes  File Size  =   29098350 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.21     *
+*............................................................................*
+*Br   75 :jetDeepFlavourTags_c : Float_t                                     *
+*Entries :  8746388 : Total  Size=   35116216 bytes  File Size  =   28483312 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.23     *
+*............................................................................*
+*Br   76 :jetDeepFlavourTags_g : Float_t                                     *
+*Entries :  8746388 : Total  Size=   35116216 bytes  File Size  =   28488920 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.23     *
+*............................................................................*
+*Br   77 :jetDeepFlavourTags_lepb : Float_t                                  *
+*Entries :  8746388 : Total  Size=   35119987 bytes  File Size  =   29286180 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.20     *
+*............................................................................*
+*Br   78 :jetDeepFlavourTags_bb : Float_t                                    *
+*Entries :  8746388 : Total  Size=   35117473 bytes  File Size  =   29575479 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.19     *
+*............................................................................*
+*Br   79 :jetDeepFlavourTags_uds : Float_t                                   *
+*Entries :  8746388 : Total  Size=   35118730 bytes  File Size  =   28693041 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.22     *
+*............................................................................*
+*Br   80 :jetDeepCSVDiscriminatorTags_BvsAll : Float_t                       *
+*Entries :  8746388 : Total  Size=   35133932 bytes  File Size  =   25576469 *
+*Baskets :     1254 : Basket Size=      32000 bytes  Compression=   1.37     *
+*............................................................................*
+*Br   81 :jetDeepCSVDiscriminatorTags_CvsB : Float_t                         *
+*Entries :  8746388 : Total  Size=   35131416 bytes  File Size  =   24456477 *
+*Baskets :     1254 : Basket Size=      32000 bytes  Compression=   1.44     *
+*............................................................................*
+*Br   82 :jetDeepCSVDiscriminatorTags_CvsL : Float_t                         *
+*Entries :  8746388 : Total  Size=   35131416 bytes  File Size  =   25254009 *
+*Baskets :     1254 : Basket Size=      32000 bytes  Compression=   1.39     *
+*............................................................................*
+*Br   83 :jetPartonID : jetPartonID/I                                        *
+*Entries :  8746388 : Total  Size=   35104905 bytes  File Size  =    7928191 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.42     *
+*............................................................................*
+*Br   84 :jetGenPartonID : jetGenPartonID/I                                  *
+*Entries :  8746388 : Total  Size=   35108676 bytes  File Size  =    8014621 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.38     *
+*............................................................................*
+*Br   85 :jetHadFlvr : jetHadFlvr/I                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =    2632785 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=  13.32     *
+*............................................................................*
+*Br   86 :jetGenPartonMomID : jetGenPartonMomID/I                            *
+*Entries :  8746388 : Total  Size=   35112447 bytes  File Size  =    7676785 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   4.57     *
+*............................................................................*
+*Br   87 :calib_scEtaWidth : calib_scEtaWidth/F                              *
+*Entries :  8746388 : Total  Size=   35111190 bytes  File Size  =   31020566 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.13     *
+*............................................................................*
+*Br   88 :calib_scPhiWidth : calib_scPhiWidth/F                              *
+*Entries :  8746388 : Total  Size=   35111190 bytes  File Size  =   31316382 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.12     *
+*............................................................................*
+*Br   89 :calib_r9Full5x5 : calib_r9Full5x5/F                                *
+*Entries :  8746388 : Total  Size=   35109933 bytes  File Size  =   28937977 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.21     *
+*............................................................................*
+*Br   90 :calib_s4Full5x5 : calib_s4Full5x5/F                                *
+*Entries :  8746388 : Total  Size=   35109933 bytes  File Size  =   28914574 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.21     *
+*............................................................................*
+*Br   91 :calib_sieieFull5x5 : calib_sieieFull5x5/F                          *
+*Entries :  8746388 : Total  Size=   35113704 bytes  File Size  =   29756593 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.18     *
+*............................................................................*
+*Br   92 :calib_sieipFull5x5 : calib_sieipFull5x5/F                          *
+*Entries :  8746388 : Total  Size=   35113704 bytes  File Size  =   33163521 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   1.06     *
+*............................................................................*
+*Br   93 :calib_esEnergyOverSCRawEnergy : calib_esEnergyOverSCRawEnergy/F    *
+*Entries :  8746388 : Total  Size=   35127531 bytes  File Size  =   15067687 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   2.33     *
+*............................................................................*
+*Br   94 :nLHE      : nLHE/I                                                 *
+*Entries :  8746388 : Total  Size=   35096106 bytes  File Size  =     278579 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 125.89     *
+*............................................................................*
+*Br   95 :lhePID    : lhePID[nLHE]/I                                         *
+*Entries :  8746388 : Total  Size=   35215446 bytes  File Size  =     426144 *
+*Baskets :     2342 : Basket Size=      32000 bytes  Compression=  82.53     *
+*............................................................................*
+*Br   96 :lheE      : lheE  [nLHE]/F                                         *
+*Entries :  8746388 : Total  Size=   35210767 bytes  File Size  =     421464 *
+*Baskets :     2342 : Basket Size=      32000 bytes  Compression=  83.43     *
+*............................................................................*
+*Br   97 :lhePx     : lhePx [nLHE]/F                                         *
+*Entries :  8746388 : Total  Size=   35213110 bytes  File Size  =     423805 *
+*Baskets :     2342 : Basket Size=      32000 bytes  Compression=  82.98     *
+*............................................................................*
+*Br   98 :lhePy     : lhePy [nLHE]/F                                         *
+*Entries :  8746388 : Total  Size=   35213110 bytes  File Size  =     423805 *
+*Baskets :     2342 : Basket Size=      32000 bytes  Compression=  82.98     *
+*............................................................................*
+*Br   99 :lhePz     : lhePz [nLHE]/F                                         *
+*Entries :  8746388 : Total  Size=   35213110 bytes  File Size  =     423805 *
+*Baskets :     2342 : Basket Size=      32000 bytes  Compression=  82.98     *
+*............................................................................*
+*Br  100 :xsweight  : xsweight/F                                             *
+*Entries :  8746388 : Total  Size=   35101134 bytes  File Size  =     307473 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 114.08     *
+*............................................................................*
+*Br  101 :genWeight : genWeight/F                                            *
+*Entries :  8746388 : Total  Size=   35102391 bytes  File Size  =     308726 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression= 113.62     *
+*............................................................................*
+*Br  102 :jetID     : jetID/I                                                *
+*Entries :  8746388 : Total  Size=   35097363 bytes  File Size  =    3300196 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=  10.63     *
+*............................................................................*
+*Br  103 :jetPUIDbit : jetPUIDbit/I                                          *
+*Entries :  8746388 : Total  Size=   35103648 bytes  File Size  =    4810322 *
+*Baskets :     1253 : Basket Size=      32000 bytes  Compression=   7.29     *
+*............................................................................*

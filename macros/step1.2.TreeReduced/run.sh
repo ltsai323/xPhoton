@@ -1,11 +1,19 @@
 #!/usr/bin/env sh
 
-origfile=/wk_cms/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root
-newfile=hi.root
-
+label=data
+file=/wk_cms/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root
 root -b <<EOF
-.L TreeReduced.C
-EventSelection("${origfile}");
+.x TreeReduced.C("${file}", "${label}")
 EOF
 
-mv output.root $newfile 
+label=mc
+file=/wk_cms/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root
+root -b <<EOF
+.x TreeReduced.C("${file}", "${label}")
+EOF
+
+label=qcd
+file=/wk_cms/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root
+root -b <<EOF
+.x TreeReduced.C("${file}", "${label}")
+EOF

@@ -154,6 +154,7 @@ public :
    Float_t         jetSF_DeepFlavour_JESReduced_up_cferr2;
    Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
    Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
+   Int_t           isQCD;
 
    // List of branches
    TBranch        *b_jetSubVtxPt;   //!
@@ -288,16 +289,17 @@ public :
    TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr2;   //!
    TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
    TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
+   TBranch        *b_isQCD;   //!
 
    MakeHisto(Int_t option=0);
-   MakeHisto(const char* fname, bool isMC);
+   MakeHisto(const char* fname, const char* outputlabel_, bool isMC);
    void fitVarsInit();
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   virtual void     Loop();
+   virtual void     Loop(Int_t extracut);
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    virtual Int_t    EBEE(Float_t eta);
@@ -312,6 +314,7 @@ public :
    Int_t           OPTION;
    Int_t        HLTOPTION;
    bool fkMC;
+   const char* _outputlabel;
 
    enum fitVar {
    _deepCSVTags_b,
@@ -392,9 +395,11 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLT
     tc->Add("/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step7.ClosureTest/storeroot/fakesample9.root");
   }
 
+  _outputlabel="hi";
   Init(tc);
 }
-MakeHisto::MakeHisto(const char* fname, bool isMC) : fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0)
+MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) :
+    fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
 {
   printf("Input file name is : %s", fname);
   TChain *tc = new TChain("t");
@@ -452,13 +457,11 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
-   /* asdf temperally disabled for fake data
-   if (!IsMC() )
+   if (!IsMC() && fChain->GetListOfBranches()->FindObject("HLT") ) // for fake data, there is no HLT found
    {
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
    }
-   */
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
    if ( IsMC() )
    {
@@ -567,14 +570,12 @@ void MakeHisto::Init(TTree *tree)
    }
    fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
-   /* asdf temporally disabled for fake data
-   if (!IsMC() )
+   if (!IsMC() && fChain->GetListOfBranches()->FindObject("HLT") ) // for fake data, there is no HLT found
    {
    fChain->SetBranchAddress("SeedTime", &SeedTime, &b_SeedTime);
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
    }
-   */
    if ( IsMC() )
    {
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
@@ -610,6 +611,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
    fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
    fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
+   fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
    Notify();
 }
 

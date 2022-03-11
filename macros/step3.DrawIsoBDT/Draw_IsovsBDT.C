@@ -8,6 +8,9 @@
 #include <TLegend.h>
 #include <TGraph.h>
 #include <TGraphAsymmErrors.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+namespace pt = boost::property_tree;
 // target : 
 //    input data / sigMC / bkgMC and return binning histogram with all and sideband BDT distribution.
 //    which all distribution is 2D histogram. But sideband is 1D.
@@ -19,7 +22,6 @@ std::vector<float> ptbin_ranges()
   std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
   return vec_ptcut;
 }
-/*
 struct VARList
 {
     enum vars
@@ -60,51 +62,10 @@ struct VARList
         histnames[subVtxMass]                         = "subVtxMass";
     }
 };
-*/
 
 // jetbin = 0 : barrel jet
 // jetbin = 1 : endcap jet
 // jetbin = 2 : inclusive photon. So it sums up all jetbins.
-/*
-TH2F* GetSigHistFromFile_General(TFile* infile, const char* varname,
-        int ebee, int jetbin, int ptbin, int IsoOption )
-{
-    TH2F* hist;
-    char hname[200];
-    //sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-    sprintf(hname,"%s_%d_%d_%d_0_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-    hist = (TH2F*)infile->Get(hname);
-    if ( jetbin == 0 || jetbin == 1 ) return hist;
-    
-    while ( jetbin-- )
-    {
-        //sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-        sprintf(hname,"%s_%d_%d_%d_0_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-        hist->Add( (TH2F*)infile->Get(hname) );
-    }
-    return hist;
-
-}
-TH2F* GetBkgHistFromFile_General(TFile* infile, const char* varname,
-        int ebee, int jetbin, int ptbin, int IsoOption )
-{
-    TH2F* hist;
-    char hname[200];
-    //sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-    sprintf(hname,"%s_%d_%d_%d_1_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-    hist = (TH2F*)infile->Get(hname);
-    if ( jetbin == 0 || jetbin == 1 ) return hist;
-    
-    while ( jetbin-- )
-    {
-        //sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-        sprintf(hname,"%s_%d_%d_%d_1_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-        hist->Add( (TH2F*)infile->Get(hname) );
-    }
-    return hist;
-
-}
-*/
 TH2F* GetHistFromFile_General(TFile* infile, const char* varname, int isBkg,
         int ebee, int jetbin, int ptbin )
 {
@@ -221,11 +182,10 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   TH2F *hgjet = (TH2F*) GetSigHistFromFile( fgjet, ebee, jetbin, ptbin, IsoOption );
   TH2F *hdata = (TH2F*) GetSigHistFromFile( fdata, ebee, jetbin, ptbin, IsoOption );
   TH2F *hqcd  = (TH2F*) GetBkgHistFromFile( fqcd , ebee, jetbin, ptbin, IsoOption );
-if ( hgjet == nullptr ) std::cerr << "nothing found in sig MC!\n";
-if ( hdata == nullptr ) std::cerr << "nothing found in data!\n";
-if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
+if ( hgjet == nullptr ) { std::cerr << "nothing found in sig MC!\n"; throw "failed to load file!\n"; }
+if ( hdata == nullptr ) { std::cerr << "nothing found in data!\n";   throw "failed to load file!\n"; }
+if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "failed to load file!\n"; }
 
-/*
   VARList fitvars;
   std::vector<TH2F*> gjet_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*> data_fithists(VARList::totvars, nullptr);
@@ -238,7 +198,6 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
       data_fithists[varidx] = (TH2F*) GetSigVarHistFromFile( fdata, vartemplate, ebee, jetbin, ptbin )->Clone();
        qcd_fithists[varidx] = (TH2F*) GetBkgVarHistFromFile( fqcd , vartemplate, ebee, jetbin, ptbin )->Clone();
   }
-  */
 
   
 
@@ -253,7 +212,6 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
   sprintf(hname,"data_all_%d_%d_%d",ebee, jetbin, ptbin);
   hdata_all->SetName(hname);
 
-  /*
   std::vector<TH2F*> gjet_all_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*> data_all_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*>  qcd_all_fithists(VARList::totvars, nullptr);
@@ -267,7 +225,6 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
       sprintf(vartemplate,"%s_%s_%d_%d_%d","qcd_all" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
        qcd_all_fithists[varidx] = (TH2F*)  qcd_fithists[varidx]->Clone();   qcd_all_fithists[varidx]->SetName(vartemplate);
   }
-  */
 
 
   Printf("data %.0f, signal %.2f, bkg %.2f \n", hdata->Integral(), hgjet->Integral(), hqcd->Integral());
@@ -275,14 +232,12 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
   hqcd->Rebin2D(rebinoption,2);
   hgjet->Rebin2D(rebinoption,2);
   hdata->Rebin2D(rebinoption,2);
-  /*
   for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
   {
       gjet_fithists[varidx]->Rebin2D(rebinoption,2);
       data_fithists[varidx]->Rebin2D(rebinoption,2);
        qcd_fithists[varidx]->Rebin2D(rebinoption,2);
   }
-  */
 
   int nbinx = hqcd->GetNbinsX();
 
@@ -331,7 +286,6 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
   sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
   TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(hname,zone2_low, zone2_high);
 
-  /*
   std::vector<TH1D*> gjet_zone1_fithists(VARList::totvars, nullptr);
   std::vector<TH1D*> data_zone1_fithists(VARList::totvars, nullptr);
   std::vector<TH1D*>  qcd_zone1_fithists(VARList::totvars, nullptr);
@@ -358,7 +312,6 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
        qcd_zone2_fithists[varidx] = (TH1D*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
   }
-  */
 
 
   //for PhoISO
@@ -480,19 +433,17 @@ if ( hqcd  == nullptr ) std::cerr << "nothing found in QCD!\n";
     hdata_all->Write();
     hqcd_all->Write();
 
-    /*
     TDirectory* outdir = (TDirectory*) fout->mkdir("fitVars");
     outdir->cd();
-    for ( auto iter : gjet_all_fithists ) iter->Write();
-    for ( auto iter : data_all_fithists ) iter->Write();
-    for ( auto iter :  qcd_all_fithists ) iter->Write();
+    for ( auto iter :   gjet_all_fithists ) iter->Write();
+    for ( auto iter :   data_all_fithists ) iter->Write();
+    for ( auto iter :    qcd_all_fithists ) iter->Write();
     for ( auto iter : gjet_zone1_fithists ) iter->Write();
     for ( auto iter : data_zone1_fithists ) iter->Write();
     for ( auto iter :  qcd_zone1_fithists ) iter->Write();
     for ( auto iter : gjet_zone2_fithists ) iter->Write();
     for ( auto iter : data_zone2_fithists ) iter->Write();
     for ( auto iter :  qcd_zone2_fithists ) iter->Write();
-    */
 
     fout->Close();
   }

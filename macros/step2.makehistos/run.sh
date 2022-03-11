@@ -1,21 +1,34 @@
 #!/usr/bin/env sh
+datafile=$1
+signfile=$2
+fakefile=$3
 
-root -b <<EOF
-.L MakeHisto.C+
-MakeHisto t(1)
-t.Loop()
-EOF
-mv output.root makehisto_data.root
 
+
+label=data
+ifile=$datafile
+isMC=false
 root -b <<EOF
 .L MakeHisto.C+
-MakeHisto t(2)
-t.Loop()
+MakeHisto t("$ifile","$label",$isMC)
+t.Loop(1)
 EOF
-mv output.root makehisto_sig_madgraph.root
+
+label=sig
+ifile=$signfile
+isMC=true
 root -b <<EOF
 .L MakeHisto.C+
-MakeHisto t(3)
-t.Loop()
+MakeHisto t("$ifile","$label",$isMC)
+t.Loop(1)
 EOF
-mv output.root makehisto_QCD_madgraph.root
+
+
+label=QCD
+ifile=$fakefile
+isMC=true
+root -b <<EOF
+.L MakeHisto.C+
+MakeHisto t("$ifile","$label",$isMC)
+t.Loop(1)
+EOF

@@ -21,7 +21,7 @@ static Int_t MINITREE=1;
 static Double_t XS=1.;
 static Bool_t verbose=false;
 static Int_t JETPD_PHOTONHLT=0;
-static Int_t ONLY_LEADINGPHOTON=1;
+static Int_t ONLY_LEADINGPHOTON=0;
 
 static Int_t isMC=0;
 static Int_t data25ns=1;
