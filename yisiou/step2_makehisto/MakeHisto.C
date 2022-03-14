@@ -21,7 +21,8 @@ std::vector<float> ptbin_ranges()
 {
     // for 2016
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
-    std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+    std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000
+}; // size = 16. ptbin = [0,15]
     return vec_ptcut;
 }
 
@@ -134,7 +135,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     // isMatched : 0 for matched, 1 for not-matched, 2 for matched(qcd-sideband), 3 for matched(qcd-signal), 4 for not-matched(qcd) 
     // jetflv    : 0 for light ; 1 for c ; 2 for b
     // tagger    : 0 for bvsall ; 1 for cvsl ; 2 for cvsb ; 3 for svxmass
-    // parity	 : 0 for even entries ; 1 for odd entries
+    // parity    : 0 for even entries ; 1 for odd entries
     // yi-shou's variables
     TH1F *h_jettag     [NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR][NUM_PARITY];
     TH1F *h_jettag_up  [NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR][NUM_PARITY];
@@ -174,6 +175,10 @@ void MakeHisto::Loop(Int_t extracut = 0)
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+        if (jentry % 100000 == 0){
+            fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries);
+          }
 
         Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
         Float_t photonpt = recoPtCalib;
@@ -224,8 +229,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
                     if( (phoFiredTrgs >>(ibit)) & 1 ) {
                         h_HLT[ebee][ibit][1]->Fill(phop4->Et());
                     }
-                }	  
-            }	
+                }         
+            }   
             if(phoFiredTrgs>0) {
                 if(ebee==0) h_EB_HLTall->Fill(photonpt);
                 else h_EE_HLTall->Fill(photonpt);
@@ -255,23 +260,20 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // asdf selections
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
         if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
-
+/*
         // jet selections
         if ( jetPt < 30. ) continue;
         if ( fabs(jetEta) > 2.5 ) continue;
         if ( jetDeepCSVTags_c < -0.99 ) continue;
         if ( jetID != 1 ) continue;
         if ( jetPUIDbit != 7 ) continue;
-
-	//if ( mcweight>3000. ) continue;
-	if ( extracut == 1 ){
-	  if ( jetSubVtxMass == 0 ) continue;
-	}else if ( extracut == 2 ){
-	  if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
-	}
-	//if ( mcweight>3000. ) continue;
-	//if ( jetSubVtxMass==0 ) continue;  
-	//if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155 ) continue;
+        if ( mcweight>60. ) continue;
+*/      
+        if ( extracut == 1 ){
+          if ( jetSubVtxMass == 0 ) continue;
+        }else if ( extracut == 2 ){
+          if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
+        }
 
         h_BDT[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][0]->Fill(bdt_score, chIsoRaw, eventweight);
@@ -291,9 +293,9 @@ void MakeHisto::Loop(Int_t extracut = 0)
         //jetflvr
         int jetflvBin = JetFlavourBin(jetHadFlvr);
         int phoMatchStatIdx = 0;
-	int parityIdx = ( jentry % 2 == 0 ) ? 0 : 1;
+        int parityIdx = ( jentry % 2 == 0 ) ? 0 : 1;
         // need to be modified asdf
-        if ( OPTION == 3 )
+        if ( isQCD == 1 )
         {
             if ( isMatched==-99 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
             else if ( isMatched==-99 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
@@ -304,7 +306,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
             if ( isMatched==1 && chIsoRaw<2.0   ) phoMatchStatIdx = 0;
             else    phoMatchStatIdx = 1;
         }
-	
+        
 
         float evtws=0.;
         float evtws_up=0.;
@@ -346,6 +348,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
     for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
     for(int isFakePho=0; isFakePho<2; isFakePho++) {
+        cout << "checkentries: " << h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][0]->Integral() << endl;
         h_BDT     [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
         h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][0]->Write();
         h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][1]->Write();
