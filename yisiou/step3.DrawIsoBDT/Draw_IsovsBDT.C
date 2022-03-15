@@ -8,6 +8,9 @@
 #include <TLegend.h>
 #include <TGraph.h>
 #include <TGraphAsymmErrors.h>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+namespace pt = boost::property_tree;
 // target : 
 //    input data / sigMC / bkgMC and return binning histogram with all and sideband BDT distribution.
 //    which all distribution is 2D histogram. But sideband is 1D.
@@ -16,10 +19,41 @@ std::vector<float> ptbin_ranges()
 {
   // for 2016
   //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
-  std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000};
- // size = 16. ptbin = [0,15]
+  std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
   return vec_ptcut;
 }
+
+struct JsonInfo
+{
+    JsonInfo( const char* jsonfile )
+    {
+        pt::ptree root;
+        pt::read_json(jsonfile, root);
+        ebee        = root.get<int>("phoEtaBin"  , 0 );
+        jetbin      = root.get<int>("jetEtaBin"  , 0 );
+        ptbin       = root.get<int>("phoPtBin"   , 0 );
+        rebinoption = root.get<int>("rebinOption", 5 );
+        sb1         = root.get<int>("sidebandlower", 14);
+        sb2         = root.get<int>("sidebandupper", 20);
+
+        datafile    = root.get<std::string>("data", "");
+        sig_file    = root.get<std::string>("sig" , "");
+        bkg_file    = root.get<std::string>("bkg" , "");
+        out_template= root.get<std::string>("out_template" , "");
+
+    }
+    JsonInfo() {}
+    
+    int ebee, jetbin, ptbin, rebinoption, sb1, sb2;
+    std::string datafile, sig_file, bkg_file;
+    std::string out_template;
+
+    const char* Data()  const { return datafile.c_str(); }
+    const char* SigMC() const { return sig_file.c_str(); }
+    const char* BkgMC() const { return bkg_file.c_str(); }
+
+    
+};
 struct VARList
 {
     enum vars
@@ -64,58 +98,20 @@ struct VARList
 // jetbin = 0 : barrel jet
 // jetbin = 1 : endcap jet
 // jetbin = 2 : inclusive photon. So it sums up all jetbins.
-/*
-TH2F* GetSigHistFromFile_General(TFile* infile, const char* varname,
-        int ebee, int jetbin, int ptbin, int IsoOption )
-{
-    TH2F* hist;
-    char hname[200];
-    //sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-    sprintf(hname,"%s_%d_%d_%d_0_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-    hist = (TH2F*)infile->Get(hname);
-    if ( jetbin == 0 || jetbin == 1 ) return hist;
-    
-    while ( jetbin-- )
-    {
-        //sprintf(hname,"h_IsovsBDT_%d_%d_%d_0_%d",ebee, jetbin, ptbin, IsoOption);  
-        sprintf(hname,"%s_%d_%d_%d_0_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-        hist->Add( (TH2F*)infile->Get(hname) );
-    }
-    return hist;
-
-}
-TH2F* GetBkgHistFromFile_General(TFile* infile, const char* varname,
-        int ebee, int jetbin, int ptbin, int IsoOption )
-{
-    TH2F* hist;
-    char hname[200];
-    //sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-    sprintf(hname,"%s_%d_%d_%d_1_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-    hist = (TH2F*)infile->Get(hname);
-    if ( jetbin == 0 || jetbin == 1 ) return hist;
-    
-    while ( jetbin-- )
-    {
-        //sprintf(hname,"h_IsovsBDT_%d_%d_%d_1_%d",ebee, jetbin, ptbin, IsoOption);  
-        sprintf(hname,"%s_%d_%d_%d_1_%d", varname, ebee, jetbin, ptbin, IsoOption);  
-        hist->Add( (TH2F*)infile->Get(hname) );
-    }
-    return hist;
-
-}
-*/
 TH2F* GetHistFromFile_General(TFile* infile, const char* varname, int isBkg,
         int ebee, int jetbin, int ptbin )
 {
     TH2F* hist;
     char hname[200];
     sprintf(hname,"%s_%d_%d_%d_%d", varname, ebee, jetbin, ptbin, isBkg);  
+        std::cout << "get nameing : " << hname << std::endl;
     hist = (TH2F*)infile->Get(hname);
     if ( jetbin == 0 || jetbin == 1 ) return hist;
     
     while ( jetbin-- )
     {
         sprintf(hname,"%s_%d_%d_%d_%d", varname, ebee, jetbin, ptbin, isBkg);
+        std::cout << "get nameing : " << hname << std::endl;
         hist->Add( (TH2F*)infile->Get(hname) );
     }
     return hist;
@@ -201,36 +197,39 @@ const char* GetFile( int fileopt )
 
 
 
-int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, const char* datafilename=""){
 
-        cout<< "mainfunc" << endl;
-        cout<< "ebee = " << ebee << endl;
-        cout<< "jetbin = " << jetbin << endl;
-        cout<< "ptbin = " << ptbin << endl;
-        cout<< "rebinoption = " << rebinoption << endl;
-        cout<< "sb1 = " << sb1 << endl;
-        cout<< "sb2 = " << sb2 << endl;
-        cout<< "datafilename = " << datafilename << endl;
-
-  TFile *fdata = TFile::Open( datafilename                 );
+int mainfunc( const JsonInfo& args )
+{
+    int ebee = args.ebee;
+    int jetbin = args.jetbin;
+    int ptbin = args.ptbin;
+    int rebinoption = args.rebinoption;
+    int sb1 = args.sb1;
+    int sb2 = args.sb2;
+    
+  TFile *fdata = TFile::Open( args.Data() );
   
-  TFile *fqcd  = TFile::Open( GetFile(fileid::qcdmadgraph) );
-  TFile *fgjet = TFile::Open( GetFile(fileid::sigmadgraph) );
+  TFile *fqcd  = TFile::Open( args.SigMC() );
+  TFile *fgjet = TFile::Open( args.BkgMC() );
+  std::cout << "details of data sample : ";
+  fdata->Print();
+  std::cout << "details of QCD         : ";
   fqcd->Print();
+  std::cout << "details of signal      : ";
+  fgjet->Print();
   char hname[100];
   // int ebee=0;
   // if(strcmp(EBEE,"EE")==0) ebee=1;
 
   int IsoOption=0; //0 chIso, 1 phoIso, 2 combIso, 3 chWorst
-
-        cout << "sfsg1" << endl;
-
   TH2F *hgjet = (TH2F*) GetSigHistFromFile( fgjet, ebee, jetbin, ptbin, IsoOption );
   TH2F *hdata = (TH2F*) GetSigHistFromFile( fdata, ebee, jetbin, ptbin, IsoOption );
   TH2F *hqcd  = (TH2F*) GetBkgHistFromFile( fqcd , ebee, jetbin, ptbin, IsoOption );
+if ( hgjet == nullptr ) { std::cerr << "nothing found in sig MC!\n"; throw "failed to load file!\n"; }
+if ( hdata == nullptr ) { std::cerr << "nothing found in data!\n";   throw "failed to load file!\n"; }
+if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "failed to load file!\n"; }
 
-        cout << "sfsg2" << endl;
-
+/*
   VARList fitvars;
   std::vector<TH2F*> gjet_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*> data_fithists(VARList::totvars, nullptr);
@@ -243,22 +242,22 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
       data_fithists[varidx] = (TH2F*) GetSigVarHistFromFile( fdata, vartemplate, ebee, jetbin, ptbin )->Clone();
        qcd_fithists[varidx] = (TH2F*) GetBkgVarHistFromFile( fqcd , vartemplate, ebee, jetbin, ptbin )->Clone();
   }
+  */
 
-         cout << "sfsg3" << endl; 
+  
 
   TH2F* hgjet_all = (TH2F*) hgjet->Clone();
   TH2F* hqcd_all =  (TH2F*) hqcd->Clone();
   TH2F* hdata_all = (TH2F*) hdata->Clone(); 
   
-  sprintf(hname,"gjet_all_%d_%d_%d",ebee, jetbin, ptbin);//, IsoOption);  
+  sprintf(hname,"gjet_all_%d_%d_%d",ebee, jetbin, ptbin);
   hgjet_all->SetName(hname);
-  sprintf(hname,"qcd_all_%d_%d_%d",ebee, jetbin, ptbin);//, IsoOption);  
+  sprintf(hname,"qcd_all_%d_%d_%d",ebee, jetbin, ptbin);
   hqcd_all->SetName(hname);
-  sprintf(hname,"data_all_%d_%d_%d",ebee, jetbin, ptbin);//, IsoOption);  
+  sprintf(hname,"data_all_%d_%d_%d",ebee, jetbin, ptbin);
   hdata_all->SetName(hname);
 
-                cout << "sfsg4" << endl;
-
+  /*
   std::vector<TH2F*> gjet_all_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*> data_all_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*>  qcd_all_fithists(VARList::totvars, nullptr);
@@ -272,20 +271,22 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
       sprintf(vartemplate,"%s_%s_%d_%d_%d","qcd_all" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
        qcd_all_fithists[varidx] = (TH2F*)  qcd_fithists[varidx]->Clone();   qcd_all_fithists[varidx]->SetName(vartemplate);
   }
+  */
 
-        cout << "sfsg5" << endl;
 
   Printf("data %.0f, signal %.2f, bkg %.2f \n", hdata->Integral(), hgjet->Integral(), hqcd->Integral());
 
   hqcd->Rebin2D(rebinoption,2);
   hgjet->Rebin2D(rebinoption,2);
   hdata->Rebin2D(rebinoption,2);
+  /*
   for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
   {
       gjet_fithists[varidx]->Rebin2D(rebinoption,2);
       data_fithists[varidx]->Rebin2D(rebinoption,2);
        qcd_fithists[varidx]->Rebin2D(rebinoption,2);
   }
+  */
 
   int nbinx = hqcd->GetNbinsX();
 
@@ -334,6 +335,7 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
   TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(hname,zone2_low, zone2_high);
 
+  /*
   std::vector<TH1D*> gjet_zone1_fithists(VARList::totvars, nullptr);
   std::vector<TH1D*> data_zone1_fithists(VARList::totvars, nullptr);
   std::vector<TH1D*>  qcd_zone1_fithists(VARList::totvars, nullptr);
@@ -360,6 +362,7 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
        qcd_zone2_fithists[varidx] = (TH1D*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
   }
+  */
 
 
   //for PhoISO
@@ -434,7 +437,7 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
 
   float ymax = h_qcd_zone1->GetMaximum();
   if(h_qcd_zone2->GetMaximum()>ymax) ymax = h_qcd_zone2->GetMaximum();
-  h_qcd_zone1->SetMaximum(ymax*1.2);                                   
+  h_qcd_zone1->SetMaximum(ymax*1.2);				       
 
   h_qcd_zone1->Draw();
   h_qcd_zone2->SetLineColor(2);
@@ -453,7 +456,7 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
   if(h_data_zone2->GetMaximum()>ymax) ymax = h_data_zone2->GetMaximum();
   h_data_zone1->SetMaximum(ymax*1.2);
   h_data_zone1->SetMinimum(0.);
-                                       
+				       
   h_data_zone1->Draw();
   h_data_zone2->SetLineColor(2);
   h_data_zone2->Draw("same");
@@ -463,7 +466,7 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
 
 
   if(rebinoption==1){
-    TFile *fout = new TFile("isovsbdt.root","recreate");
+    TFile *fout = new TFile( Form("iso_%d_%d_%d.root", args.ebee, args.jetbin, args.ptbin) ,"recreate");
     h_gjet_zone1->Write();
     h_gjet_zone2->Write();
     h_qcd_zone1->Write();
@@ -481,22 +484,37 @@ int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=
     hdata_all->Write();
     hqcd_all->Write();
 
+    /*
     TDirectory* outdir = (TDirectory*) fout->mkdir("fitVars");
     outdir->cd();
-    for ( auto iter : gjet_all_fithists ) iter->Write();
-    for ( auto iter : data_all_fithists ) iter->Write();
-    for ( auto iter :  qcd_all_fithists ) iter->Write();
+    for ( auto iter :   gjet_all_fithists ) iter->Write();
+    for ( auto iter :   data_all_fithists ) iter->Write();
+    for ( auto iter :    qcd_all_fithists ) iter->Write();
     for ( auto iter : gjet_zone1_fithists ) iter->Write();
     for ( auto iter : data_zone1_fithists ) iter->Write();
     for ( auto iter :  qcd_zone1_fithists ) iter->Write();
     for ( auto iter : gjet_zone2_fithists ) iter->Write();
     for ( auto iter : data_zone2_fithists ) iter->Write();
     for ( auto iter :  qcd_zone2_fithists ) iter->Write();
+    */
 
     fout->Close();
   }
 
   return 0;
+}
+int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, const char* datafilename=""){
+    JsonInfo a;
+    a.ebee = ebee;
+    a.jetbin = jetbin;
+    a.ptbin = ptbin;
+    a.rebinoption = rebinoption;
+    a.sb1 = sb1;
+    a.sb2 = sb2;
+    a.datafile = datafilename;
+    a.sig_file = GetFile(fileid::sigmadgraph);
+    a.bkg_file = GetFile(fileid::qcdmadgraph);
+    return mainfunc(a);
 }
 
 void Draw_Isoeff(){
@@ -550,7 +568,7 @@ void Draw_Isoeff(){
   tgrs_EE->Divide(h_EE_pass,h_EE_total);
 
   // printf(" 195, %f / %f =  %f \n", h_EB_pass->GetBinContent(14), 
-  //     h_EB_total->GetBinContent(14), tgrs_EB->Eval(195));
+  // 	 h_EB_total->GetBinContent(14), tgrs_EB->Eval(195));
   
   // h_EB_total->Draw();
   // h_EB_pass->Draw("same");
@@ -591,9 +609,14 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
     int fileID = fileid::data;
     if ( fakefileidx != 0 ) fileID = fakefileidx; // Use data or fake sample.
     const char* filename = GetFile(fileID);
-        cout << filename << endl;
+
     mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, filename);
 }
-void Draw_IsovsBDT(const char* ifilename, int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+void Draw_IsovsBDT(const char* ifilename, int ebee, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
     mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, ifilename);
+}
+void Draw_IsovsBDT(const char* jsonName){
+    JsonInfo ivars(jsonName);
+
+    mainfunc(ivars.ebee,ivars.jetbin,ivars.ptbin,ivars.rebinoption,ivars.sb1,ivars.sb2, ivars.datafile.c_str());
 }
