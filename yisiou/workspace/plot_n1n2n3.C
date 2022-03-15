@@ -6,12 +6,10 @@
 
 void plot_n1n2n3(int ptbin = 0){
 
-//  TFile *mc  = new TFile("../step2_makehisto/storeroot1/makehisto_sig_madgraph.root");
-//  TFile *qcd = new TFile("../step2_makehisto/storeroot1/makehisto_QCD_madgraph.root");
-  TFile *mc  = new TFile("../step2_makehisto/storeroot_weightcut1/makehisto_sig_madgraph.root");
-  TFile *qcd = new TFile("../step2_makehisto/storeroot_weightcut1/makehisto_QCD_madgraph.root");
-  TFile *data = new TFile("../step3/toy_data.root");
-
+//  TFile *mc  = new TFile("../step2.makehistos/storeroot1/makehisto_sig_madgraph.root");
+//  TFile *qcd = new TFile("../step2.makehistos/storeroot1/makehisto_QCD_madgraph.root");
+  TFile *mc  = new TFile("../step2.makehistos/storeroot_weightcut1/makehisto_sig_madgraph.root");
+  TFile *qcd = new TFile("../step2.makehistos/storeroot_weightcut1/makehisto_QCD_madgraph.root");
 
   cout << "ptbin is " << ptbin << endl;
 

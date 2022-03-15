@@ -1,0 +1,20 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.12/07                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 9 February 2018                                 |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
+details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
+details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
+data 63423, signal 1828.07, bkg 1709.23 
+
+sig fraction of 10 1 SB/all  = 0.087623 
+sig fraction of 10 1 sig/all = 0.762000 
+sig fit correction       0.674377 
+zone1 sig faction of left / right = 0.450195 
+zone2 SB  faction of left / right = 0.586629 
+Data faction of SB/all = 0.108778 
+Data faction of sig/all = 0.794727 

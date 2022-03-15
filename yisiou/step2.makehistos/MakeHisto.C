@@ -260,15 +260,18 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // asdf selections
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
         if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
-/*
+
         // jet selections
         if ( jetPt < 30. ) continue;
         if ( fabs(jetEta) > 2.5 ) continue;
         if ( jetDeepCSVTags_c < -0.99 ) continue;
-        if ( jetID != 1 ) continue;
-        if ( jetPUIDbit != 7 ) continue;
         if ( mcweight>60. ) continue;
-*/      
+      
+	if ( !isData ){
+		if ( jetID != 1 ) continue;
+        	if ( jetPUIDbit != 7 ) continue;	
+	}	
+
         if ( extracut == 1 ){
           if ( jetSubVtxMass == 0 ) continue;
         }else if ( extracut == 2 ){

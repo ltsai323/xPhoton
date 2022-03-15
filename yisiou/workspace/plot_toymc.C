@@ -6,11 +6,11 @@
 
 void plot_toymc(int ptbin = 0){
 
-//  TFile *mc  = new TFile("../step2_makehisto/storeroot1/makehisto_sig_madgraph.root");
-//  TFile *qcd = new TFile("../step2_makehisto/storeroot1/makehisto_QCD_madgraph.root");
-  TFile *mc  = new TFile("../step2_makehisto/storeroot_weightcut1/makehisto_sig_madgraph.root");
-  TFile *qcd = new TFile("../step2_makehisto/storeroot_weightcut1/makehisto_QCD_madgraph.root");
-  TFile *toymc = new TFile("../step3/toy_mc.root");
+//  TFile *mc  = new TFile("../step2.makehistos/storeroot1/makehisto_sig_madgraph.root");
+//  TFile *qcd = new TFile("../step2.makehistos/storeroot1/makehisto_QCD_madgraph.root");
+  TFile *mc  = new TFile("../step2.makehistos/storeroot_weightcut1/makehisto_sig_madgraph.root");
+  TFile *qcd = new TFile("../step2.makehistos/storeroot_weightcut1/makehisto_QCD_madgraph.root");
+  TFile *toymc = new TFile("../step4.ClousureTest/toy_mc.root");
 
 
   cout << "ptbin is " << ptbin << endl;

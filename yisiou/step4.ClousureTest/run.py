@@ -89,26 +89,25 @@ for num in range(6, 7):
 
     outfile.close()
 
-    string00 = "root.exe -q 'clousure_prod.C("+str(num)+")'"
+    string0 = "root.exe -q 'clousure_prod.C("+str(num)+")'"
 
-    string0 = 'text2workspace.py auto_datacard.txt -o ws.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO "map=.*/sigB.*:mu1[1000,0,1000000]" --PO "map=.*/sigC.*:mu2[1000,0,1000000]" --PO "map=.*/bkgL.*:mu3[1000,0,5000000]"'
+    string1 = 'text2workspace.py auto_datacard.txt -o ws.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO "map=.*/sigB.*:mu1[1000,0,1000000]" --PO "map=.*/sigC.*:mu2[1000,0,1000000]" --PO "map=.*/bkgL.*:mu3[1000,0,5000000]"'
 
-    string1 = 'combine --saveWorkspace -M MultiDimFit -d ws.root --saveFitResult --saveNLL --robustFit on'
+    string2 = 'combine --saveWorkspace -M MultiDimFit -d ws.root --saveFitResult --saveNLL --robustFit on'
 
-    string2 = 'PostFitShapesFromWorkspace -d auto_datacard.txt -w higgsCombineTest.MultiDimFit.mH120.root -o postfit.root -m 120 -f multidimfitTest.root:fit_mdf --postfit --print'
+    string3 = 'PostFitShapesFromWorkspace -d auto_datacard.txt -w higgsCombineTest.MultiDimFit.mH120.root -o postfit.root -m 120 -f multidimfitTest.root:fit_mdf --postfit --print'
 
-    #string3 = "root.exe -q 'Draw_fit_postfit.C("+str(num)+")'"
-    string3 = "root.exe -q 'Draw_svxmass.C("+str(num)+")'"
+    string4 = "root.exe -q 'Draw_svxmass.C("+str(num)+")'"
 
 
-    print string00
-    os.system(string00)
-    print string0
+    print(string0)
     os.system(string0)
     print(string1)
     os.system(string1)
-    print string2
+    print(string2)
     os.system(string2)
     print(string3)
     os.system(string3)
+    print(string4)
+    os.system(string4)
 
