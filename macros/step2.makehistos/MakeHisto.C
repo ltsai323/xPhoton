@@ -24,7 +24,99 @@ std::vector<float> ptbin_ranges()
     std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
     return vec_ptcut;
 }
+struct HistMgr
+{
+    HistMgr( const char* nameTemplate, std::vector<int> maxIdxs ) :
+        _nTemplate(nameTemplate), _MIdxs(maxIdxs) {}
+    std::vector<int> DecodeIdx(int idx)
+    {
+        std::vector<int> outputidxs;
+        for ( int i = 0; i < _MIdxs.size(); ++i )
+        {
+            int lPosition = IdxMultiplier(i);
+            int rPosition = IdxMultiplier(i+1);
+            outputidxs.emplace_back( (idx%lPosition) / rPosition );
+        }
+        std::cout << " input digit : " << idx << ". And outputs are ";
+        for  ( auto k : outputidxs ) std::cout << k << ", ";
+        std::cout << std::endl;
+        return outputidxs;
+    }
+    const char* GetTitle( const std::vector<int>& iI )
+    {
+        switch ( _MIdxs.size() ) {
+        case 0: throw "histogram failed to interpret\n"; return "";
+        case 1: return Form(_nTemplate, iI[0]);
+        case 2: return Form(_nTemplate, iI[0], iI[2]);
+        case 3: return Form(_nTemplate, iI[0], iI[1], iI[2]);
+        case 4: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3]);
+        case 5: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4]);
+        case 6: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5]);
+        case 7: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5], iI[6]);
+        }
+        throw "_MIdxs size exceeds the size provided from GetTitle(), please extend this function\n";
+                return "";
+    }
+    int indexing( const std::vector<int>& inIdxs )
+    {
+        int idx = 0;
+        for ( int idx = 0; idx < _MIdxs.size(); ++idx )
+        { idx += inIdxs[idx] * IdxMultiplier(idx+1); }
+        return idx;
+    }
+    int IdxMultiplier( int fromIdx )
+    {
+        int idxMultiplier = 1;
+        for ( int jdx = fromIdx; jdx < _MIdxs.size(); ++jdx )
+            idxMultiplier *= _MIdxs.at(jdx);
+        return idxMultiplier;
+    }
+    int TotalSize()
+    { return IdxMultiplier(0); }
 
+
+    std::vector<int> _MIdxs;
+    const char* _nTemplate;
+    char tmpnaming[200];
+};
+struct HistMgr1D : public HistMgr
+{
+    HistMgr1D( const char* nameTemplate, std::vector<int> maxIdxs ) : HistMgr(nameTemplate,maxIdxs)
+    {
+        hists.reserve( TotalSize() );
+        for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
+    };
+    void SetXaxis( int nbin, float xmin, float xmax )
+    {
+        for ( int idx = 0; idx < TotalSize(); ++idx )
+        {
+            hists[idx] = new TH1F( GetTitle( DecodeIdx(idx) ), "", nbin, xmin, xmax );
+            hists[idx]->Sumw2();
+        }
+    }
+    TH1F* Get( const std::vector<int>& idxs )
+    { return hists[ indexing(idxs) ]; }
+    std::vector<TH1F*> hists;
+};
+struct HistMgr2D : public HistMgr
+{
+    HistMgr2D( const char* nameTemplate, std::vector<int> maxIdxs ) : HistMgr(nameTemplate,maxIdxs)
+    {
+        hists.reserve( TotalSize() );
+        for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
+    };
+    void SetXYaxis( int nbinx, float xmin, float xmax, int nbiny, float ymin, float ymax )
+    {
+        for ( int idx = 0; idx < TotalSize(); ++idx )
+        {
+            hists[idx] = new TH2F( GetTitle( DecodeIdx(idx) ), "", nbinx, xmin, xmax, nbiny, ymin, ymax );
+            hists[idx]->Sumw2();
+        }
+    }
+    TH2F* Get( const std::vector<int>& idxs )
+    { return hists[ indexing(idxs) ]; }
+    std::vector<TH2F*> hists;
+};
 void MakeHisto::Loop(Int_t extracut = 0)
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
@@ -63,8 +155,38 @@ void MakeHisto::Loop(Int_t extracut = 0)
     TH1F *h_Pt      [NUMBIN_PHOETA]                             [2];
     TH1F *h_Ptspec  [NUMBIN_PHOETA]                             [2];
     TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][NUMBIN_ISOVAR];
+    HistMgr1D _h_BDT_all ( "BDT_all_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
+    HistMgr1D _h_BDT     ( "BDT_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
+    HistMgr1D _h_Pt_all  ( "Pt_all_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
+    HistMgr1D _h_Pt      ( "Pt_%d_%d",
+            {NUMBIN_PHOETA,2});
+    HistMgr1D _h_Ptspec  ( "Pt_spec_%d_%d",
+            {NUMBIN_PHOETA,2});
+    HistMgr2D _h_IsovsBDT( "IsovsBDT_%d_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
+    HistMgr1D _h_HLT_all( "HLT_ebee_%d_bit%d",
+            {NUMBIN_PHOETA,NUMBIT_HLT} );
+    HistMgr1D _h_HLTpass( "HLT_ebee_%d_bit%d_pass",
+            {NUMBIN_PHOETA,NUMBIT_HLT} );
 
+    _h_BDT_all .SetXaxis( 100,-1.,1.);
+    _h_BDT     .SetXaxis( 100,-1.,1.);
+    _h_Pt_all  .SetXaxis( 2000, 0., 2000.);
+    _h_Pt      .SetXaxis( 200, 0., 2000.);
+    _h_Ptspec  .SetXaxis( 200, 0., 2000.);
+    _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    _h_HLT_all .SetXaxis(2000,0.,2000.);
+    _h_HLTpass .SetXaxis(2000,0.,2000.);
+    TH1F *h_EB_HLTall = new TH1F("EB_HLTall","all HLT photon", 1000, 0., 1000.);
+    TH1F *h_EE_HLTall = new TH1F("EE_HLTall","all HLT photon", 1000, 0., 1000.);
 
+    TH1F *h_chiso_sg = new TH1F("chiso_sg","chiso signal region", 150, 0., 30);
+    TH1F *h_chworst_sg = new TH1F("chworst_sg","chworst signal region", 150, 0., 30);
+
+    // hist declare {{{
     for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
     for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
     for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT ; pPtIdx++) {
@@ -108,11 +230,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
             200, 0., 2000.);
         h_Pt[pEtaIdx][isFakePho]->Sumw2();
     } }
-    TH1F *h_EB_HLTall = new TH1F("h_EB_HLTall","all HLT photon", 1000, 0., 1000.);
-    TH1F *h_EE_HLTall = new TH1F("h_EE_HLTall","all HLT photon", 1000, 0., 1000.);
-
-    TH1F *h_chiso_sg = new TH1F("h_chiso_sg","chiso signal region", 150, 0., 30);
-    TH1F *h_chworst_sg = new TH1F("h_chworst_sg","chworst signal region", 150, 0., 30);
 
 
     TH1F *h_HLT[NUMBIN_PHOETA][NUMBIT_HLT][2];
@@ -141,7 +258,49 @@ void MakeHisto::Loop(Int_t extracut = 0)
     TH1F *h_jettag_down[NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR][NUM_PARITY];
     const int varBTagIdx_svxmass=3;
 
+    // hist declare end }}}
 
+
+    HistMgr1D h_btagscore_BvsAll_central    ( "jettag_0_0_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_BvsAll_up         ( "jettag_1_0_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_BvsAll_down       ( "jettag_2_0_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_CvsL_central      ( "jettag_0_1_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_CvsL_up           ( "jettag_1_1_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_CvsL_down         ( "jettag_2_1_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_CvsB_central      ( "jettag_0_2_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_CvsB_up           ( "jettag_1_2_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_CvsB_down         ( "jettag_2_2_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_secVtxMass_central( "jettag_0_3_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_secVtxMass_up     ( "jettag_1_3_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagscore_secVtxMass_down   ( "jettag_2_3_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+
+    h_btagscore_BvsAll_central    .SetXaxis( 10, 0., 1.);
+    h_btagscore_BvsAll_up         .SetXaxis( 10, 0., 1.);
+    h_btagscore_BvsAll_down       .SetXaxis( 10, 0., 1.);
+    h_btagscore_CvsL_central      .SetXaxis( 10, 0., 1.);
+    h_btagscore_CvsL_up           .SetXaxis( 10, 0., 1.);
+    h_btagscore_CvsL_down         .SetXaxis( 10, 0., 1.);
+    h_btagscore_CvsB_central      .SetXaxis( 10, 0., 1.);
+    h_btagscore_CvsB_up           .SetXaxis( 10, 0., 1.);
+    h_btagscore_CvsB_down         .SetXaxis( 10, 0., 1.);
+    h_btagscore_secVtxMass_central.SetXaxis( 10, 0., 5.);
+    h_btagscore_secVtxMass_up     .SetXaxis( 10, 0., 5.);
+    h_btagscore_secVtxMass_down   .SetXaxis( 10, 0., 5.);
+    return ;
+
+    // hist declare 2 {{{
     const std::vector< const char* > jetFlvrNames = { "sigma", "alpha", "beta" };
     for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
     for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
@@ -164,6 +323,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
                 Form("h_jettag_%sDown_%d_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
                 10, 0., upperboundary);
     } } } } } }
+    // hist declare 2 end }}}
 
     Long64_t nentries = fChain->GetEntries();   
     printf("nentries %lli \n", nentries);
@@ -240,7 +400,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // if(isData==1 && ((phoFiredTrgs>>triggerbit(ptbin))&1)==0) continue;
         // if(isData==1 && !(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
         //if(!(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
-        if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue;
+        if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
         //float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);// deta_wg
         // if(MTm>0. && ebee==0 &&dr_wg<0.4) continue;
         // if(MTm>0. && ebee==1 &&dr_wg<1.) continue;
@@ -269,9 +429,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
 	}else if ( extracut == 2 ){
 	  if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
 	}
-	//if ( mcweight>3000. ) continue;
-	//if ( jetSubVtxMass==0 ) continue;  
-	//if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155 ) continue;
 
         h_BDT[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][0]->Fill(bdt_score, chIsoRaw, eventweight);
