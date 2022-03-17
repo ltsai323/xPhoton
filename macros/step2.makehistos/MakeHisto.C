@@ -45,11 +45,12 @@ struct HistMgr
         return outputidxs;
     }
     const char* GetTitle( const std::vector<int>& iI )
+    //const char* GetTitle( const std::vector<int> iI )
     {
         switch ( _MIdxs.size() ) {
         case 0: throw "histogram failed to interpret\n"; return "";
         case 1: return Form(_nTemplate, iI[0]);
-        case 2: return Form(_nTemplate, iI[0], iI[2]);
+        case 2: return Form(_nTemplate, iI[0], iI[1]);
         case 3: return Form(_nTemplate, iI[0], iI[1], iI[2]);
         case 4: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3]);
         case 5: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4]);
@@ -60,6 +61,7 @@ struct HistMgr
                 return "";
     }
     int indexing( const std::vector<int>& inIdxs )
+    //int indexing( const std::vector<int> inIdxs )
     {
         int idx = 0;
         for ( int i = 0; i < _MIdxs.size(); ++i )
@@ -99,11 +101,17 @@ struct HistMgr1D : public HistMgr
     {
         for ( int idx = 0; idx < TotalSize(); ++idx )
         {
+            std::cout << "setxaxis00 input idx : " << idx << "\n";
             hists[idx] = new TH1F( GetTitle( DecodeIdx(idx) ), "", nbin, xmin, xmax );
+            std::cout << "setxaxis01 decoded name : " << GetTitle(DecodeIdx(idx)) << "\n";
+            std::cout << "setxaxis011decoded indexes : ";
+            for ( auto v : DecodeIdx(idx) ) std::cout << v << ", ";
+            std::cout << std::endl;
             hists[idx]->Sumw2();
         }
     }
     TH1F* GetBin( const std::vector<int>& idxs )
+    //TH1F* GetBin( const std::vector<int> idxs )
     { return hists[ indexing(idxs) ]; }
     void Write( TDirectory* dir = nullptr )
     { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
@@ -127,6 +135,7 @@ struct HistMgr2D : public HistMgr
         }
     }
     TH2F* GetBin( const std::vector<int>& idxs )
+    //TH2F* GetBin( const std::vector<int> idxs )
     { return hists[ indexing(idxs) ]; }
     void Write( TDirectory* dir = nullptr )
     { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
@@ -162,6 +171,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
     TRandom3 *trd = new TRandom3();
 
     TFile *fout = new TFile( Form("makehisto_%s.root", _outputlabel),"recreate");
+    fout->cd();
+    std::cerr << "0001\n";
 
     //ebee, jetbin, ptbin, true/fake;
     TH1F *h_BDT_all [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
@@ -170,6 +181,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     TH1F *h_Pt      [NUMBIN_PHOETA]                             [2];
     TH1F *h_Ptspec  [NUMBIN_PHOETA]                             [2];
     TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][NUMBIN_ISOVAR];
+    std::cerr << "0002\n";
     HistMgr1D _h_BDT_all ( "BDT_all_%d_%d_%d_%d",
             {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
     HistMgr1D _h_BDT     ( "BDT_%d_%d_%d_%d",
@@ -186,6 +198,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
             {NUMBIN_PHOETA,NUMBIT_HLT} );
     HistMgr1D _h_HLTpass( "HLT_ebee_%d_bit%d_pass",
             {NUMBIN_PHOETA,NUMBIT_HLT} );
+    std::cerr << "0003\n";
 
     _h_BDT_all .SetXaxis( 100,-1.,1.);
     _h_BDT     .SetXaxis( 100,-1.,1.);
@@ -195,6 +208,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
     _h_HLT_all .SetXaxis(2000,0.,2000.);
     _h_HLTpass .SetXaxis(2000,0.,2000.);
+    std::cerr << "0004\n";
     TH1F *h_EB_HLTall = new TH1F("EB_HLTall","all HLT photon", 1000, 0., 1000.);
     TH1F *h_EE_HLTall = new TH1F("EE_HLTall","all HLT photon", 1000, 0., 1000.);
 
@@ -276,43 +290,43 @@ void MakeHisto::Loop(Int_t extracut = 0)
     // hist declare end }}}
 
 
-    HistMgr1D h_btagscore_BvsAll_central    ( "jettag_0_0_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_BvsAll_central    ( "btagDeepCSV_0_0_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_BvsAll_up         ( "jettag_1_0_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_BvsAll_up         ( "btagDeepCSV_1_0_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_BvsAll_down       ( "jettag_2_0_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_BvsAll_down       ( "btagDeepCSV_2_0_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_CvsL_central      ( "jettag_0_1_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_CvsL_central      ( "btagDeepCSV_0_1_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_CvsL_up           ( "jettag_1_1_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_CvsL_up           ( "btagDeepCSV_1_1_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_CvsL_down         ( "jettag_2_1_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_CvsL_down         ( "btagDeepCSV_2_1_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_CvsB_central      ( "jettag_0_2_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_CvsB_central      ( "btagDeepCSV_0_2_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_CvsB_up           ( "jettag_1_2_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_CvsB_up           ( "btagDeepCSV_1_2_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_CvsB_down         ( "jettag_2_2_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_CvsB_down         ( "btagDeepCSV_2_2_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_secVtxMass_central( "jettag_0_3_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_secVtxMass_central( "btagDeepCSV_0_3_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_secVtxMass_up     ( "jettag_1_3_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_secVtxMass_up     ( "btagDeepCSV_1_3_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagscore_secVtxMass_down   ( "jettag_2_3_%d__%d_%d_%d_%d",
+    HistMgr1D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV_2_3_%d__%d_%d_%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
 
-    h_btagscore_BvsAll_central    .SetXaxis( 10, 0., 1.);
-    h_btagscore_BvsAll_up         .SetXaxis( 10, 0., 1.);
-    h_btagscore_BvsAll_down       .SetXaxis( 10, 0., 1.);
-    h_btagscore_CvsL_central      .SetXaxis( 10, 0., 1.);
-    h_btagscore_CvsL_up           .SetXaxis( 10, 0., 1.);
-    h_btagscore_CvsL_down         .SetXaxis( 10, 0., 1.);
-    h_btagscore_CvsB_central      .SetXaxis( 10, 0., 1.);
-    h_btagscore_CvsB_up           .SetXaxis( 10, 0., 1.);
-    h_btagscore_CvsB_down         .SetXaxis( 10, 0., 1.);
-    h_btagscore_secVtxMass_central.SetXaxis( 10, 0., 5.);
-    h_btagscore_secVtxMass_up     .SetXaxis( 10, 0., 5.);
-    h_btagscore_secVtxMass_down   .SetXaxis( 10, 0., 5.);
+    h_btagDeepCSV_BvsAll_central    .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_BvsAll_up         .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_BvsAll_down       .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsL_central      .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsL_up           .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsL_down         .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsB_central      .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsB_up           .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsB_down         .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_secVtxMass_central.SetXaxis( 10, 0., 5.);
+    h_btagDeepCSV_secVtxMass_up     .SetXaxis( 10, 0., 5.);
+    h_btagDeepCSV_secVtxMass_down   .SetXaxis( 10, 0., 5.);
 
     // hist declare 2 {{{
     const std::vector< const char* > jetFlvrNames = { "sigma", "alpha", "beta" };
@@ -425,13 +439,11 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
         _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
         _h_Pt_all .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(photonpt , eventweight);
-        /*
-        std::cout << _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->GetName() << " founds entries "
-                  << _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->GetEntries() << std::endl;
-                  */
 
+        // deleted {{{
         h_BDT_all[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight); //<-default 
         h_Pt_all[ebee][jetbin][ptbin][isfakephoton]->Fill(photonpt, eventweight);
+        // deleted end }}}
         if (jentry > 1e4 ) break; continue;
 
         // asdf selections
@@ -452,15 +464,28 @@ void MakeHisto::Loop(Int_t extracut = 0)
 	  if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
 	}
 
+        _h_BDT     .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
+
+        // deleted {{{
         h_BDT[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][0]->Fill(bdt_score, chIsoRaw, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][1]->Fill(bdt_score, phoIsoRaw, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][2]->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
         h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][3]->Fill(bdt_score, chWorstRaw, eventweight);
+        // deleted end }}}
 
 
+        _h_Pt       .GetBin({ebee,isfakephoton})->Fill(photonpt, eventweight);
+        _h_Ptspec   .GetBin({ebee,isfakephoton})->Fill( phop4->Et(), eventweight);
+
+        // deleted {{{
         h_Pt[ebee][isfakephoton]->Fill(photonpt, eventweight);
         h_Ptspec[ebee][isfakephoton]->Fill( phop4->Et(), eventweight);
+        // deleted end }}}
 
         if ( TMath::Abs(recoEta)<1.4442 )
             if(isfakephoton==1&&photonpt>100.){
@@ -490,19 +515,20 @@ void MakeHisto::Loop(Int_t extracut = 0)
         float evtws_down=0.;
 
         if(jetflvBin==0){
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;
-            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_hf;
+            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_hf;
         }else if(jetflvBin==1){
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_cferr1;
-            evtws_down =  mcweight* jetSF_DeepCSV_down_cferr1;
+            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_cferr1;
+            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_cferr1;
         }else {
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;  
-            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_lf;  
+            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_lf;
         }
 
+        // deleted {{{
         h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws);
         h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws_up);
         h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws_down);
@@ -514,13 +540,39 @@ void MakeHisto::Loop(Int_t extracut = 0)
         h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][2][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws);
         h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][2][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws_up);
         h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][2][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws_down);
+        // deleted end }}}
 
         h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][3][parityIdx]->Fill(jetSubVtxMass);
 
+        h_btagDeepCSV_BvsAll_central    .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws);
+        h_btagDeepCSV_BvsAll_up         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws_up);
+        h_btagDeepCSV_BvsAll_down       .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws_down);
+        h_btagDeepCSV_CvsL_central      .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws);
+        h_btagDeepCSV_CvsL_up           .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws_up);
+        h_btagDeepCSV_CvsL_down         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws_down);
+        h_btagDeepCSV_CvsB_central      .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws);
+        h_btagDeepCSV_CvsB_up           .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws_up);
+        h_btagDeepCSV_CvsB_down         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws_down);
+        h_btagDeepCSV_secVtxMass_central.GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      ,evtws);
+        h_btagDeepCSV_secVtxMass_up     .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      ,evtws_up);
+        h_btagDeepCSV_secVtxMass_down   .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      ,evtws_down);
     }
 
     fout->cd();
 
+    std::cerr << "hi-d\n";
     for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
     for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
     for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
@@ -533,24 +585,29 @@ void MakeHisto::Loop(Int_t extracut = 0)
         h_BDT_all [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
         h_Pt_all  [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
     } } } }
+    std::cerr << "hi-f\n";
     for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
     for(int isFakePho=0; isFakePho<2; isFakePho++) {
         h_Pt    [pEtaIdx][isFakePho]->Write();
         h_Ptspec[pEtaIdx][isFakePho]->Write();
     } }
 
+    std::cerr << "hi-g\n";
     h_EB_HLTall->Write();
     h_EE_HLTall->Write();
 
+    std::cerr << "hi-h\n";
     for (int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++){
     for (int HLTIdx=0; HLTIdx<NUMBIT_HLT; HLTIdx++){
             h_HLT[pEtaIdx][HLTIdx][0]->Write();
             h_HLT[pEtaIdx][HLTIdx][1]->Write();
     } }
 
+    std::cerr << "hi-j\n";
     h_chiso_sg->Write();
     h_chworst_sg->Write();
 
+    std::cerr << "hi-k\n";
     for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
     for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
     for(int phoMatchStatIdx=0; phoMatchStatIdx<NUMBIN_MATCHEDPHOTONSTATUS; phoMatchStatIdx++) {
@@ -562,15 +619,23 @@ void MakeHisto::Loop(Int_t extracut = 0)
         h_jettag_down[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx]->Write();
     } } } } } }
 
-    //std::cerr << "hi-0\n";
+    std::cerr << "hi-0\n";
     _h_BDT_all.Write();
-    //std::cerr << "hi-1\n";
+    std::cerr << "hi-1\n";
     _h_Pt_all.Write();
-    //std::cerr << "hi-2\n";
+    std::cerr << "hi-2\n";
+    _h_BDT_all .Write();
+    _h_BDT     .Write();
+    _h_Pt_all  .Write();
+    _h_Pt      .Write();
+    _h_Ptspec  .Write();
+    _h_IsovsBDT.Write();
+    _h_HLT_all .Write();
+    _h_HLTpass .Write();
     
 
     fout->Close();
-    //std::cerr << "hi-3\n";
+    std::cerr << "hi-3\n";
 }
 
 

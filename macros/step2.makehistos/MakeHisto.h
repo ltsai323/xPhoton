@@ -46,7 +46,7 @@ public :
    Float_t         recoPhi;
    Float_t         recoSCEta;
    Float_t         r9;
-   Float_t         s4;
+   Float_t         s4Full5x5;
    Int_t           isMatched;
    Int_t           isMatchedEle;
    Int_t           isConverted;
@@ -108,7 +108,7 @@ public :
    Int_t           jetGenPartonMomID;
    Float_t         calib_scEtaWidth;
    Float_t         calib_r9Full5x5;
-   Float_t         calib_s4;
+   Float_t         calib_s4Full5x5;
    Float_t         calib_sieieFull5x5;
    Int_t           nLHE;
    Int_t           lhePID[5];   //[nLHE]
@@ -145,15 +145,15 @@ public :
    Float_t         jetSF_DeepFlavour_up_cferr2;
    Float_t         jetSF_DeepFlavour_up_hf;
    Float_t         jetSF_DeepFlavour_up_lf;
-   Float_t         jetSF_DeepFlavour_JESReduced_central;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_cferr1;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_cferr2;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_hf;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_lf;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_cferr1;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_cferr2;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_central;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_cferr1;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_cferr2;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_hf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_lf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_cferr1;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_cferr2;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
    Int_t           isQCD;
 
    // List of branches
@@ -181,7 +181,7 @@ public :
    TBranch        *b_recoPhi;   //!
    TBranch        *b_recoSCEta;   //!
    TBranch        *b_r9;   //!
-   TBranch        *b_s4;   //!
+   TBranch        *b_s4Full5x5;   //!
    TBranch        *b_isMatched;   //!
    TBranch        *b_isMatchedEle;   //!
    TBranch        *b_isConverted;   //!
@@ -243,7 +243,7 @@ public :
    TBranch        *b_jetGenPartonMomID;   //!
    TBranch        *b_calib_scEtaWidth;   //!
    TBranch        *b_calib_r9Full5x5;   //!
-   TBranch        *b_calib_s4;   //!
+   TBranch        *b_calib_s4Full5x5;   //!
    TBranch        *b_calib_sieieFull5x5;   //!
    TBranch        *b_nLHE;   //!
    TBranch        *b_lhePID;   //!
@@ -280,15 +280,15 @@ public :
    TBranch        *b_jetSF_DeepFlavour_up_cferr2;   //!
    TBranch        *b_jetSF_DeepFlavour_up_hf;   //!
    TBranch        *b_jetSF_DeepFlavour_up_lf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_central;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr1;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr2;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_hf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_lf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr1;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr2;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_central;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr1;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr2;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_hf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_lf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr1;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr2;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
    TBranch        *b_isQCD;   //!
 
    MakeHisto(Int_t option=0);
@@ -479,7 +479,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("recoPhi", &recoPhi, &b_recoPhi);
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
    fChain->SetBranchAddress("r9", &r9, &b_r9);
-   fChain->SetBranchAddress("s4", &s4, &b_s4);
+   fChain->SetBranchAddress("s4Full5x5", &s4Full5x5, &b_s4Full5x5);
    if ( IsMC() )
    {
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
@@ -558,7 +558,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetGenPartonMomID", &jetGenPartonMomID, &b_jetGenPartonMomID);
    fChain->SetBranchAddress("calib_scEtaWidth", &calib_scEtaWidth, &b_calib_scEtaWidth);
    fChain->SetBranchAddress("calib_r9Full5x5", &calib_r9Full5x5, &b_calib_r9Full5x5);
-   fChain->SetBranchAddress("calib_s4", &calib_s4, &b_calib_s4);
+   fChain->SetBranchAddress("calib_s4Full5x5", &calib_s4Full5x5, &b_calib_s4Full5x5);
    fChain->SetBranchAddress("calib_sieieFull5x5", &calib_sieieFull5x5, &b_calib_sieieFull5x5);
    fChain->SetBranchAddress("nLHE", &nLHE, &b_nLHE);
    fChain->SetBranchAddress("lhePID", lhePID, &b_lhePID);
@@ -602,15 +602,15 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetSF.DeepFlavour.up_cferr2", &jetSF_DeepFlavour_up_cferr2, &b_jetSF_DeepFlavour_up_cferr2);
    fChain->SetBranchAddress("jetSF.DeepFlavour.up_hf", &jetSF_DeepFlavour_up_hf, &b_jetSF_DeepFlavour_up_hf);
    fChain->SetBranchAddress("jetSF.DeepFlavour.up_lf", &jetSF_DeepFlavour_up_lf, &b_jetSF_DeepFlavour_up_lf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.central", &jetSF_DeepFlavour_JESReduced_central, &b_jetSF_DeepFlavour_JESReduced_central);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr1", &jetSF_DeepFlavour_JESReduced_down_cferr1, &b_jetSF_DeepFlavour_JESReduced_down_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr2", &jetSF_DeepFlavour_JESReduced_down_cferr2, &b_jetSF_DeepFlavour_JESReduced_down_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_hf", &jetSF_DeepFlavour_JESReduced_down_hf, &b_jetSF_DeepFlavour_JESReduced_down_hf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_lf", &jetSF_DeepFlavour_JESReduced_down_lf, &b_jetSF_DeepFlavour_JESReduced_down_lf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr1", &jetSF_DeepFlavour_JESReduced_up_cferr1, &b_jetSF_DeepFlavour_JESReduced_up_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
+   // fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.central", &jetSF_DeepFlavour_JESReduced_central, &b_jetSF_DeepFlavour_JESReduced_central);
+   // fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr1", &jetSF_DeepFlavour_JESReduced_down_cferr1, &b_jetSF_DeepFlavour_JESReduced_down_cferr1);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr2", &jetSF_DeepFlavour_JESReduced_down_cferr2, &b_jetSF_DeepFlavour_JESReduced_down_cferr2);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_hf", &jetSF_DeepFlavour_JESReduced_down_hf, &b_jetSF_DeepFlavour_JESReduced_down_hf);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_lf", &jetSF_DeepFlavour_JESReduced_down_lf, &b_jetSF_DeepFlavour_JESReduced_down_lf);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr1", &jetSF_DeepFlavour_JESReduced_up_cferr1, &b_jetSF_DeepFlavour_JESReduced_up_cferr1);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
    Notify();
 }
