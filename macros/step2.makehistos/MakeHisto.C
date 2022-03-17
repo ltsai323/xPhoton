@@ -37,9 +37,11 @@ struct HistMgr
             int rPosition = IdxMultiplier(i+1);
             outputidxs.emplace_back( (idx%lPosition) / rPosition );
         }
+        /*
         std::cout << " input digit : " << idx << ". And outputs are ";
         for  ( auto k : outputidxs ) std::cout << k << ", ";
         std::cout << std::endl;
+        */
         return outputidxs;
     }
     const char* GetTitle( const std::vector<int>& iI )
@@ -60,8 +62,14 @@ struct HistMgr
     int indexing( const std::vector<int>& inIdxs )
     {
         int idx = 0;
-        for ( int idx = 0; idx < _MIdxs.size(); ++idx )
-        { idx += inIdxs[idx] * IdxMultiplier(idx+1); }
+        for ( int i = 0; i < _MIdxs.size(); ++i )
+        { idx += inIdxs[i] * IdxMultiplier(i+1); }
+
+        /*
+        std::cout << "input idxs : ";
+        for ( auto a : inIdxs ) std::cout << a << ", ";
+        std::cout << " and final index is : " << idx << std::endl;
+        */
         return idx;
     }
     int IdxMultiplier( int fromIdx )
@@ -85,7 +93,8 @@ struct HistMgr1D : public HistMgr
     {
         hists.reserve( TotalSize() );
         for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
-    };
+    }
+    //~HistMgr1D() { for ( auto h : hists ) delete h; }
     void SetXaxis( int nbin, float xmin, float xmax )
     {
         for ( int idx = 0; idx < TotalSize(); ++idx )
@@ -94,8 +103,11 @@ struct HistMgr1D : public HistMgr
             hists[idx]->Sumw2();
         }
     }
-    TH1F* Get( const std::vector<int>& idxs )
+    TH1F* GetBin( const std::vector<int>& idxs )
     { return hists[ indexing(idxs) ]; }
+    void Write( TDirectory* dir = nullptr )
+    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
+
     std::vector<TH1F*> hists;
 };
 struct HistMgr2D : public HistMgr
@@ -105,6 +117,7 @@ struct HistMgr2D : public HistMgr
         hists.reserve( TotalSize() );
         for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
     };
+    //~HistMgr2D() { for ( auto h : hists ) delete h; }
     void SetXYaxis( int nbinx, float xmin, float xmax, int nbiny, float ymin, float ymax )
     {
         for ( int idx = 0; idx < TotalSize(); ++idx )
@@ -113,8 +126,10 @@ struct HistMgr2D : public HistMgr
             hists[idx]->Sumw2();
         }
     }
-    TH2F* Get( const std::vector<int>& idxs )
+    TH2F* GetBin( const std::vector<int>& idxs )
     { return hists[ indexing(idxs) ]; }
+    void Write( TDirectory* dir = nullptr )
+    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
     std::vector<TH2F*> hists;
 };
 void MakeHisto::Loop(Int_t extracut = 0)
@@ -298,7 +313,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
     h_btagscore_secVtxMass_central.SetXaxis( 10, 0., 5.);
     h_btagscore_secVtxMass_up     .SetXaxis( 10, 0., 5.);
     h_btagscore_secVtxMass_down   .SetXaxis( 10, 0., 5.);
-    return ;
 
     // hist declare 2 {{{
     const std::vector< const char* > jetFlvrNames = { "sigma", "alpha", "beta" };
@@ -325,7 +339,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     } } } } } }
     // hist declare 2 end }}}
 
-    Long64_t nentries = fChain->GetEntries();   
+    Long64_t nentries = fChain->GetEntries();
     printf("nentries %lli \n", nentries);
     printf("HLT option %d \n", HLTOPTION);
 
@@ -409,8 +423,16 @@ void MakeHisto::Loop(Int_t extracut = 0)
         int isfakephoton = 0;
         if( IsMC() &&  isMatched!=1 && isConverted!=1 && isMatchedEle!=1) isfakephoton=1; //fake
 
+        _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
+        _h_Pt_all .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(photonpt , eventweight);
+        /*
+        std::cout << _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->GetName() << " founds entries "
+                  << _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->GetEntries() << std::endl;
+                  */
+
         h_BDT_all[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight); //<-default 
         h_Pt_all[ebee][jetbin][ptbin][isfakephoton]->Fill(photonpt, eventweight);
+        if (jentry > 1e4 ) break; continue;
 
         // asdf selections
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
@@ -540,8 +562,15 @@ void MakeHisto::Loop(Int_t extracut = 0)
         h_jettag_down[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx]->Write();
     } } } } } }
 
+    //std::cerr << "hi-0\n";
+    _h_BDT_all.Write();
+    //std::cerr << "hi-1\n";
+    _h_Pt_all.Write();
+    //std::cerr << "hi-2\n";
+    
 
     fout->Close();
+    //std::cerr << "hi-3\n";
 }
 
 
