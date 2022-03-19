@@ -5,22 +5,45 @@ fakerun.sh : Process fake sample as data.
 fullrun.sh : Process run.sh and send the output into storeroot/ to be used.
 
 created histogram naming :
-    const std::vector< const char* > jetFlvrNames = { "sigma", "alpha", "beta" };
-    for(int pEtaIdx=0; pEtaIdx<2; pEtaIdx++)
-    for(int pPtIdx=0; pPtIdx<(range of pt); pPtIdx++)
-    for(int phoMatchStatIdx=0; phoMatchStatIdx<5; phoMatchStatIdx++)
-    for(int jFlvrIdx=0; jFlvrIdx<3; jFlvrIdx++)
-    for(int varBTagIdx=0; varBTagIdx<4; varBTagIdx++)
-    for(int parityIdx=0; parityIdx<2; parityIdx++)
-* Form("h_BDT_all_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho)
-* Form("h_BDT_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho)
-* Form("h_IsovsBDT_%d_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho,varIsoIdx)
-* Form("h_Pt_all_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho)
-* Form("h_Pt_spec_%d_%d",pEtaIdx,isFakePho)
-* Form("h_Pt_%d_%d",pEtaIdx,isFakePho)
-* Form("h_HLT_ebee_%d_bit%d",pEtaIdx,HLTIdx)
-* Form("h_HLT_ebee_%d_bit%d_pass",pEtaIdx,HLTIdx)
-* Form("h_jettag_%d_%d_%d_%d_%d_%d",pEtaIdx,pPtIdx,phoMatchStatIdx,jFlvrIdx,varBTagIdx,parityIdx)
-* Form("h_jettag_%sUp_%d_%d_%d_%d_%d_%d",jetFlvrNames[jFlvrIdx],pEtaIdx,pPtIdx,phoMatchStatIdx,jFlvrIdx,varBTagIdx,parityIdx)
-* Form("h_jettag_%sDown_%d_%d_%d_%d_%d_%d",jetFlvrNames[jFlvrIdx],pEtaIdx,pPtIdx,phoMatchStatIdx,jFlvrIdx,varBTagIdx,parityIdx)
+* "BDT_all/BDT_all.%d_%d_%d_%d",
+    ** {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}
+    * "BDT/BDT.%d_%d_%d_%d",
+    ** {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}
+    * "Pt_all/Pt_all.%d_%d_%d_%d",
+    ** {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}
+    * "Pt/Pt.%d_%d",
+    ** {NUMBIN_PHOETA,2}
+    * "Pt_spec/Pt_spec.%d_%d",
+    ** {NUMBIN_PHOETA,2}
+    * "IsovsBDT/IsovsBDT.%d_%d_%d_%d_%d",
+    ** {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR}
+    * "HLT_ebee/HLT_ebee.%d_bit%d",
+    ** {NUMBIN_PHOETA,NUMBIT_HLT}
+    * "HLT_ebee/HLT_ebee.%d_bit%d_pass",
+    ** {NUMBIN_PHOETA,NUMBIT_HLT}
 
+
+    * "btagDeepCSV/btagDeepCSV.0_0_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.1_0_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.2_0_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.0_1_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.1_1_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.2_1_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.0_2_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.1_2_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.2_2_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.0_3_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.1_3_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
+    * "btagDeepCSV/btagDeepCSV.2_3_%d__%d_%d_%d_%d",
+    ** {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}
