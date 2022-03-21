@@ -181,7 +181,11 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // if(isData==1 && ((phoFiredTrgs>>triggerbit(ptbin))&1)==0) continue;
         // if(isData==1 && !(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
         //if(!(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
-        if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
+        if ( dataera == "2016ReReco" )
+            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
+        if ( dataera == "UL2018" )
+            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
+
         //float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);// deta_wg
         // if(MTm>0. && ebee==0 &&dr_wg<0.4) continue;
         // if(MTm>0. && ebee==1 &&dr_wg<1.) continue;
@@ -193,7 +197,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
         _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
         _h_Pt_all .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(photonpt , eventweight);
 
-        if (jentry > 1e4 ) break; continue;
 
         // asdf selections
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
