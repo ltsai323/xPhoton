@@ -12,8 +12,8 @@ void clousure_prod(int ptbin = 0){
 
 //TFile *mc  = new TFile("../step2.makehistos/storeroot0/makehisto_sig_madgraph.root");
 //TFile *qcd = new TFile("../step2.makehistos/storeroot0/makehisto_QCD_madgraph.root");
-TFile *mc  = new TFile("../step2.makehistos/storeroot_weightcut1/makehisto_sig_madgraph.root");
-TFile *qcd = new TFile("../step2.makehistos/storeroot_weightcut1/makehisto_QCD_madgraph.root");
+TFile *mc  = new TFile("../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root");
+TFile *qcd = new TFile("../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root");
 
 cout << "ptbin is " << ptbin << endl;
 

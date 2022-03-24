@@ -265,12 +265,15 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if ( jetPt < 30. ) continue;
         if ( fabs(jetEta) > 2.5 ) continue;
         if ( jetDeepCSVTags_c < -0.99 ) continue;
-        if ( mcweight>60. ) continue;
       
 	if ( !isData ){
 		if ( jetID != 1 ) continue;
         	if ( jetPUIDbit != 7 ) continue;	
-	}	
+	}
+
+	if ( IsMC() && isQCD!=1 ){
+		if ( mcweight>60. ) continue;
+	}
 
         if ( extracut == 1 ){
           if ( jetSubVtxMass == 0 ) continue;
@@ -294,40 +297,49 @@ void MakeHisto::Loop(Int_t extracut = 0)
                 h_chworst_sg->Fill(chWorstRaw+phoIsoRaw);
             }
         //jetflvr
-        int jetflvBin = JetFlavourBin(jetHadFlvr);
+        int jetflvBin = IsMC() ? JetFlavourBin(jetHadFlvr) : 0;
+//	cout << "jetflvBin should be 0 if this is DATA; jetflvbin = " << jetflvBin << endl;
         int phoMatchStatIdx = 0;
         int parityIdx = ( jentry % 2 == 0 ) ? 0 : 1;
         // need to be modified asdf
-        if ( isQCD == 1 )
+        if ( isQCD == 1 && !isData )//QCD
         {
             if ( isMatched==-99 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
             else if ( isMatched==-99 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
             else    phoMatchStatIdx = 4;
         }
-        else
+        else if( IsMC() )//MC
         {
             if ( isMatched==1 && chIsoRaw<2.0   ) phoMatchStatIdx = 0;
             else    phoMatchStatIdx = 1;
         }
+	else //data
+	{
+	    if ( chIsoRaw<2.0 ) phoMatchStatIdx = 0;
+            else    phoMatchStatIdx = 1;
+	}
         
 
-        float evtws=0.;
-        float evtws_up=0.;
-        float evtws_down=0.;
-
+        float evtws=1.;
+        float evtws_up=1.;
+        float evtws_down=1.;
+	
         if(jetflvBin==0){
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;
-            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+	    evtws      =  IsMC() ? mcweight * jetSF_DeepCSV_central     : 1.;
+            evtws_up   =  IsMC() ? mcweight * jetSF_DeepCSV_up_lf       : 1.;
+            evtws_down =  IsMC() ? mcweight * jetSF_DeepCSV_down_lf     : 1.;
         }else if(jetflvBin==1){
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_cferr1;
-            evtws_down =  mcweight* jetSF_DeepCSV_down_cferr1;
+	    evtws      =  IsMC() ? mcweight * jetSF_DeepCSV_central     : 1.;
+            evtws_up   =  IsMC() ? mcweight * jetSF_DeepCSV_up_cferr1   : 1.;
+            evtws_down =  IsMC() ? mcweight * jetSF_DeepCSV_down_cferr1 : 1.;
         }else {
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;  
-            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+	    evtws      =  IsMC() ? mcweight * jetSF_DeepCSV_central     : 1.;
+            evtws_up   =  IsMC() ? mcweight * jetSF_DeepCSV_up_lf       : 1.;
+            evtws_down =  IsMC() ? mcweight * jetSF_DeepCSV_down_lf     : 1.;
         }
+	//cout << "evtws should be 1 if this is DATA, evtws = " << evtws << endl;
+	//cout << "jetDeepCSVDiscriminatorTags_BvsAll = " << jetDeepCSVDiscriminatorTags_BvsAll << endl;
+	//cout << ebee << ptbin << phoMatchStatIdx << jetflvBin << parityIdx << endl;
 
         h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws);
         h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws_up);
@@ -351,7 +363,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
     for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
     for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
     for(int isFakePho=0; isFakePho<2; isFakePho++) {
-        cout << "checkentries: " << h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][0]->Integral() << endl;
         h_BDT     [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
         h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][0]->Write();
         h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][1]->Write();

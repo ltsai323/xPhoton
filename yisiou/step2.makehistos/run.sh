@@ -15,19 +15,19 @@ output_qcd=${outputdir}/makehisto_QCD_madgraph.root
 
 mkdir -p ${outputdir}
 
-root -b <<EOF
-.L MakeHisto.C+
-MakeHisto t(1)
-t.Loop(${lightcut})
-EOF
-mv output.root ${output_data}
+#root -b <<EOF
+#.L MakeHisto.C+
+#MakeHisto t(1)
+#t.Loop(${lightcut})
+#EOF
+#mv output.root ${output_data}
 
-root -b <<EOF
-.L MakeHisto.C+
-MakeHisto t(2)
-t.Loop(${lightcut})
-EOF
-mv output.root ${output_mc}
+#root -b <<EOF
+#.L MakeHisto.C+
+#MakeHisto t(2)
+#t.Loop(${lightcut})
+#EOF
+#mv output.root ${output_mc}
 
 root -b <<EOF
 .L MakeHisto.C+
