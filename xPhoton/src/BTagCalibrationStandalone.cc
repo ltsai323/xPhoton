@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <sstream>
 
-// source : https://github.com/cms-sw/cmssw/blob/CMSSW_10_0_X/CondTools/BTau/test/BTagCalibrationStandalone.cpp
-
 
 BTagEntry::Parameters::Parameters(
   OperatingPoint op,
@@ -37,19 +35,29 @@ BTagEntry::Parameters::Parameters(
                  sysType.begin(), ::tolower);
 }
 
-BTagEntry::BTagEntry(const std::string &csvLine)
+BTagEntry::BTagEntry(const std::string &csvLine, bool newFormat)
 {
   // make tokens
   std::stringstream buff(csvLine);
+  std::vector<std::string> vec_tmp;
   std::vector<std::string> vec;
   std::string token;
-  while (std::getline(buff, token, ","[0])) {
+  while (std::getline(buff, token, "\""[0])) {
     token = BTagEntry::trimStr(token);
-    if (token.empty()) {
-      continue;
-    }
+    if (token.empty()) continue;
+
+    vec_tmp.push_back(token);
+  }
+
+  std::stringstream buff2(vec_tmp[0]);
+  while (std::getline(buff2, token, ","[0])) {
+    token = BTagEntry::trimStr(token);
+    if (token.empty()) continue;
+
     vec.push_back(token);
   }
+  if (vec_tmp.size() > 1) vec.push_back(vec_tmp[1]);
+
   if (vec.size() != 11) {
 std::cerr << "ERROR in BTagCalibration: "
           << "Invalid csv line; num tokens != 11: "
@@ -76,14 +84,28 @@ throw std::exception();
   }
 
   // make parameters
-  unsigned op = stoi(vec[0]);
+  unsigned op = newFormat ? 999 : stoi(vec[0]);
+
+  if (vec[0] == "L") op = 0;
+  else if (vec[0] == "M") op = 1;
+  else if (vec[0] == "T") op = 2;
+  else if (vec[0] == "shape") op = 3;
+
   if (op > 3) {
 std::cerr << "ERROR in BTagCalibration: "
           << "Invalid csv line; OperatingPoint > 3: "
           << csvLine;
 throw std::exception();
   }
+
   unsigned jf = stoi(vec[3]);
+
+  if (newFormat) {
+    if (jf == 5) jf = 0;
+    else if (jf == 4) jf = 1;
+    else if (jf == 0) jf = 2;
+  }
+
   if (jf > 2) {
 std::cerr << "ERROR in BTagCalibration: "
           << "Invalid csv line; JetFlavor > 2: "
@@ -280,7 +302,8 @@ BTagCalibration::BTagCalibration(const std::string &taggr):
 {}
 
 BTagCalibration::BTagCalibration(const std::string &taggr,
-                                 const std::string &filename):
+                                 const std::string &filename,
+                                 bool newFormat):
   tagger_(taggr)
 {
   std::ifstream ifs(filename);
@@ -290,7 +313,7 @@ std::cerr << "ERROR in BTagCalibration: "
           << filename;
 throw std::exception();
   }
-  readCSV(ifs);
+  readCSV(ifs, newFormat);
   ifs.close();
 }
 
@@ -312,20 +335,20 @@ throw std::exception();
   return data_.at(tok);
 }
 
-void BTagCalibration::readCSV(const std::string &s)
+void BTagCalibration::readCSV(const std::string &s, bool newFormat)
 {
   std::stringstream buff(s);
-  readCSV(buff);
+  readCSV(buff, newFormat);
 }
 
-void BTagCalibration::readCSV(std::istream &s)
+void BTagCalibration::readCSV(std::istream &s, bool newFormat)
 {
   std::string line;
 
   // firstline might be the header
   getline(s,line);
   if (line.find("OperatingPoint") == std::string::npos) {
-    addEntry(BTagEntry(line));
+    addEntry(BTagEntry(line, newFormat));
   }
 
   while (getline(s,line)) {
@@ -333,7 +356,7 @@ void BTagCalibration::readCSV(std::istream &s)
     if (line.empty()) {  // skip empty lines
       continue;
     }
-    addEntry(BTagEntry(line));
+    addEntry(BTagEntry(line, newFormat));
   }
 }
 
@@ -384,7 +407,7 @@ public:
     TF1 func;
   };
 
-//private:
+private:
   BTagCalibrationReaderImpl(BTagEntry::OperatingPoint op,
                             const std::string & sysType,
                             const std::vector<std::string> & otherSysTypes={});
@@ -429,15 +452,13 @@ BTagCalibrationReader::BTagCalibrationReaderImpl::BTagCalibrationReaderImpl(
   useAbsEta_(3, true)
 {
   for (const std::string & ost : otherSysTypes) {
-      if ( ost == sysType_ ) continue; // prevent major sys type merged in otherSysTypes
     if (otherSysTypeReaders_.count(ost)) {
 std::cerr << "ERROR in BTagCalibration: "
             << "Every otherSysType should only be given once. Duplicate: "
             << ost;
 throw std::exception();
     }
-    //otherSysTypeReaders_[ost] = std::auto_ptr<BTagCalibrationReaderImpl>(
-    otherSysTypeReaders_[ost] = std::shared_ptr<BTagCalibrationReaderImpl>(
+    otherSysTypeReaders_[ost] = std::unique_ptr<BTagCalibrationReaderImpl>(
         new BTagCalibrationReaderImpl(op, ost)
     );
   }
@@ -499,7 +520,6 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
   bool use_discr = (op_ == BTagEntry::OP_RESHAPING);
   if (useAbsEta_[jf] && eta < 0) {
     eta = -eta;
-    LOG_DEBUG("eval : useAbsEta!");
   }
 
   // search linearly through eta, pt and discr ranges and eval
@@ -513,20 +533,16 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     ){
       if (use_discr) {                                    // discr. reshaping?
         if (e.discrMin <= discr && discr < e.discrMax) {  // check discr
-            if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG(" C jet in %s func name is  Use input discr to calculate weight",e.func.GetName());
           return e.func.Eval(discr);
         }
       } else {
-            if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG(" C jet in %s func name is  Use input   pt  to calculate weight",e.func.GetName());
-        //LOG_DEBUG("Use pt to calculate weight");
         return e.func.Eval(pt);
       }
     }
   }
 
-  LOG_INFO("No any scale factor found. return default jetSF = 0. discr = %.3f, flavour = %d (0:B,1:C,2:L), (pt,eta)=(%.3f,%.3f)", discr, jf, pt, eta);
-  //return 1.;  // If nothing found, just return a non weighted result.
-  return 0.;  // If nothing found, just return a non weighted result.
+  LOG_WARNING("No any scale factor found. return default jetSF = 0. discr = %.3f, flavour = %d (0:B,1:C,2:L), (pt,eta)=(%.3f,%.3f)", discr, jf, pt, eta);
+  return 0.;  // default value
 }
 
 double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
@@ -539,15 +555,12 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
   auto sf_bounds_eta = min_max_eta(jf, discr);
   bool eta_is_out_of_bounds = false;
 
-  if ( useAbsEta_[jf] && eta < 0 ) eta = -eta;
-
   if (sf_bounds_eta.first < 0) sf_bounds_eta.first = -sf_bounds_eta.second;   
   if (eta <= sf_bounds_eta.first || eta > sf_bounds_eta.second ) {
     eta_is_out_of_bounds = true;
   }
    
   if (eta_is_out_of_bounds) {
-      LOG_WARNING(" eta(=%.3f) is out of bounds! { Abs eta range = [ %.3f, %.3f ], jet flavor = %d and discr = %.4f }",eta, sf_bounds_eta.first, sf_bounds_eta.second, jf, discr);
     return 1.;
   }
 
@@ -567,7 +580,6 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval_auto_bounds(
   // get central SF (and maybe return)
   double sf = eval(jf, eta, pt_for_eval, discr);
   if (sys == sysType_) {
-      if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG( "Found a category in %s. Return sf = %.5f", sys.c_str(),sf );
     return sf;
   }
 
@@ -580,12 +592,10 @@ throw std::exception();
   }
   double sf_err = otherSysTypeReaders_.at(sys)->eval(jf, eta, pt_for_eval, discr);
   if (!is_out_of_bounds) {
-      if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG( "Found a category in %s. Return sf_err = %.5f", otherSysTypeReaders_.at(sys)->sysType_.c_str(),sf_err );
     return sf_err;
   }
 
   // double uncertainty on out-of-bounds and return
-  if ( jf == BTagEntry::FLAV_C ) LOG_DEBUG( "Nothing found. Return sf_err = sf + 2*(sferr-sf) = %.5f+ 2*(%.5f-%.5f) = %.5f", sf, sf_err, sf, sf+2*(sf_err-sf) );
   sf_err = sf + 2*(sf_err - sf);
   return sf_err;
 }

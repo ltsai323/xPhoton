@@ -13,11 +13,12 @@ def GetArg_TextPath(argv):
     return argv[1]
 
 if __name__ == '__main__':
+    import os
     import sys
     textpath=GetArg_TextPath(sys.argv)
     f=open(textpath,'r')
     useRemote='True' if 'root://' in f.read() else 'False' # read first line
     f.close()
 
-    #os.system( 'python sepRunnerGeneralExecuter.py %s %s %d &'%(textpath,exeCMD,nThread, useRemote) )
     print( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+    os.system( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )

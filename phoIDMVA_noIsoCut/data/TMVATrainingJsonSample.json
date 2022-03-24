@@ -1,0 +1,8 @@
+{
+    "isEndcap": false,
+    "useIsoVars": false,
+    "useShapeVars": true,
+    "UsedAlgorithm": ["BDT"],
+    "OutputTemplate": "TMVA_UL2018_%s",
+    "InputFile":" /wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/hi.root"
+}

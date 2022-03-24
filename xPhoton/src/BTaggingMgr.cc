@@ -277,12 +277,12 @@ namespace
         return systTypeCollection[name];
     }
 }; // end of namespace t
-BTaggingMgr::BTaggingMgr( const char* dataera, const char* algoname, std::vector<std::string> systypenames ) :
+BTaggingMgr::BTaggingMgr( const char* dataera, const char* algoname, std::vector<std::string> systypenames, bool newFormat ) :
     algorithm(algoname),
     _dataEra(dataera),
     _usedSystTypeNames(systypenames),
     _systVars(_usedSystTypeNames.size()),
-    _calib ( algorithm, ExternalFilesMgr::csvFile_BTagCalibs(algorithm, dataera) ), // era input asdf
+    _calib ( algorithm, ExternalFilesMgr::csvFile_BTagCalibs(algorithm, dataera), newFormat ), // era input asdf
     _calibReader ( BTagEntry::OP_RESHAPING, "central", _usedSystTypeNames )
 
 {
@@ -312,6 +312,20 @@ void BTaggingMgr::RegBranch(TTree* t)
         t->Branch(bname, &_systVars[iSyst], bnameF);
     }
 }
+void BTaggingMgr::DisableBranch(TTree* t)
+{
+    char bname[200], bnameF[200];
+    if ( t == nullptr || t->IsZombie() ) LOG_FATAL("input tree is invalid");
+
+    for ( unsigned iSyst = 0; iSyst < _usedSystTypeNames.size(); ++iSyst )
+    {
+        const std::string systType = _usedSystTypeNames[iSyst];
+        sprintf(bname , "jetSF.%s.%s"  , algorithm, systType.c_str());
+        sprintf(bnameF, "jetSF.%s.%s/F", algorithm, systType.c_str());
+        if ( t->GetListOfBranches()->FindObject(bname) )
+            t->SetBranchStatus(bname, false);
+    }
+}
 void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDis_)
 {
     float bDis = bDis_;
@@ -335,12 +349,12 @@ void BTaggingMgr::FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDi
 }
 
 
-BTaggingMgr_CSVv2      ::BTaggingMgr_CSVv2      ( const char* dataera ) :
-    BTaggingMgr(dataera, "CSVv2"      , ::systTypes("CSVv2"      ))
+BTaggingMgr_CSVv2      ::BTaggingMgr_CSVv2      ( const char* dataera, bool newFormat ) :
+    BTaggingMgr(dataera, "CSVv2"      , ::systTypes("CSVv2"      ), newFormat)
 {}
-BTaggingMgr_DeepCSV    ::BTaggingMgr_DeepCSV    ( const char* dataera ) :
-    BTaggingMgr(dataera, "DeepCSV"    , ::systTypes("DeepCSV"    ))
+BTaggingMgr_DeepCSV    ::BTaggingMgr_DeepCSV    ( const char* dataera, bool newFormat ) :
+    BTaggingMgr(dataera, "DeepCSV"    , ::systTypes("DeepCSV"    ), newFormat)
 {}
-BTaggingMgr_DeepFlavour::BTaggingMgr_DeepFlavour( const char* dataera ) :
-    BTaggingMgr(dataera, "DeepFlavour", ::systTypes("DeepFlavour"))
+BTaggingMgr_DeepFlavour::BTaggingMgr_DeepFlavour( const char* dataera, bool newFormat ) :
+    BTaggingMgr(dataera, "DeepFlavour", ::systTypes("DeepFlavour"), newFormat)
 {}

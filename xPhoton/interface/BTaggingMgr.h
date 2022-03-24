@@ -20,9 +20,10 @@
 class BTaggingMgr
 {
 public:
-    BTaggingMgr(const char* dataera, const char* algoname, std::vector<std::string> name );
+    BTaggingMgr(const char* dataera, const char* algoname, std::vector<std::string> name, bool newFormat = false );
     void InitVars();
     void RegBranch(TTree* t);
+    void DisableBranch(TTree* t); // if the input file is btagging calculated, you can use this function to clear previous result.
     void FillWeightToEvt(float pt_, float eta_, int hadFlav_, float bDis_ );
 
 private:
@@ -37,9 +38,9 @@ private:
 
 // input era check is done in bin/AppendBTagCalibration and src/ExternalFile
 class BTaggingMgr_CSVv2       : public BTaggingMgr
-{ public: BTaggingMgr_CSVv2       ( const char* dataEra ); };
+{ public: BTaggingMgr_CSVv2       ( const char* dataEra, bool newFormat = false ); };
 class BTaggingMgr_DeepCSV     : public BTaggingMgr
-{ public: BTaggingMgr_DeepCSV     ( const char* dataEra ); };
+{ public: BTaggingMgr_DeepCSV     ( const char* dataEra, bool newFormat = false ); };
 class BTaggingMgr_DeepFlavour : public BTaggingMgr
-{ public: BTaggingMgr_DeepFlavour ( const char* dataEra ); };
+{ public: BTaggingMgr_DeepFlavour ( const char* dataEra, bool newFormat = false ); };
 #endif
