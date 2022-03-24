@@ -12,7 +12,6 @@
  *
  * Everything is converted into a function, as it is easiest to store it in a
  * txt or json file.
- * See : https://github.com/cms-sw/cmssw/blob/CMSSW_10_0_X/CondTools/BTau/test/BTagCalibrationStandalone.h
  *
  ************************************************************/
 
@@ -64,7 +63,7 @@ public:
   };
 
   BTagEntry() {}
-  BTagEntry(const std::string &csvLine);
+  BTagEntry(const std::string &csvLine, bool newFormat);
   BTagEntry(const std::string &func, Parameters p);
   BTagEntry(const TF1* func, Parameters p);
   BTagEntry(const TH1* histo, Parameters p);
@@ -111,7 +110,7 @@ class BTagCalibration
 public:
   BTagCalibration() {}
   BTagCalibration(const std::string &tagger);
-  BTagCalibration(const std::string &tagger, const std::string &filename);
+  BTagCalibration(const std::string &tagger, const std::string &filename, bool newFormat = true);
   ~BTagCalibration() {}
 
   std::string tagger() const {return tagger_;}
@@ -119,8 +118,8 @@ public:
   void addEntry(const BTagEntry &entry);
   const std::vector<BTagEntry>& getEntries(const BTagEntry::Parameters &par) const;
 
-  void readCSV(std::istream &s);
-  void readCSV(const std::string &s);
+  void readCSV(std::istream &s, bool newFormat);
+  void readCSV(const std::string &s, bool newFormat);
   void makeCSV(std::ostream &s) const;
   std::string makeCSV() const;
 

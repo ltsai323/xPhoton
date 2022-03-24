@@ -8,7 +8,6 @@
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/histMgr.h"
-#include "xPhoton/xPhoton/interface/puweicalc.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 #include <TLorentzVector.h>
@@ -293,7 +292,11 @@ void xElectrons(
             eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
             
             
-            SScorr.CalculateCorrections(&data, recoIdx);
+                if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, recoIdx) )
+                {
+                    ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, recoIdx);
+                    SScorr.CalculateCorrections();
+                }
             eleRecording.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
             eleRecording.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
             eleRecording.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
@@ -533,13 +536,13 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
 {
     t->Branch("run"               , &var->run,                     "run/I");
     t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
-    t->Branch("puwei"             , &var->puwei,                   "puwei/I");
     t->Branch("pthat"             , &var->pthat,                   "pthat/I");
     t->Branch("nVtx"              , &var->nVtx,                    "nVtx/I");
     t->Branch("nPU"               , &var->nPU,                     "nPU/I");
 
     t->Branch("rho"               , &var->rho,                     "rho/F");
     t->Branch("fixedGridRhoAll"   , &var->fixedGridRhoAll,         "fixedGridRhoAll/F");
+    t->Branch("puwei"             , &var->puwei,                   "puwei/F");
     t->Branch("genWeight"         , &var->genweight,               "genWeight/F");
     t->Branch("MET"               , &var->MET,                     "MET/F");
     t->Branch("METPhi"            , &var->METPhi,                  "METPhi/F");

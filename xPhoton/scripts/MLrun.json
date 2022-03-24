@@ -1,0 +1,10 @@
+{
+    "nJobs": 10,
+    "updateMVA": true,
+    "updatePU": false,
+    "updateBTagCalibration": false,
+    "isMC": false,
+    "dataera": "UL2018",
+    "InputFiles": ["simpletest_0.root"],
+    "OutputFileName":"mvaUpdated.simpletest.root"
+}

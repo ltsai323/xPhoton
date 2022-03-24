@@ -67,24 +67,11 @@ TTree* skim( TTree* tree )
     return newtree;
 }
 
-void TreeReduced( const char* loadedFile )
+void TreeReduced( const char* loadedFile, const char* outputlabel )
 {
     TFile* f_load = TFile::Open(loadedFile);
     TTree* t_load = (TTree*) f_load->Get("t");
-    TFile* f_out;
-
-    const char file_data[] = "/wk_cms/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root";
-    const char file_mc[] = "/wk_cms/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root";
-    const char file_qcd[] = "/wk_cms/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root";
-
-    if( strcmp(loadedFile,file_data) == 0 )
-      f_out = new TFile("reduced_data.root", "recreate");
-    else if( strcmp(loadedFile,file_mc) == 0)
-      f_out = new TFile("reduced_mc.root", "recreate");
-    else if( strcmp(loadedFile,file_qcd) == 0 )
-      f_out = new TFile("reduced_qcd.root", "recreate");
-    else
-      cout << "[ERROR] Please check the name of the file..." << endl;
+    TFile* f_out = new TFile( Form("reduced_%s.root", outputlabel), "RECREATE");
 
     TTree* t_out = skim(t_load);
     printf( "Reduced tree contains %lld events from %lld events.\n", t_out->GetEntries(), t_load->GetEntries() );

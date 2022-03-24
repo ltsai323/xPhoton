@@ -36,7 +36,6 @@ class MyCanvas(ROOT.TCanvas):
         self.SetFrameFillStyle(4000)
         self.SetFillColor(4000)
         self.SetFillStyle(4000)
-
 class DrawingMgr(object):
     def __init__(self, width=1000, height=1000):
         self._tmpTFile=ROOT.TFile('tmp.root','recreate')

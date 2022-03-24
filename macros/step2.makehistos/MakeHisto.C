@@ -24,148 +24,89 @@ std::vector<float> ptbin_ranges()
     std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
     return vec_ptcut;
 }
-
 void MakeHisto::Loop(Int_t extracut = 0)
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
-    //   In a ROOT session, you can do:
-    //      Root > .L MakeHisto.C
-    //      Root > MakeHisto t
-    //      Root > t.GetEntry(12); // Fill t data members with entry number 12
-    //      Root > t.Show();       // Show values of entry 12
-    //      Root > t.Show(16);     // Read and show values of entry 16
-    //      Root > t.Loop();       // Loop on all entries
-    //
 
-    //     This is the loop skeleton where:
-    //    jentry is the global entry number in the chain
-    //    ientry is the entry number in the current Tree
-    //  Note that the argument to GetEntry must be:
-    //    jentry for TChain::GetEntry
-    //    ientry for TTree::GetEntry and TBranch::GetEntry
-    //
-    //       To read only selected branches, Insert statements like:
-    // METHOD1:
-    //    fChain->SetBranchStatus("*",0);  // disable all branches
-    //    fChain->SetBranchStatus("branchname",1);  // activate branchname
-    // METHOD2: replace line
-    //    fChain->GetEntry(jentry);       //read all branches
-    //by  b_branchname->GetEntry(ientry); //read only this branch
     if (fChain == 0) return;
     TRandom3 *trd = new TRandom3();
 
-    TFile *fout = new TFile("output.root","recreate");
+    TFile *fout = new TFile( Form("makehisto_%s.root", _outputlabel),"recreate");
+    fout->cd();
 
-    //ebee, jetbin, ptbin, true/fake;
-    TH1F *h_BDT_all [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
-    TH1F *h_BDT     [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
-    TH1F *h_Pt_all  [NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2];
-    TH1F *h_Pt      [NUMBIN_PHOETA]                             [2];
-    TH1F *h_Ptspec  [NUMBIN_PHOETA]                             [2];
-    TH2F *h_IsovsBDT[NUMBIN_PHOETA][NUMBIN_JETETA][NUMBIN_PHOPT][2][NUMBIN_ISOVAR];
+    HistMgr1D _h_BDT_all ( "BDT_all.%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
+    HistMgr1D _h_BDT     ( "BDT.%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
+    HistMgr1D _h_Pt_all  ( "Pt_all.%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
+    HistMgr1D _h_Pt      ( "Pt.%d_%d",
+            {NUMBIN_PHOETA,2});
+    HistMgr1D _h_Ptspec  ( "Pt_spec.%d_%d",
+            {NUMBIN_PHOETA,2});
+    HistMgr2D _h_IsovsBDT( "IsovsBDT.%d_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
+    HistMgr1D _h_HLT_all( "HLT_ebee.%d_bit%d",
+            {NUMBIN_PHOETA,NUMBIT_HLT} );
+    HistMgr1D _h_HLTpass( "HLT_ebee.%d_bit%d_pass",
+            {NUMBIN_PHOETA,NUMBIT_HLT} );
 
+    _h_BDT_all .SetXaxis( 100,-1.,1.);
+    _h_BDT     .SetXaxis( 100,-1.,1.);
+    _h_Pt_all  .SetXaxis( 2000, 0., 2000.);
+    _h_Pt      .SetXaxis( 200, 0., 2000.);
+    _h_Ptspec  .SetXaxis( 200, 0., 2000.);
+    _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    _h_HLT_all .SetXaxis(2000,0.,2000.);
+    _h_HLTpass .SetXaxis(2000,0.,2000.);
+    TH1F *h_EB_HLTall = new TH1F("EB_HLTall","all HLT photon", 1000, 0., 1000.);
+    TH1F *h_EE_HLTall = new TH1F("EE_HLTall","all HLT photon", 1000, 0., 1000.);
 
-    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
-    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT ; pPtIdx++) {
-    for(int isFakePho=0; isFakePho<2; isFakePho++) {
-        h_BDT_all[pEtaIdx][jEtaIdx][pPtIdx][isFakePho] = new TH1F(
-            Form("h_BDT_all_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
-            Form("BDT all  EBEE_%d_Jet_%d_ptbin_%d_true_%d", pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
-            100,-1.,1.);
-        h_BDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho] = new TH1F(
-            Form("h_BDT_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
-            Form("BDT selected EBEE_%d_Jet_%d_ptbin_%d_true_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
-            100,-1.,1.);
-
-        for(int varIsoIdx=0; varIsoIdx<NUMBIN_ISOVAR; varIsoIdx++)
-        {
-            h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][varIsoIdx] = new TH2F(
-                Form("h_IsovsBDT_%d_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho,varIsoIdx),
-                Form("Iso vs BDT EBEE_%d_Jet_%d_ptbin_%d_true_%d_Iso_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho,varIsoIdx),
-                100, -1., 1., 30, 0., 15);
-                h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][varIsoIdx]->Sumw2();
-        }
-
-
-        h_Pt_all[pEtaIdx][jEtaIdx][pPtIdx][isFakePho] = new TH1F(
-            Form("h_Pt_all_%d_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
-            Form("Pt all  EBEE_%d_Jet_%d_ptbin_%d_true_%d",pEtaIdx,jEtaIdx,pPtIdx,isFakePho),
-            2000, 0., 2000.);
-    } } } }
-
-    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for(int isFakePho=0; isFakePho<2; isFakePho++) {
-        h_Ptspec[pEtaIdx][isFakePho] = new TH1F(
-            Form("h_Pt_spec_%d_%d",pEtaIdx,isFakePho),
-            Form("Pt EBEE_%d_true_%d",pEtaIdx,isFakePho),
-            200, 0., 2000.);
-        h_Ptspec[pEtaIdx][isFakePho]->Sumw2();
-
-        h_Pt[pEtaIdx][isFakePho] = new TH1F(
-            Form("h_Pt_%d_%d",pEtaIdx,isFakePho),
-            Form("Pt EBEE_%d_true_%d",pEtaIdx,isFakePho),
-            200, 0., 2000.);
-        h_Pt[pEtaIdx][isFakePho]->Sumw2();
-    } }
-    TH1F *h_EB_HLTall = new TH1F("h_EB_HLTall","all HLT photon", 1000, 0., 1000.);
-    TH1F *h_EE_HLTall = new TH1F("h_EE_HLTall","all HLT photon", 1000, 0., 1000.);
-
-    TH1F *h_chiso_sg = new TH1F("h_chiso_sg","chiso signal region", 150, 0., 30);
-    TH1F *h_chworst_sg = new TH1F("h_chworst_sg","chworst signal region", 150, 0., 30);
+    TH1F *h_chiso_sg = new TH1F("chiso_sg","chiso signal region", 150, 0., 30);
+    TH1F *h_chworst_sg = new TH1F("chworst_sg","chworst signal region", 150, 0., 30);
 
 
-    TH1F *h_HLT[NUMBIN_PHOETA][NUMBIT_HLT][2];
-    for (int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for (int HLTIdx=0; HLTIdx<NUMBIT_HLT; HLTIdx++) {
-        h_HLT[pEtaIdx][HLTIdx][0] = new TH1F(
-                Form("h_HLT_ebee_%d_bit%d",pEtaIdx, HLTIdx),
-                Form("HLT ebee %d bit %d all",pEtaIdx, HLTIdx),
-                2000, 0., 2000.);
-        h_HLT[pEtaIdx][HLTIdx][1] = new TH1F(
-                Form("h_HLT_ebee_%d_bit%d_pass",pEtaIdx, HLTIdx),
-                Form("HLT ebee %d bit %d pass",pEtaIdx, HLTIdx),
-                2000, 0., 2000.);
-    } }
 
-    // EBEE ; recoPt ; isMatched ; jetflvr ; tagger
-    // EBEE      : 0 for EB ; 1 for EE
-    // recoPt    : 
-    // isMatched : 0 for matched, 1 for not-matched, 2 for matched(qcd-sideband), 3 for matched(qcd-signal), 4 for not-matched(qcd) 
-    // jetflv    : 0 for light ; 1 for c ; 2 for b
-    // tagger    : 0 for bvsall ; 1 for cvsl ; 2 for cvsb ; 3 for svxmass
-    // parity	 : 0 for even entries ; 1 for odd entries
-    // yi-shou's variables
-    TH1F *h_jettag     [NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR][NUM_PARITY];
-    TH1F *h_jettag_up  [NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR][NUM_PARITY];
-    TH1F *h_jettag_down[NUMBIN_PHOETA][NUMBIN_PHOPT][NUMBIN_MATCHEDPHOTONSTATUS][NUMBIN_JETFLVR][NUM_BTAGVAR][NUM_PARITY];
-    const int varBTagIdx_svxmass=3;
+    HistMgr1D h_btagDeepCSV_BvsAll_central    ( "btagDeepCSV.0_0_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_BvsAll_up         ( "btagDeepCSV.1_0_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_BvsAll_down       ( "btagDeepCSV.2_0_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_CvsL_central      ( "btagDeepCSV.0_1_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_CvsL_up           ( "btagDeepCSV.1_1_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_CvsL_down         ( "btagDeepCSV.2_1_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_CvsB_central      ( "btagDeepCSV.0_2_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_CvsB_up           ( "btagDeepCSV.1_2_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_CvsB_down         ( "btagDeepCSV.2_2_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_secVtxMass_central( "btagDeepCSV.0_3_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_secVtxMass_up     ( "btagDeepCSV.1_3_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr1D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV.2_3_%d__%d_%d_%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+
+    h_btagDeepCSV_BvsAll_central    .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_BvsAll_up         .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_BvsAll_down       .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsL_central      .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsL_up           .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsL_down         .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsB_central      .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsB_up           .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_CvsB_down         .SetXaxis( 10, 0., 1.);
+    h_btagDeepCSV_secVtxMass_central.SetXaxis( 10, 0., 5.);
+    h_btagDeepCSV_secVtxMass_up     .SetXaxis( 10, 0., 5.);
+    h_btagDeepCSV_secVtxMass_down   .SetXaxis( 10, 0., 5.);
 
 
-    const std::vector< const char* > jetFlvrNames = { "sigma", "alpha", "beta" };
-    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
-    for(int phoMatchStatIdx=0; phoMatchStatIdx<NUMBIN_MATCHEDPHOTONSTATUS; phoMatchStatIdx++) {
-    for(int jFlvrIdx=0; jFlvrIdx<NUMBIN_JETFLVR; jFlvrIdx++) {
-    for(int varBTagIdx=0; varBTagIdx<NUM_BTAGVAR; varBTagIdx++) {
-    for(int parityIdx=0; parityIdx<NUM_PARITY; parityIdx++) {
-        float upperboundary = varBTagIdx == varBTagIdx_svxmass ? 5. : 1.; // idx goes to svxmass, change upper boundary.
-
-        h_jettag[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx] = new TH1F(
-                Form("h_jettag_%d_%d_%d_%d_%d_%d", pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
-                Form("h_jettag_%d_%d_%d_%d_%d_%d", pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
-                10, 0., upperboundary);
-        h_jettag_up[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx] = new TH1F(
-                Form("h_jettag_%sUp_%d_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
-                Form("h_jettag_%sUp_%d_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
-                10, 0., upperboundary);
-        h_jettag_down[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx] = new TH1F(
-                Form("h_jettag_%sDown_%d_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
-                Form("h_jettag_%sDown_%d_%d_%d_%d_%d_%d", jetFlvrNames[jFlvrIdx], pEtaIdx, pPtIdx, phoMatchStatIdx, jFlvrIdx, varBTagIdx, parityIdx),
-                10, 0., upperboundary);
-    } } } } } }
-
-    Long64_t nentries = fChain->GetEntries();   
+    Long64_t nentries = fChain->GetEntries();
     printf("nentries %lli \n", nentries);
     printf("HLT option %d \n", HLTOPTION);
 
@@ -220,9 +161,9 @@ void MakeHisto::Loop(Int_t extracut = 0)
                 if(ibit>=7) basebit=6;
                 if(ibit>=9) basebit=8;
                 if( (phoFiredTrgs >>basebit) & 1 ) {
-                    h_HLT[ebee][ibit][0]->Fill(phop4->Et());
+                    _h_HLT_all.GetBin({ebee,ibit})->Fill(phop4->Et());
                     if( (phoFiredTrgs >>(ibit)) & 1 ) {
-                        h_HLT[ebee][ibit][1]->Fill(phop4->Et());
+                        _h_HLTpass.GetBin({ebee,ibit})->Fill(phop4->Et());
                     }
                 }	  
             }	
@@ -240,7 +181,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // if(isData==1 && ((phoFiredTrgs>>triggerbit(ptbin))&1)==0) continue;
         // if(isData==1 && !(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
         //if(!(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
-        if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue;
+        if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
         //float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);// deta_wg
         // if(MTm>0. && ebee==0 &&dr_wg<0.4) continue;
         // if(MTm>0. && ebee==1 &&dr_wg<1.) continue;
@@ -249,8 +190,10 @@ void MakeHisto::Loop(Int_t extracut = 0)
         int isfakephoton = 0;
         if( IsMC() &&  isMatched!=1 && isConverted!=1 && isMatchedEle!=1) isfakephoton=1; //fake
 
-        h_BDT_all[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight); //<-default 
-        h_Pt_all[ebee][jetbin][ptbin][isfakephoton]->Fill(photonpt, eventweight);
+        _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
+        _h_Pt_all .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(photonpt , eventweight);
+
+        if (jentry > 1e4 ) break; continue;
 
         // asdf selections
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
@@ -269,19 +212,18 @@ void MakeHisto::Loop(Int_t extracut = 0)
 	}else if ( extracut == 2 ){
 	  if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
 	}
-	//if ( mcweight>3000. ) continue;
-	//if ( jetSubVtxMass==0 ) continue;  
-	//if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155 ) continue;
 
-        h_BDT[ebee][jetbin][ptbin][isfakephoton]->Fill(bdt_score, eventweight);
-        h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][0]->Fill(bdt_score, chIsoRaw, eventweight);
-        h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][1]->Fill(bdt_score, phoIsoRaw, eventweight);
-        h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][2]->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
-        h_IsovsBDT[ebee][jetbin][ptbin][isfakephoton][3]->Fill(bdt_score, chWorstRaw, eventweight);
+        _h_BDT     .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
+        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
 
 
-        h_Pt[ebee][isfakephoton]->Fill(photonpt, eventweight);
-        h_Ptspec[ebee][isfakephoton]->Fill( phop4->Et(), eventweight);
+
+        _h_Pt       .GetBin({ebee,isfakephoton})->Fill(photonpt, eventweight);
+        _h_Ptspec   .GetBin({ebee,isfakephoton})->Fill( phop4->Et(), eventweight);
+
 
         if ( TMath::Abs(recoEta)<1.4442 )
             if(isfakephoton==1&&photonpt>100.){
@@ -295,8 +237,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // need to be modified asdf
         if ( isQCD )
         {
-            if ( isMatched==-99 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
-            else if ( isMatched==-99 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
+            if ( isMatched!=1 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
+            else if ( isMatched!=1 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
             else    phoMatchStatIdx = 4;
         }
         else
@@ -311,80 +253,82 @@ void MakeHisto::Loop(Int_t extracut = 0)
         float evtws_down=0.;
 
         if(jetflvBin==0){
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;
-            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_hf;
+            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_hf;
         }else if(jetflvBin==1){
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_cferr1;
-            evtws_down =  mcweight* jetSF_DeepCSV_down_cferr1;
+            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_cferr1;
+            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_cferr1;
         }else {
-            evtws      =  mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  mcweight* jetSF_DeepCSV_up_lf;  
-            evtws_down =  mcweight* jetSF_DeepCSV_down_lf;
+            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
+            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_lf;  
+            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_lf;
         }
 
-        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws);
-        h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws_up);
-        h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][0][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_BvsAll,evtws_down);
 
-        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][1][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsL,evtws);
-        h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][1][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsL,evtws_up);
-        h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][1][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsL,evtws_down);
 
-        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][2][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws);
-        h_jettag_up  [ebee][ptbin][phoMatchStatIdx][jetflvBin][2][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws_up);
-        h_jettag_down[ebee][ptbin][phoMatchStatIdx][jetflvBin][2][parityIdx]->Fill(jetDeepCSVDiscriminatorTags_CvsB,evtws_down);
-
-        h_jettag     [ebee][ptbin][phoMatchStatIdx][jetflvBin][3][parityIdx]->Fill(jetSubVtxMass);
-
+        h_btagDeepCSV_BvsAll_central    .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws);
+        h_btagDeepCSV_BvsAll_up         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws_up);
+        h_btagDeepCSV_BvsAll_down       .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws_down);
+        h_btagDeepCSV_CvsL_central      .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws);
+        h_btagDeepCSV_CvsL_up           .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws_up);
+        h_btagDeepCSV_CvsL_down         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws_down);
+        h_btagDeepCSV_CvsB_central      .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws);
+        h_btagDeepCSV_CvsB_up           .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws_up);
+        h_btagDeepCSV_CvsB_down         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws_down);
+        h_btagDeepCSV_secVtxMass_central.GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      ,evtws);
+        h_btagDeepCSV_secVtxMass_up     .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      ,evtws_up);
+        h_btagDeepCSV_secVtxMass_down   .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      ,evtws_down);
     }
 
     fout->cd();
 
-    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for(int jEtaIdx=0; jEtaIdx<NUMBIN_JETETA; jEtaIdx++) {
-    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
-    for(int isFakePho=0; isFakePho<2; isFakePho++) {
-        h_BDT     [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
-        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][0]->Write();
-        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][1]->Write();
-        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][2]->Write();
-        h_IsovsBDT[pEtaIdx][jEtaIdx][pPtIdx][isFakePho][3]->Write();
-        h_BDT_all [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
-        h_Pt_all  [pEtaIdx][jEtaIdx][pPtIdx][isFakePho]->Write();
-    } } } }
-    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for(int isFakePho=0; isFakePho<2; isFakePho++) {
-        h_Pt    [pEtaIdx][isFakePho]->Write();
-        h_Ptspec[pEtaIdx][isFakePho]->Write();
-    } }
 
+    _h_BDT     .Write(_h_BDT     .MakeDirectory(fout));
+    _h_Pt_all  .Write(_h_Pt_all  .MakeDirectory(fout));
+    _h_Pt      .Write(_h_Pt      .MakeDirectory(fout));
+    _h_Ptspec  .Write(_h_Ptspec  .MakeDirectory(fout));
+    _h_IsovsBDT.Write(_h_IsovsBDT.MakeDirectory(fout));
+    
+    TDirectory* HLTdir =_h_HLT_all .MakeDirectory(fout);
+    _h_HLT_all .Write(HLTdir);
+    _h_HLTpass .Write(HLTdir);
+    
+    fout->cd();
     h_EB_HLTall->Write();
     h_EE_HLTall->Write();
-
-    for (int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++){
-    for (int HLTIdx=0; HLTIdx<NUMBIT_HLT; HLTIdx++){
-            h_HLT[pEtaIdx][HLTIdx][0]->Write();
-            h_HLT[pEtaIdx][HLTIdx][1]->Write();
-    } }
-
     h_chiso_sg->Write();
     h_chworst_sg->Write();
 
-    for(int pEtaIdx=0; pEtaIdx<NUMBIN_PHOETA; pEtaIdx++) {
-    for(int pPtIdx=0; pPtIdx<NUMBIN_PHOPT; pPtIdx++) {
-    for(int phoMatchStatIdx=0; phoMatchStatIdx<NUMBIN_MATCHEDPHOTONSTATUS; phoMatchStatIdx++) {
-    for(int jFlvrIdx=0; jFlvrIdx<NUMBIN_JETFLVR; jFlvrIdx++) {
-    for(int varBTagIdx=0; varBTagIdx<NUM_BTAGVAR; varBTagIdx++) {
-    for(int parityIdx=0; parityIdx<NUM_PARITY; parityIdx++) {
-        h_jettag     [pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx]->Write();
-        h_jettag_up  [pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx]->Write();
-        h_jettag_down[pEtaIdx][pPtIdx][phoMatchStatIdx][jFlvrIdx][varBTagIdx][parityIdx]->Write();
-    } } } } } }
-
+    TDirectory* btagdir = h_btagDeepCSV_BvsAll_central.MakeDirectory(fout);
+    h_btagDeepCSV_BvsAll_central    .Write( btagdir );
+    h_btagDeepCSV_BvsAll_up         .Write( btagdir );
+    h_btagDeepCSV_BvsAll_down       .Write( btagdir );
+    h_btagDeepCSV_CvsL_central      .Write( btagdir );
+    h_btagDeepCSV_CvsL_up           .Write( btagdir );
+    h_btagDeepCSV_CvsL_down         .Write( btagdir );
+    h_btagDeepCSV_CvsB_central      .Write( btagdir );
+    h_btagDeepCSV_CvsB_up           .Write( btagdir );
+    h_btagDeepCSV_CvsB_down         .Write( btagdir );
+    h_btagDeepCSV_secVtxMass_central.Write( btagdir );
+    h_btagDeepCSV_secVtxMass_up     .Write( btagdir );
+    h_btagDeepCSV_secVtxMass_down   .Write( btagdir );
 
     fout->Close();
+    std::cerr << "hi-3\n";
 }
 
 
