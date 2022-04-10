@@ -9,11 +9,23 @@
 details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
 details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
 details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
-data 57603, signal 1814.45, bkg 1332.30 
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_11_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_11_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_11_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_11_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_11_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_11_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_11_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_11_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_11_1_0
+get nameing : h_subVtxMass_0_1_11_0_0
+get nameing : h_subVtxMass_0_1_11_0_0
+get nameing : h_subVtxMass_0_1_11_1_0
+data 57603, signal 2560.15, bkg 1332.30 
 
-sig fraction of 11 0 SB/all  = 0.143343 
-sig fraction of 11 0 sig/all = 0.804361 
-sig fit correction       0.661018 
+sig fraction of 11 0 SB/all  = 0.101591 
+sig fraction of 11 0 sig/all = 0.861345 
+sig fit correction       0.759754 
 zone1 sig faction of left / right = 0.383025 
 zone2 SB  faction of left / right = 0.290467 
 Data faction of SB/all = 0.216117 

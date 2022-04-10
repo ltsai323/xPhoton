@@ -58,6 +58,7 @@ struct VARList
 {
     enum vars
     {
+/*
         deepCSVTags_b,
         deepCSVTags_bb,
         deepCSVTags_c,
@@ -68,6 +69,7 @@ struct VARList
         deepFlavourTags_lepb,
         deepFlavourTags_bb,
         deepFlavourTags_uds,
+*/
         deepCSVDiscriminatorTags_BvsAll,
         deepCSVDiscriminatorTags_CvsB,
         deepCSVDiscriminatorTags_CvsL,
@@ -78,6 +80,7 @@ struct VARList
 
     VARList() : histnames(totvars)
     {
+/*
         histnames[deepCSVTags_b]                      = "deepCSVTags_b";                   
         histnames[deepCSVTags_bb]                     = "deepCSVTags_bb";
         histnames[deepCSVTags_c]                      = "deepCSVTags_c";
@@ -88,6 +91,7 @@ struct VARList
         histnames[deepFlavourTags_lepb]               = "deepFlavourTags_lepb";
         histnames[deepFlavourTags_bb]                 = "deepFlavourTags_bb";
         histnames[deepFlavourTags_uds]                = "deepFlavourTags_uds";
+*/
         histnames[deepCSVDiscriminatorTags_BvsAll]    = "deepCSVDiscriminatorTags_BvsAll";
         histnames[deepCSVDiscriminatorTags_CvsB]      = "deepCSVDiscriminatorTags_CvsB";
         histnames[deepCSVDiscriminatorTags_CvsL]      = "deepCSVDiscriminatorTags_CvsL";
@@ -103,14 +107,14 @@ TH2F* GetHistFromFile_General(TFile* infile, const char* varname, int isBkg,
 {
     TH2F* hist;
     char hname[200];
-    sprintf(hname,"%s_%d_%d_%d_%d", varname, ebee, jetbin, ptbin, isBkg);  
+    sprintf(hname,"%s_%d_%d_%d_%d_0", varname, ebee, jetbin, ptbin, isBkg);  
         std::cout << "get nameing : " << hname << std::endl;
     hist = (TH2F*)infile->Get(hname);
     if ( jetbin == 0 || jetbin == 1 ) return hist;
     
     while ( jetbin-- )
     {
-        sprintf(hname,"%s_%d_%d_%d_%d", varname, ebee, jetbin, ptbin, isBkg);
+        sprintf(hname,"%s_%d_%d_%d_%d_0", varname, ebee, jetbin, ptbin, isBkg);
         std::cout << "get nameing : " << hname << std::endl;
         hist->Add( (TH2F*)infile->Get(hname) );
     }
@@ -229,7 +233,7 @@ if ( hgjet == nullptr ) { std::cerr << "nothing found in sig MC!\n"; throw "fail
 if ( hdata == nullptr ) { std::cerr << "nothing found in data!\n";   throw "failed to load file!\n"; }
 if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "failed to load file!\n"; }
 
-/*
+
   VARList fitvars;
   std::vector<TH2F*> gjet_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*> data_fithists(VARList::totvars, nullptr);
@@ -237,12 +241,11 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
   for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
   {
       char vartemplate[100];
-      sprintf(vartemplate,"fitVars/h_%s",fitvars.histnames[varidx]);
+      sprintf(vartemplate,"h_%s",fitvars.histnames[varidx]);
       gjet_fithists[varidx] = (TH2F*) GetSigVarHistFromFile( fgjet, vartemplate, ebee, jetbin, ptbin )->Clone();
       data_fithists[varidx] = (TH2F*) GetSigVarHistFromFile( fdata, vartemplate, ebee, jetbin, ptbin )->Clone();
        qcd_fithists[varidx] = (TH2F*) GetBkgVarHistFromFile( fqcd , vartemplate, ebee, jetbin, ptbin )->Clone();
   }
-  */
 
   
 
@@ -257,7 +260,7 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
   sprintf(hname,"data_all_%d_%d_%d",ebee, jetbin, ptbin);
   hdata_all->SetName(hname);
 
-  /*
+  
   std::vector<TH2F*> gjet_all_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*> data_all_fithists(VARList::totvars, nullptr);
   std::vector<TH2F*>  qcd_all_fithists(VARList::totvars, nullptr);
@@ -271,7 +274,7 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
       sprintf(vartemplate,"%s_%s_%d_%d_%d","qcd_all" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
        qcd_all_fithists[varidx] = (TH2F*)  qcd_fithists[varidx]->Clone();   qcd_all_fithists[varidx]->SetName(vartemplate);
   }
-  */
+  
 
 
   Printf("data %.0f, signal %.2f, bkg %.2f \n", hdata->Integral(), hgjet->Integral(), hqcd->Integral());
@@ -279,14 +282,14 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
   hqcd->Rebin2D(rebinoption,2);
   hgjet->Rebin2D(rebinoption,2);
   hdata->Rebin2D(rebinoption,2);
-  /*
+  
   for ( int varidx = 0; varidx < VARList::totvars; ++varidx )
   {
       gjet_fithists[varidx]->Rebin2D(rebinoption,2);
       data_fithists[varidx]->Rebin2D(rebinoption,2);
        qcd_fithists[varidx]->Rebin2D(rebinoption,2);
   }
-  */
+  
 
   int nbinx = hqcd->GetNbinsX();
 
@@ -335,7 +338,7 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
   sprintf(hname,"data_%d_%d_%d_px2_chIso",ebee, jetbin, ptbin);
   TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(hname,zone2_low, zone2_high);
 
-  /*
+  
   std::vector<TH1D*> gjet_zone1_fithists(VARList::totvars, nullptr);
   std::vector<TH1D*> data_zone1_fithists(VARList::totvars, nullptr);
   std::vector<TH1D*>  qcd_zone1_fithists(VARList::totvars, nullptr);
@@ -362,7 +365,7 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
       sprintf(vartemplate,"%s_%s_%d_%d_%d_px2","qcd" ,fitvars.histnames[varidx], ebee, jetbin, ptbin);
        qcd_zone2_fithists[varidx] = (TH1D*) qcd_fithists[varidx]->ProjectionX(vartemplate, zone2_low, zone2_high);
   }
-  */
+  
 
 
   //for PhoISO
@@ -484,7 +487,7 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
     hdata_all->Write();
     hqcd_all->Write();
 
-    /*
+    
     TDirectory* outdir = (TDirectory*) fout->mkdir("fitVars");
     outdir->cd();
     for ( auto iter :   gjet_all_fithists ) iter->Write();
@@ -496,7 +499,7 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
     for ( auto iter : gjet_zone2_fithists ) iter->Write();
     for ( auto iter : data_zone2_fithists ) iter->Write();
     for ( auto iter :  qcd_zone2_fithists ) iter->Write();
-    */
+    
 
     fout->Close();
   }

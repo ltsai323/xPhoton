@@ -9,11 +9,23 @@
 details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
 details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
 details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
-data 421847, signal 32187.55, bkg 48910.44 
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_7_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_7_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_7_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_7_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_7_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_7_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_7_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_7_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_7_1_0
+get nameing : h_subVtxMass_0_0_7_0_0
+get nameing : h_subVtxMass_0_0_7_0_0
+get nameing : h_subVtxMass_0_0_7_1_0
+data 421847, signal 117679.47, bkg 48910.44 
 
-sig fraction of 7 0 SB/all  = 0.064813 
-sig fraction of 7 0 sig/all = 0.898903 
-sig fit correction       0.834090 
+sig fraction of 7 0 SB/all  = 0.161766 
+sig fraction of 7 0 sig/all = 0.772121 
+sig fit correction       0.610356 
 zone1 sig faction of left / right = 0.266215 
 zone2 SB  faction of left / right = 0.353199 
 Data faction of SB/all = 0.050552 

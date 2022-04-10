@@ -9,6 +9,42 @@
 details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
 details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
 details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_2_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_2_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_2_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_2_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_2_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_2_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_2_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_2_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_17_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_2_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_17_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_17_1_0
+get nameing : h_subVtxMass_0_2_17_0_0
+get nameing : h_subVtxMass_0_1_17_0_0
+get nameing : h_subVtxMass_0_0_17_0_0
+get nameing : h_subVtxMass_0_2_17_0_0
+get nameing : h_subVtxMass_0_1_17_0_0
+get nameing : h_subVtxMass_0_0_17_0_0
+get nameing : h_subVtxMass_0_2_17_1_0
+get nameing : h_subVtxMass_0_1_17_1_0
+get nameing : h_subVtxMass_0_0_17_1_0
 data 40061, signal 1443.24, bkg 1058.00 
 
 sig fraction of 17 0 SB/all  = 0.128849 

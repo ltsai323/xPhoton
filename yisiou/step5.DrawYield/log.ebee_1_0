@@ -1,0 +1,2189 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.12/07                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 9 February 2018                                 |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+gjet_1_0_0_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   2.60477e+04  1.00000e-01    0.00000e+00  7.44220e+04
+     2 background yield   1.11633e+04  1.00000e-01    0.00000e+00  7.44220e+04
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-546713 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   2.60477e+04   1.00000e-01   2.81714e-06   4.38215e+03
+   2  background yield   1.11633e+04   1.00000e-01   3.76308e-06  -7.65471e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-547846 FROM MIGRAD    STATUS=CONVERGED      48 CALLS          49 TOTAL
+                     EDM=4.50272e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   2.01919e+04   2.10119e+02   1.89667e-03   5.16734e-03
+   2  background yield   1.70191e+04   2.02444e+02   1.93465e-03   1.68923e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  4.415e+04 -2.395e+04 
+ -2.395e+04  4.098e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.56296   1.000 -0.563
+        2  0.56296  -0.563  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 20191.945559 +- 210.119359
+Parameter (yeild) 1 = 17019.060452 +- 202.444463
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-547846 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          71 TOTAL
+                     EDM=4.50272e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   2.01919e+04   2.10119e+02  -2.10023e+02   2.10646e+02
+   2  background yield   1.70191e+04   2.02444e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          71 TOTAL
+                     EDM=4.50272e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   2.01919e+04   2.10119e+02   0.00000e+00   7.44220e+04
+   2  background yield   1.70191e+04   2.02444e+02   0.00000e+00   7.44220e+04
+ FCN=-547846 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          71 TOTAL
+                     EDM=4.50272e-09    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   2.01919e+04   2.10119e+02   0.00000e+00   7.44220e+04
+   2  background yield   1.70191e+04   2.02444e+02   0.00000e+00   7.44220e+04
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  4.415e+04 -2.395e+04 
+ -2.395e+04  4.098e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.56296   1.000 -0.563
+        2  0.56296  -0.563  1.000
+ ========= happy ending !? =========================== 
+FCN =  -547845.821 
+EE Data 37211.0 events, fitted 37211.0
+EE Data 19931.0, and fitted (in 5GeV) 18624.3 events 
+EE bin 0 SIG 20191.9 #pm 210.1 events 
+EE SIG (in 5GeV) 13557.4 #pm 141.1 events 
+EE bin 0 BKG 17019.1 #pm 202.4 events 
+EE BKG (in 5GeV) 5066.8 #pm  60.3 events 
+----------------------------------------------- 
+EE Data (<0) 14959.0 (>0) 22252.0 events 
+EE sig (<0) 5162.6 (>0) 15029.3 events 
+EE bkg (<0) 10741.3 (>0) 6277.8 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 37.457903, Prob = 2.17994e-05, NDF = 9, igood = 0
+ chi2/ndf is 3.75e+01
+gjet_1_0_1_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   3.91958e+04  1.00000e-01    0.00000e+00  1.11988e+05
+     2 background yield   1.67982e+04  1.00000e-01    0.00000e+00  1.11988e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-874613 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   3.91958e+04   1.00000e-01   1.87214e-06   9.94201e+03
+   2  background yield   1.67982e+04   1.00000e-01   2.50077e-06  -1.73666e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-877952 FROM MIGRAD    STATUS=CONVERGED      48 CALLS          49 TOTAL
+                     EDM=3.62191e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   2.77749e+04   2.35937e+02   1.93463e-03   5.04849e-02
+   2  background yield   2.82192e+04   2.36875e+02   1.93209e-03   5.88519e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  5.567e+04 -2.787e+04 
+ -2.787e+04  5.611e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.49868   1.000 -0.499
+        2  0.49868  -0.499  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 27774.873880 +- 235.936526
+Parameter (yeild) 1 = 28219.156440 +- 236.874763
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-877952 FROM MINOS     STATUS=SUCCESSFUL     17 CALLS          66 TOTAL
+                     EDM=3.62191e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   2.77749e+04   2.35937e+02  -2.35745e+02   2.36478e+02
+   2  background yield   2.82192e+04   2.36875e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     17 CALLS          66 TOTAL
+                     EDM=3.62191e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   2.77749e+04   2.35937e+02   0.00000e+00   1.11988e+05
+   2  background yield   2.82192e+04   2.36875e+02   0.00000e+00   1.11988e+05
+ FCN=-877952 FROM MINOS     STATUS=SUCCESSFUL     17 CALLS          66 TOTAL
+                     EDM=3.62191e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   2.77749e+04   2.35937e+02   0.00000e+00   1.11988e+05
+   2  background yield   2.82192e+04   2.36875e+02   0.00000e+00   1.11988e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  5.567e+04 -2.787e+04 
+ -2.787e+04  5.611e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.49868   1.000 -0.499
+        2  0.49868  -0.499  1.000
+ ========= happy ending !? =========================== 
+FCN =  -877951.720 
+EE Data 55994.0 events, fitted 55994.0
+EE Data 30242.0, and fitted (in 5GeV) 29884.7 events 
+EE bin 1 SIG 27774.9 #pm 235.9 events 
+EE SIG (in 5GeV) 21807.0 #pm 185.2 events 
+EE bin 1 BKG 28219.2 #pm 236.9 events 
+EE BKG (in 5GeV) 8077.8 #pm  67.8 events 
+----------------------------------------------- 
+EE Data (<0) 22781.0 (>0) 33213.0 events 
+EE sig (<0) 4749.3 (>0) 23025.6 events 
+EE bkg (<0) 18520.6 (>0) 9698.6 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 17.433976, Prob = 0.0423381, NDF = 9, igood = 0
+ chi2/ndf is 1.74e+01
+gjet_1_0_2_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.05429e+05  1.00000e-01    0.00000e+00  3.01226e+05
+     2 background yield   4.51839e+04  1.00000e-01    0.00000e+00  3.01226e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-2.68049e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.05429e+05   1.00000e-01   6.96012e-07   2.07730e+04
+   2  background yield   4.51839e+04   1.00000e-01   9.29721e-07  -3.62864e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-2.68554e+06 FROM MIGRAD    STATUS=CONVERGED      48 CALLS          49 TOTAL
+                     EDM=2.60366e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   8.34227e+04   3.85492e+02   2.02672e-03   7.04965e-02
+   2  background yield   6.71903e+04   3.63858e+02   2.05631e-03  -1.67067e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.486e+05 -6.514e+04 
+ -6.514e+04  1.324e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.46439   1.000 -0.464
+        2  0.46439  -0.464  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 83422.718948 +- 385.492312
+Parameter (yeild) 1 = 67190.301069 +- 363.858350
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-2.68554e+06 FROM MINOS     STATUS=SUCCESSFUL     13 CALLS          62 TOTAL
+                     EDM=2.60366e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   8.34227e+04   3.85492e+02  -3.85412e+02   3.86070e+02
+   2  background yield   6.71903e+04   3.63858e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     13 CALLS          62 TOTAL
+                     EDM=2.60366e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   8.34227e+04   3.85492e+02   0.00000e+00   3.01226e+05
+   2  background yield   6.71903e+04   3.63858e+02   0.00000e+00   3.01226e+05
+ FCN=-2.68554e+06 FROM MINOS     STATUS=SUCCESSFUL     13 CALLS          62 TOTAL
+                     EDM=2.60366e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   8.34227e+04   3.85492e+02   0.00000e+00   3.01226e+05
+   2  background yield   6.71903e+04   3.63858e+02   0.00000e+00   3.01226e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.486e+05 -6.514e+04 
+ -6.514e+04  1.324e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.46439   1.000 -0.464
+        2  0.46439  -0.464  1.000
+ ========= happy ending !? =========================== 
+FCN =  -2685542.397 
+EE Data 150613.0 events, fitted 150613.0
+EE Data 84501.0, and fitted (in 5GeV) 84283.5 events 
+EE bin 2 SIG 83422.7 #pm 385.5 events 
+EE SIG (in 5GeV) 66360.4 #pm 306.6 events 
+EE bin 2 BKG 67190.3 #pm 363.9 events 
+EE BKG (in 5GeV) 17923.2 #pm  97.1 events 
+----------------------------------------------- 
+EE Data (<0) 59059.0 (>0) 91554.0 events 
+EE sig (<0) 13011.8 (>0) 70411.0 events 
+EE bkg (<0) 46042.4 (>0) 21147.9 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 2.261105, Prob = 0.986634, NDF = 9, igood = 0
+ chi2/ndf is 2.26e+00
+gjet_1_0_3_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.07764e+05  1.00000e-01    0.00000e+00  3.07896e+05
+     2 background yield   4.61844e+04  1.00000e-01    0.00000e+00  3.07896e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-2.75515e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.07764e+05   1.00000e-01   6.80934e-07   1.56149e+04
+   2  background yield   4.61844e+04   1.00000e-01   9.09580e-07  -2.72755e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-2.75791e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=7.85857e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   9.17008e+04   3.91737e+02   2.01756e-03   4.35075e-01
+   2  background yield   6.22473e+04   3.52190e+02   2.06567e-03  -3.18587e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.535e+05 -6.172e+04 
+ -6.172e+04  1.240e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.44736   1.000 -0.447
+        2  0.44736  -0.447  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 91700.806479 +- 391.737071
+Parameter (yeild) 1 = 62247.319222 +- 352.190488
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-2.75791e+06 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          69 TOTAL
+                     EDM=7.85857e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   9.17008e+04   3.91737e+02  -3.91830e+02   3.92101e+02
+   2  background yield   6.22473e+04   3.52190e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          69 TOTAL
+                     EDM=7.85857e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   9.17008e+04   3.91737e+02   0.00000e+00   3.07896e+05
+   2  background yield   6.22473e+04   3.52190e+02   0.00000e+00   3.07896e+05
+ FCN=-2.75791e+06 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          69 TOTAL
+                     EDM=7.85857e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   9.17008e+04   3.91737e+02   0.00000e+00   3.07896e+05
+   2  background yield   6.22473e+04   3.52190e+02   0.00000e+00   3.07896e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.535e+05 -6.172e+04 
+ -6.172e+04  1.240e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.44736   1.000 -0.447
+        2  0.44736  -0.447  1.000
+ ========= happy ending !? =========================== 
+FCN =  -2757906.314 
+EE Data 153948.0 events, fitted 153948.1
+EE Data 88916.0, and fitted (in 5GeV) 88459.8 events 
+EE bin 3 SIG 91700.8 #pm 391.7 events 
+EE SIG (in 5GeV) 72527.8 #pm 309.8 events 
+EE bin 3 BKG 62247.3 #pm 352.2 events 
+EE BKG (in 5GeV) 15932.0 #pm  90.1 events 
+----------------------------------------------- 
+EE Data (<0) 58006.0 (>0) 95942.0 events 
+EE sig (<0) 16941.8 (>0) 74759.0 events 
+EE bkg (<0) 43426.8 (>0) 18820.5 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 37.224729, Prob = 2.39956e-05, NDF = 9, igood = 2
+ chi2/ndf is 3.72e+01
+gjet_1_0_4_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.11156e+05  1.00000e-01    0.00000e+00  3.17588e+05
+     2 background yield   4.76382e+04  1.00000e-01    0.00000e+00  3.17588e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-2.87185e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.11156e+05   1.00000e-01   6.60154e-07   8.01582e+03
+   2  background yield   4.76382e+04   1.00000e-01   8.81822e-07  -1.40025e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-2.87249e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=5.42899e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.03850e+05   3.94037e+02   2.00615e-03   3.78952e-01
+   2  background yield   5.49437e+04   3.26191e+02   2.05973e-03   3.28684e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.553e+05 -5.139e+04 
+ -5.139e+04  1.064e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.39981   1.000 -0.400
+        2  0.39981  -0.400  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 103850.474647 +- 394.037444
+Parameter (yeild) 1 = 54943.724093 +- 326.191467
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-2.87249e+06 FROM MINOS     STATUS=SUCCESSFUL     20 CALLS          64 TOTAL
+                     EDM=5.42899e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.03850e+05   3.94037e+02  -3.93969e+02   3.94444e+02
+   2  background yield   5.49437e+04   3.26191e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     20 CALLS          64 TOTAL
+                     EDM=5.42899e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.03850e+05   3.94037e+02   0.00000e+00   3.17588e+05
+   2  background yield   5.49437e+04   3.26191e+02   0.00000e+00   3.17588e+05
+ FCN=-2.87249e+06 FROM MINOS     STATUS=SUCCESSFUL     20 CALLS          64 TOTAL
+                     EDM=5.42899e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.03850e+05   3.94037e+02   0.00000e+00   3.17588e+05
+   2  background yield   5.49437e+04   3.26191e+02   0.00000e+00   3.17588e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.553e+05 -5.139e+04 
+ -5.139e+04  1.064e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.39981   1.000 -0.400
+        2  0.39981  -0.400  1.000
+ ========= happy ending !? =========================== 
+FCN =  -2872485.591 
+EE Data 158794.0 events, fitted 158794.2
+EE Data 103774.0, and fitted (in 5GeV) 106005.5 events 
+EE bin 4 SIG 103850.5 #pm 394.0 events 
+EE SIG (in 5GeV) 90606.7 #pm 343.8 events 
+EE bin 4 BKG 54943.7 #pm 326.2 events 
+EE BKG (in 5GeV) 15398.9 #pm  91.4 events 
+----------------------------------------------- 
+EE Data (<0) 47980.0 (>0) 110814.0 events 
+EE sig (<0) 9971.5 (>0) 93879.0 events 
+EE bkg (<0) 36799.0 (>0) 18144.8 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 10.049528, Prob = 0.346491, NDF = 9, igood = 0
+ chi2/ndf is 1.00e+01
+gjet_1_0_5_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.37648e+05  1.00000e-01    0.00000e+00  3.93280e+05
+     2 background yield   5.89920e+04  1.00000e-01    0.00000e+00  3.93280e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-3.6371e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.37648e+05   1.00000e-01   5.33098e-07   1.05625e+04
+   2  background yield   5.89920e+04   1.00000e-01   7.12103e-07  -1.84498e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-3.6379e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=3.31236e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.28929e+05   4.28133e+02   2.01239e-03  -8.71703e-02
+   2  background yield   6.77108e+04   3.49459e+02   2.04247e-03   1.05942e+00
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.833e+05 -5.434e+04 
+ -5.434e+04  1.221e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.36317   1.000 -0.363
+        2  0.36317  -0.363  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 128929.447394 +- 428.132693
+Parameter (yeild) 1 = 67710.777515 +- 349.458852
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-3.6379e+06 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          56 TOTAL
+                     EDM=3.31236e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.28929e+05   4.28133e+02  -4.27719e+02   4.28839e+02
+   2  background yield   6.77108e+04   3.49459e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          56 TOTAL
+                     EDM=3.31236e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.28929e+05   4.28133e+02   0.00000e+00   3.93280e+05
+   2  background yield   6.77108e+04   3.49459e+02   0.00000e+00   3.93280e+05
+ FCN=-3.6379e+06 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          56 TOTAL
+                     EDM=3.31236e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.28929e+05   4.28133e+02   0.00000e+00   3.93280e+05
+   2  background yield   6.77108e+04   3.49459e+02   0.00000e+00   3.93280e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.833e+05 -5.434e+04 
+ -5.434e+04  1.221e+05 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.36317   1.000 -0.363
+        2  0.36317  -0.363  1.000
+ ========= happy ending !? =========================== 
+FCN =  -3637900.766 
+EE Data 196640.0 events, fitted 196640.2
+EE Data 132174.0, and fitted (in 5GeV) 132202.3 events 
+EE bin 5 SIG 128929.4 #pm 428.1 events 
+EE SIG (in 5GeV) 113062.9 #pm 375.4 events 
+EE bin 5 BKG 67710.8 #pm 349.5 events 
+EE BKG (in 5GeV) 19139.4 #pm  98.8 events 
+----------------------------------------------- 
+EE Data (<0) 55667.0 (>0) 140973.0 events 
+EE sig (<0) 9048.1 (>0) 119881.3 events 
+EE bkg (<0) 44669.4 (>0) 23041.4 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 26.901849, Prob = 0.00145202, NDF = 9, igood = 2
+ chi2/ndf is 2.69e+01
+gjet_1_0_6_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.08469e+05  1.00000e-01    0.00000e+00  3.09912e+05
+     2 background yield   4.64868e+04  1.00000e-01    0.00000e+00  3.09912e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-2.80415e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.08469e+05   1.00000e-01   6.76505e-07   6.00698e+03
+   2  background yield   4.64868e+04   1.00000e-01   9.03663e-07  -1.04925e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-2.80446e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=3.94946e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.03806e+05   3.76609e+02   1.98183e-03   1.07733e+00
+   2  background yield   5.11504e+04   2.98676e+02   1.99793e-03  -3.98582e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.418e+05 -3.800e+04 
+ -3.800e+04  8.921e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.33787   1.000 -0.338
+        2  0.33787  -0.338  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 103806.017271 +- 376.609188
+Parameter (yeild) 1 = 51150.355867 +- 298.675657
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-2.80446e+06 FROM MINOS     STATUS=SUCCESSFUL     18 CALLS          62 TOTAL
+                     EDM=3.94946e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.03806e+05   3.76609e+02  -3.76901e+02   3.76523e+02
+   2  background yield   5.11504e+04   2.98676e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     18 CALLS          62 TOTAL
+                     EDM=3.94946e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.03806e+05   3.76609e+02   0.00000e+00   3.09912e+05
+   2  background yield   5.11504e+04   2.98676e+02   0.00000e+00   3.09912e+05
+ FCN=-2.80446e+06 FROM MINOS     STATUS=SUCCESSFUL     18 CALLS          62 TOTAL
+                     EDM=3.94946e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.03806e+05   3.76609e+02   0.00000e+00   3.09912e+05
+   2  background yield   5.11504e+04   2.98676e+02   0.00000e+00   3.09912e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.418e+05 -3.800e+04 
+ -3.800e+04  8.921e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.33787   1.000 -0.338
+        2  0.33787  -0.338  1.000
+ ========= happy ending !? =========================== 
+FCN =  -2804458.709 
+EE Data 154956.0 events, fitted 154956.4
+EE Data 105639.0, and fitted (in 5GeV) 104012.3 events 
+EE bin 6 SIG 103806.0 #pm 376.6 events 
+EE SIG (in 5GeV) 89887.0 #pm 326.1 events 
+EE bin 6 BKG 51150.4 #pm 298.7 events 
+EE BKG (in 5GeV) 14125.3 #pm  82.5 events 
+----------------------------------------------- 
+EE Data (<0) 42501.0 (>0) 112455.0 events 
+EE sig (<0) 8188.2 (>0) 95617.8 events 
+EE bkg (<0) 34316.9 (>0) 16833.5 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 12.333892, Prob = 0.195134, NDF = 9, igood = 2
+ chi2/ndf is 1.23e+01
+gjet_1_0_7_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.33721e+05  1.00000e-01    0.00000e+00  3.82060e+05
+     2 background yield   5.73090e+04  1.00000e-01    0.00000e+00  3.82060e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-3.56736e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.33721e+05   1.00000e-01   5.48754e-07  -5.87221e+03
+   2  background yield   5.73090e+04   1.00000e-01   7.33016e-07   1.02561e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-3.56762e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=2.11173e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.38397e+05   4.28055e+02   2.02531e-03   5.05497e-01
+   2  background yield   5.26327e+04   3.12267e+02   2.06071e-03  -5.62706e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.832e+05 -4.481e+04 
+ -4.481e+04  9.751e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.33526   1.000 -0.335
+        2  0.33526  -0.335  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 138397.368551 +- 428.054557
+Parameter (yeild) 1 = 52632.709590 +- 312.266931
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-3.56762e+06 FROM MINOS     STATUS=SUCCESSFUL     19 CALLS          63 TOTAL
+                     EDM=2.11173e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.38397e+05   4.28055e+02  -4.28193e+02   4.28143e+02
+   2  background yield   5.26327e+04   3.12267e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     19 CALLS          63 TOTAL
+                     EDM=2.11173e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.38397e+05   4.28055e+02   0.00000e+00   3.82060e+05
+   2  background yield   5.26327e+04   3.12267e+02   0.00000e+00   3.82060e+05
+ FCN=-3.56762e+06 FROM MINOS     STATUS=SUCCESSFUL     19 CALLS          63 TOTAL
+                     EDM=2.11173e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.38397e+05   4.28055e+02   0.00000e+00   3.82060e+05
+   2  background yield   5.26327e+04   3.12267e+02   0.00000e+00   3.82060e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.832e+05 -4.481e+04 
+ -4.481e+04  9.751e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.33526   1.000 -0.335
+        2  0.33526  -0.335  1.000
+ ========= happy ending !? =========================== 
+FCN =  -3567618.619 
+EE Data 191030.0 events, fitted 191030.1
+EE Data 142710.0, and fitted (in 5GeV) 138282.7 events 
+EE bin 7 SIG 138397.4 #pm 428.1 events 
+EE SIG (in 5GeV) 121558.0 #pm 376.0 events 
+EE bin 7 BKG 52632.7 #pm 312.3 events 
+EE BKG (in 5GeV) 16724.7 #pm  99.2 events 
+----------------------------------------------- 
+EE Data (<0) 40339.0 (>0) 150691.0 events 
+EE sig (<0) 11493.8 (>0) 126903.6 events 
+EE bkg (<0) 32625.6 (>0) 20007.1 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 53.403179, Prob = 2.45092e-08, NDF = 9, igood = 2
+ chi2/ndf is 5.34e+01
+gjet_1_0_8_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.07824e+05  1.00000e-01    0.00000e+00  3.08068e+05
+     2 background yield   4.62102e+04  1.00000e-01    0.00000e+00  3.08068e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-2.81593e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.07824e+05   1.00000e-01   6.80554e-07  -9.82638e+03
+   2  background yield   4.62102e+04   1.00000e-01   9.09072e-07   1.71648e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-2.81688e+06 FROM MIGRAD    STATUS=CONVERGED      42 CALLS          43 TOTAL
+                     EDM=3.74301e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.16014e+05   3.92266e+02   2.01827e-03   3.44523e+00
+   2  background yield   3.80211e+04   2.75544e+02   2.08774e-03   5.35482e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.539e+05 -3.785e+04 
+ -3.785e+04  7.592e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.35014   1.000 -0.350
+        2  0.35014  -0.350  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 116014.287628 +- 392.266475
+Parameter (yeild) 1 = 38021.144666 +- 275.544064
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-2.81688e+06 FROM MINOS     STATUS=SUCCESSFUL     23 CALLS          66 TOTAL
+                     EDM=3.74301e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.16014e+05   3.92266e+02  -3.93721e+02   3.91059e+02
+   2  background yield   3.80211e+04   2.75544e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     23 CALLS          66 TOTAL
+                     EDM=3.74301e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.16014e+05   3.92266e+02   0.00000e+00   3.08068e+05
+   2  background yield   3.80211e+04   2.75544e+02   0.00000e+00   3.08068e+05
+ FCN=-2.81688e+06 FROM MINOS     STATUS=SUCCESSFUL     23 CALLS          66 TOTAL
+                     EDM=3.74301e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.16014e+05   3.92266e+02   0.00000e+00   3.08068e+05
+   2  background yield   3.80211e+04   2.75544e+02   0.00000e+00   3.08068e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.539e+05 -3.785e+04 
+ -3.785e+04  7.592e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.35014   1.000 -0.350
+        2  0.35014  -0.350  1.000
+ ========= happy ending !? =========================== 
+FCN =  -2816875.644 
+EE Data 154034.0 events, fitted 154035.4
+EE Data 116754.0, and fitted (in 5GeV) 117859.9 events 
+EE bin 8 SIG 116014.3 #pm 392.3 events 
+EE SIG (in 5GeV) 105468.2 #pm 356.6 events 
+EE bin 8 BKG 38021.1 #pm 275.5 events 
+EE BKG (in 5GeV) 12391.6 #pm  89.8 events 
+----------------------------------------------- 
+EE Data (<0) 30897.0 (>0) 123137.0 events 
+EE sig (<0) 9243.9 (>0) 106770.4 events 
+EE bkg (<0) 23253.9 (>0) 14767.2 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 113.992045, Prob = 2.25822e-20, NDF = 9, igood = 0
+ chi2/ndf is 1.14e+02
+gjet_1_0_9_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   7.82446e+04  1.00000e-01    0.00000e+00  2.23556e+05
+     2 background yield   3.35334e+04  1.00000e-01    0.00000e+00  2.23556e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1.98838e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   7.82446e+04   1.00000e-01   9.37828e-07  -8.73216e+03
+   2  background yield   3.35334e+04   1.00000e-01   1.25273e-06   1.52536e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1.98951e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=7.42644e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   8.62097e+04   3.42853e+02   2.00450e-03   9.46859e-02
+   2  background yield   2.55684e+04   2.38643e+02   2.13391e-03  -4.62557e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.175e+05 -3.134e+04 
+ -3.134e+04  5.695e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.38298   1.000 -0.383
+        2  0.38298  -0.383  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 86209.666130 +- 342.852644
+Parameter (yeild) 1 = 25568.364823 +- 238.642952
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1.98951e+06 FROM MINOS     STATUS=SUCCESSFUL     18 CALLS          62 TOTAL
+                     EDM=7.42644e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   8.62097e+04   3.42853e+02  -3.42707e+02   3.43245e+02
+   2  background yield   2.55684e+04   2.38643e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     18 CALLS          62 TOTAL
+                     EDM=7.42644e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   8.62097e+04   3.42853e+02   0.00000e+00   2.23556e+05
+   2  background yield   2.55684e+04   2.38643e+02   0.00000e+00   2.23556e+05
+ FCN=-1.98951e+06 FROM MINOS     STATUS=SUCCESSFUL     18 CALLS          62 TOTAL
+                     EDM=7.42644e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   8.62097e+04   3.42853e+02   0.00000e+00   2.23556e+05
+   2  background yield   2.55684e+04   2.38643e+02   0.00000e+00   2.23556e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.175e+05 -3.134e+04 
+ -3.134e+04  5.695e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.38298   1.000 -0.383
+        2  0.38298  -0.383  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1989508.861 
+EE Data 111778.0 events, fitted 111778.0
+EE Data 89488.0, and fitted (in 5GeV) 86511.2 events 
+EE bin 9 SIG 86209.7 #pm 342.9 events 
+EE SIG (in 5GeV) 77199.1 #pm 307.0 events 
+EE bin 9 BKG 25568.4 #pm 238.6 events 
+EE BKG (in 5GeV) 9312.1 #pm  86.9 events 
+----------------------------------------------- 
+EE Data (<0) 17895.0 (>0) 93883.0 events 
+EE sig (<0) 6886.7 (>0) 79323.0 events 
+EE bkg (<0) 14425.1 (>0) 11143.2 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 38.033276, Prob = 1.71934e-05, NDF = 9, igood = 2
+ chi2/ndf is 3.80e+01
+gjet_1_0_10_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   7.52220e+04  1.00000e-01    0.00000e+00  2.14920e+05
+     2 background yield   3.22380e+04  1.00000e-01    0.00000e+00  2.14920e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1.8767e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   7.52220e+04   1.00000e-01   9.75512e-07   1.13449e+03
+   2  background yield   3.22380e+04   1.00000e-01   1.30307e-06  -1.98146e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1.87672e+06 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=3.62836e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   7.42575e+04   3.22649e+02   1.96344e-03  -2.50443e-01
+   2  background yield   3.32025e+04   2.51151e+02   2.01227e-03   7.11500e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.041e+05 -2.983e+04 
+ -2.983e+04  6.308e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.36813   1.000 -0.368
+        2  0.36813  -0.368  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 74257.533365 +- 322.649272
+Parameter (yeild) 1 = 33202.527900 +- 251.151315
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1.87672e+06 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          64 TOTAL
+                     EDM=3.62836e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   7.42575e+04   3.22649e+02  -3.22134e+02   3.23395e+02
+   2  background yield   3.32025e+04   2.51151e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          64 TOTAL
+                     EDM=3.62836e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   7.42575e+04   3.22649e+02   0.00000e+00   2.14920e+05
+   2  background yield   3.32025e+04   2.51151e+02   0.00000e+00   2.14920e+05
+ FCN=-1.87672e+06 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          64 TOTAL
+                     EDM=3.62836e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   7.42575e+04   3.22649e+02   0.00000e+00   2.14920e+05
+   2  background yield   3.32025e+04   2.51151e+02   0.00000e+00   2.14920e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.041e+05 -2.983e+04 
+ -2.983e+04  6.308e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.36813   1.000 -0.368
+        2  0.36813  -0.368  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1876718.752 
+EE Data 107460.0 events, fitted 107460.1
+EE Data 79001.0, and fitted (in 5GeV) 75960.0 events 
+EE bin 10 SIG 74257.5 #pm 322.6 events 
+EE SIG (in 5GeV) 65662.5 #pm 285.3 events 
+EE bin 10 BKG 33202.5 #pm 251.2 events 
+EE BKG (in 5GeV) 10297.5 #pm  77.9 events 
+----------------------------------------------- 
+EE Data (<0) 23703.0 (>0) 83757.0 events 
+EE sig (<0) 6923.9 (>0) 67333.6 events 
+EE bkg (<0) 20478.5 (>0) 12724.0 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 26.443309, Prob = 0.00172804, NDF = 9, igood = 2
+ chi2/ndf is 2.64e+01
+gjet_1_0_11_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   4.51934e+04  1.00000e-01    0.00000e+00  1.29124e+05
+     2 background yield   1.93686e+04  1.00000e-01    0.00000e+00  1.29124e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1.04857e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   4.51934e+04   1.00000e-01   1.62369e-06   7.33875e+03
+   2  background yield   1.93686e+04   1.00000e-01   2.16889e-06  -1.28193e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1.04955e+06 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=1.13182e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   4.00544e+04   2.31183e+02   1.84857e-03   1.10660e-01
+   2  background yield   2.45078e+04   1.94693e+02   1.83650e-03   4.09677e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  5.345e+04 -1.338e+04 
+ -1.338e+04  3.791e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.29726   1.000 -0.297
+        2  0.29726  -0.297  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 40054.352341 +- 231.182630
+Parameter (yeild) 1 = 24507.784963 +- 194.692642
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1.04955e+06 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          66 TOTAL
+                     EDM=1.13182e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   4.00544e+04   2.31183e+02  -2.30875e+02   2.31583e+02
+   2  background yield   2.45078e+04   1.94693e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          66 TOTAL
+                     EDM=1.13182e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   4.00544e+04   2.31183e+02   0.00000e+00   1.29124e+05
+   2  background yield   2.45078e+04   1.94693e+02   0.00000e+00   1.29124e+05
+ FCN=-1.04955e+06 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          66 TOTAL
+                     EDM=1.13182e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   4.00544e+04   2.31183e+02   0.00000e+00   1.29124e+05
+   2  background yield   2.45078e+04   1.94693e+02   0.00000e+00   1.29124e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  5.345e+04 -1.338e+04 
+ -1.338e+04  3.791e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.29726   1.000 -0.297
+        2  0.29726  -0.297  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1049552.177 
+EE Data 64562.0 events, fitted 64562.1
+EE Data 42452.0, and fitted (in 5GeV) 42395.2 events 
+EE bin 11 SIG 40054.4 #pm 231.2 events 
+EE SIG (in 5GeV) 36148.6 #pm 208.6 events 
+EE bin 11 BKG 24507.8 #pm 194.7 events 
+EE BKG (in 5GeV) 6246.5 #pm  49.6 events 
+----------------------------------------------- 
+EE Data (<0) 19220.0 (>0) 45342.0 events 
+EE sig (<0) 2007.7 (>0) 38046.7 events 
+EE bkg (<0) 16652.3 (>0) 7855.5 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 13.475115, Prob = 0.14226, NDF = 9, igood = 2
+ chi2/ndf is 1.35e+01
+gjet_1_0_12_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   6.59645e+04  1.00000e-01    0.00000e+00  1.88470e+05
+     2 background yield   2.82705e+04  1.00000e-01    0.00000e+00  1.88470e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1.60172e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   6.59645e+04   1.00000e-01   1.11242e-06   1.28725e+04
+   2  background yield   2.82705e+04   1.00000e-01   1.48594e-06  -2.24856e+04
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1.60363e+06 FROM MIGRAD    STATUS=CONVERGED      44 CALLS          45 TOTAL
+                     EDM=6.9807e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   5.76052e+04   2.73726e+02   1.87570e-03   1.01327e+00
+   2  background yield   3.66304e+04   2.32289e+02   1.85335e-03   9.61130e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  7.493e+04 -1.730e+04 
+ -1.730e+04  5.396e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.27215   1.000 -0.272
+        2  0.27215  -0.272  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 57605.199619 +- 273.726316
+Parameter (yeild) 1 = 36630.375581 +- 232.288896
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1.60363e+06 FROM MINOS     STATUS=SUCCESSFUL     16 CALLS          61 TOTAL
+                     EDM=6.9807e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   5.76052e+04   2.73726e+02  -2.73758e+02   2.73785e+02
+   2  background yield   3.66304e+04   2.32289e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     16 CALLS          61 TOTAL
+                     EDM=6.9807e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   5.76052e+04   2.73726e+02   0.00000e+00   1.88470e+05
+   2  background yield   3.66304e+04   2.32289e+02   0.00000e+00   1.88470e+05
+ FCN=-1.60363e+06 FROM MINOS     STATUS=SUCCESSFUL     16 CALLS          61 TOTAL
+                     EDM=6.9807e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   5.76052e+04   2.73726e+02   0.00000e+00   1.88470e+05
+   2  background yield   3.66304e+04   2.32289e+02   0.00000e+00   1.88470e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  7.493e+04 -1.730e+04 
+ -1.730e+04  5.396e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.27215   1.000 -0.272
+        2  0.27215  -0.272  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1603626.604 
+EE Data 94235.0 events, fitted 94235.6
+EE Data 61982.0, and fitted (in 5GeV) 60389.7 events 
+EE bin 12 SIG 57605.2 #pm 273.7 events 
+EE SIG (in 5GeV) 51249.7 #pm 243.5 events 
+EE bin 12 BKG 36630.4 #pm 232.3 events 
+EE BKG (in 5GeV) 9140.0 #pm  58.0 events 
+----------------------------------------------- 
+EE Data (<0) 27901.0 (>0) 66334.0 events 
+EE sig (<0) 2266.9 (>0) 55338.3 events 
+EE bkg (<0) 25140.2 (>0) 11490.2 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 26.173958, Prob = 0.00191327, NDF = 9, igood = 2
+ chi2/ndf is 2.62e+01
+gjet_1_0_13_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   5.77556e+04  1.00000e-01    0.00000e+00  1.65016e+05
+     2 background yield   2.47524e+04  1.00000e-01    0.00000e+00  1.65016e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1.38875e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   5.77556e+04   1.00000e-01   1.27053e-06   1.14054e+03
+   2  background yield   2.47524e+04   1.00000e-01   1.69714e-06  -1.99226e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1.38877e+06 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=5.70332e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   5.69198e+04   2.72730e+02   1.90729e-03  -5.25492e-01
+   2  background yield   2.55881e+04   2.07519e+02   1.90295e-03   6.71342e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  7.438e+04 -1.745e+04 
+ -1.745e+04  4.306e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.30834   1.000 -0.308
+        2  0.30834  -0.308  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 56919.844768 +- 272.730457
+Parameter (yeild) 1 = 25588.104951 +- 207.519494
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1.38877e+06 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          61 TOTAL
+                     EDM=5.70332e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   5.69198e+04   2.72730e+02  -2.72096e+02   2.73487e+02
+   2  background yield   2.55881e+04   2.07519e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          61 TOTAL
+                     EDM=5.70332e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   5.69198e+04   2.72730e+02   0.00000e+00   1.65016e+05
+   2  background yield   2.55881e+04   2.07519e+02   0.00000e+00   1.65016e+05
+ FCN=-1.38877e+06 FROM MINOS     STATUS=SUCCESSFUL     22 CALLS          61 TOTAL
+                     EDM=5.70332e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   5.69198e+04   2.72730e+02   0.00000e+00   1.65016e+05
+   2  background yield   2.55881e+04   2.07519e+02   0.00000e+00   1.65016e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  7.438e+04 -1.745e+04 
+ -1.745e+04  4.306e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.30834   1.000 -0.308
+        2  0.30834  -0.308  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1388767.495 
+EE Data 82508.0 events, fitted 82507.9
+EE Data 56323.0, and fitted (in 5GeV) 54668.9 events 
+EE bin 13 SIG 56919.8 #pm 272.7 events 
+EE SIG (in 5GeV) 48301.5 #pm 231.4 events 
+EE bin 13 BKG 25588.1 #pm 207.5 events 
+EE BKG (in 5GeV) 6367.4 #pm  51.6 events 
+----------------------------------------------- 
+EE Data (<0) 22500.0 (>0) 60008.0 events 
+EE sig (<0) 6546.4 (>0) 50373.4 events 
+EE bkg (<0) 17649.2 (>0) 7938.9 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 10.935977, Prob = 0.280123, NDF = 9, igood = 2
+ chi2/ndf is 1.09e+01
+gjet_1_0_14_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+ --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   4.46201e+04  1.00000e-01    0.00000e+00  1.27486e+05
+     2 background yield   1.91229e+04  1.00000e-01    0.00000e+00  1.27486e+05
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1.04897e+06 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   4.46201e+04   1.00000e-01   1.64455e-06   7.05632e+02
+   2  background yield   1.91229e+04   1.00000e-01   2.19676e-06  -1.23258e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1.04898e+06 FROM MIGRAD    STATUS=CONVERGED      38 CALLS          39 TOTAL
+                     EDM=1.59503e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   4.41717e+04   2.32590e+02   1.85939e-03  -2.40076e-02
+   2  background yield   1.95713e+04   1.71767e+02   1.81126e-03  -1.55335e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  5.410e+04 -9.919e+03 
+ -9.919e+03  2.950e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.24828   1.000 -0.248
+        2  0.24828  -0.248  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 44171.665747 +- 232.590027
+Parameter (yeild) 1 = 19571.294324 +- 171.766953
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1.04898e+06 FROM MINOS     STATUS=SUCCESSFUL     16 CALLS          55 TOTAL
+                     EDM=1.59503e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   4.41717e+04   2.32590e+02  -2.32295e+02   2.32943e+02
+   2  background yield   1.95713e+04   1.71767e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     16 CALLS          55 TOTAL
+                     EDM=1.59503e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   4.41717e+04   2.32590e+02   0.00000e+00   1.27486e+05
+   2  background yield   1.95713e+04   1.71767e+02   0.00000e+00   1.27486e+05
+ FCN=-1.04898e+06 FROM MINOS     STATUS=SUCCESSFUL     16 CALLS          55 TOTAL
+                     EDM=1.59503e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   4.41717e+04   2.32590e+02   0.00000e+00   1.27486e+05
+   2  background yield   1.95713e+04   1.71767e+02   0.00000e+00   1.27486e+05
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  5.410e+04 -9.919e+03 
+ -9.919e+03  2.950e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.24828   1.000 -0.248
+        2  0.24828  -0.248  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1048983.153 
+EE Data 63743.0 events, fitted 63743.0
+EE Data 45820.0, and fitted (in 5GeV) 46200.7 events 
+EE bin 14 SIG 44171.7 #pm 232.6 events 
+EE SIG (in 5GeV) 41132.1 #pm 216.6 events 
+EE bin 14 BKG 19571.3 #pm 171.8 events 
+EE BKG (in 5GeV) 5068.6 #pm  44.5 events 
+----------------------------------------------- 
+EE Data (<0) 15280.0 (>0) 48463.0 events 
+EE sig (<0) 1505.8 (>0) 42665.9 events 
+EE bkg (<0) 13235.0 (>0) 6336.3 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 27.859467, Prob = 0.00100682, NDF = 9, igood = 0
+ chi2/ndf is 2.79e+01
+gjet_1_0_15_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.81083e+04  1.00000e-01    0.00000e+00  5.17380e+04
+     2 background yield   7.76070e+03  1.00000e-01    0.00000e+00  5.17380e+04
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-383720 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.81083e+04   1.00000e-01   4.05228e-06  -1.70985e+03
+   2  background yield   7.76070e+03   1.00000e-01   5.41297e-06   2.98674e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-383858 FROM MIGRAD    STATUS=CONVERGED      43 CALLS          44 TOTAL
+                     EDM=8.37052e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.92720e+04   1.53459e+02   1.78849e-03   5.47781e-02
+   2  background yield   6.59705e+03   1.04300e+02   1.76203e-03  -2.65196e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  2.355e+04 -4.276e+03 
+ -4.276e+03  1.088e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.26713   1.000 -0.267
+        2  0.26713  -0.267  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 19271.970321 +- 153.459291
+Parameter (yeild) 1 = 6597.045353 +- 104.300116
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-383858 FROM MINOS     STATUS=SUCCESSFUL     15 CALLS          59 TOTAL
+                     EDM=8.37052e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.92720e+04   1.53459e+02  -1.53174e+02   1.53789e+02
+   2  background yield   6.59705e+03   1.04300e+02                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     15 CALLS          59 TOTAL
+                     EDM=8.37052e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.92720e+04   1.53459e+02   0.00000e+00   5.17380e+04
+   2  background yield   6.59705e+03   1.04300e+02   0.00000e+00   5.17380e+04
+ FCN=-383858 FROM MINOS     STATUS=SUCCESSFUL     15 CALLS          59 TOTAL
+                     EDM=8.37052e-08    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.92720e+04   1.53459e+02   0.00000e+00   5.17380e+04
+   2  background yield   6.59705e+03   1.04300e+02   0.00000e+00   5.17380e+04
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  2.355e+04 -4.276e+03 
+ -4.276e+03  1.088e+04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.26713   1.000 -0.267
+        2  0.26713  -0.267  1.000
+ ========= happy ending !? =========================== 
+FCN =  -383858.275 
+EE Data 25869.0 events, fitted 25869.0
+EE Data 19961.0, and fitted (in 5GeV) 20280.0 events 
+EE bin 15 SIG 19272.0 #pm 153.5 events 
+EE SIG (in 5GeV) 18305.9 #pm 145.8 events 
+EE bin 15 BKG 6597.0 #pm 104.3 events 
+EE BKG (in 5GeV) 1974.1 #pm  31.2 events 
+----------------------------------------------- 
+EE Data (<0) 4880.0 (>0) 20989.0 events 
+EE sig (<0) 591.4 (>0) 18680.6 events 
+EE bkg (<0) 4183.1 (>0) 2414.0 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 18.087501, Prob = 0.0341718, NDF = 9, igood = 0
+ chi2/ndf is 1.81e+01
+gjet_1_0_16_px1_chIso --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   8.23340e+03  1.00000e-01    0.00000e+00  2.35240e+04
+     2 background yield   3.52860e+03  1.00000e-01    0.00000e+00  2.35240e+04
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-157826 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   8.23340e+03   1.00000e-01   8.91247e-06  -1.86360e+03
+   2  background yield   3.52860e+03   1.00000e-01   1.19051e-05   3.25532e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-158274 FROM MIGRAD    STATUS=CONVERGED      41 CALLS          42 TOTAL
+                     EDM=5.35481e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   9.71730e+03   1.09299e+02   1.74109e-03  -2.63493e-01
+   2  background yield   2.04455e+03   6.53956e+01   1.82140e-03  -3.08066e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.195e+04 -2.229e+03 
+ -2.229e+03  4.277e+03 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.31188   1.000 -0.312
+        2  0.31188  -0.312  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 9717.296536 +- 109.299268
+Parameter (yeild) 1 = 2044.545445 +- 65.395563
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-158274 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          54 TOTAL
+                     EDM=5.35481e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   9.71730e+03   1.09299e+02  -1.08912e+02   1.09730e+02
+   2  background yield   2.04455e+03   6.53956e+01                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          54 TOTAL
+                     EDM=5.35481e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   9.71730e+03   1.09299e+02   0.00000e+00   2.35240e+04
+   2  background yield   2.04455e+03   6.53956e+01   0.00000e+00   2.35240e+04
+ FCN=-158274 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          54 TOTAL
+                     EDM=5.35481e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   9.71730e+03   1.09299e+02   0.00000e+00   2.35240e+04
+   2  background yield   2.04455e+03   6.53956e+01   0.00000e+00   2.35240e+04
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.195e+04 -2.229e+03 
+ -2.229e+03  4.277e+03 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.31188   1.000 -0.312
+        2  0.31188  -0.312  1.000
+ ========= happy ending !? =========================== 
+FCN =  -158274.074 
+EE Data 11762.0 events, fitted 11761.8
+EE Data 9626.0, and fitted (in 5GeV) 9285.3 events 
+EE bin 16 SIG 9717.3 #pm 109.3 events 
+EE SIG (in 5GeV) 8621.2 #pm  97.0 events 
+EE bin 16 BKG 2044.5 #pm  65.4 events 
+EE BKG (in 5GeV) 664.2 #pm  21.2 events 
+----------------------------------------------- 
+EE Data (<0) 1705.0 (>0) 10057.0 events 
+EE sig (<0) 683.9 (>0) 9033.4 events 
+EE bkg (<0) 1209.0 (>0) 835.5 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 8.563724, Prob = 0.47848, NDF = 9, igood = 2
+ chi2/ndf is 8.56e+00
+gjet_1_0_17_px1_chIsoset sig bin 3, content 0.000000 to 0. 
+ --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   5.91780e+03  1.00000e-01    0.00000e+00  1.69080e+04
+     2 background yield   2.53620e+03  1.00000e-01    0.00000e+00  1.69080e+04
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-109585 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   5.91780e+03   1.00000e-01   1.23999e-05  -1.73094e+03
+   2  background yield   2.53620e+03   1.00000e-01   1.65635e-05   3.02360e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-110149 FROM MIGRAD    STATUS=CONVERGED      45 CALLS          46 TOTAL
+                     EDM=2.85916e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   7.28754e+03   9.24536e+01   1.71832e-03  -2.79929e-02
+   2  background yield   1.16646e+03   4.92769e+01   1.79082e-03   5.30356e-02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  8.548e+03 -1.260e+03 
+ -1.260e+03  2.428e+03 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.27665   1.000 -0.277
+        2  0.27665  -0.277  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 7287.539012 +- 92.453611
+Parameter (yeild) 1 = 1166.456047 +- 49.276907
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-110149 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          58 TOTAL
+                     EDM=2.85916e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   7.28754e+03   9.24536e+01  -9.21279e+01   9.28027e+01
+   2  background yield   1.16646e+03   4.92769e+01                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          58 TOTAL
+                     EDM=2.85916e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   7.28754e+03   9.24536e+01   0.00000e+00   1.69080e+04
+   2  background yield   1.16646e+03   4.92769e+01   0.00000e+00   1.69080e+04
+ FCN=-110149 FROM MINOS     STATUS=SUCCESSFUL     12 CALLS          58 TOTAL
+                     EDM=2.85916e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   7.28754e+03   9.24536e+01   0.00000e+00   1.69080e+04
+   2  background yield   1.16646e+03   4.92769e+01   0.00000e+00   1.69080e+04
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  8.548e+03 -1.260e+03 
+ -1.260e+03  2.428e+03 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.27665   1.000 -0.277
+        2  0.27665  -0.277  1.000
+ ========= happy ending !? =========================== 
+FCN =  -110149.009 
+EE Data 8454.0 events, fitted 8454.0
+EE Data 7305.0, and fitted (in 5GeV) 7010.4 events 
+EE bin 17 SIG 7287.5 #pm  92.5 events 
+EE SIG (in 5GeV) 6555.0 #pm  83.2 events 
+EE bin 17 BKG 1166.5 #pm  49.3 events 
+EE BKG (in 5GeV) 455.4 #pm  19.2 events 
+----------------------------------------------- 
+EE Data (<0) 890.0 (>0) 7564.0 events 
+EE sig (<0) 215.3 (>0) 7072.2 events 
+EE bkg (<0) 614.0 (>0) 552.5 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 26.546869, Prob = 0.00166156, NDF = 9, igood = 2
+ chi2/ndf is 2.65e+01
+gjet_1_0_18_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+set sig bin 2, content 0.000000 to 0. 
+set sig bin 3, content 0.000000 to 0. 
+ --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   2.14760e+03  1.00000e-01    0.00000e+00  6.13600e+03
+     2 background yield   9.20400e+02  1.00000e-01    0.00000e+00  6.13600e+03
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-34423.9 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   2.14760e+03   1.00000e-01   3.41683e-05  -8.59900e+02
+   2  background yield   9.20400e+02   1.00000e-01   4.56415e-05   1.50207e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-34791.1 FROM MIGRAD    STATUS=CONVERGED      41 CALLS          42 TOTAL
+                     EDM=8.64934e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   2.76282e+03   5.52105e+01   1.60696e-03  -1.42118e-01
+   2  background yield   3.05034e+02   2.43073e+01   1.62254e-03  -7.38332e-01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  3.049e+03 -2.857e+02 
+ -2.857e+02  5.909e+02 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.21288   1.000 -0.213
+        2  0.21288  -0.213  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 2762.817744 +- 55.210539
+Parameter (yeild) 1 = 305.033617 +- 24.307287
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-34791.1 FROM MINOS     STATUS=SUCCESSFUL     26 CALLS          68 TOTAL
+                     EDM=8.64934e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   2.76282e+03   5.52105e+01  -5.49081e+01   5.55306e+01
+   2  background yield   3.05034e+02   2.43073e+01                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     26 CALLS          68 TOTAL
+                     EDM=8.64934e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   2.76282e+03   5.52105e+01   0.00000e+00   6.13600e+03
+   2  background yield   3.05034e+02   2.43073e+01   0.00000e+00   6.13600e+03
+ FCN=-34791.1 FROM MINOS     STATUS=SUCCESSFUL     26 CALLS          68 TOTAL
+                     EDM=8.64934e-05    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   2.76282e+03   5.52105e+01   0.00000e+00   6.13600e+03
+   2  background yield   3.05034e+02   2.43073e+01   0.00000e+00   6.13600e+03
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  3.049e+03 -2.857e+02 
+ -2.857e+02  5.909e+02 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.21288   1.000 -0.213
+        2  0.21288  -0.213  1.000
+ ========= happy ending !? =========================== 
+FCN =  -34791.101 
+EE Data 3068.0 events, fitted 3067.9
+EE Data 2793.0, and fitted (in 5GeV) 2806.4 events 
+EE bin 18 SIG 2762.8 #pm  55.2 events 
+EE SIG (in 5GeV) 2687.3 #pm  53.7 events 
+EE bin 18 BKG 305.0 #pm  24.3 events 
+EE BKG (in 5GeV) 119.1 #pm   9.5 events 
+----------------------------------------------- 
+EE Data (<0) 197.0 (>0) 2871.0 events 
+EE sig (<0) 36.5 (>0) 2726.3 events 
+EE bkg (<0) 160.6 (>0) 144.5 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 4.251496, Prob = 0.894094, NDF = 9, igood = 2
+ chi2/ndf is 4.25e+00
+gjet_1_0_19_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+set sig bin 2, content 0.000000 to 0. 
+set sig bin 3, content 0.000000 to 0. 
+set sig bin 4, content 0.000000 to 0. 
+set sig bin 5, content 0.000000 to 0. 
+set sig bin 6, content 0.000000 to 0. 
+ --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.32300e+02  1.00000e-01    0.00000e+00  3.78000e+02
+     2 background yield   5.67000e+01  1.00000e-01    0.00000e+00  3.78000e+02
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-1054.02 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.32300e+02   1.00000e-01   5.54648e-04  -4.56187e+01
+   2  background yield   5.67000e+01   1.00000e-01   7.40889e-04   7.96863e+01
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-1068.95 FROM MIGRAD    STATUS=CONVERGED      36 CALLS          37 TOTAL
+                     EDM=6.87829e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.62416e+02   1.33566e+01   1.12111e-03   1.67056e-02
+   2  background yield   2.65921e+01   6.54305e+00   1.06402e-03   3.63030e-03
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.787e+02 -1.628e+01 
+ -1.628e+01  4.288e+01 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.18595   1.000 -0.186
+        2  0.18595  -0.186  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 162.415695 +- 13.356583
+Parameter (yeild) 1 = 26.592058 +- 6.543047
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+ FCN=-1068.95 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          62 TOTAL
+                     EDM=6.87829e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   1.62416e+02   1.33566e+01  -1.30601e+01   1.36813e+01
+   2  background yield   2.65921e+01   6.54305e+00                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          62 TOTAL
+                     EDM=6.87829e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.62416e+02   1.33566e+01   0.00000e+00   3.78000e+02
+   2  background yield   2.65921e+01   6.54305e+00   0.00000e+00   3.78000e+02
+ FCN=-1068.95 FROM MINOS     STATUS=SUCCESSFUL     25 CALLS          62 TOTAL
+                     EDM=6.87829e-07    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   1.62416e+02   1.33566e+01   0.00000e+00   3.78000e+02
+   2  background yield   2.65921e+01   6.54305e+00   0.00000e+00   3.78000e+02
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  1.787e+02 -1.628e+01 
+ -1.628e+01  4.288e+01 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.18595   1.000 -0.186
+        2  0.18595  -0.186  1.000
+ ========= happy ending !? =========================== 
+FCN =  -1068.947 
+EE Data 189.0 events, fitted 189.0
+EE Data 173.0, and fitted (in 5GeV) 172.8 events 
+EE bin 19 SIG 162.4 #pm  13.4 events 
+EE SIG (in 5GeV) 162.4 #pm  13.4 events 
+EE bin 19 BKG  26.6 #pm   6.5 events 
+EE BKG (in 5GeV)  10.4 #pm   2.6 events 
+----------------------------------------------- 
+EE Data (<0) 10.0 (>0) 179.0 events 
+EE sig (<0) 0.0 (>0) 162.4 events 
+EE bkg (<0) 14.0 (>0) 12.6 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 14.683544, Prob = 0.100003, NDF = 9, igood = 2
+ chi2/ndf is 1.47e+01
+gjet_1_0_20_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+set sig bin 2, content 0.000000 to 0. 
+set sig bin 3, content 0.000000 to 0. 
+set sig bin 4, content 0.000000 to 0. 
+set sig bin 5, content 0.000000 to 0. 
+set sig bin 6, content 0.000000 to 0. 
+set sig bin 7, content 0.000000 to 0. 
+set sig bin 8, content 0.000000 to 0. 
+set sig bin 9, content 0.000000 to 0. 
+set sig bin 10, content 0.000000 to 0. 
+ --------- before the fit ------------- 
+Nsig 1.000, Nbg 1.000, Ntemplate 0.000 
+ -------------------------------------- 
+ -----  Got 10, 10, 10 bins for fit ----- 
+  **********
+ **    1 **SET STR            1
+ **********
+ NOW USING STRATEGY  1: TRY TO BALANCE SPEED AGAINST RELIABILITY
+ **********
+ **    2 **SET ERR           1
+ **********
+ **********
+ **    3 **SET PRINT           1
+ **********
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 Signal yield   1.89000e+01  1.00000e-01    0.00000e+00  5.40000e+01
+     2 background yield   8.10000e+00  1.00000e-01    0.00000e+00  5.40000e+01
+ --------------------------------------------------------- 
+ Now ready for minimization step 
+ --------------------------------------------------------- 
+ **********
+ **    4 **MIGRAD        2000           1
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  1.  CONVERGENCE WHEN EDM .LT. 1.00e-03
+ FCN=-0.652613 FROM MIGRAD    STATUS=INITIATE        8 CALLS           9 TOTAL
+                     EDM= unknown      STRATEGY= 1      NO ERROR MATRIX       
+  EXT PARAMETER               CURRENT GUESS       STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   1.89000e+01   1.00000e-01   3.88255e-03   9.11972e-01
+   2  background yield   8.10000e+00   1.00000e-01   5.18631e-03  -1.59303e+00
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=-2.55005 FROM MIGRAD    STATUS=CONVERGED      68 CALLS          69 TOTAL
+                     EDM=1.39823e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  Signal yield   8.88225e-07   1.12217e+01   8.59756e-04** at limit **
+   2  background yield   2.70041e+01   5.16494e+00   1.77213e-04   8.22824e-03
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  4.299e-05 -1.103e-04 
+ -1.103e-04  2.701e+01 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.00324   1.000 -0.003
+        2  0.00324  -0.003  1.000
+ -------------------------------------------- 
+Finished.  ierr = 0.00 
+Parameter (yeild) 0 = 0.000001 +- 11.221725
+Parameter (yeild) 1 = 27.004114 +- 5.164941
+ fitted yield 1.000 
+         ---------------------------------------------------------
+          Now call for minos step 
+         ---------------------------------------------------------
+ **********
+ **    5 **MINOS         200           1
+ **********
+    THE NEGATIVE MINOS ERROR OF PARAMETER   1, Signal yield EXCEEDS ITS LIMIT.
+ MINUIT WARNING IN MIGRAD  
+ ============== VARIABLE1 IS AT ITS LOWER ALLOWED LIMIT.
+ FCN=-2.55005 FROM MINOS     STATUS=SUCCESSFUL     31 CALLS         100 TOTAL
+                     EDM=1.39823e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                  PARABOLIC         MINOS ERRORS        
+  NO.   NAME      VALUE            ERROR      NEGATIVE      POSITIVE   
+   1  Signal yield   8.88225e-07   1.12217e+01   at limit      1.08889e+01
+                                 WARNING -   - ABOVE PARAMETER IS AT LIMIT.
+   2  background yield   2.70041e+01   5.16494e+00                            
+         --------------------------------------------------------- 
+         Done Minos.  ierr = 0 
+ FCN=0 FROM MINOS     STATUS=SUCCESSFUL     31 CALLS         100 TOTAL
+                     EDM=1.39823e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   8.88225e-07   1.12217e+01   0.00000e+00   5.40000e+01
+                                 WARNING -   - ABOVE PARAMETER IS AT LIMIT.
+   2  background yield   2.70041e+01   5.16494e+00   0.00000e+00   5.40000e+01
+ FCN=-2.55005 FROM MINOS     STATUS=SUCCESSFUL     31 CALLS         100 TOTAL
+                     EDM=1.39823e-06    STRATEGY= 1      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                  PHYSICAL LIMITS       
+  NO.   NAME      VALUE            ERROR       NEGATIVE      POSITIVE  
+   1  Signal yield   8.88225e-07   1.12217e+01   0.00000e+00   5.40000e+01
+                                 WARNING -   - ABOVE PARAMETER IS AT LIMIT.
+   2  background yield   2.70041e+01   5.16494e+00   0.00000e+00   5.40000e+01
+ EXTERNAL ERROR MATRIX.    NDIM=  25    NPAR=  2    ERR DEF=1
+  4.299e-05 -1.103e-04 
+ -1.103e-04  2.701e+01 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2
+        1  0.00324   1.000 -0.003
+        2  0.00324  -0.003  1.000
+ ========= happy ending !? =========================== 
+FCN =  -2.550 
+EE Data  27.0 events, fitted  27.0
+EE Data  25.0, and fitted (in 5GeV)  10.5 events 
+EE bin 20 SIG   0.0 #pm  11.2 events 
+EE SIG (in 5GeV)   0.0 #pm   4.5 events 
+EE bin 20 BKG  27.0 #pm   5.2 events 
+EE BKG (in 5GeV)  10.5 #pm   2.0 events 
+----------------------------------------------- 
+EE Data (<0) 1.0 (>0) 26.0 events 
+EE sig (<0) 0.0 (>0) 0.0 events 
+EE bkg (<0) 14.2 (>0) 12.8 events 
+----- fit results with signal projection   ----------- 
+Chi2 = 67.351793, Prob = 5.02134e-11, NDF = 9, igood = 1
+ chi2/ndf is 6.74e+01
+gjet_1_0_21_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+set sig bin 2, content 0.000000 to 0. 
+set sig bin 3, content 0.000000 to 0. 
+set sig bin 4, content 0.000000 to 0. 
+set sig bin 5, content 0.000000 to 0. 
+set sig bin 6, content 0.000000 to 0. 
+set sig bin 7, content 0.000000 to 0. 
+set sig bin 8, content 0.000000 to 0. 
+set sig bin 9, content 0.000000 to 0. 
+set sig bin 10, content 0.000000 to 0. 
+ ---  no events in the fit 
+gjet_1_0_22_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+set sig bin 2, content 0.000000 to 0. 
+set sig bin 3, content 0.000000 to 0. 
+set sig bin 4, content 0.000000 to 0. 
+set sig bin 5, content 0.000000 to 0. 
+set sig bin 6, content 0.000000 to 0. 
+set sig bin 7, content 0.000000 to 0. 
+set sig bin 8, content 0.000000 to 0. 
+set sig bin 9, content 0.000000 to 0. 
+set sig bin 10, content 0.000000 to 0. 
+ ---  no events in the fit 
+gjet_1_0_23_px1_chIsoset sig bin 1, content 0.000000 to 0. 
+set sig bin 2, content 0.000000 to 0. 
+set sig bin 3, content 0.000000 to 0. 
+set sig bin 4, content 0.000000 to 0. 
+set sig bin 5, content 0.000000 to 0. 
+set sig bin 6, content 0.000000 to 0. 
+set sig bin 7, content 0.000000 to 0. 
+set sig bin 8, content 0.000000 to 0. 
+set sig bin 9, content 0.000000 to 0. 
+set sig bin 10, content 0.000000 to 0. 
+ ---  no events in the fit 

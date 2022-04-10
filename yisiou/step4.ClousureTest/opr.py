@@ -9,7 +9,7 @@ import sys
 ROOT.gROOT.SetBatch(True)
 
 
-for num in range(6, 7):
+for ptbin in range(0, 20):
 
     file = ROOT.TFile('./toy_mc.root')
     hsigB0 = file.Get("tag0_B")
@@ -89,7 +89,7 @@ for num in range(6, 7):
 
     outfile.close()
 
-    string0 = "root.exe -q 'clousure_prod.C("+str(num)+")'"
+    string0 = "root.exe -q 'clousure_prod.C("+str(ptbin)+")'"
 
     string1 = 'text2workspace.py auto_datacard.txt -o ws.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO "map=.*/sigB.*:mu1[1000,0,1000000]" --PO "map=.*/sigC.*:mu2[1000,0,1000000]" --PO "map=.*/bkgL.*:mu3[1000,0,5000000]"'
 
@@ -97,7 +97,7 @@ for num in range(6, 7):
 
     string3 = 'PostFitShapesFromWorkspace -d auto_datacard.txt -w higgsCombineTest.MultiDimFit.mH120.root -o postfit.root -m 120 -f multidimfitTest.root:fit_mdf --postfit --print'
 
-    string4 = "root.exe -q 'Draw_svxmass.C("+str(num)+")'"
+    string4 = "root.exe -q 'Draw_svxmass.C("+str(ptbin)+")'"
 
 
     print(string0)

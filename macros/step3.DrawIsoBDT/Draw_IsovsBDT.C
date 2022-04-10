@@ -88,13 +88,13 @@ TH2F* GetHistFromFile_IsovsBDT(TFile* infile, int isBkg,
 {
     TH2F* hist;
     char hname[200];
-    sprintf(hname,"h_IsovsBDT_%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
+    sprintf(hname,"IsovsBDT/IsovsBDT.%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
     hist = (TH2F*)infile->Get(hname);
     if ( jetbin == 0 || jetbin == 1 ) return hist;
     
     while ( jetbin-- )
     {
-        sprintf(hname,"h_IsovsBDT_%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
+        sprintf(hname,"IsovsBDT/IsovsBDT.%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
         hist->Add( (TH2F*)infile->Get(hname) );
     }
     return hist;
@@ -114,11 +114,11 @@ TH2F* GetBkgVarHistFromFile(TFile* infile, const char* var,
 { return GetHistFromFile_General(infile, var, 1, ebee, jetbin, ptbin); }
 
 const char* GetQCD_madgraph()
-{ return "../step2.makehistos/storeroot/makehisto_QCD_madgraph.root"; }
+{ return "../step2.makehistos/storeroot/makehisto_QCD.root"; }
 const char* GetData()
 { return "../step2.makehistos/storeroot/makehisto_data.root"; }
 const char* GetSig_madgraph()
-{ return "../step2.makehistos/storeroot/makehisto_sig_madgraph.root"; }
+{ return "../step2.makehistos/storeroot/makehisto_sig.root"; }
 const char* FakeDataSample(int opt)
 {
     switch ( opt )

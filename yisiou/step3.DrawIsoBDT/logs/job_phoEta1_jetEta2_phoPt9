@@ -9,11 +9,47 @@
 details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
 details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
 details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
-data 194565, signal 11876.27, bkg 12801.71 
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_2_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_1_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_0_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_2_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_1_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_0_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_2_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_1_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_0_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_2_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_1_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_0_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_2_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_1_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_0_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_2_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_1_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_0_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_2_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_1_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_0_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_2_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_1_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_0_9_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_2_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_1_9_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_0_9_1_0
+get nameing : h_subVtxMass_1_2_9_0_0
+get nameing : h_subVtxMass_1_1_9_0_0
+get nameing : h_subVtxMass_1_0_9_0_0
+get nameing : h_subVtxMass_1_2_9_0_0
+get nameing : h_subVtxMass_1_1_9_0_0
+get nameing : h_subVtxMass_1_0_9_0_0
+get nameing : h_subVtxMass_1_2_9_1_0
+get nameing : h_subVtxMass_1_1_9_1_0
+get nameing : h_subVtxMass_1_0_9_1_0
+data 194565, signal 30986.82, bkg 12801.71 
 
-sig fraction of 9 1 SB/all  = 0.087123 
-sig fraction of 9 1 sig/all = 0.832052 
-sig fit correction       0.744929 
+sig fraction of 9 1 SB/all  = 0.198962 
+sig fraction of 9 1 sig/all = 0.721238 
+sig fit correction       0.522276 
 zone1 sig faction of left / right = 0.598310 
 zone2 SB  faction of left / right = 0.697107 
 Data faction of SB/all = 0.056100 
