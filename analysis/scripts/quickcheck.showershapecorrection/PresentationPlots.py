@@ -9,9 +9,8 @@ def PrintHelp():
     print '## Use TTree::Draw() feature to plot the    ##'
     print '## compairson of data / MC plot. The canvas ##'
     print '## is separated in upper and lower pads for ##'
-    print '## comparison. Comparison between original  ##'
-    print '## MC and re-weighted MC will be shown in   ##'
-    print '## one plot.                                ##'
+    print '## comparison. Single Data/MC comparison is ##'
+    print '## shown in each figure.                    ##'
     print '## Usage :                                  ##'
     print '##   ./this.py input.json                   ##'
     print '##############################################'
@@ -76,6 +75,7 @@ def ShowRatioPlot(pad, etaregion, varname, figFrags=FigPartContainer()):
     ratio_simu.SetMarkerSize(4)
     ratio_simu.SetFillStyle(0)
     HistSetting_Visualization_LowerStyling(ratio_simu)
+    HistSetting_Visualization_LowerStyling(ratio_calb)
 
 
 
@@ -145,6 +145,86 @@ def ShowOriginalDist(pad, etaregion, varname, figFrags=FigPartContainer()):
     return figFrags
 
 
+def ShowRatioPlot_1(pad, etaregion, varname, figFrags=FigPartContainer()):
+    hdata = ROOT.gROOT.FindObject( 'hdata.'+'_'.join([etaregion,varname]) )
+    hcalb = ROOT.gROOT.FindObject( 'hcalb.'+'_'.join([etaregion,varname]) )
+
+    ratio_calb = hdata.Clone()
+    ratio_calb.Divide(hcalb)
+    ratio_calb.SetName( 'ratio.%s'%hcalb.GetName() )
+    PlotObjectMgr.HistSetting_Clone(ratio_calb, hcalb)
+    #ratio_calb.SetMarkerStyle(24)
+    ratio_calb.SetMarkerColor( 1 )
+    ratio_calb.SetMarkerSize(4)
+    #ratio_calb.SetFillStyle(0)
+    ratio_calb.SetTitle('')
+    ratio_calb.GetYaxis().SetRangeUser(0.7,1.3)
+    HistSetting_Visualization_LowerStyling(ratio_calb)
+
+    # put 100x error to check error bar is printed or not.
+    #[ ratio_calb.SetBinError( ibin, ratio_calb.GetBinError(ibin) * 100.) for ibin in range(1, ratio_calb.GetNbinsX()+1) ]
+
+    pad.cd()
+    ratio_calb.Draw('e0 p')
+
+    figFrags.KeepPlotable(ratio_calb)
+    return figFrags
+
+def ShowOriginalDist_1(pad, etaregion, varname, figFrags=FigPartContainer()):
+    hdata = ROOT.gROOT.FindObject( 'hdata.'+'_'.join([etaregion,varname]) )
+    hcalb = ROOT.gROOT.FindObject( 'hcalb.'+'_'.join([etaregion,varname]) )
+
+    PlotObjectMgr.HistSetting_Visualization_data( hdata, LineWidth_ =2, MarkerSize_=4 )
+    PlotObjectMgr.HistSetting_GeneralStyling    ( hdata, xlabel_=varname, ylabel_='Entries / %.1e' % hdata.GetBinWidth(1) )
+
+    PlotObjectMgr.HistSetting_Visualization_MC  ( hcalb, LineColor_ = 30, FillColor_=30, FillStyle_=1 )
+    PlotObjectMgr.HistSetting_GeneralStyling    ( hcalb, xlabel_=varname, ylabel_='Entries / %.1e' % hcalb.GetBinWidth(1) )
+    hcalb.Scale( hdata.Integral() / hcalb.Integral() )
+    hcalb.SetFillColor(hcalb.GetLineColor())
+    hcalb.SetFillStyle(1001)
+
+    leg=ROOT.TLegend( 0.2, 0.67, 0.8, 0.85 )
+    leg.SetTextAlign(32)
+    leg.AddEntry( hdata, 'UL2018 data sample', 'lp' )
+    leg.AddEntry( hcalb, 'MC. #chi^{2} = %.2e / %.0f = %.2e' % (
+        Chi2(hdata.GetName(),hcalb.GetName()), Ndof(hdata.GetName()), Chi2(hdata.GetName(),hcalb.GetName()) / Ndof(hdata.GetName())
+        ), 'l')
+
+    leg.SetBorderSize(0)
+    leg.SetFillColor(4000)
+    leg.SetFillStyle(4000)
+
+    pad.cd()
+    hdata.GetXaxis().SetLabelSize(0)
+    hdata.Draw('axis')
+    hcalb.Draw('hist same')
+    hdata.Draw('e0 p same')
+    leg.Draw()
+
+    figFrags.KeepPlotable(hdata)
+    figFrags.KeepPlotable(hcalb)
+    figFrags.KeepPlotable( leg )
+    return figFrags
+
+class Mgr_1RatioPlot(object):
+    def __init__(self, upperpad, lowerpad):
+        self._upperpad = upperpad
+        self._lowerpad = lowerpad
+        self._frag = FigPartContainer()
+    def DrawToCanvas(self, canv, etaregion, varname):
+        canv.cd()
+        ShowOriginalDist_1(self._upperpad, etaregion, vname, self._frag)
+        ShowRatioPlot_1   (self._lowerpad, etaregion, vname, self._frag)
+class Mgr_2RatioPlot(object):
+    def __init__(self, upperpad, lowerpad):
+        self._upperpad = upperpad
+        self._lowerpad = lowerpad
+        self._frag = FigPartContainer()
+    def DrawToCanvas(self, canv, etaregion, varname):
+        canv.cd()
+        ShowOriginalDist(self._upperpad, etaregion, vname, self._frag)
+        ShowRatioPlot   (self._lowerpad, etaregion, vname, self._frag)
+
 if __name__ == "__main__":
     args = JsonInfo(sys.argv[1])
     fdata = ROOT.TFile.Open( args.file_data )
@@ -157,72 +237,78 @@ if __name__ == "__main__":
     canv=MyCanvas('canv',1600,1200)
 
     import xPhoton.analysis.SelectionsMgr as Selections
-    pre_selections=(
+    pre_selections=[
         Selections.DrawCutStr_ZmassWindow(),
         Selections.DrawCutStr_data_PurifyZ(),
-        )
+        ]
     listofvars=[]
 
     for eta in ('barrel','endcap'):
-        varname='mva'
         selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
         selections.extend(pre_selections)
         cut='&&'.join( selections )
 
+        hsetting='(100,60,120)'
+        varname='Zmass'
+        listofvars.append( (varname, eta) )
+        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting),
+                '&&'.join( [Selections.DrawCutStr_data_PurifyZ(), Selections.DrawCutStr_EtaRegion(eta)] )
+                )
+        tsimu.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting),
+                '&&'.join( [Selections.DrawCutStr_data_PurifyZ(), Selections.DrawCutStr_EtaRegion(eta)] )
+                )
+
         hsetting='(10,-1.,1.)'
+        varname='mva'
         listofvars.append( (varname, eta) )
         tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
+        #tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('mva                           >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
+        '''
         hsetting='(40,0.,0.05)'
         varname='scEtaWidth'
         listofvars.append( (varname, eta) )
         tdata.Draw('scEtaWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('scEtaWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_scEtaWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.,0.2)'
         varname='scPhiWidth'
         listofvars.append( (varname, eta) )
         tdata.Draw('scPhiWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('scPhiWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_scPhiWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.,1.2)'
         varname='r9Full5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('r9Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('r9Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_r9Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.2,1.)'
         varname='s4Full5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('s4Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('s4Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_s4Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.002,0.045)'
         varname='sieieFull5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('sieieFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('sieieFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_sieieFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,-0.0015,0.0015)' if eta == 'endcap' else '(40,-0.0002,0.0002)'
         varname='sieipFull5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('sieipFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('sieipFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_sieipFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.,1.)'
         varname='esEnergyOverSCRawEnergy'
         listofvars.append( (varname, eta) )
         tdata.Draw('esEnergyOverSCRawEnergy       >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('esEnergyOverSCRawEnergy       >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        '''
+
 
     canv.Clear()
     upperpad=PlotObjectMgr.UpperPad()
@@ -231,14 +317,23 @@ if __name__ == "__main__":
     upperpad.Draw()
     lowerpad.Draw()
 
-    fout=ROOT.TFile('output.root','recreate')
+    #plots=Mgr_2RatioPlot(upperpad,lowerpad)
+    plots=Mgr_1RatioPlot(upperpad,lowerpad)
     for vname, etaregion in listofvars:
-        canv.cd()
-        figFrag=FigPartContainer()
-        ShowOriginalDist(upperpad, etaregion, vname, figFrag)
-        ShowRatioPlot(lowerpad, etaregion, vname, figFrag)
+        plots.DrawToCanvas(canv, etaregion, vname)
 
-        canv.SaveAs('ratioplot.%s_%s.pdf' % (etaregion,vname) )
+        canv.SaveAs('ratioplot_Single.%s_%s.pdf' % (etaregion,vname) )
 
-        figFrag.Write(fout)
-    fout.Close()
+    '''
+    canv.Clear()
+    canv.cd()
+    pre_selections.pop(0) # drop out Z mass window
+    for eta in ('barrel','endcap'):
+        selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
+        selections.extend(pre_selections)
+        cut='&&'.join( selections )
+
+        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('Z.recoMass                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
+    '''
+

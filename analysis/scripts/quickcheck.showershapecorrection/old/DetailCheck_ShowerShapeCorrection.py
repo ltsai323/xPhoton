@@ -4,62 +4,8 @@ import ROOT
 import json
 import sys
 
-def PrintHelp():
-    print '##############################################'
-    print '## Use TTree::Draw() feature to plot the    ##'
-    print '## compairson of data / MC plot. The canvas ##'
-    print '## is separated in upper and lower pads for ##'
-    print '## comparison. Comparison between original  ##'
-    print '## MC and re-weighted MC will be shown in   ##'
-    print '## one plot.                                ##'
-    print '## Usage :                                  ##'
-    print '##   ./this.py input.json                   ##'
-    print '##############################################'
-    raise IOError('Input arg failed')
-
-class JsonInfo(object):
-    def __init__(self, jsonname):
-        infile=open(jsonname, 'r')
-        data=json.load(infile)
-
-        if not 'mcFile' in data: PrintHelp()
-        if not 'dataFile' in data: PrintHelp()
-        if not 'tag' in data: PrintHelp()
-
-        self.file_data = data['dataFile']
-        self.file_simu = data['mcFile']
-        self.tag = data['tag']
-
 import xPhoton.analysis.PlotObjectMgr as PlotObjectMgr
-
-def Chi2(histname_data_, histname_simu_):
-    hdata = ROOT.gROOT.FindObject( histname_data_ )
-    hsimu = ROOT.gROOT.FindObject( histname_simu_ )
-    return sum( [( ( hdata.GetBinContent(ibin)-hsimu.GetBinContent(ibin) )/hdata.GetBinError(ibin) )**2 for ibin in range(1,hdata.GetNbinsX()+1) if hdata.GetBinError(ibin) > 1e-2 ] )
-def Ndof(histname_):
-    return ROOT.gROOT.FindObject( histname_ ).GetNbinsX() - 1
-class FigPartContainer(object):
-    ''' To prevent objects are deleted. Use it to keep plotable '''
-    def __init__(self):
-        self.plotable=[]
-    def KeepPlotable(self, obj):
-        self.plotable.append(obj)
-    def Write(self, odir=None):
-        if odir:odir.cd()
-        for obj in self.plotable:
-            obj.Write()
-def HistSetting_Visualization_LowerStyling(hist):
-    hist.SetTitle('')
-    hist.GetYaxis().SetRangeUser(0.7,1.3)
-    hist.GetXaxis().SetTitleSize(0.11)
-    hist.GetXaxis().SetLabelSize(0.11)
-    hist.GetYaxis().SetTitleSize(0.15)
-    hist.GetYaxis().SetLabelSize(0.11)
-    hist.GetYaxis().SetTitleOffset(0.25)
-    hist.GetYaxis().SetNdivisions(905)
-    hist.GetYaxis().CenterTitle(True)
-    hist.SetYTitle('Data/MC')
-    hist.SetStats(False)
+import ShowerShapeCorrectionBase as SSCB
 
 def ShowRatioPlot(pad, etaregion, varname, figFrags=FigPartContainer()):
     hdata = ROOT.gROOT.FindObject( 'hdata.'+'_'.join([etaregion,varname]) )
@@ -75,7 +21,7 @@ def ShowRatioPlot(pad, etaregion, varname, figFrags=FigPartContainer()):
     ratio_simu.SetMarkerColor( ratio_simu.GetLineColor() )
     ratio_simu.SetMarkerSize(4)
     ratio_simu.SetFillStyle(0)
-    HistSetting_Visualization_LowerStyling(ratio_simu)
+    SSCB.HistSetting_Visualization_LowerStyling(ratio_simu)
 
 
 
@@ -146,7 +92,7 @@ def ShowOriginalDist(pad, etaregion, varname, figFrags=FigPartContainer()):
 
 
 if __name__ == "__main__":
-    args = JsonInfo(sys.argv[1])
+    args = SSCB.JsonInfo(sys.argv[1])
     fdata = ROOT.TFile.Open( args.file_data )
     tdata = fdata.Get('t')
 
@@ -231,7 +177,6 @@ if __name__ == "__main__":
     upperpad.Draw()
     lowerpad.Draw()
 
-    fout=ROOT.TFile('output.root','recreate')
     for vname, etaregion in listofvars:
         canv.cd()
         figFrag=FigPartContainer()
@@ -239,6 +184,3 @@ if __name__ == "__main__":
         ShowRatioPlot(lowerpad, etaregion, vname, figFrag)
 
         canv.SaveAs('ratioplot.%s_%s.pdf' % (etaregion,vname) )
-
-        figFrag.Write(fout)
-    fout.Close()

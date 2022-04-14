@@ -6,14 +6,14 @@ import sys
 
 def PrintHelp():
     print '##############################################'
-    print '## Use TTree::Draw() feature to plot the    ##'
-    print '## compairson of data / MC plot. The canvas ##'
-    print '## is separated in upper and lower pads for ##'
-    print '## comparison. Comparison between original  ##'
-    print '## MC and re-weighted MC will be shown in   ##'
-    print '## one plot.                                ##'
-    print '## Usage :                                  ##'
-    print '##   ./this.py input.json                   ##'
+    print '##############################################'
+    print '##############################################'
+    print '##############################################'
+    print '##############################################'
+    print '##############################################'
+    print '##############################################'
+    print '##############################################'
+    print '##############################################'
     print '##############################################'
     raise IOError('Input arg failed')
 
@@ -44,10 +44,6 @@ class FigPartContainer(object):
         self.plotable=[]
     def KeepPlotable(self, obj):
         self.plotable.append(obj)
-    def Write(self, odir=None):
-        if odir:odir.cd()
-        for obj in self.plotable:
-            obj.Write()
 def HistSetting_Visualization_LowerStyling(hist):
     hist.SetTitle('')
     hist.GetYaxis().SetRangeUser(0.7,1.3)
@@ -169,61 +165,6 @@ if __name__ == "__main__":
         selections.extend(pre_selections)
         cut='&&'.join( selections )
 
-        hsetting='(10,-1.,1.)'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('mva                           >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,0.,0.05)'
-        varname='scEtaWidth'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('scEtaWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('scEtaWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_scEtaWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,0.,0.2)'
-        varname='scPhiWidth'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('scPhiWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('scPhiWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_scPhiWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,0.,1.2)'
-        varname='r9Full5x5'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('r9Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('r9Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_r9Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,0.2,1.)'
-        varname='s4Full5x5'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('s4Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('s4Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_s4Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,0.002,0.045)'
-        varname='sieieFull5x5'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('sieieFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('sieieFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_sieieFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,-0.0015,0.0015)' if eta == 'endcap' else '(40,-0.0002,0.0002)'
-        varname='sieipFull5x5'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('sieipFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('sieipFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_sieipFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
-        hsetting='(40,0.,1.)'
-        varname='esEnergyOverSCRawEnergy'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('esEnergyOverSCRawEnergy       >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('esEnergyOverSCRawEnergy       >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-
     canv.Clear()
     upperpad=PlotObjectMgr.UpperPad()
     lowerpad=PlotObjectMgr.LowerPad()
@@ -231,14 +172,10 @@ if __name__ == "__main__":
     upperpad.Draw()
     lowerpad.Draw()
 
-    fout=ROOT.TFile('output.root','recreate')
     for vname, etaregion in listofvars:
         canv.cd()
-        figFrag=FigPartContainer()
-        ShowOriginalDist(upperpad, etaregion, vname, figFrag)
-        ShowRatioPlot(lowerpad, etaregion, vname, figFrag)
+        #figFrag=FigPartContainer()
+        #ShowOriginalDist(upperpad, etaregion, vname, figFrag)
+        #ShowRatioPlot(lowerpad, etaregion, vname, figFrag)
 
         canv.SaveAs('ratioplot.%s_%s.pdf' % (etaregion,vname) )
-
-        figFrag.Write(fout)
-    fout.Close()
