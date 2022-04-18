@@ -75,11 +75,11 @@ def ShowRatioPlot(pad, etaregion, varname, figFrags=FigPartContainer()):
     ratio_simu.SetMarkerSize(4)
     ratio_simu.SetFillStyle(0)
     HistSetting_Visualization_LowerStyling(ratio_simu)
-    HistSetting_Visualization_LowerStyling(ratio_calb)
 
 
 
     ratio_calb = hdata.Clone()
+    HistSetting_Visualization_LowerStyling(ratio_calb)
     ratio_calb.Divide(hcalb)
     ratio_calb.SetName( 'ratio.%s'%hcalb.GetName() )
     PlotObjectMgr.HistSetting_Clone(ratio_calb, hcalb)
@@ -122,7 +122,7 @@ def ShowOriginalDist(pad, etaregion, varname, figFrags=FigPartContainer()):
     leg.AddEntry( hsimu, 'original MC. #chi^{2} = %.2e / %.0f = %.2e' % (
         Chi2(hdata.GetName(),hsimu.GetName()), Ndof(hdata.GetName()), Chi2(hdata.GetName(),hsimu.GetName()) / Ndof(hdata.GetName())
         ), 'l')
-    leg.AddEntry( hcalb, 'calibrated MC. #chi^{2} = %.2e / %.0f = %.2e' % (
+    leg.AddEntry( hcalb, 'weighted MC. #chi^{2} = %.2e / %.0f = %.2e' % (
         Chi2(hdata.GetName(),hcalb.GetName()), Ndof(hdata.GetName()), Chi2(hdata.GetName(),hcalb.GetName()) / Ndof(hdata.GetName())
         ), 'l')
 
@@ -323,17 +323,3 @@ if __name__ == "__main__":
         plots.DrawToCanvas(canv, etaregion, vname)
 
         canv.SaveAs('ratioplot_Single.%s_%s.pdf' % (etaregion,vname) )
-
-    '''
-    canv.Clear()
-    canv.cd()
-    pre_selections.pop(0) # drop out Z mass window
-    for eta in ('barrel','endcap'):
-        selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
-        selections.extend(pre_selections)
-        cut='&&'.join( selections )
-
-        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('Z.recoMass                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-    '''
-
