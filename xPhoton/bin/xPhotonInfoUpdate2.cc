@@ -206,6 +206,8 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 int main(int argc, char** argv)
 {
     JsonInfo inputvars(argc,argv);
+    //ROOT::EnableImplicitMT(inputvars.nJobs);
+    //printf("Using %d thread for this training\n", ROOT::GetImplicitMTPoolSize() );
 
     TChain* ch = new TChain("t");
     for ( const std::string& ifile : inputvars.inputfiles )

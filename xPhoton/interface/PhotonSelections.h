@@ -70,8 +70,8 @@ class PhotonMVACalculator
         void ShowerShapeCorrection( ShowerShapeCorrectionAdapter* SScorr_ );
 
         // mva variables
-        //float phoPhi, phoR9Full5x5;
-        float phoPhi, phoR9;
+        float phoPhi, phoR9Full5x5;
+        //float phoPhi, phoR9;
         float phoSCEtaWidth, phoSCPhiWidth, rho;
         float phoSCEta, phoSCRawE;
         float phoPFPhoIso, phoPFChIso, phoPFChIsoWorst;
