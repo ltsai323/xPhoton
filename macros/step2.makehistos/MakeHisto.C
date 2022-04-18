@@ -127,7 +127,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
         //test new mva with isolation smearing
         //if(isData!=1) 
-        Float_t bdt_score = mva;// norminall
+        //Float_t bdt_score = mva;// norminall
+        Float_t bdt_score = IsMC() ? mva_nocorr : mva; // use non corrected BDT score.
         // bdt_score = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
         // bdt_score = mva - trd->Gaus(0.025,0.05);
         // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
@@ -181,6 +182,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // if(isData==1 && ((phoFiredTrgs>>triggerbit(ptbin))&1)==0) continue;
         // if(isData==1 && !(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
         //if(!(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
+        std::string dataera = "UL2018";
         if ( dataera == "2016ReReco" )
             if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
         if ( dataera == "UL2018" )
@@ -202,19 +204,21 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
         if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
 
-        // jet selections
-        if ( jetPt < 30. ) continue;
-        if ( fabs(jetEta) > 2.5 ) continue;
-        if ( jetDeepCSVTags_c < -0.99 ) continue;
-        if ( jetID != 1 ) continue;
-        if ( jetPUIDbit != 7 ) continue;
+        // YiShou's code disabled {{{
+        //   // jet selections
+        //   if ( jetPt < 30. ) continue;
+        //   if ( fabs(jetEta) > 2.5 ) continue;
+        //   if ( jetDeepCSVTags_c < -0.99 ) continue;
+        //   if ( jetID != 1 ) continue;
+        //   if ( jetPUIDbit != 7 ) continue;
 
-	//if ( mcweight>3000. ) continue;
-	if ( extracut == 1 ){
-	  if ( jetSubVtxMass == 0 ) continue;
-	}else if ( extracut == 2 ){
-	  if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
-	}
+        //   //if ( mcweight>3000. ) continue;
+        //   if ( extracut == 1 ){
+        //       if ( jetSubVtxMass == 0 ) continue;
+        //   }else if ( extracut == 2 ){
+        //       if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
+        //   }
+        // YiShou's code disabled }}}
 
         _h_BDT     .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
         _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
@@ -238,16 +242,19 @@ void MakeHisto::Loop(Int_t extracut = 0)
         int phoMatchStatIdx = 0;
 	int parityIdx = ( jentry % 2 == 0 ) ? 0 : 1;
         // need to be modified asdf
-        if ( isQCD )
+        if ( IsMC() )
         {
-            if ( isMatched!=1 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
-            else if ( isMatched!=1 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
-            else    phoMatchStatIdx = 4;
-        }
-        else
-        {
-            if ( isMatched==1 && chIsoRaw<2.0   ) phoMatchStatIdx = 0;
-            else    phoMatchStatIdx = 1;
+            if ( isQCD )
+            {
+                if ( isMatched!=1 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
+                else if ( isMatched!=1 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
+                else    phoMatchStatIdx = 4;
+            }
+            else
+            {
+                if ( isMatched==1 && chIsoRaw<2.0   ) phoMatchStatIdx = 0;
+                else    phoMatchStatIdx = 1;
+            }
         }
 	
 

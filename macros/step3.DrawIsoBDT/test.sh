@@ -9,7 +9,7 @@ tmpjson="hi.json"
 #for jetEtaIdx in {0..2}; do
 phoPtBin=13
 phoEtaIdx=0
-jetEtaIdx=0
+jetEtaIdx=2
 
 cat > $tmpjson <<EOF
 {
@@ -26,10 +26,13 @@ cat > $tmpjson <<EOF
 }
 EOF
 
-root -b > logs/job_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin} <<EOF
-.L testing.C+
+root -b <<EOF
+.L test.C
 Draw_IsovsBDT("$tmpjson")
 EOF
+echo done
+exit
+
 #done; done; done
 
 /bin/rm $tmpjson

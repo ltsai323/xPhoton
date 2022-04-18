@@ -248,17 +248,17 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
   if (!tmvaReader[iBE]) {
     tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
 
-    // add classification variables
+// add classification variables
     tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi_);
     tmvaReader[iBE]->AddVariable("r9", &phoR9_);
-    tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
-    tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
-    //tmvaReader[iBE]->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",   &s13Full5x5 );	        
+    tmvaReader[iBE]->AddVariable( "sieieFull5x5",                 &sieieFull5x5 );     
+    tmvaReader[iBE]->AddVariable( "sieipFull5x5",                 &sieipFull5x5 );     
+    //tmvaReader[iBE]->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",   &s13Full5x5 );          
     if ( dataera == "2016ReReco" )
-        tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
+        tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );        
     if ( dataera == "UL2018" )
-        tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );	       
-    //tmvaReader[iBE]->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",   &s25Full5x5 );	        
+        tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );        
+    //tmvaReader[iBE]->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",   &s25Full5x5 );          
     tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta_);
     tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE_);
     tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth_);
@@ -426,26 +426,30 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
      tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
  
      // add classification variables
-     tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi);
-     tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9);
+     tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9Full5x5);
      tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
      tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
      if ( _dataEra == "2016ReReco" )
          tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
         if ( _dataEra == "UL2018" )
              tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );	       
-     tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta);
      tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE);
      tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth);
      tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth);
      if (iBE == 1) {
          if ( _dataEra == "2016ReReco" )
-       tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE);
+           tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE);
          if ( _dataEra == "UL2018" )
            tmvaReader[iBE]->AddVariable("esEnergyOverSCRawEnergy", &phoESEnToRawE);
        tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR);
      }
+     tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi);
+     tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta);
      tmvaReader[iBE]->AddVariable("rho", &rho);
+
+
+
+
  
  
      std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) << std::endl;
@@ -463,13 +467,12 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapt
 {
     LoadingVars( iPho_);
 
-    //SScorr_->CalculateCorrections( _data, iPho_ );
     if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(SScorr_, _data, iPho_) )
     {
         ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr_, _data, iPho_);
         SScorr_->CalculateCorrections();
     }
-    phoR9		    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       );
+    phoR9Full5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       );
     s4Full5x5       = SScorr_->Corrected( ShowerShapeCorrectionAdapter::s4       );
     sieieFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieie    );
     sieipFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieip    );
@@ -495,9 +498,7 @@ void PhotonMVACalculator::LoadingVars( Int_t iPho_ )
 {
   // load necessary tree branches
   Float_t  DATAphoPhi                    = _data->GetPtrFloat("phoPhi")[iPho_];
-  //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9")[iPho_]; // The MVA use phoR9 for training. Not phoR9Full5x5
-  //Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // is phoR9Full5x5 needed?
-  Float_t  DATAphoR9                     = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // Use this for new training
+  Float_t  DATAphoR9Full5x5              = _data->GetPtrFloat("phoR9Full5x5")[iPho_]; // Use this for new training
   Float_t  DATAphoSCEta                  = _data->GetPtrFloat("phoSCEta")[iPho_];
   Float_t  DATAphoSCRawE                 = _data->GetPtrFloat("phoSCRawE")[iPho_];
   Float_t  DATAphoSCEtaWidth             = _data->GetPtrFloat("phoSCEtaWidth")[iPho_];
@@ -516,7 +517,7 @@ void PhotonMVACalculator::LoadingVars( Int_t iPho_ )
 
   // set MVA variables
   phoPhi                = DATAphoPhi;
-  phoR9                 = DATAphoR9;
+  phoR9Full5x5          = DATAphoR9Full5x5;
   sieieFull5x5          = DATAphoSigmaIEtaIEtaFull5x5;
   sieipFull5x5          = DATAphoSigmaIEtaIPhiFull5x5;
 
@@ -542,12 +543,12 @@ void PhotonMVACalculator::ShowerShapeCorrection( TGraph* tgr[8] )
       if(!isEE ) {
         phoSCEtaWidth	= tgr[0]->Eval(phoSCEtaWidth);
         s4Full5x5       = tgr[1]->Eval(s4Full5x5);
-        phoR9		    = tgr[2]->Eval(phoR9);
+        phoR9Full5x5    = tgr[2]->Eval(phoR9Full5x5);
         sieieFull5x5    = tgr[3]->Eval(sieieFull5x5);
       } else {
         phoSCEtaWidth 	= tgr[4]->Eval(phoSCEtaWidth);
         s4Full5x5       = tgr[5]->Eval(s4Full5x5);
-        phoR9		    = tgr[6]->Eval(phoR9);
+        phoR9Full5x5    = tgr[6]->Eval(phoR9Full5x5);
         sieieFull5x5    = tgr[7]->Eval(sieieFull5x5);
 
       }      
