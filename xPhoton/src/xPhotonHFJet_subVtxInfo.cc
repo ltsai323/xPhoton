@@ -265,7 +265,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Int_t   isMatched, isMatchedEle,  nVtx, eleVeto, nPU;
     Float_t HoverE, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
     Float_t rho;
-    Int_t phoFiredTrgs_, phohasPixelSeed_;
+    Int_t phohasPixelSeed_;
+    Long64_t phoFiredTrgs_;
 
     Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva, mva_nocorr,  photonIDmva;
     Float_t sieieFull5x5, sipipFull5x5, sieipFull5x5, e2x2Full5x5,  e5x5Full5x5;
@@ -334,7 +335,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("HLT",         &HLT,        "HLT/L");
     outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
     }
-    outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
+    outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/L");
     if ( data.HasMC() )
     {
     outtree_->Branch("pthat",        &pthat_,       "pthat/F");

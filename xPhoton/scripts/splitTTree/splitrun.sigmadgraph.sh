@@ -28,8 +28,8 @@ cat > MLrun_${ii}.json <<EOF
     "InputFiles": ["/home/ltsai/cms3/tmpfiles/sigMadgraphFrag_$ii.root"],
     "OutputFileName":"mvaUpdated.sigmadgraphFrag.$ii.root",
     "xmlFiles":[
-    "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/phoIDMVA_noIsoCut/scripts/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
-    "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/phoIDMVA_noIsoCut/scripts/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml"
+"/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
+"/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml"
     ]
 }
 EOF

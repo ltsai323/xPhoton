@@ -11,6 +11,8 @@
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
+#include <TH1F.h>
+#include <TH2F.h>
 
 // Header file for the classes stored in the TTree if any.
 
@@ -46,7 +48,7 @@ public :
    Float_t         recoPhi;
    Float_t         recoSCEta;
    Float_t         r9;
-   Float_t         s4;
+   Float_t         s4Full5x5;
    Int_t           isMatched;
    Int_t           isMatchedEle;
    Int_t           isConverted;
@@ -108,7 +110,7 @@ public :
    Int_t           jetGenPartonMomID;
    Float_t         calib_scEtaWidth;
    Float_t         calib_r9Full5x5;
-   Float_t         calib_s4;
+   Float_t         calib_s4Full5x5;
    Float_t         calib_sieieFull5x5;
    Int_t           nLHE;
    Int_t           lhePID[5];   //[nLHE]
@@ -145,16 +147,16 @@ public :
    Float_t         jetSF_DeepFlavour_up_cferr2;
    Float_t         jetSF_DeepFlavour_up_hf;
    Float_t         jetSF_DeepFlavour_up_lf;
-   Float_t         jetSF_DeepFlavour_JESReduced_central;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_cferr1;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_cferr2;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_hf;
-   Float_t         jetSF_DeepFlavour_JESReduced_down_lf;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_cferr1;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_cferr2;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
-   Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
-   Int_t           isQCD;
+   // Float_t         jetSF_DeepFlavour_JESReduced_central;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_cferr1;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_cferr2;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_hf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_down_lf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_cferr1;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_cferr2;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
+   // Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
+   Int_t           isQCD = 0;
 
    // List of branches
    TBranch        *b_jetSubVtxPt;   //!
@@ -181,7 +183,7 @@ public :
    TBranch        *b_recoPhi;   //!
    TBranch        *b_recoSCEta;   //!
    TBranch        *b_r9;   //!
-   TBranch        *b_s4;   //!
+   TBranch        *b_s4Full5x5;   //!
    TBranch        *b_isMatched;   //!
    TBranch        *b_isMatchedEle;   //!
    TBranch        *b_isConverted;   //!
@@ -243,7 +245,7 @@ public :
    TBranch        *b_jetGenPartonMomID;   //!
    TBranch        *b_calib_scEtaWidth;   //!
    TBranch        *b_calib_r9Full5x5;   //!
-   TBranch        *b_calib_s4;   //!
+   TBranch        *b_calib_s4Full5x5;   //!
    TBranch        *b_calib_sieieFull5x5;   //!
    TBranch        *b_nLHE;   //!
    TBranch        *b_lhePID;   //!
@@ -280,15 +282,15 @@ public :
    TBranch        *b_jetSF_DeepFlavour_up_cferr2;   //!
    TBranch        *b_jetSF_DeepFlavour_up_hf;   //!
    TBranch        *b_jetSF_DeepFlavour_up_lf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_central;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr1;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr2;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_hf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_down_lf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr1;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr2;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
-   TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_central;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr1;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_cferr2;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_hf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_down_lf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr1;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_cferr2;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
+   //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
    TBranch        *b_isQCD;   //!
 
    MakeHisto(Int_t option=0);
@@ -479,7 +481,7 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("recoPhi", &recoPhi, &b_recoPhi);
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
    fChain->SetBranchAddress("r9", &r9, &b_r9);
-   fChain->SetBranchAddress("s4", &s4, &b_s4);
+   fChain->SetBranchAddress("s4Full5x5", &s4Full5x5, &b_s4Full5x5);
    if ( IsMC() )
    {
    fChain->SetBranchAddress("isMatched", &isMatched, &b_isMatched);
@@ -550,15 +552,15 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_BvsAll", &jetDeepCSVDiscriminatorTags_BvsAll, &b_jetDeepCSVDiscriminatorTags_BvsAll);
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_CvsB", &jetDeepCSVDiscriminatorTags_CvsB, &b_jetDeepCSVDiscriminatorTags_CvsB);
    fChain->SetBranchAddress("jetDeepCSVDiscriminatorTags_CvsL", &jetDeepCSVDiscriminatorTags_CvsL, &b_jetDeepCSVDiscriminatorTags_CvsL);
-   fChain->SetBranchAddress("jetPartonID", &jetPartonID, &b_jetPartonID);
    if ( IsMC() )
    {
+   fChain->SetBranchAddress("jetPartonID", &jetPartonID, &b_jetPartonID);
    fChain->SetBranchAddress("jetGenPartonID", &jetGenPartonID, &b_jetGenPartonID);
    fChain->SetBranchAddress("jetHadFlvr", &jetHadFlvr, &b_jetHadFlvr);
    fChain->SetBranchAddress("jetGenPartonMomID", &jetGenPartonMomID, &b_jetGenPartonMomID);
    fChain->SetBranchAddress("calib_scEtaWidth", &calib_scEtaWidth, &b_calib_scEtaWidth);
    fChain->SetBranchAddress("calib_r9Full5x5", &calib_r9Full5x5, &b_calib_r9Full5x5);
-   fChain->SetBranchAddress("calib_s4", &calib_s4, &b_calib_s4);
+   fChain->SetBranchAddress("calib_s4Full5x5", &calib_s4Full5x5, &b_calib_s4Full5x5);
    fChain->SetBranchAddress("calib_sieieFull5x5", &calib_sieieFull5x5, &b_calib_sieieFull5x5);
    fChain->SetBranchAddress("nLHE", &nLHE, &b_nLHE);
    fChain->SetBranchAddress("lhePID", lhePID, &b_lhePID);
@@ -583,7 +585,6 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("integratedLuminosity", &integratedLuminosity, &b_integratedLuminosity);
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
-   }
    fChain->SetBranchAddress("jetSF.DeepCSV.central", &jetSF_DeepCSV_central, &b_jetSF_DeepCSV_central);
    fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr1", &jetSF_DeepCSV_down_cferr1, &b_jetSF_DeepCSV_down_cferr1);
    fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr2", &jetSF_DeepCSV_down_cferr2, &b_jetSF_DeepCSV_down_cferr2);
@@ -602,16 +603,17 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetSF.DeepFlavour.up_cferr2", &jetSF_DeepFlavour_up_cferr2, &b_jetSF_DeepFlavour_up_cferr2);
    fChain->SetBranchAddress("jetSF.DeepFlavour.up_hf", &jetSF_DeepFlavour_up_hf, &b_jetSF_DeepFlavour_up_hf);
    fChain->SetBranchAddress("jetSF.DeepFlavour.up_lf", &jetSF_DeepFlavour_up_lf, &b_jetSF_DeepFlavour_up_lf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.central", &jetSF_DeepFlavour_JESReduced_central, &b_jetSF_DeepFlavour_JESReduced_central);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr1", &jetSF_DeepFlavour_JESReduced_down_cferr1, &b_jetSF_DeepFlavour_JESReduced_down_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr2", &jetSF_DeepFlavour_JESReduced_down_cferr2, &b_jetSF_DeepFlavour_JESReduced_down_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_hf", &jetSF_DeepFlavour_JESReduced_down_hf, &b_jetSF_DeepFlavour_JESReduced_down_hf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_lf", &jetSF_DeepFlavour_JESReduced_down_lf, &b_jetSF_DeepFlavour_JESReduced_down_lf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr1", &jetSF_DeepFlavour_JESReduced_up_cferr1, &b_jetSF_DeepFlavour_JESReduced_up_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
+   // fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.central", &jetSF_DeepFlavour_JESReduced_central, &b_jetSF_DeepFlavour_JESReduced_central);
+   // fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr1", &jetSF_DeepFlavour_JESReduced_down_cferr1, &b_jetSF_DeepFlavour_JESReduced_down_cferr1);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_cferr2", &jetSF_DeepFlavour_JESReduced_down_cferr2, &b_jetSF_DeepFlavour_JESReduced_down_cferr2);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_hf", &jetSF_DeepFlavour_JESReduced_down_hf, &b_jetSF_DeepFlavour_JESReduced_down_hf);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.down_lf", &jetSF_DeepFlavour_JESReduced_down_lf, &b_jetSF_DeepFlavour_JESReduced_down_lf);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr1", &jetSF_DeepFlavour_JESReduced_up_cferr1, &b_jetSF_DeepFlavour_JESReduced_up_cferr1);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
+   //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
+   }
    Notify();
 }
 
@@ -643,4 +645,132 @@ Int_t MakeHisto::Cut(Long64_t entry)
 
 bool MakeHisto::IsMC()
 { return fkMC; }
+struct HistMgr
+{
+    HistMgr( const char* nameTemplate, std::vector<int> maxIdxs ) :
+        _nTemplate(nameTemplate), _MIdxs(maxIdxs) {}
+    std::vector<int> DecodeIdx(int idx)
+    {
+        std::vector<int> outputidxs;
+        for ( unsigned int i = 0; i < _MIdxs.size(); ++i )
+        {
+            int lPosition = IdxMultiplier(i);
+            int rPosition = IdxMultiplier(i+1);
+            outputidxs.emplace_back( (idx%lPosition) / rPosition );
+        }
+        /*
+        std::cout << " input digit : " << idx << ". And outputs are ";
+        for  ( auto k : outputidxs ) std::cout << k << ", ";
+        std::cout << std::endl;
+        */
+        return outputidxs;
+    }
+    const char* GetTitle( const std::vector<int>& iI )
+    {
+        switch ( _MIdxs.size() ) {
+        case 0: throw "histogram failed to interpret\n"; return "";
+        case 1: return Form(_nTemplate, iI[0]);
+        case 2: return Form(_nTemplate, iI[0], iI[1]);
+        case 3: return Form(_nTemplate, iI[0], iI[1], iI[2]);
+        case 4: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3]);
+        case 5: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4]);
+        case 6: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5]);
+        case 7: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5], iI[6]);
+        }
+        throw "_MIdxs size exceeds the size provided from GetTitle(), please extend this function\n";
+                return "";
+    }
+    int indexing( const std::vector<int>& inIdxs )
+    {
+        int idx = 0;
+        for ( unsigned int i = 0; i < _MIdxs.size(); ++i )
+        { idx += inIdxs[i] * IdxMultiplier(i+1); }
+
+        /*
+        std::cout << "input idxs : ";
+        for ( auto a : inIdxs ) std::cout << a << ", ";
+        std::cout << " and final index is : " << idx << std::endl;
+        */
+        return idx;
+    }
+    int IdxMultiplier( int fromIdx )
+    {
+        int idxMultiplier = 1;
+        for ( unsigned int jdx = fromIdx; jdx < _MIdxs.size(); ++jdx )
+            idxMultiplier *= _MIdxs.at(jdx);
+        return idxMultiplier;
+    }
+    int TotalSize()
+    { return IdxMultiplier(0); }
+
+    TDirectory* MakeDirectory( TDirectory* origdir )
+    {
+        char kk[200];
+        int i=0;
+        while ( _nTemplate[i] != '\0' )
+        {
+            char k = _nTemplate[i];
+            if ( k == '.' )
+            { kk[i] = '\0'; break; }
+            kk[i] = k;
+            ++i;
+        }
+        return origdir->mkdir( kk );
+    }
+
+
+    std::vector<int> _MIdxs;
+    const char* _nTemplate;
+    char tmpnaming[200];
+};
+struct HistMgr1D : public HistMgr
+{
+    HistMgr1D( const char* nameTemplate, std::vector<int> maxIdxs ) : HistMgr(nameTemplate,maxIdxs)
+    {
+        hists.reserve( TotalSize() );
+        for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
+    }
+    //~HistMgr1D() { for ( auto h : hists ) delete h; }
+    void SetXaxis( int nbin, float xmin, float xmax )
+    {
+        for ( int idx = 0; idx < TotalSize(); ++idx )
+        {
+            //std::cout << "setxaxis00 input idx : " << idx << "\n";
+            hists[idx] = new TH1F( GetTitle( DecodeIdx(idx) ), "", nbin, xmin, xmax );
+            //std::cout << "setxaxis01 decoded name : " << GetTitle(DecodeIdx(idx)) << "\n";
+            //std::cout << "setxaxis011decoded indexes : ";
+            //for ( auto v : DecodeIdx(idx) ) std::cout << v << ", ";
+            //std::cout << std::endl;
+            hists[idx]->Sumw2();
+        }
+    }
+    TH1F* GetBin( const std::vector<int>& idxs )
+    { return hists[ indexing(idxs) ]; }
+    void Write( TDirectory* dir = nullptr )
+    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
+
+    std::vector<TH1F*> hists;
+};
+struct HistMgr2D : public HistMgr
+{
+    HistMgr2D( const char* nameTemplate, std::vector<int> maxIdxs ) : HistMgr(nameTemplate,maxIdxs)
+    {
+        hists.reserve( TotalSize() );
+        for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
+    };
+    //~HistMgr2D() { for ( auto h : hists ) delete h; }
+    void SetXYaxis( int nbinx, float xmin, float xmax, int nbiny, float ymin, float ymax )
+    {
+        for ( int idx = 0; idx < TotalSize(); ++idx )
+        {
+            hists[idx] = new TH2F( GetTitle( DecodeIdx(idx) ), "", nbinx, xmin, xmax, nbiny, ymin, ymax );
+            hists[idx]->Sumw2();
+        }
+    }
+    TH2F* GetBin( const std::vector<int>& idxs )
+    { return hists[ indexing(idxs) ]; }
+    void Write( TDirectory* dir = nullptr )
+    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
+    std::vector<TH2F*> hists;
+};
 #endif // #ifdef MakeHisto_cxx

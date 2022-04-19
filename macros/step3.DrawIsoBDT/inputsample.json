@@ -1,0 +1,12 @@
+{
+    "phoEtaBin": 0,
+    "jetEtaBin": 1,
+    "phoPtBin": 11,
+    "rebinOption":1,
+    "sidebandlower":14,
+    "sidebandupper":20,
+    "data":"/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/makehisto_data.root",
+    "bkg": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/makehisto_QCD.root",
+    "sig": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/makehisto_sig.root",
+    "out_template": "disabled"
+}

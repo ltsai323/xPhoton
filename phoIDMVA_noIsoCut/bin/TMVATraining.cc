@@ -228,17 +228,9 @@ int main( int argc, char** argv )
    //mcphoton
    if(useShapeVars == 1){
    dataloader->AddVariable( "r9Full5x5",   'F' );   
-     //      dataloader->AddVariable( "sieie",   'F' );   
-     //      dataloader->AddVariable( "sieip",   'F' );   
-     //      dataloader->AddVariable( "s13 := e1x3/e5x5",  'F' );   
-     //      dataloader->AddVariable( "s4 := e2x2/e5x5",  'F' );   
-     //      dataloader->AddVariable( "s25 := e2x5/e5x5",  'F' ); 
      dataloader->AddVariable( "sieieFull5x5",   'F' );   
      dataloader->AddVariable( "sieipFull5x5",   'F' );   
-     // dataloader->AddVariable( "s13 := e1x3Full5x5/e5x5Full5x5",  'F' );   
-     //dataloader->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",  'F' );   
      dataloader->AddVariable( "s4Full5x5",  'F' );   
-     // dataloader->AddVariable( "s25 := e2x5Full5x5/e5x5Full5x5",  'F' );   
    }
    dataloader->AddVariable( "rawE",   'F' );   
    if(useShapeVars == 1){
@@ -247,7 +239,6 @@ int main( int argc, char** argv )
    }
 
    if(isEndcap == 1 && useShapeVars==1 ) {
-     //dataloader->AddVariable( "ESEn := esEn/rawE",   'F' );   
      dataloader->AddVariable( "esEnergyOverSCRawEnergy",   'F' );   
      dataloader->AddVariable( "esRR",   'F' );   
    }
@@ -257,38 +248,10 @@ int main( int argc, char** argv )
      dataloader->AddVariable( "phoIsoRaw",   'F' );   
      dataloader->AddVariable( "chIsoRaw",   'F' );   
      dataloader->AddVariable( "chWorstRaw",   'F' );   
-     // dataloader->AddVariable("chafix1", 'F');
-     // dataloader->AddVariable("chafix2", 'F');
-     // dataloader->AddVariable("chafix3", 'F');
-     // dataloader->AddVariable("chafix4", 'F');
    }
-   dataloader->AddSpectator( "recoPhi", "recoPhi", "none",   'F' );
-   dataloader->AddSpectator( "recoSCEta", "recoSCEta", "none",   'F' );   
-   dataloader->AddSpectator( "rho",  "rho", "GeV", 'F' );
-//    if(useShapeVars==1) {
-//      dataloader->AddVariable("phofix1", 'F');
-//    }
-//    if(useIsoVars == 1){   
-//      dataloader->AddVariable("phofix2", 'F');
-//      dataloader->AddVariable("phofix3", 'F');
-//      dataloader->AddVariable("phofix4", 'F');
-//    }
-   
-   //for cut based practice 
-//    dataloader->AddVariable( "1-r9 := 1-r9",   'F' );   
-//    dataloader->AddVariable( "sieieFull5x5",   'F' );   
-//    dataloader->AddVariable( "s4 := 1-(e2x2Full5x5/e5x5Full5x5)",  'F' );   
-//    dataloader->AddVariable( "s25 := 1-(e2x5Full5x5/e5x5Full5x5)",  'F' );   
-//    dataloader->AddVariable( "scEtaWidth",   'F' );   
-//    dataloader->AddVariable( "scPhiWidth",   'F' );   
-//    dataloader->AddVariable( "phoIso*0.01",   'F' );   
-//    dataloader->AddVariable( "chIso*0.01",   'F' );   
-//    dataloader->AddVariable( "chWorst*0.01",   'F' );   
-
-//    dataloader->AddVariable( "sieieFull5x5",   'F' );   
-//    dataloader->AddVariable( "phoIso*0.01",   'F' );   
-//    dataloader->AddVariable( "chIso*0.01",   'F' );   
-//    dataloader->AddVariable( "chWorst*0.01",   'F' );   
+   dataloader->AddVariable( "recoPhi", "recoPhi", "none",   'F' );
+   dataloader->AddVariable( "recoSCEta", "recoSCEta", "none",   'F' );   
+   dataloader->AddVariable( "rho",  "rho", "GeV", 'F' );
 
 
 
@@ -369,11 +332,11 @@ int main( int argc, char** argv )
 //    TCut mycuts = "mcphoton==1&&TMath::Abs(SCEta)<1.5&&phoEt<30.";
 //    TCut mycutb = "mcphoton==0&&TMath::Abs(SCEta)<1.5&&phoEt<30.";
 
-   TCut mycuts = "(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoEta)<1.5";
-   TCut mycutb = "(isMatched!=1&&isConverted!=1)&&isMatchedEle!=1&&TMath::Abs(recoEta)<1.5";
+   TCut mycuts = " (isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)<1.5";
+   TCut mycutb = "!(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)<1.5";
    if (isEndcap == 1) {
-     mycuts = "(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoEta)>1.5";
-     mycutb = "(isMatched!=1&&isConverted!=1)&&isMatchedEle!=1&&TMath::Abs(recoEta)>1.5";
+     mycuts = " (isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)>1.5";
+     mycutb = "!(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)>1.5";
    }
 
    // for high pt photon
@@ -426,27 +389,9 @@ int main( int argc, char** argv )
    if (Use["Fisher"])
       factory->BookMethod( dataloader, TMVA::Types::kFisher, "Fisher", "H:!V:Fisher:CreateMVAPdfs:PDFInterpolMVAPdf=Spline2:NbinsMVAPdf=50:NsmoothMVAPdf=10" );
 
-//    if (Use["BDT"])  // Adaptive Boost
-//       factory->BookMethod( TMVA::Types::kBDT, "BDT",
-//                            "!H:!V:NTrees=850:nEventsMin=150:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning" );
-
 
    if (Use["BDT"]) {
-     //factory->BookMethod( TMVA::Types::kBDT, "BDT", 
-     //                       "!H:!V:NTrees=400:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=CostComplexity:PruneStrength=4.5" );
-
-     //J. Tao setting
-     //factory->BookMethod( TMVA::Types::kBDT, "BDT", "!H:!V:NTrees=400:nEventsMin=400:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=2000:PruneMethod=NoPruning" );
-
-     //default for my 2014 training
-     //factory->BookMethod( TMVA::Types::kBDT, "BDT", "!H:!V:NTrees=400:nEventsMin=400:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=100:PruneMethod=NoPruning" );
-
-     //suggested by Daniele Benedetti
-     //factory->BookMethod(TMVA::Types::kBDT, "BDT","!H:!V:NTrees=2000:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:nEventsMin=100:NNodesMax=5:UseNvars=4:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=6");
-     //by Inna in 2016
-     factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT","!H:!V:NTrees=2000:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:UseNvars=4:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=6:NegWeightTreatment=IgnoreNegWeightsInTraining");
-     //Adaboost
-     // factory->BookMethod(TMVA::Types::kBDT, "BDT","!H:!V:NTrees=2000:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.6:UseRandomisedTrees=True:UseNVars=6:nCuts=2000:PruneMethod=CostComplexity:PruneStrength=-1");
+     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDT","!H:!V:NTrees=2000:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:UseNvars=4:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=6:NegWeightTreatment=IgnoreNegWeightsInTraining");
    }
 
    if (Use["BDTG"]) // Gradient Boost

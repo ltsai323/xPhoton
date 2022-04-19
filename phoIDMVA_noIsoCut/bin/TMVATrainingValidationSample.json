@@ -1,0 +1,12 @@
+{
+    "cut_barrel": 0.5,
+    "cut_endcap": 0.49,
+    "usevar_Isolation": false,
+    "usevar_showerShape": true,
+    "xmlfile_EB":
+"/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/phoIDMVA_noIsoCut/scripts/fullVarAndNoMC_PUweights_SCEtaSep/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
+    "xmlfile_EE":
+"/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/phoIDMVA_noIsoCut/scripts/fullVarAndNoMC_PUweights_SCEtaSep/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml",
+    "testsample":"/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/phoIDMVA_noIsoCut/bin/rw_outFrag.2.root"
+}
+    

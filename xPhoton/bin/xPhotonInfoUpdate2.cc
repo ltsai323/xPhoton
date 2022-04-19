@@ -72,6 +72,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
     if (!jobInfo.updateMVA ) return;
     inTree->SetBranchStatus("*", 1);
     inTree->SetBranchStatus("mva", 0);
+    if ( inTree->GetListOfBranches()->FindObject("mva_nocorr") )
     inTree->SetBranchStatus("mva_nocorr", 0);
     TreeReader data(inTree);
 
@@ -96,7 +97,6 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
         tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
 
         // add classification variables
-        tmvaReader[iBE]->AddVariable("recoPhi", &recoPhi);
         tmvaReader[iBE]->AddVariable("r9Full5x5", &r9Full5x5);
         tmvaReader[iBE]->AddVariable( "sieieFull5x5", &sieieFull5x5 );
         tmvaReader[iBE]->AddVariable( "sieipFull5x5", &sieipFull5x5 );     
@@ -109,7 +109,6 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
         {
             tmvaReader[iBE]->AddVariable( "s4Full5x5", &s4Full5x5 );	       
         }
-        tmvaReader[iBE]->AddVariable("recoSCEta", &recoSCEta );
         tmvaReader[iBE]->AddVariable("rawE", &rawE );
         tmvaReader[iBE]->AddVariable("scEtaWidth", &scEtaWidth );
         tmvaReader[iBE]->AddVariable("scPhiWidth", &scPhiWidth );
@@ -121,6 +120,8 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
                 tmvaReader[iBE]->AddVariable("esEnergyOverSCRawEnergy", &esEnergyOverSCRawEnergy );
             tmvaReader[iBE]->AddVariable("esRR", &esRR );
         }
+        tmvaReader[iBE]->AddVariable("recoPhi", &recoPhi);
+        tmvaReader[iBE]->AddVariable("recoSCEta", &recoSCEta );
         tmvaReader[iBE]->AddVariable("rho", &rho);
         //tmvaReader[iBE]->AddVariable("recoSCEta", &recoSCEta);
 
@@ -153,7 +154,8 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
         
         if ( evtIdx % ANNOUNSE_INTERVAL == 0 ) LOG_INFO(" processing enty %llu / %llu = %.2f %% \n", evtIdx, data.GetEntriesFast(), float(10000*evtIdx/data.GetEntriesFast())/100.);
         
-        inTree->GetEntry(evtIdx);
+        // This line is embedded in untuplier.cc
+        //inTree->GetEntry(evtIdx);
         data.GetEntry(evtIdx);
         // variables declare and data loader {{{
         bool isEE = fabs(data.GetFloat("recoSCEta")) > 1.5 ? 1 : 0;
@@ -204,6 +206,8 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 int main(int argc, char** argv)
 {
     JsonInfo inputvars(argc,argv);
+    //ROOT::EnableImplicitMT(inputvars.nJobs);
+    //printf("Using %d thread for this training\n", ROOT::GetImplicitMTPoolSize() );
 
     TChain* ch = new TChain("t");
     for ( const std::string& ifile : inputvars.inputfiles )

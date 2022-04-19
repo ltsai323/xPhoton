@@ -451,7 +451,9 @@ void TreeReader::GetEntry(Long64_t entry)
 {
    /* Sets event number to retrieve next time TreeReader::Get*() called.
     */
-
+   // if native TTree feature used, this line is needed for update every entry.
+   // For example, SetBranchAddress or CloneTree
+   this->GetTree()->GetEntry(entry);
    if (fTree->IsA() != TChain::Class())
       fEntry = entry;
 
