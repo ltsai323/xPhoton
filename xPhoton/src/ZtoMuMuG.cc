@@ -26,12 +26,12 @@ void ZtoMuMuG(
     Float_t overallGenweight = 0;
     Float_t hasNon1Val = 0;
     
-    rec_Electron record_electrons[2]; // probe photon : need to be modified.
+    rec_Electron record_photon;
     rec_Mu record_Mu[2];
     rec_Z record_Z;
     rec_Event record_evt;
 
-    RegBranchZMuMu( outtree_, "", &record_electrons[1] ); // probe electron, like a photon
+    RegBranchZMuMu( outtree_, "", &record_photon ); // probe electron, like a photon
     RegBranchZMuMu( outtree_, "mu0", &record_Mu[0] );
     RegBranchZMuMu( outtree_, "mu1", &record_Mu[1] );
     RegBranchZMuMu( outtree_, "Z", &record_Z );
@@ -143,51 +143,49 @@ void ZtoMuMuG(
         for ( auto photon : selectedPhoton )
         {
         LOG_DEBUG("starting to fill event");
-        ClearStruct(&record_electrons[0]);
-        ClearStruct(&record_electrons[1]);
+        ClearStruct(&record_photon);
         ClearStruct(&record_Mu[0]);
         ClearStruct(&record_Mu[1]);
         ClearStruct(&record_Z);
         ClearStruct(&record_evt);
 
             int recoIdx = photon.idx();
-            rec_Electron& eleRecording = record_electrons[1];
                     
-            eleRecording.recoPt       = data.GetPtrFloat("phoEt")[recoIdx];
-            eleRecording.recoEta      = data.GetPtrFloat("phoEta")[recoIdx];
-            eleRecording.recoPtCalib  = data.GetPtrFloat("phoCalibEt")[recoIdx];
-            eleRecording.recoSCEta    = data.GetPtrFloat("phoSCEta")[recoIdx];
-            eleRecording.r9           = data.GetPtrFloat("phoR9")[recoIdx];
-            eleRecording.HoverE       = data.GetPtrFloat("phoHoverE")[recoIdx];
-            eleRecording.chIsoRaw     = data.GetPtrFloat("phoPFChIso")[recoIdx];
-            eleRecording.phoIsoRaw    = data.GetPtrFloat("phoPFPhoIso")[recoIdx];
-            eleRecording.nhIsoRaw     = data.GetPtrFloat("phoPFNeuIso")[recoIdx];
-            eleRecording.rawE         = data.GetPtrFloat("phoSCRawE")[recoIdx];
-            eleRecording.scEtaWidth   = data.GetPtrFloat("phoSCEtaWidth")[recoIdx];
-            eleRecording.scPhiWidth   = data.GetPtrFloat("phoSCPhiWidth")[recoIdx];
-            eleRecording.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
-            eleRecording.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
+            record_photon.recoPt       = data.GetPtrFloat("phoEt")[recoIdx];
+            record_photon.recoEta      = data.GetPtrFloat("phoEta")[recoIdx];
+            record_photon.recoPtCalib  = data.GetPtrFloat("phoCalibEt")[recoIdx];
+            record_photon.recoSCEta    = data.GetPtrFloat("phoSCEta")[recoIdx];
+            record_photon.r9           = data.GetPtrFloat("phoR9")[recoIdx];
+            record_photon.HoverE       = data.GetPtrFloat("phoHoverE")[recoIdx];
+            record_photon.chIsoRaw     = data.GetPtrFloat("phoPFChIso")[recoIdx];
+            record_photon.phoIsoRaw    = data.GetPtrFloat("phoPFPhoIso")[recoIdx];
+            record_photon.nhIsoRaw     = data.GetPtrFloat("phoPFNeuIso")[recoIdx];
+            record_photon.rawE         = data.GetPtrFloat("phoSCRawE")[recoIdx];
+            record_photon.scEtaWidth   = data.GetPtrFloat("phoSCEtaWidth")[recoIdx];
+            record_photon.scPhiWidth   = data.GetPtrFloat("phoSCPhiWidth")[recoIdx];
+            record_photon.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
+            record_photon.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
                                         data.GetPtrFloat("phoESEnP2")[recoIdx];
-            eleRecording.mva          = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
-            eleRecording.mva_nocorr   = mvaloader.GetMVA_noIso(recoIdx);
-            eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
-            eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
-            eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
-            eleRecording.sieipFull5x5 = data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[recoIdx];
-            eleRecording.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
-            eleRecording.s4Full5x5    = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
+            record_photon.mva          = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
+            record_photon.mva_nocorr   = mvaloader.GetMVA_noIso(recoIdx);
+            record_photon.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
+            record_photon.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
+            record_photon.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
+            record_photon.sieipFull5x5 = data.GetPtrFloat("phoSigmaIEtaIPhiFull5x5")[recoIdx];
+            record_photon.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
+            record_photon.s4Full5x5    = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
-            eleRecording.esEnergyOverSCRawEnergy = eleRecording.esEn / eleRecording.rawE;
+            record_photon.esEnergyOverSCRawEnergy = record_photon.esEn / record_photon.rawE;
 
-            eleRecording.isMatched    = photon.genidx() >= 0;
-            eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
-            eleRecording.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
+            record_photon.isMatched    = photon.genidx() >= 0;
+            record_photon.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
+            record_photon.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
 
             if ( data.HasMC() )
             {
                 int genIdx = photon.genidx();
-            eleRecording.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
-            eleRecording.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
+            record_photon.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
+            record_photon.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
             
             
                 if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, recoIdx) )
@@ -195,13 +193,13 @@ void ZtoMuMuG(
                     ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, recoIdx);
                     SScorr.CalculateCorrections();
                 }
-            eleRecording.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
-            eleRecording.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
-            eleRecording.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
-            eleRecording.sieipFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
-            eleRecording.scEtaWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
-            eleRecording.scPhiWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
-            eleRecording.esEnergyOverSCRawEnergy_corrected = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+            record_photon.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
+            record_photon.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
+            record_photon.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+            record_photon.sieipFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+            record_photon.scEtaWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+            record_photon.scPhiWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+            record_photon.esEnergyOverSCRawEnergy_corrected = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
 
         // add Mu block
@@ -478,13 +476,14 @@ bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
     
     return true;
 }
-int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand) // modification needed
+int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand)
 {
     const int NOTHING_MATCHED=-1;
     const double CUT_DELTA_R = 0.20;
     const double CUT_PT_RATIO = 1.0;
     const int PID_Z = 23;
     const int PID_ELECTRON = 11;
+    const int PID_MUON = 13;
     const int STATUS_FINALSTATE = 3;
     if (!dataptr->HasMC() ) return NOTHING_MATCHED;
 
@@ -499,10 +498,10 @@ int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand) // mo
 
 
     for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
-        if ( abs(genPID_[iMC]) == PID_ELECTRON && genStatus_[iMC] <= STATUS_FINALSTATE && genMomPID_[iMC] == PID_Z )
+        if ( abs(genPID_[iMC]) == PID_MUON && genStatus_[iMC] <= STATUS_FINALSTATE && genMomPID_[iMC] == PID_Z )
         {
             TLorentzCand genCand(iMC,
-                    genPID_[iMC] == PID_ELECTRON ? -1 : 1, // charge
+                    genPID_[iMC] == PID_MUON ? -1 : 1, // charge
                     genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_ELECTRON );
         
             if (!recoInfo::InFiducialRegion(genCand) ) continue;
