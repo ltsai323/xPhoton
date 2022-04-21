@@ -135,6 +135,9 @@ void ZtoMuMuG(
             ZcandP4.SetAlive(false);
             if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
             if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
+
+            int genIdx = FindMatchedIdx_Photon( &data, photon );
+            photon.SetGenIdx(genIdx);
             ZcandP4.SetAlive(true);
             selectedPhoton.push_back(photon);
         }
@@ -482,7 +485,6 @@ int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand)
     const double CUT_DELTA_R = 0.20;
     const double CUT_PT_RATIO = 1.0;
     const int PID_Z = 23;
-    const int PID_ELECTRON = 11;
     const int PID_MUON = 13;
     const int STATUS_FINALSTATE = 3;
     if (!dataptr->HasMC() ) return NOTHING_MATCHED;
@@ -502,7 +504,48 @@ int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand)
         {
             TLorentzCand genCand(iMC,
                     genPID_[iMC] == PID_MUON ? -1 : 1, // charge
-                    genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_ELECTRON );
+                    genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_MUON );
+        
+            if (!recoInfo::InFiducialRegion(genCand) ) continue;
+    
+
+            double deltaR = genCand.DeltaR(recoCand);
+            double ptratio = (recoCand.Pt()-genCand.Pt()) / genCand.Pt();
+            hists.Fill("DeltaR", deltaR);
+            hists.Fill("ptratio", ptratio);
+            if ( deltaR < CUT_DELTA_R && ptratio < CUT_PT_RATIO )
+                return iMC;
+        }
+    return NOTHING_MATCHED;
+}
+int FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand)
+{
+    const int NOTHING_MATCHED=-1;
+    const double CUT_DELTA_R = 0.20;
+    const double CUT_PT_RATIO = 1.0;
+    const int PID_Z = 23;
+    const int PID_MUON = 13;
+    const int PID_PHOTON = 22;
+    const int STATUS_FINALSTATE = 3;
+    if (!dataptr->HasMC() ) return NOTHING_MATCHED;
+
+    Int_t  nMC_         = dataptr->GetInt("nMC");
+    Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
+    Int_t* genMomPID_   = dataptr->GetPtrInt("mcMomPID");
+    Int_t* genGMomPID_  = dataptr->GetPtrInt("mcGMomPID");
+    Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
+
+    Float_t* genpt_     = dataptr->GetPtrFloat("mcPt");
+    Float_t* geneta_    = dataptr->GetPtrFloat("mcEta");
+    Float_t* genphi_    = dataptr->GetPtrFloat("mcPhi");
+
+
+    for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
+        if ( genPID_[iMC] == PID_PHOTON && abs(genMomPID_[iMC]) == PID_MUON && genMomPID_[iMC] == PID_Z )
+        {
+            TLorentzCand genCand(iMC,
+                    0, // charge
+                    genpt_[iMC], geneta_[iMC], genphi_[iMC], MASS_PHOTON );
         
             if (!recoInfo::InFiducialRegion(genCand) ) continue;
     
