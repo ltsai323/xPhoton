@@ -84,6 +84,7 @@ void ZtoMuMuG(
     hists.Create("numGenZee", 4, 0., 4.);
     hists.Create("NumMuonPassedHLT", 4, 0., 4.);
     hists.Create("MuonHLTPassedBits", 32, 0., 32.);
+    hists.Create("HLTEleMuXEvt", 64, 0., 64);
 
     std::string dataEra = "UL2018";
     ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
@@ -110,6 +111,9 @@ void ZtoMuMuG(
                 if ( data.GetFloat("genWeight") != 1. )
                     hasNon1Val = 1;
         }
+        Long64_t kkk = data.GetLong64("HLTEleMuX");
+        for ( int ibit = 0; ibit < 64; ++ibit ) if ( (kkk>>ibit)&1 ) hists.FillStatus("HLTEleMuXEvt", ibit);
+
 
         LOG_DEBUG(" check point 01");
         std::vector<TLorentzCand> trigMuons = TriggeredDiMuon(&data);
