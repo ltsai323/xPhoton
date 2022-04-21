@@ -83,6 +83,7 @@ struct rec_Mu
         recoPt,
         recoEta,
         deltaR;
+    Long64_t trg;
 };
 struct rec_Event
 {

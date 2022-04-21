@@ -83,6 +83,7 @@ void ZtoMuMuG(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
     hists.Create("NumMuonPassedHLT", 4, 0., 4.);
+    hists.Create("MuonHLTPassedBits", 32, 0., 32.);
 
     std::string dataEra = "UL2018";
     ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
@@ -203,9 +204,11 @@ void ZtoMuMuG(
         record_Mu[0].recoPt  = trigMuons[0].Pt();
         record_Mu[0].recoEta = trigMuons[0].Eta();
         record_Mu[0].deltaR  = trigMuons[0].DeltaR(photon);
+        record_Mu[0].trg     = data.GetPtrLong64("muFiredTrgs")[ trigMuons[0].idx() ];
         record_Mu[1].recoPt  = trigMuons[1].Pt();
         record_Mu[1].recoEta = trigMuons[1].Eta();
         record_Mu[1].deltaR  = trigMuons[1].DeltaR(photon);
+        record_Mu[1].trg     = data.GetPtrLong64("muFiredTrgs")[ trigMuons[1].idx() ];
         // ZcandP4 does not exist
 
         TLorentzCand mumuP4 = trigMuons[0] + trigMuons[1];
@@ -324,6 +327,7 @@ std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr)
     int testidx = 0;
     for ( Int_t idx = 0; idx < nCand; ++idx )
     {
+        for ( int ibit = 0; ibit < 32; ++ibit ) if ( (trg[idx]>>ibit)&1 ) hists.FillStatus("MuonHLTPassedBits", ibit);
         if ( !((muType[idx]>>WP_GM)&1) && !((muType[idx]>>WP_GM)&1) ) continue;
         if ( fabs(eta[idx]) > 2.4 ) continue;
 
@@ -335,6 +339,8 @@ std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr)
         if ( muPixelHits[idx] == 0 ) continue;
         if ( muTrkLayers[idx] < 6 ) continue;
         if (((trg[idx]>>PASS_HLTBIT)&1) ) hists.FillStatus("NumMuonPassedHLT", testidx++);
+        if ( outputs.size() == 0 ) if ( pt[idx] < 17 ) continue;
+        if ( outputs.size() == 1 ) if ( pt[idx] <  8 ) continue;
 
         TLorentzCand output(
                     idx,
@@ -408,6 +414,7 @@ void RegBranchZMuMu( TTree* t, const std::string& name, rec_Mu* var )
     t->Branch( (name+".recoPt").c_str()         ,&var->recoPt    , (name+".recoPt/F").c_str()     );
     t->Branch( (name+".recoEta").c_str()        ,&var->recoEta   , (name+".recoEta/F").c_str()    );
     t->Branch( (name+".deltaR").c_str()         ,&var->deltaR    , (name+".deltaR/F").c_str()     );
+    t->Branch( (name+".trg").c_str()            ,&var->trg       , (name+".trg/L").c_str()        );
 }
 void RegBranchZMuMu( TTree* t, const string& name, rec_Event* var )
 {
