@@ -1,9 +1,8 @@
-#include "xPhoton/xPhoton/interface/xElectrons.h"
+#include "xPhoton/xPhoton/interface/ZtoMuMuG.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
 #include "xPhoton/xPhoton/interface/ElectronSelections.h"
 #include "xPhoton/xPhoton/interface/puweicalc.h"
-#include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/histMgr.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
@@ -13,7 +12,7 @@
 
 
 static histMgr hists;
-void xElectrons(
+void ZtoMuMuG(
         std::vector<std::string> pathes,
         char oname[200] )
 {
@@ -27,14 +26,16 @@ void xElectrons(
     Float_t overallGenweight = 0;
     Float_t hasNon1Val = 0;
     
-    rec_Electron record_electrons[2];
+    rec_Electron record_electrons[2]; // probe photon : need to be modified.
+    rec_Mu record_Mu[2];
     rec_Z record_Z;
     rec_Event record_evt;
 
-    RegBranch( outtree_, "electron_tag.", &record_electrons[0] );
-    RegBranch( outtree_, "", &record_electrons[1] ); // probe electron, like a photon
-    RegBranch( outtree_, "Z", &record_Z );
-    RegBranch( outtree_, "Events", &record_evt );
+    RegBranchZMuMu( outtree_, "", &record_electrons[1] ); // probe electron, like a photon
+    RegBranchZMuMu( outtree_, "mu0", &record_Mu[0] );
+    RegBranchZMuMu( outtree_, "mu1", &record_Mu[1] );
+    RegBranchZMuMu( outtree_, "Z", &record_Z );
+    RegBranchZMuMu( outtree_, "Events", &record_evt );
 
     
     // check the reason why event failed
@@ -81,42 +82,15 @@ void xElectrons(
     // 1 : number of gen Zee, all electrons belongs to fiducial region.
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
+    hists.Create("NumMuonPassedHLT", 4, 0., 4.);
 
     std::string dataEra = "UL2018";
     ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
     PhotonMVACalculator mvaloader( &data, dataEra );
-    //TFile* f_showershapecorrection;
-    //TGraph *tgr[8];
     PUWeightCalculator pucalc;
 
-    //std::map<std::string, TGraph*> endcapCorrections;
-    //std::map<std::string, TGraph*> barrelCorrections;
     if ( data.HasMC() )
-    {
-    //f_showershapecorrection = TFile::Open( ExternalFilesMgr::RooFile_ShowerShapeCorrection() );
-    /*
-    endcapCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEE");
-    endcapCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EE");
-    endcapCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EE");
-    endcapCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEE");
-
-    barrelCorrections["scEtaWidth"  ] = (TGraph*)f_showershapecorrection->Get("transfEtaWidthEB");
-    barrelCorrections["s4"          ] = (TGraph*)f_showershapecorrection->Get("transfS4EB");
-    barrelCorrections["r9Full5x5"   ] = (TGraph*)f_showershapecorrection->Get("transffull5x5R9EB");
-    barrelCorrections["sieieFull5x5"] = (TGraph*)f_showershapecorrection->Get("transffull5x5sieieEB");
-    tgr[0] = (TGraph*) f_showershapecorrection->Get("transfEtaWidthEB");
-    tgr[1] = (TGraph*) f_showershapecorrection->Get("transfS4EB");
-    tgr[2] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EB");
-    tgr[3] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEB");
-
-    tgr[4] = (TGraph*) f_showershapecorrection->Get("transfEtaWidthEE");
-    tgr[5] = (TGraph*) f_showershapecorrection->Get("transfS4EE");
-    tgr[6] = (TGraph*) f_showershapecorrection->Get("transffull5x5R9EE");
-    tgr[7] = (TGraph*) f_showershapecorrection->Get("transffull5x5sieieEE");
-    */
-
-    pucalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
-    }
+    { pucalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) ); }
 
 
     
@@ -137,112 +111,45 @@ void xElectrons(
         }
 
         LOG_DEBUG(" check point 01");
-        //std::vector<TLorentzCand> electronpool = RecoElectrons(&data);
-        std::vector<TLorentzCand> electronpool = RecoElectronsInPhotonCollection_(&data);
-        TLorentzCand tag_electron = TriggeredElectron(&data);
-        if ( tag_electron.IsZombie() ) continue;
-
+        std::vector<TLorentzCand> trigMuons = TriggeredDiMuon(&data);
+        if ( trigMuons.size() != 2 ) continue;
         LOG_DEBUG(" check point 02");
-        for ( TLorentzCand& electron : electronpool )
+
+        std::vector<TLorentzCand> photons = RecoPhoton(&data);
+        LOG_DEBUG(" number of reco photon : %d", int(photons.size()) );
+
+
+        int Zidx = 0;
+        std::vector<TLorentzCand> selectedPhoton;
+        for ( auto photon : photons )
         {
-            int genIdx = FindMatchedIdx_Electron( &data, electron );
-            if ( genIdx < 0 ) continue;
-            electron.SetGenIdx(genIdx);
-        }
-        LOG_DEBUG(" check point 03");
+            TLorentzCand ZcandP4;
+            ZcandP4 = trigMuons[0] + trigMuons[1];
+            ZcandP4 += photon;
 
-        //for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassElectronPreselection_(&data, ELECTRONWORKINGPOINT, cand) );
-        for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassPhotonPreselection_(&data, cand) );
-        hists.FillStatus("eventStat", 0);
-        LOG_DEBUG(" check point 04");
-
-        int aliveEleNum = 0;
-        for ( auto ele : electronpool )
-            if (!ele.IsZombie() )
-                ++aliveEleNum;
-
-        hists.Fill("Nele", aliveEleNum);
-        //if ( aliveEleNum < 2 ) continue;
-        if ( aliveEleNum == 0 ) continue;
-
-        hists.FillStatus("eventStat", 1);
-
-        TLorentzCand ZcandP4;
-        TLorentzCand probe_electron;
-        LOG_DEBUG( "ELECTRON (0,1) = Pt(%.2f,%.2f), Eta(%.2f,%.2f), charge(%d,%d)",
-                electronpool[0].Pt(), electronpool[1].Pt(),
-                electronpool[0].Eta(), electronpool[1].Eta(),
-                electronpool[0].charge(), electronpool[1].charge() );
-        for ( auto& fake_photon : electronpool )
-        {
-            if ( fake_photon.IsZombie() ) continue;
-            ZcandP4 = tag_electron + fake_photon;
             ZcandP4.SetAlive(false);
             if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
-            hists.FillStatus("ZRecoStat", 5);
             if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
-            hists.FillStatus("ZRecoStat", 6);
             ZcandP4.SetAlive(true);
-            probe_electron = fake_photon;
-
-            break;
+            selectedPhoton.push_back(photon);
         }
-
-
-        if ( ZcandP4.IsZombie() ) continue;
-        hists.FillStatus("eventStat", 2);
-        if ( data.HasMC() )
-        { LOG_DEBUG("reco Z candidate contains matched gen electron in idx (%d,%d)", ZcandP4.daughters().at(0).genidx(), ZcandP4.daughters().at(1).genidx()); }
-
-
-
-    // clear everything.
+        LOG_DEBUG(" number of selected photon : %d", int(selectedPhoton.size()) );
+            
+        for ( auto photon : selectedPhoton )
+        {
         LOG_DEBUG("starting to fill event");
         ClearStruct(&record_electrons[0]);
         ClearStruct(&record_electrons[1]);
+        ClearStruct(&record_Mu[0]);
+        ClearStruct(&record_Mu[1]);
         ClearStruct(&record_Z);
         ClearStruct(&record_evt);
 
-        { // fillin tag electron information
-            int recoIdx = tag_electron.idx();
-            rec_Electron& eleRecording = record_electrons[0];
-          
-            eleRecording.recoPt       = data.GetPtrFloat("elePt")[recoIdx];
-            eleRecording.recoEta      = data.GetPtrFloat("eleEta")[recoIdx];
-            eleRecording.recoPhi      = data.GetPtrFloat("elePhi")[recoIdx];
-            eleRecording.recoPtCalib  = data.GetPtrFloat("eleCalibPt")[recoIdx];
-            eleRecording.recoSCEta    = data.GetPtrFloat("eleSCEta")[recoIdx];
-            eleRecording.r9           = data.GetPtrFloat("eleR9")[recoIdx];
-            eleRecording.HoverE       = data.GetPtrFloat("eleHoverE")[recoIdx];
-            eleRecording.chIsoRaw     = data.GetPtrFloat("elePFChIso")[recoIdx];
-            eleRecording.phoIsoRaw    = data.GetPtrFloat("elePFPhoIso")[recoIdx];
-            eleRecording.nhIsoRaw     = data.GetPtrFloat("elePFNeuIso")[recoIdx];
-            eleRecording.rawE         = data.GetPtrFloat("eleSCRawEn")[recoIdx];
-            eleRecording.scEtaWidth   = data.GetPtrFloat("eleSCEtaWidth")[recoIdx];
-            eleRecording.scPhiWidth   = data.GetPtrFloat("eleSCPhiWidth")[recoIdx];
-            eleRecording.esRR         = data.GetPtrFloat("eleESEffSigmaRR")[recoIdx];
-            eleRecording.esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
-                                        data.GetPtrFloat("eleESEnP2")[recoIdx];
-            eleRecording.mva          = 0; //data.GetPtrFloat("")[recoIdx];
-            eleRecording.mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
-            eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
-            eleRecording.r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
-            eleRecording.sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
-            eleRecording.sieipFull5x5 = 0; // = data.GetPtrFloat("eleSigmaIEtaIPhiFull5x5")[recoIdx]; no sieip in electron
-            eleRecording.sipipFull5x5 = data.GetPtrFloat("eleSigmaIPhiIPhiFull5x5")[recoIdx];
-            //eleRecording.e2x2Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
-            //eleRecording.e2x5Full5x5  = 0; //data.GetPtrFloat("")[recoIdx];
-
-            eleRecording.isMatched    = tag_electron.genidx() >= 0;
-
-        }
-        { // fill in probe electron information
-            int recoIdx = probe_electron.idx();
+            int recoIdx = photon.idx();
             rec_Electron& eleRecording = record_electrons[1];
                     
             eleRecording.recoPt       = data.GetPtrFloat("phoEt")[recoIdx];
             eleRecording.recoEta      = data.GetPtrFloat("phoEta")[recoIdx];
-            eleRecording.recoPhi      = data.GetPtrFloat("phoPhi")[recoIdx];
             eleRecording.recoPtCalib  = data.GetPtrFloat("phoCalibEt")[recoIdx];
             eleRecording.recoSCEta    = data.GetPtrFloat("phoSCEta")[recoIdx];
             eleRecording.r9           = data.GetPtrFloat("phoR9")[recoIdx];
@@ -256,10 +163,8 @@ void xElectrons(
             eleRecording.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
             eleRecording.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
                                         data.GetPtrFloat("phoESEnP2")[recoIdx];
-            //eleRecording.mva          = select_photon_mvanoIso(data, recoIdx, tgr);
-            //eleRecording.mva_nocorr   = select_photon_mvanoIso(data, recoIdx, nullptr);
-            eleRecording.mva = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
-            eleRecording.mva_nocorr = mvaloader.GetMVA_noIso(recoIdx);
+            eleRecording.mva          = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
+            eleRecording.mva_nocorr   = mvaloader.GetMVA_noIso(recoIdx);
             eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
@@ -269,17 +174,15 @@ void xElectrons(
                                         data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
             eleRecording.esEnergyOverSCRawEnergy = eleRecording.esEn / eleRecording.rawE;
 
-            eleRecording.isMatched    = probe_electron.genidx() >= 0;
+            eleRecording.isMatched    = photon.genidx() >= 0;
             eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
             eleRecording.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
 
             if ( data.HasMC() )
             {
-                int genIdx = probe_electron.genidx();
-            eleRecording.mcE          = genIdx < 0 ? 0 : data.GetPtrFloat("mcE")[genIdx];
+                int genIdx = photon.genidx();
             eleRecording.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
             eleRecording.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
-            eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
             
             
                 if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, recoIdx) )
@@ -295,22 +198,29 @@ void xElectrons(
             eleRecording.scPhiWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
             eleRecording.esEnergyOverSCRawEnergy_corrected = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
-        }
+
+        // add Mu block
+        record_Mu[0].recoPt  = trigMuons[0].Pt();
+        record_Mu[0].recoEta = trigMuons[0].Eta();
+        record_Mu[0].deltaR  = trigMuons[0].DeltaR(photon);
+        record_Mu[1].recoPt  = trigMuons[1].Pt();
+        record_Mu[1].recoEta = trigMuons[1].Eta();
+        record_Mu[1].deltaR  = trigMuons[1].DeltaR(photon);
+        // ZcandP4 does not exist
+
+        TLorentzCand mumuP4 = trigMuons[0] + trigMuons[1];
+        TLorentzCand ZcandP4 = mumuP4 + photon;
 
         if ( data.HasMC() )
         {
-            int ZMCidx = data.GetPtrInt("mcMomPID")[ZcandP4.daughters().at(0).idx()];
-        record_Z.mcE       = 0;
+            int ZMCidx = data.GetPtrInt("mcMomPID")[mumuP4.daughters().at(0).idx()];
         record_Z.mcPt      = 0;
-        record_Z.mcEta     = 0;
-        record_Z.mcPhi     = 0;
         }
         record_Z.recoMass  = ZcandP4.M();
-        record_Z.recoE     = ZcandP4.Energy();
         record_Z.recoPt    = ZcandP4.Pt();
-        record_Z.recoEta   = ZcandP4.Eta();
-        record_Z.recoPhi   = ZcandP4.Phi();
-        record_Z.isMatched = ZcandP4.daughters().at(0).genidx() >= 0 && ZcandP4.daughters().at(1).genidx() >= 0;
+        record_Z.isMatched = trigMuons[0].genidx() >= 0 && trigMuons[1].genidx() >= 0;
+        record_Z.mumuMass  = mumuP4.M();
+        record_Z.mumuPt    = mumuP4.Pt();
 
         record_evt.run               = data.GetInt("run"); 
         if ( data.HasMC() )
@@ -320,7 +230,7 @@ void xElectrons(
             int _purec = 0;
             for ( int i=0; i<npuInfo; ++i ) if ( data.GetPtrInt("puBX")[i] == 0 ) _purec = puTrue[i];
             
-        record_evt.xsweight          = 0;
+        record_evt.xsweight          = 1.;
         record_evt.genweight         = data.HasMC() ? data.GetFloat("genWeight") : 1;
         record_evt.puwei             = (float) pucalc.GetWeight(record_evt.run, puTrue[1]);
         record_evt.pthat             = data.GetFloat("pthat");
@@ -339,6 +249,7 @@ void xElectrons(
 
 
         outtree_->Fill();
+        }
         LOG_DEBUG("one event ended");
     }
     LOG_DEBUG("event loop ended");
@@ -360,12 +271,8 @@ void xElectrons(
     LOG_DEBUG("closing output ROOT file");
     fout_->Close();
     LOG_INFO("All %lld Events processed", data.GetEntriesFast());
-    /*
-    if ( data.HasMC() )
-	    f_showershapecorrection->Close();
-    */
 }
-void xElectrons(std::string ipath, int outID)
+void ZtoMuMuG(std::string ipath, int outID)
 {
    char fname[200];
    std::vector<std::string> pathes;
@@ -375,94 +282,79 @@ void xElectrons(std::string ipath, int outID)
    char oname[200];
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
-   xElectrons(pathes, oname);
+   ZtoMuMuG(pathes, oname);
 }
-std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
+std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr)
 {
-    std::vector<TLorentzCand> outputs;
-    for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
-        outputs.emplace_back(
-                    idx,
-                    dataptr->GetPtrInt  ("eleCharge")[idx],
-                    dataptr->GetPtrFloat("elePt")[idx],
-                    dataptr->GetPtrFloat("eleEta")[idx],
-                    dataptr->GetPtrFloat("elePhi")[idx],
-                    MASS_ELECTRON
-                );
-    return outputs;
-}
-std::vector<TLorentzCand> RecoElectronsInPhotonCollection_(TreeReader* dataptr)
-{
-    std::vector<TLorentzCand> outputs;
-    for ( Int_t idx = 0; idx < dataptr->GetInt("nPho"); ++idx )
-        outputs.emplace_back(
-                    idx,
-                    0,
-                    //dataptr->GetPtrFloat("phoPt")[idx],
-                    dataptr->GetPtrFloat("phoCalibEt")[idx], // for photon, et is equiv to pt
-                    dataptr->GetPtrFloat("phoEta")[idx],
-                    dataptr->GetPtrFloat("phoPhi")[idx],
-                    MASS_ELECTRON
-                );
-    return outputs;
-}
-TLorentzCand TriggeredElectron(TreeReader* dataptr)
-{
-    // const int PASS_HLTBIT = 12; // HLT_Ele27_WPTight_Gsf @ 2016ReReco
-    const int PASS_HLTBIT = 13; // HLT_Ele32_eta2p1_WPTight_Gsf @ UL2018
-    const int HLTWP = 3;
+    const int PASS_HLTBIT = 10; // HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ @ UL2018
 
-    for ( Int_t idx = 0; idx < dataptr->GetInt("nEle"); ++idx )
+    // muon types from github
+    // https://github.com/cms-sw/cmssw/blob/CMSSW_10_6_X/DataFormats/MuonReco/interface/Muon.h
+    //    static const unsigned int GlobalMuon     =  1<<1;
+    //    static const unsigned int TrackerMuon    =  1<<2;
+    //    static const unsigned int StandAloneMuon =  1<<3;
+    //    static const unsigned int CaloMuon =  1<<4;
+    //    static const unsigned int PFMuon =  1<<5;
+    //    static const unsigned int RPCMuon =  1<<6;
+    //    static const unsigned int GEMMuon =  1<<7;
+    //    static const unsigned int ME0Muon =  1<<8;
+    const int WP_GM = 1;
+    const int WP_PF = 5;
+
+    Int_t nCand         = dataptr->GetInt("nMu");
+    Float_t* pt         = dataptr->GetPtrFloat("muPt");
+    Float_t* eta        = dataptr->GetPtrFloat("muEta");
+    Float_t* phi        = dataptr->GetPtrFloat("muPhi");
+    Int_t* charge       = dataptr->GetPtrInt("muCharge");
+
+
+    Float_t* muChi2NDF  = dataptr->GetPtrFloat("muChi2NDF");
+    Float_t* muD0       = dataptr->GetPtrFloat("muD0");
+    Float_t* muDz       = dataptr->GetPtrFloat("muDz");
+
+    Int_t* muType     = dataptr->GetPtrInt("muType");
+    Int_t* muStations = dataptr->GetPtrInt("muStations");
+    Int_t* muMuonHits = dataptr->GetPtrInt("muMuonHits");
+    Int_t* muPixelHits= dataptr->GetPtrInt("muPixelHits");
+    Int_t* muTrkLayers= dataptr->GetPtrInt("muTrkLayers");
+
+    Long64_t* trg = dataptr->GetPtrLong64("muFiredTrgs");
+
+    std::vector<TLorentzCand> outputs;
+    int testidx = 0;
+    for ( Int_t idx = 0; idx < nCand; ++idx )
     {
-        if ( dataptr->GetPtrFloat("elePt")[idx] < 27. ) continue;
-        UShort_t* id_bits = (UShort_t*)dataptr->GetPtrShort("eleIDbit");
-        if (!(id_bits[idx]>>HLTWP&1) ) continue;
-        if (!dataptr->HasMC() )
-        {
-            ULong64_t* hlt_bits = (ULong64_t*) dataptr->GetPtrLong64("eleFiredSingleTrgs");
-            if (!(hlt_bits[idx]>>PASS_HLTBIT&1) ) continue;
-        }
+        if ( !((muType[idx]>>WP_GM)&1) && !((muType[idx]>>WP_GM)&1) ) continue;
+        if ( fabs(eta[idx]) > 2.4 ) continue;
+
+        if ( muChi2NDF[idx] > 10 ) continue;
+        if ( muMuonHits[idx] == 0 ) continue;
+        if ( muStations[idx] < 2 ) continue;
+        if ( fabs(muD0[idx]) > 0.2 ) continue;
+        if ( fabs(muDz[idx]) > 0.5 ) continue;
+        if ( muPixelHits[idx] == 0 ) continue;
+        if ( muTrkLayers[idx] < 6 ) continue;
+        if (((trg[idx]>>PASS_HLTBIT)&1) ) hists.FillStatus("NumMuonPassedHLT", testidx++);
 
         TLorentzCand output(
                     idx,
-                    dataptr->GetPtrInt  ("eleCharge")[idx],
-                    dataptr->GetPtrFloat("elePt")[idx],
-                    dataptr->GetPtrFloat("eleEta")[idx],
-                    dataptr->GetPtrFloat("elePhi")[idx],
-                    MASS_ELECTRON
-                );
-        int genIdx = FindMatchedIdx_Electron( dataptr, output );
+                    charge[idx],
+                    pt[idx],eta[idx],phi[idx], MASS_MUON );
+        int genIdx = FindMatchedIdx_Muon( dataptr, output );
         if ( genIdx >= 0 ) output.SetGenIdx( genIdx );
-        return output;
+        outputs.push_back(output);
+        LOG_DEBUG("Got Triggered muon : %d in 2", int(outputs.size()) );
+        if ( outputs.size() == 2 ) return outputs;
     }
-    return TLorentzCand();
+    return std::vector<TLorentzCand>();
 }
 
-bool PassElectronPreselection_(TreeReader* dataptr, int WP, const TLorentzCand& cand)
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Electron* var )
 {
-    int idx = cand.idx();
-    hists.FillStatus("elePreselectStat", 0);
-    if ( dataptr->GetPtrFloat("elePt")[idx] < 12. ) return false;
-    hists.FillStatus("elePreselectStat", 1);
-    float abseta = fabs(dataptr->GetPtrFloat("eleSCEta")[idx]);
-    if ( abseta > 2.5 ) return false;
-    hists.FillStatus("elePreselectStat", 2);
-    if ( abseta > 1.4442 && abseta < 1.566 ) return false;
-    hists.FillStatus("elePreselectStat", 3);
-    if ( WP >= 0 ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
-    //if (!dataptr->HasMC() ) if (!((((UShort_t*)dataptr->GetPtrShort("eleIDbit"))[idx] >> WP) & 1) ) return false;
-    hists.FillStatus("elePreselectStat", 4);
-    return true;
-}
-void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
-{
-    t->Branch( (name+"mcE").c_str()                ,&var->mcE          , (name+"mcE/F").c_str()              );
     t->Branch( (name+"mcPt").c_str()               ,&var->mcPt         , (name+"mcPt/F").c_str()             );
     t->Branch( (name+"mcEta").c_str()              ,&var->mcEta        , (name+"mcEta/F").c_str()            );
-    t->Branch( (name+"mcPhi").c_str()              ,&var->mcPhi        , (name+"mcPhi/F").c_str()            );
     t->Branch( (name+"recoPt").c_str()             ,&var->recoPt       , (name+"recoPt/F").c_str()           );
     t->Branch( (name+"recoEta").c_str()            ,&var->recoEta      , (name+"recoEta/F").c_str()          );
-    t->Branch( (name+"recoPhi").c_str()            ,&var->recoPhi      , (name+"recoPhi/F").c_str()          );
     t->Branch( (name+"recoPtCalib").c_str()        ,&var->recoPtCalib  , (name+"recoPtCalib/F").c_str()      );
     t->Branch( (name+"recoSCEta").c_str()          ,&var->recoSCEta    , (name+"recoSCEta/F").c_str()        );
     t->Branch( (name+"r9").c_str()                 ,&var->r9           , (name+"r9/F").c_str()               );
@@ -483,16 +375,8 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+"sieieFull5x5/F").c_str()     );
     t->Branch( (name+"sieipFull5x5").c_str()       ,&var->sieipFull5x5 , (name+"sieipFull5x5/F").c_str()     );
     t->Branch( (name+"sipipFull5x5").c_str()       ,&var->sipipFull5x5 , (name+"sipipFull5x5/F").c_str()     );
-    //t->Branch( (name+"e2x2Full5x5").c_str()        ,&var->e2x2Full5x5  , (name+"e2x2Full5x5/F").c_str()      );
-    //t->Branch( (name+"e2x5Full5x5").c_str()        ,&var->e2x5Full5x5  , (name+"e2x5Full5x5/F").c_str()      );
     t->Branch( (name+"s4Full5x5").c_str()          ,&var->s4Full5x5    , (name+"s4Full5x5/F").c_str() );
     t->Branch( (name+"esEnergyOverSCRawEnergy").c_str(),&var->esEnergyOverSCRawEnergy,(name+"esEnergyOverSCRawEnergy/F").c_str() );
-    /*
-    t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F").c_str()      );
-    t->Branch( (name+"calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+"calib_r9Full5x5/F").c_str()      );
-    t->Branch( (name+"calib_s4"          ).c_str(), &var->s4_corrected             , (name+"calib_s4/F").c_str()      );
-    t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F").c_str()      );
-    */
 
     t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F"       ).c_str() );
     t->Branch( (name+"calib_scPhiWidth"  ).c_str(), &var->scPhiWidth_corrected     , (name+"calib_scPhiWidth/F"       ).c_str() );
@@ -503,26 +387,29 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"calib_esEnergyOverSCRawEnergy").c_str(), &var->esEnergyOverSCRawEnergy_corrected, (name+"calib_esEnergyOverSCRawEnergy/F").c_str() );
 
 
+    t->Branch( (name+"recoIdx").c_str()            ,&var->recoIdx      , (name+"recoIdx/I").c_str()          );
     t->Branch( (name+"isMatched").c_str()          ,&var->isMatched    , (name+"isMatched/I").c_str()        );
 
     t->Branch( (name+"firedTrgsL").c_str()         ,&var->firedTrgsL   , (name+"firedTrgsL/L").c_str()       );
     t->Branch( (name+"idbit").c_str()              ,&var->idbit        , (name+"idbit/I").c_str()            );
 }
-void RegBranch( TTree* t, const std::string& name, rec_Z* var )
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Z* var )
 {
-    t->Branch( (name+".mcE").c_str()            ,&var->mcE       , (name+".mcE/F").c_str()        );
     t->Branch( (name+".mcPt").c_str()           ,&var->mcPt      , (name+".mcPt/F").c_str()       );
-    t->Branch( (name+".mcEta").c_str()          ,&var->mcEta     , (name+".mcEta/F").c_str()      );
-    t->Branch( (name+".mcPhi").c_str()          ,&var->mcPhi     , (name+".mcPhi/F").c_str()      );
     t->Branch( (name+".recoMass").c_str()       ,&var->recoMass  , (name+".recoMass/F").c_str()   );
-    t->Branch( (name+".recoE").c_str()          ,&var->recoE     , (name+".recoE/F").c_str()      );
     t->Branch( (name+".recoPt").c_str()         ,&var->recoPt    , (name+".recoPt/F").c_str()     );
-    t->Branch( (name+".recoEta").c_str()        ,&var->recoEta   , (name+".recoEta/F").c_str()    );
-    t->Branch( (name+".recoPhi").c_str()        ,&var->recoPhi   , (name+".recoPhi/F").c_str()    );
+    t->Branch( (name+".mumuMass").c_str()       ,&var->mumuMass  , (name+".mumuMass/F").c_str()   );
+    t->Branch( (name+".mumuPt"  ).c_str()       ,&var->mumuMass  , (name+".mumuPt/F"  ).c_str()   );
 
     t->Branch( (name+".isMatched").c_str()      ,&var->isMatched , (name+".isMatched/I").c_str()  );
 }
-void RegBranch( TTree* t, const string& name, rec_Event* var )
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Mu* var )
+{
+    t->Branch( (name+".recoPt").c_str()         ,&var->recoPt    , (name+".recoPt/F").c_str()     );
+    t->Branch( (name+".recoEta").c_str()        ,&var->recoEta   , (name+".recoEta/F").c_str()    );
+    t->Branch( (name+".deltaR").c_str()         ,&var->deltaR    , (name+".deltaR/F").c_str()     );
+}
+void RegBranchZMuMu( TTree* t, const string& name, rec_Event* var )
 {
     t->Branch("run"               , &var->run,                     "run/I");
     t->Branch("xsweight"          , &var->xsweight,                "xsweight/I");
@@ -542,7 +429,7 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
     t->Branch("event"             , &var->event,                   "event/L");
 }
 
-bool PassPhotonPreselection_(TreeReader* dataptr, const TLorentzCand& cand)
+bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
 {
     // HLT_Ele27_WPTight_Gsf
     //const int PASS_HLTBIT = 12;
@@ -580,33 +467,7 @@ bool PassPhotonPreselection_(TreeReader* dataptr, const TLorentzCand& cand)
     
     return true;
 }
-bool PassTagElePreselection_(TreeReader* dataptr, const TLorentzCand& cand)
-{
-    unsigned idx = cand.idx();
-    // HLT_Ele27_WPTight_Gsf
-    const int PASS_HLTBIT = -1; // HLT selected afterward
-
-    ULong64_t Trigs =  ((ULong64_t*) dataptr->GetPtrLong64("phoFiredSingleTrgs") ) [idx];
-    Int_t EleVeto = dataptr->GetPtrInt("phoEleVeto")[idx];
-
-
-
-    if (!dataptr->HasMC() )
-    { // HLT selections
-        if ( Trigs == 0 ) return false;
-
-        if ( PASS_HLTBIT > 0 )
-        { // although ULong64_t used. but only 0~31 bits recorded in ROOT. bit larger than 31 is useless.
-            int hltbit = PASS_HLTBIT;
-            if ( ((Trigs>>hltbit)&1) == 0 ) return false;
-        }
-    }
-    if ( EleVeto == 1 ) return false; // select electron
-  
-
-    return true;
-}
-int FindMatchedIdx_Electron(TreeReader* dataptr, const TLorentzCand& recoCand)
+int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand) // modification needed
 {
     const int NOTHING_MATCHED=-1;
     const double CUT_DELTA_R = 0.20;
@@ -644,4 +505,18 @@ int FindMatchedIdx_Electron(TreeReader* dataptr, const TLorentzCand& recoCand)
                 return iMC;
         }
     return NOTHING_MATCHED;
+}
+std::vector<TLorentzCand> RecoPhoton(TreeReader* dataptr)
+{
+    std::vector<TLorentzCand> outputs;
+    for ( Int_t idx = 0; idx < dataptr->GetInt("nPho"); ++idx )
+        outputs.emplace_back(
+                    idx,
+                    0,
+                    dataptr->GetPtrFloat("phoCalibEt")[idx], // for photon, et is equiv to pt
+                    dataptr->GetPtrFloat("phoEta")[idx],
+                    dataptr->GetPtrFloat("phoPhi")[idx],
+                    0
+                );
+    return outputs;
 }

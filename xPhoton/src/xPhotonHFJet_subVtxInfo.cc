@@ -318,15 +318,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t mcTrkIso, mcCalIso, matchDR, matchDPT;
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
-    //if ( hasSubVtxInfo )
-    //{
+
+    Int_t phoFillIdx = 0;
+    if ( hasSubVtxInfo )
+    {
         outtree_->Branch("jetSubVtxPt"   , &jetSubVtxPt_   , "jetSubVtxPt/F"   );
         outtree_->Branch("jetSubVtxMass" , &jetSubVtxMass_ , "jetSubVtxMass/F" );
         outtree_->Branch("jetSubVtx3DVal", &jetSubVtx3DVal_, "jetSubVtx3DVal/F");
         outtree_->Branch("jetSubVtx3DErr"  , &jetSubVtx3DErr_  , "jetSubVtx3DErr/F"  );
         outtree_->Branch("jetSubVtxNtrks", &jetSubVtxNtrks_, "jetSubVtxNtrks/I");
-    //}
+    }
 
+    if (!ONLY_LEADINGPHOTON )
+        outtree_->Branch("phoFillIdx", &phoFillIdx, "phoFillIdx/I");
     outtree_->Branch("run", &run, "run/I");
     outtree_->Branch("event", &event, "event/L");
     outtree_->Branch("isData",         &isData,        "isData/O");
@@ -559,6 +563,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         Float_t      genWeight =1.;
         int nPU_ = 0;
+        phoFillIdx = 0;
         // gen histos {{{
         if( data.HasMC()) { 
             pthat     = data.GetFloat("pthat");
@@ -671,8 +676,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         Float_t *jetSubVtx3DVal = nullptr;
         Float_t *jetSubVtx3DErr = nullptr;
         Int_t   *jetSubVtxNtrks = nullptr;
-        //if ( hasSubVtxInfo )
-        //{
+        if ( hasSubVtxInfo )
+        {
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
@@ -683,7 +688,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             else
                 LOG_FATAL("neigher 3DErr nor 3DSig not found in data, check it now!");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
-        //}
+        }
 
         Float_t pfMET = data.GetFloat("pfMET");
         Float_t pfMETPhi = data.GetFloat("pfMETPhi");
@@ -1224,7 +1229,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
                 }
 
-                //if (hasSubVtxInfo) {
+                if (hasSubVtxInfo) {
                     jetSubVtxPt_    = jetSubVtxPt   [jet_index];
                     jetSubVtxMass_  = jetSubVtxMass [jet_index];
                     jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
@@ -1235,7 +1240,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     h_subVtx3DVal->Fill(jetSubVtx3DVal_);
                     h_subVtx3DErr->Fill(jetSubVtx3DErr_);
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
-                //}
+                }
 
                 //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
 
@@ -1358,8 +1363,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             if(MINITREE==1 ) 	{
                 outtree_->Fill();
                 if ( ONLY_LEADINGPHOTON ) break;
+                else phoFillIdx++;
             }
-
         } // fill tree end
 
         h_nphoFiredTrgs->Fill(nphofiredtrgs);

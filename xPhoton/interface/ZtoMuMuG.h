@@ -1,5 +1,5 @@
-#ifndef __xElectrons_h__
-#define __xElectrons_h__
+#ifndef __ZtoMuMuG_h__
+#define __ZtoMuMuG_h__
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -11,8 +11,10 @@
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/recoInfo.h"
+#include "xPhoton/xPhoton/interface/LogMgr.h"
 #define BINNING 100
 #define MASS_ELECTRON 0.511*0.001
+#define MASS_MUON 0.105658
 #define MASS_Z 90
 #define WINDOW_Z 40
 // 0 : veto, 1 : loose, 2: medium, 3: tight. Minus : Disable
@@ -20,16 +22,13 @@
 struct rec_Electron
 {
     Float_t
-        mcE,
         mcPt,
         mcEta,
-        mcPhi,
         recoPt,
         recoEta,
-        recoPhi;
-    Float_t
         recoPtCalib,
         recoSCEta,
+
         r9,
         HoverE,
         chIsoRaw,
@@ -59,15 +58,8 @@ struct rec_Electron
         sieipFull5x5_corrected   ,
         esEnergyOverSCRawEnergy_corrected;
 
-
-
-
-
-
-
-
-
     Int_t
+        recoIdx,
         idbit,
         isMatched;
     Long64_t
@@ -76,18 +68,21 @@ struct rec_Electron
 struct rec_Z
 {
     Float_t
-        mcE,
         mcPt,
-        mcEta,
-        mcPhi,
         recoMass,
-        recoE,
         recoPt,
-        recoEta,
-        recoPhi;
+        mumuMass,
+        mumuPt;
 
     Int_t
         isMatched;
+};
+struct rec_Mu
+{
+    Float_t
+        recoPt,
+        recoEta,
+        deltaR;
 };
 struct rec_Event
 {
@@ -110,25 +105,22 @@ struct rec_Event
         HLTPhoIsPrescaled,
         event;
 };
-std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
-std::vector<TLorentzCand> RecoElectronsInPhotonCollection_(TreeReader* dataptr);
-TLorentzCand              TriggeredElectron(TreeReader* dataptr);
-int                      FindMatchedIdx_Electron(TreeReader* dataptr, const TLorentzCand& recoCand);
-bool PassElectronPreselection_(TreeReader* dataptr, int WP, const TLorentzCand& cand);
-bool PassPhotonPreselection_(TreeReader* dataptr, const TLorentzCand& cand);
-bool PassTagElePreselection_(TreeReader* dataptr, const TLorentzCand& cand);
-void RegBranch( TTree* t, const std::string& name, rec_Electron* var );
-void RegBranch( TTree* t, const std::string& name, rec_Z* var );
-void RegBranch( TTree* t, const std::string& name, rec_Event* var );
+std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr);
+std::vector<TLorentzCand> RecoPhoton(TreeReader* dataptr);
+int                      FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand);
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Electron* var );
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Z* var );
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Mu* var );
+void RegBranchZMuMu( TTree* t, const std::string& name, rec_Event* var );
 
 #include <string.h>
 template<typename T>
 void ClearStruct(T* obj) { memset( obj, 0x00, sizeof(T) ); }
 
 
-void xElectrons(
+void ZtoMuMuG(
         std::vector<std::string> pathes,
         char oname[200]);
 
-void xElectrons(std::string ipath, int outID);
+void ZtoMuMuG(std::string ipath, int outID);
 #endif

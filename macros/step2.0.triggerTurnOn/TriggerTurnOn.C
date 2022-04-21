@@ -18,7 +18,7 @@ struct currentBit
 };
 
 const char* EventSelections()
-{ return "( ((phoIDbit>>2)&1) ==1 ) && fabs(recoEta) > 1.5"; }
+{ return "chIsoRaw<2&&((phoIDbit>>2)&1) == 1 && photonIDmva > 0.9  && fabs(recoEta) > 1.5"; }
 const char* PassTrg(int ibit)
 { return Form("( ((phoFiredTrgs>>%d)&1) == 1 )", ibit); }
 void DrawingTo( TTree* t, const char* var, const char* cut )
@@ -117,7 +117,8 @@ struct HistDeclareHelper
 void TriggerTurnOn()
 {
     //TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/correctMVA/data.root");
-    TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
+    TFile* fin = TFile::Open("/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test/storeroot/UL18/UL2018.root");
+    //TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
     TTree* tin = (TTree*) fin->Get("t");
 
     const char* HLTtemplate0 = "HLT_%d";
