@@ -15,6 +15,7 @@
 #define BINNING 100
 #define MASS_ELECTRON 0.511*0.001
 #define MASS_MUON 0.105658
+#define MASS_PHOTON 0
 #define MASS_Z 90
 #define WINDOW_Z 40
 // 0 : veto, 1 : loose, 2: medium, 3: tight. Minus : Disable
@@ -109,6 +110,7 @@ struct rec_Event
 std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr);
 std::vector<TLorentzCand> RecoPhoton(TreeReader* dataptr);
 int                      FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand);
+int                      FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand);
 void RegBranchZMuMu( TTree* t, const std::string& name, rec_Electron* var );
 void RegBranchZMuMu( TTree* t, const std::string& name, rec_Z* var );
 void RegBranchZMuMu( TTree* t, const std::string& name, rec_Mu* var );
