@@ -266,7 +266,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     //Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
     Int_t   isMatched, isMatchedEle,  nVtx, eleVeto, nPU;
     Float_t HoverE, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
-    Float_t chIsoRhoCorr;
+    Float_t calib_chIso;
     Float_t rho;
     Int_t phohasPixelSeed_;
     Long64_t phoFiredTrgs_;
@@ -387,7 +387,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
     outtree_->Branch("nhIsoRaw",     &nhIsoRaw,     "nhIsoRaw/F");
     outtree_->Branch("rho",          &rho,          "rho/F"); 
-    outtree_->Branch("chIsoRhoCorr", &chIsoRhoCorr, "chIsoRhoCorr/F");
+    outtree_->Branch("calib_chIso",  &calib_chIso, "calib_chIso/F");
 
     outtree_->Branch("rawE",         &rawE,         "rawE/F");
     outtree_->Branch("scEtaWidth",   &scEtaWidth,   "scEtaWidth/F");
@@ -1143,7 +1143,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   =0.;         //ch
             phoIsoRaw  =0.;         //ch
             nhIsoRaw   =0.;         //ch
-            chIsoRhoCorr = 0.;
+            calib_chIso = 0.;
 
 
             rawE       =0.;          //ch
@@ -1306,7 +1306,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
-            chIsoRhoCorr = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
+            calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
 
 
             rawE       = phoSCRawE[ipho];

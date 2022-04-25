@@ -1,15 +1,16 @@
 {
     "nJobs": 10,
-    "updateMVA":true,
+    "updateMVA":false,
     "updatePU":false,
     "updateBTagCalibration":false,
+    "updateChIso":true,
     "isMC":false,
     "dataera":"UL2018",
-    "InputFiles":[ "/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/correctMVA/data.root" ],
+    "InputFiles":["newfile.root"],
 
     "xmlFiles":[
         "/home/ltsai/ReceivedFile/hii/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
         "/home/ltsai/ReceivedFile/hii/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml"
         ],
-    "OutputFileName":"updated.root"
+    "OutputFileName":"testing.root"
 }

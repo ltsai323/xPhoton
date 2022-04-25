@@ -18,6 +18,7 @@ const int ANNOUNSE_INTERVAL = 100000;
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
+#include "xPhoton/xPhoton/interface/RhoCorrection.h"
 
 
 void PrintHelp()
@@ -48,6 +49,7 @@ struct JsonInfo
         updateMVA               = root.get<bool>("updateMVA"                , false);
         updatePU                = root.get<bool>("updatePU"                 , false);
         updateBTagCalibration   = root.get<bool>("updateBTagCalibration"    , false);
+        updateChIso             = root.get<bool>("updateChIso"              , false);
         isMC                    = root.get<bool>("isMC"                     , true);
         dataEra                 = root.get<std::string>("dataera"           , "");
 
@@ -61,12 +63,37 @@ struct JsonInfo
     bool updateMVA;
     bool updatePU;
     bool updateBTagCalibration;
+    bool updateChIso;
     bool isMC;
     std::string dataEra;
     std::string outputfilename;
     std::vector<std::string> inputfiles;
 };
 
+class UpdateCalibChIsoProcedure
+{
+    public:
+    UpdateCalibChIsoProcedure( const JsonInfo* jobInfo_, TTree* outtree ) : jobInfo(jobInfo_)
+    {
+        if (!jobInfo->updateChIso ) return;
+
+        if ( outtree->GetListOfBranches()->FindObject("calib_chIso") )
+            outtree->SetBranchStatus("calib_chIso", 0);
+        outtree->Branch("calib_chIso", &calib_chIso, "calib_chIso/F");
+    }
+
+    void UpdateValue(TreeReader* data)
+    {
+        if (!jobInfo->updateChIso ) return;
+        float recoSCEta = data->GetFloat("recoSCEta");
+        float rho       = data->GetFloat("rho");
+        float chIsoRaw  = data->GetFloat("chIsoRaw");
+
+        calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
+    }
+    const JsonInfo* jobInfo;
+    float calib_chIso;
+};
 class UpdateMVAProcedure
 {
     public:
@@ -185,9 +212,12 @@ int main(int argc, char** argv)
     outtree->SetAutoSave(ANNOUNSE_INTERVAL);
 
     TreeReader data(ch);
-    ShowerShapeCorrectionAdapter SScorr( inputvars.dataEra, inputvars.isMC );
 
-    UpdateMVAProcedure updatingmvascore(&inputvars, &SScorr, outtree);
+    ShowerShapeCorrectionAdapter* SScorr = nullptr;
+    if ( inputvars.updateMVA ) SScorr = new ShowerShapeCorrectionAdapter( inputvars.dataEra, inputvars.isMC );
+
+    UpdateMVAProcedure updatingmvascore(&inputvars, SScorr, outtree);
+    UpdateCalibChIsoProcedure updatingChIso(&inputvars, outtree);
 
 
     LOG_INFO(" processing entries %lld \n", data.GetEntriesFast());
@@ -199,6 +229,7 @@ int main(int argc, char** argv)
         ch->GetEntry(evtIdx);
         data.GetEntry(evtIdx);
         updatingmvascore.UpdateValue(&data);
+        updatingChIso.UpdateValue(&data);
 
         outtree->Fill();
     }

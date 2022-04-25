@@ -23,19 +23,20 @@ static Bool_t verbose=false;
 static Int_t JETPD_PHOTONHLT=0;
 static Int_t ONLY_LEADINGPHOTON=1;
 
-static Int_t isMC=0;
+static Int_t isMC=0; // deleted
 static Int_t data25ns=1;
 static Int_t data50ns=0;
-static Int_t qstar=1;
-static Int_t gjet15to6000=0;
-static Int_t genHTcut=0;
-static Int_t gjetSignal=0;
+//static Int_t qstar=1;
+static Int_t gjet15to6000=0; // deleted
+static Int_t genHTcut=0; // deleted
+static Int_t gjetSignal=0; // deleted
 
-static bool hasSubVtxInfo = true;
-static bool testJetSF = true;
+static bool hasSubVtxInfo = false;
+static bool testJetSF = false;
 static bool ELECTRONVETO = false;
 static bool USEHLT = false;
 
+void ShowInfo();
 
 void xPhotonHFJet(
         vector<string> pathes,

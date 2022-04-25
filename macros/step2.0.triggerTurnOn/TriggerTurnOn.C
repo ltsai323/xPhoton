@@ -117,7 +117,8 @@ struct HistDeclareHelper
 void TriggerTurnOn()
 {
     //TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/correctMVA/data.root");
-    TFile* fin = TFile::Open("/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/test/storeroot/UL18/UL2018.root");
+    TFile* fin = TFile::Open("/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/scripts/Runner_separateAndSubmitToBkg/UL2018.root");
+    //TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/correctMVA/data.fromChip02.root");
     //TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/Run2016_Legacy.root");
     TTree* tin = (TTree*) fin->Get("t");
 
