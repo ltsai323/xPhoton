@@ -4,6 +4,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 namespace pt = boost::property_tree;
+const int ANNOUNSE_INTERVAL = 100000;
 
 
 
@@ -66,12 +67,19 @@ struct JsonInfo
     std::vector<std::string> inputfiles;
 };
 
-void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
+//void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
+int main(int argc, char** argv)
 {
-    if (!jobInfo.updateMVA ) return;
+    JsonInfo inputvars(argc,argv);
+
+    TChain* ch = new TChain("t");
+    for ( const std::string& ifile : inputvars.inputfiles )
+        ch->Add(ifile.c_str());
+    // init of main
+    
+    TTree* inTree = ch;
+    const JsonInfo& jobInfo = inputvars;
     inTree->SetBranchStatus("*", 1);
-    inTree->SetBranchStatus("mva", 0);
-    inTree->SetBranchStatus("mva_nocorr", 0);
     TreeReader data(inTree);
 
     // declare MVA {{{
@@ -133,13 +141,14 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
     TFile* outfile = new TFile( jobInfo.outputfilename.c_str(), "RECREATE" );
     outfile->cd();
     TTree* outtree = inTree->CloneTree(0);
-    const int ANNOUNSE_INTERVAL = 100000;
     outtree->SetAutoSave(ANNOUNSE_INTERVAL);
 
     float mva = 0;
-    float mva_nocorr = 0;
+    float calib_mva = 0;
+    outtree->SetBranchStatus("mva", 0);
+    outtree->SetBranchStatus("calib_mva", 0);
     outtree->Branch("mva", &mva, "mva/F");
-    outtree->Branch("mva_nocorr", &mva_nocorr, "mva_nocorr/F");
+    outtree->Branch("calib_mva", &calib_mva, "calib_mva/F");
 
     LOG_INFO(" processing entries %lld \n", data.GetEntriesFast());
     for ( Long64_t evtIdx = 0; evtIdx != data.GetEntriesFast(); ++evtIdx )
@@ -175,7 +184,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
 
         // variables declare and data loader end }}}
         
-        mva_nocorr = tmvaReader[isEE]->EvaluateMVA("BDT");
+        mva = tmvaReader[isEE]->EvaluateMVA("BDT");
         if ( jobInfo.isMC )
         {
             r9Full5x5               = SScorr.Corrected( ShowerShapeCorrectionAdapter::r9       );
@@ -186,26 +195,13 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
             scPhiWidth   	        = SScorr.Corrected( ShowerShapeCorrectionAdapter::etaWidth );
             esEnergyOverSCRawEnergy = SScorr.Corrected( ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
         }
-        mva = tmvaReader[isEE]->EvaluateMVA("BDT");
+        calib_mva = tmvaReader[isEE]->EvaluateMVA("BDT");
 
         outtree->Fill();
     }
 
     outtree->Write();
     outfile->Close();
-}
-
-int main(int argc, char** argv)
-{
-    JsonInfo inputvars(argc,argv);
-    //ROOT::EnableImplicitMT(inputvars.nJobs);
-    //printf("Using %d thread for this training\n", ROOT::GetImplicitMTPoolSize() );
-
-    TChain* ch = new TChain("t");
-    for ( const std::string& ifile : inputvars.inputfiles )
-        ch->Add(ifile.c_str());
-    
-    UpdateMVA( inputvars, ch );
-
     return 0;
 }
+
