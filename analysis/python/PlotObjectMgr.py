@@ -38,17 +38,55 @@ def Legend( p0_=(0.5,0.3), p1_=(0.89,0.89), title='', useNDC=True ):
     return leg
 
 
-def HistSetting_Visualization( hist, LineColor_=3, LineWidth_=4, FillColor_=1, FillStyle_=0 ):
+def HistSetting_GeneralStyling_( hist_, xlabel_='', ylabel_=''):
+    hist_.GetYaxis().SetRangeUser( 1e-1, hist_.GetMaximum()*1.5 )
+    hist_.GetXaxis().SetTitle(xlabel_)
+    hist_.GetXaxis().SetTitleSize(0.05)
+    hist_.GetXaxis().SetLabelSize(0.03)
+
+    hist_.GetYaxis().SetTitle(ylabel_)
+    hist_.GetYaxis().SetTitleSize(0.11)
+    hist_.GetYaxis().SetTitleOffset(0.4)
+    hist_.GetYaxis().SetLabelSize(0.03)
+    hist_.GetYaxis().SetNdivisions(905)
+    #hist_.GetYaxis().CenterTitle(True)
+    #hist_.GetYaxis().SetMaxDigits(3)
+    ROOT.TGaxis.SetMaxDigits(3)
+
+    hist_.SetStats(False)
+def HistSetting_GeneralStyling( hist_, xlabel_='', ylabel_=''):
+    HistSetting_UpperStyling(hist_,xlabel_,ylabel_)
+def HistSetting_UpperStyling( hist_, xlabel_='', ylabel_=''):
+    hist_.GetYaxis().SetRangeUser( 1e-1, hist_.GetMaximum()*1.5 )
+    hist_.GetXaxis().SetTitle(xlabel_)
+    hist_.GetXaxis().SetTitleSize(0.05)
+    hist_.GetXaxis().SetLabelSize(0.03)
+
+    hist_.GetYaxis().SetTitle(ylabel_)
+    hist_.GetYaxis().SetTitleSize(0.06)
+    hist_.GetYaxis().SetTitleOffset(0.6)
+    hist_.GetYaxis().SetLabelSize(0.03)
+    hist_.GetYaxis().SetNdivisions(905)
+    #hist_.GetYaxis().CenterTitle(True)
+    #hist_.GetYaxis().SetMaxDigits(3)
+    ROOT.TGaxis.SetMaxDigits(3)
+
+    hist_.SetStats(False)
+
+def HistSetting_Visualization_MC( hist, LineColor_=3, LineWidth_=4, FillColor_=1, FillStyle_=0 ):
     hist.SetLineColor(LineColor_)
     hist.SetLineWidth(LineWidth_)
     hist.SetFillColor(FillColor_)
     hist.SetFillStyle(FillStyle_)
 def HistSetting_Visualization_data( hist, LineWidth_=1, LineColor_=1,  MarkerSize_=2, MarkerColor_=1):
+    print('hist name : ' + hist.GetName() )
     hist.SetLineColor(LineColor_)
     hist.SetLineWidth(LineWidth_)
     hist.SetMarkerSize(MarkerSize_)
     hist.SetMarkerColor(MarkerColor_)
     hist.SetMarkerStyle(20)
+def HistSetting_Visualization( hist, LineColor_=3, LineWidth_=4, FillColor_=1, FillStyle_=0 ):
+    HistSetting_Visualization_MC(hist,LineColor_,LineWidth_,FillColor_,FillStyle_)
 def HistSetting_YRangeExtendforLegend( hist, logscale=False ):
     multiplier= 1000. if logscale else 1.5
     hist.SetMaximum( hist.GetMaximum()*multiplier )

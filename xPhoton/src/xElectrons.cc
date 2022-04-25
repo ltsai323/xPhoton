@@ -1,12 +1,9 @@
 #include "xPhoton/xPhoton/interface/xElectrons.h"
-#include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/PhotonSelections.h"
 #include "xPhoton/xPhoton/interface/MuonSelections.h"
 #include "xPhoton/xPhoton/interface/ElectronSelections.h"
 #include "xPhoton/xPhoton/interface/puweicalc.h"
-#include "xPhoton/xPhoton/interface/usefulFuncs.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
-#include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/histMgr.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
@@ -16,13 +13,6 @@
 
 
 static histMgr hists;
-std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr);
-std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr);
-TLorentzCand              TriggeredElectron(TreeReader* dataptr);
-int                      FindMatchedIdx(TreeReader* dataptr, const TLorentzCand& recoCand);
-bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand);
-bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand);
-bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand);
 void xElectrons(
         std::vector<std::string> pathes,
         char oname[200] )
@@ -148,21 +138,21 @@ void xElectrons(
 
         LOG_DEBUG(" check point 01");
         //std::vector<TLorentzCand> electronpool = RecoElectrons(&data);
-        std::vector<TLorentzCand> electronpool = RecoElectronsInPhotonCollection(&data);
+        std::vector<TLorentzCand> electronpool = RecoElectronsInPhotonCollection_(&data);
         TLorentzCand tag_electron = TriggeredElectron(&data);
         if ( tag_electron.IsZombie() ) continue;
 
         LOG_DEBUG(" check point 02");
         for ( TLorentzCand& electron : electronpool )
         {
-            int genIdx = FindMatchedIdx( &data, electron );
+            int genIdx = FindMatchedIdx_Electron( &data, electron );
             if ( genIdx < 0 ) continue;
             electron.SetGenIdx(genIdx);
         }
         LOG_DEBUG(" check point 03");
 
-        //for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassElectronPreselection(&data, ELECTRONWORKINGPOINT, cand) );
-        for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassPhotonPreselection(&data, cand) );
+        //for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassElectronPreselection_(&data, ELECTRONWORKINGPOINT, cand) );
+        for ( TLorentzCand& cand : electronpool ) cand.SetAlive( PassPhotonPreselection_(&data, cand) );
         hists.FillStatus("eventStat", 0);
         LOG_DEBUG(" check point 04");
 
@@ -401,7 +391,7 @@ std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
                 );
     return outputs;
 }
-std::vector<TLorentzCand> RecoElectronsInPhotonCollection(TreeReader* dataptr)
+std::vector<TLorentzCand> RecoElectronsInPhotonCollection_(TreeReader* dataptr)
 {
     std::vector<TLorentzCand> outputs;
     for ( Int_t idx = 0; idx < dataptr->GetInt("nPho"); ++idx )
@@ -441,14 +431,14 @@ TLorentzCand TriggeredElectron(TreeReader* dataptr)
                     dataptr->GetPtrFloat("elePhi")[idx],
                     MASS_ELECTRON
                 );
-        int genIdx = FindMatchedIdx( dataptr, output );
+        int genIdx = FindMatchedIdx_Electron( dataptr, output );
         if ( genIdx >= 0 ) output.SetGenIdx( genIdx );
         return output;
     }
     return TLorentzCand();
 }
 
-bool PassElectronPreselection(TreeReader* dataptr, int WP, const TLorentzCand& cand)
+bool PassElectronPreselection_(TreeReader* dataptr, int WP, const TLorentzCand& cand)
 {
     int idx = cand.idx();
     hists.FillStatus("elePreselectStat", 0);
@@ -552,7 +542,7 @@ void RegBranch( TTree* t, const string& name, rec_Event* var )
     t->Branch("event"             , &var->event,                   "event/L");
 }
 
-bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
+bool PassPhotonPreselection_(TreeReader* dataptr, const TLorentzCand& cand)
 {
     // HLT_Ele27_WPTight_Gsf
     //const int PASS_HLTBIT = 12;
@@ -590,7 +580,7 @@ bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
     
     return true;
 }
-bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand)
+bool PassTagElePreselection_(TreeReader* dataptr, const TLorentzCand& cand)
 {
     unsigned idx = cand.idx();
     // HLT_Ele27_WPTight_Gsf
@@ -616,7 +606,7 @@ bool PassTagElePreselection(TreeReader* dataptr, const TLorentzCand& cand)
 
     return true;
 }
-int FindMatchedIdx(TreeReader* dataptr, const TLorentzCand& recoCand)
+int FindMatchedIdx_Electron(TreeReader* dataptr, const TLorentzCand& recoCand)
 {
     const int NOTHING_MATCHED=-1;
     const double CUT_DELTA_R = 0.20;

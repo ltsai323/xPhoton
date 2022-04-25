@@ -94,26 +94,6 @@ void yield_cmp_plot() {
       }
   }
   
-
-
-  /*
-  TFile *ftest = new TFile("test.root","recreate");
-
-  for (int ebeebin=0; ebeebin<2; ebeebin++){
-    for (int jetbin=0; jetbin<3; jetbin++){
-
-      h_yield_2015[ebeebin][jetbin] = new TH1F(Form("h_yield_2015_%d",ebeebin*3+jetbin),"",nbin, ptcut);
-      h_yield_2016[ebeebin][jetbin] = new TH1F(Form("h_yield_2016_%d",ebeebin*3+jetbin),"",nbin, ptcut);
-
-      for(int ii=0; ii<nbin; ii++){
-
-        f_2016 >> tmp >> tmp >> tmp >> tmp >> sig_yield_2016 >> tmp;
-        f_2015 >> tmp >> tmp >> tmp >> sig_yield_2015 >> tmp;
-        std::cout << sig_yield_2015 << " " << sig_yield_2015/lumi2015/h_yield_2015[ebeebin][jetbin]->GetBinWidth(ii+1) << " " << sig_yield_2016 << " " << sig_yield_2016/lumi2016/h_yield_2016[ebeebin][jetbin]->GetBinWidth(ii+1) << std::endl;
-        h_yield_2015[ebeebin][jetbin]->SetBinContent(ii+1, (sig_yield_2015/lumi2015)/h_yield_2015[ebeebin][jetbin]->GetBinWidth(ii+1));
-        h_yield_2016[ebeebin][jetbin]->SetBinContent(ii+1, (sig_yield_2016/lumi2016)/h_yield_2016[ebeebin][jetbin]->GetBinWidth(ii+1));
-      }
-      */
   for (int ebeebin=0; ebeebin<2; ebeebin++){
     for (int jetbin=0; jetbin<3; jetbin++){
       TCanvas cc("c1", "A ratio example",600,600);

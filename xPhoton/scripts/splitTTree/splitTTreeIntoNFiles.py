@@ -87,8 +87,3 @@ for jf in xrange(N_subfiles):
 			newtree.Fill()
 			if (je == n_lastfile-1):  
 				newfile.Write()
-
-   
-   
-   
-   

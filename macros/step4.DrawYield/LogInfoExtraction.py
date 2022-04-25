@@ -22,7 +22,7 @@ class MyBin(object):
 def ExportToDAT(binvalues, outputfile):
     ofile=open(outputfile,'w')
 
-    ofile.write('ptbin/I:EBEE/I:jetbin/I:fiterror/F:fitvalue/F\n')
+    ofile.write('ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F\n')
     for v in binvalues: ofile.write( v.DATExport() )
     ofile.close()
 
@@ -38,8 +38,8 @@ if __name__ == "__main__":
 
     for sig in sigvals: print sig
     for bkg in bkgvals: print bkg
-    ExportToDAT(sigvals, 'yield.dat')
-    ExportToDAT(bkgvals, 'bkg.dat')
+    ExportToDAT(sigvals, 'data.yield.dat')
+    ExportToDAT(bkgvals, 'data.bkg.dat')
 
     sigbarrel=[ mybin for mybin in sigvals if     mybin.IsBarrelJet() ]
     sigendcap=[ mybin for mybin in sigvals if not mybin.IsBarrelJet() ]

@@ -3,6 +3,7 @@
 #include <TH1D.h>
 #include <TLorentzVector.h>
 
+
 #include <TFile.h>
 #include <TTree.h>
 #include <TSystem.h>
@@ -32,6 +33,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
+#include "xPhoton/xPhoton/interface/RhoCorrection.h"
 
 //const std::string dataEra = "2016ReReco";
 const float CUT_DELTAR  = 0.2;
@@ -264,10 +266,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     //Int_t   isMatched, isMatchedEle, idLoose, idMedium, idTight, nVtx, eleVeto, nPU;
     Int_t   isMatched, isMatchedEle,  nVtx, eleVeto, nPU;
     Float_t HoverE, chIsoRaw, phoIsoRaw, nhIsoRaw, chWorstIso;
+    Float_t chIsoRhoCorr;
     Float_t rho;
-    Int_t phoFiredTrgs_, phohasPixelSeed_;
+    Int_t phohasPixelSeed_;
+    Long64_t phoFiredTrgs_;
 
-    Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva, mva_nocorr,  photonIDmva;
+    Float_t e5x5, rawE, scEtaWidth, scPhiWidth, esRR, esEn, mva, calib_mva,  photonIDmva;
     Float_t sieieFull5x5, sipipFull5x5, sieipFull5x5, e2x2Full5x5,  e5x5Full5x5;
     Int_t isConverted;
 
@@ -317,15 +321,19 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t mcTrkIso, mcCalIso, matchDR, matchDPT;
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
-    //if ( hasSubVtxInfo )
-    //{
+
+    Int_t phoFillIdx = 0;
+    if ( hasSubVtxInfo )
+    {
         outtree_->Branch("jetSubVtxPt"   , &jetSubVtxPt_   , "jetSubVtxPt/F"   );
         outtree_->Branch("jetSubVtxMass" , &jetSubVtxMass_ , "jetSubVtxMass/F" );
         outtree_->Branch("jetSubVtx3DVal", &jetSubVtx3DVal_, "jetSubVtx3DVal/F");
         outtree_->Branch("jetSubVtx3DErr"  , &jetSubVtx3DErr_  , "jetSubVtx3DErr/F"  );
         outtree_->Branch("jetSubVtxNtrks", &jetSubVtxNtrks_, "jetSubVtxNtrks/I");
-    //}
+    }
 
+    if (!ONLY_LEADINGPHOTON )
+        outtree_->Branch("phoFillIdx", &phoFillIdx, "phoFillIdx/I");
     outtree_->Branch("run", &run, "run/I");
     outtree_->Branch("event", &event, "event/L");
     outtree_->Branch("isData",         &isData,        "isData/O");
@@ -334,7 +342,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("HLT",         &HLT,        "HLT/L");
     outtree_->Branch("HLTIsPrescaled", &HLTIsPrescaled,        "HLTIsPrescaled/L");
     }
-    outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/I");
+    outtree_->Branch("phoFiredTrgs", &phoFiredTrgs_,"phoFiredTrgs/L");
     if ( data.HasMC() )
     {
     outtree_->Branch("pthat",        &pthat_,       "pthat/F");
@@ -379,6 +387,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
     outtree_->Branch("nhIsoRaw",     &nhIsoRaw,     "nhIsoRaw/F");
     outtree_->Branch("rho",          &rho,          "rho/F"); 
+    outtree_->Branch("chIsoRhoCorr", &chIsoRhoCorr, "chIsoRhoCorr/F");
 
     outtree_->Branch("rawE",         &rawE,         "rawE/F");
     outtree_->Branch("scEtaWidth",   &scEtaWidth,   "scEtaWidth/F");
@@ -388,7 +397,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("mva",          &mva,          "mva/F");  
     if ( data.HasMC() )
     {
-    outtree_->Branch("mva_nocorr",   &mva_nocorr,   "mva_nocorr/F");  
+    outtree_->Branch("calib_mva",   &calib_mva,   "calib_mva/F");  
     }
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
@@ -558,6 +567,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         Float_t      genWeight =1.;
         int nPU_ = 0;
+        phoFillIdx = 0;
         // gen histos {{{
         if( data.HasMC()) { 
             pthat     = data.GetFloat("pthat");
@@ -670,8 +680,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         Float_t *jetSubVtx3DVal = nullptr;
         Float_t *jetSubVtx3DErr = nullptr;
         Int_t   *jetSubVtxNtrks = nullptr;
-        //if ( hasSubVtxInfo )
-        //{
+        if ( hasSubVtxInfo )
+        {
             jetSubVtxPt    = data.GetPtrFloat("jetSecVtxPt"   );
             jetSubVtxMass  = data.GetPtrFloat("jetSecVtxMass" );
             jetSubVtx3DVal = data.GetPtrFloat("jetSecVtx3DVal");
@@ -682,7 +692,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             else
                 LOG_FATAL("neigher 3DErr nor 3DSig not found in data, check it now!");
             jetSubVtxNtrks = data.GetPtrInt  ("jetSecVtxNtrks");
-        //}
+        }
 
         Float_t pfMET = data.GetFloat("pfMET");
         Float_t pfMETPhi = data.GetFloat("pfMETPhi");
@@ -1090,7 +1100,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             isMatchedEle = -99; //need
             isConverted = -99; //need
             mva = -99.; //ch
-            mva_nocorr = -99.; //ch
+            calib_mva = -99.; //ch
             genHT_ = 0.; //ch
             pthat_      = 0.; //ch
             mcPt_       = 0.;
@@ -1133,6 +1143,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   =0.;         //ch
             phoIsoRaw  =0.;         //ch
             nhIsoRaw   =0.;         //ch
+            chIsoRhoCorr = 0.;
 
 
             rawE       =0.;          //ch
@@ -1223,7 +1234,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
                 }
 
-                //if (hasSubVtxInfo) {
+                if (hasSubVtxInfo) {
                     jetSubVtxPt_    = jetSubVtxPt   [jet_index];
                     jetSubVtxMass_  = jetSubVtxMass [jet_index];
                     jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
@@ -1234,7 +1245,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     h_subVtx3DVal->Fill(jetSubVtx3DVal_);
                     h_subVtx3DErr->Fill(jetSubVtx3DErr_);
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
-                //}
+                }
 
                 //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
 
@@ -1295,6 +1306,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
+            chIsoRhoCorr = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
 
 
             rawE       = phoSCRawE[ipho];
@@ -1318,11 +1330,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             {
 
                     //SScorr.CalculateCorrections(&data, ipho);
-                if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, ipho) )
-                {
-                    ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, ipho);
-                    SScorr.CalculateCorrections();
-                }
+                ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, ipho);
+                SScorr.CalculateCorrections();
                 calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
                 calib_s4Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
                 calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
@@ -1333,13 +1342,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             }
 
 
-            //asdf testing
-            //mvaParameters.LoadVar(ipho);
-            //mva_nocorr = mvaloader.GetMVA_noIso(ipho);
-            //mvaParameters.UseCorrectedParameters(&SScorr);
             //mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
-            mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
-            mva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            //mva_nocorr = mvaloader.GetMVA_noIso(ipho);
+            mva = mvaloader.GetMVA_noIso(ipho);
+            //mva_nocorr = mvaloader.GetMVA_noIso(ipho,&&SScorr);
+            calib_mva = mvaloader.GetMVA_noIso(ipho,&SScorr);
             
             photonIDmva = phoIDMVA[ipho];
 
@@ -1357,8 +1364,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             if(MINITREE==1 ) 	{
                 outtree_->Fill();
                 if ( ONLY_LEADINGPHOTON ) break;
+                else phoFillIdx++;
             }
-
         } // fill tree end
 
         h_nphoFiredTrgs->Fill(nphofiredtrgs);
@@ -1667,4 +1674,15 @@ int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<i
         }
     }
     return -1;
+}
+void ShowInfo()
+{
+    printf("==================== Information for this run :       ==================\n");
+    printf("== Only keep leading photon : %s                      ==================\n", ONLY_LEADINGPHOTON ? "Yes": "No ");
+    printf("== Keep information to secondary vertex ? %3s         ==================\n", hasSubVtxInfo ? "Yes": "NO");
+    printf("== Additional jet scale factor information ? %3s      ==================\n", testJetSF ? "Yes": "NO");
+    printf("== Use select a specific Single photon HLT ? %3s      ==================\n", USEHLT ? "Yes": "NO");
+    printf("== Veto electron in photon collection ? %3s           ==================\n", ELECTRONVETO ? "Yes": "NO" );
+    printf("== I have told this run use Jet primary dataset ? %3s  =================\n", JETPD_PHOTONHLT? "Yes":"NO");
+    printf("========================================================================\n");
 }

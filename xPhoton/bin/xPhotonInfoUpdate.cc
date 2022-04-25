@@ -178,7 +178,7 @@ void UpdateMVA( const JsonInfo& jobInfo, TTree* inTree )
         mva_nocorr = tmvaReader[isEE]->EvaluateMVA("BDT");
         if ( jobInfo.isMC )
         {
-            r9Full5x5               = SScorr.Corrected( ShowerShapeCorrectionAdapter::r9      );
+            r9Full5x5               = SScorr.Corrected( ShowerShapeCorrectionAdapter::r9       );
             s4Full5x5               = SScorr.Corrected( ShowerShapeCorrectionAdapter::s4       );
             sieieFull5x5            = SScorr.Corrected( ShowerShapeCorrectionAdapter::sieie    );
             sieipFull5x5            = SScorr.Corrected( ShowerShapeCorrectionAdapter::sieip    );
