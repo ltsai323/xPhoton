@@ -1,0 +1,32 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.12/07                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 9 February 2018                                 |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
+details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
+details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_0_4_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_0_4_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_1_0_4_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_0_4_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_0_4_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_1_0_4_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_0_4_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_0_4_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_1_0_4_1_0
+get nameing : h_subVtxMass_1_0_4_0_0
+get nameing : h_subVtxMass_1_0_4_0_0
+get nameing : h_subVtxMass_1_0_4_1_0
+data 206738, signal 417958.66, bkg 119034.17 
+
+sig fraction of 4 1 SB/all  = 0.200003 
+sig fraction of 4 1 sig/all = 0.678198 
+sig fit correction       0.478194 
+zone1 sig faction of left / right = 0.916967 
+zone2 SB  faction of left / right = 0.974479 
+Data faction of SB/all = 0.092334 
+Data faction of sig/all = 0.768093 

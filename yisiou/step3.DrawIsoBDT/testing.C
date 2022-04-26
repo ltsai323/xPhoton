@@ -22,6 +22,38 @@ std::vector<float> ptbin_ranges()
   std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
   return vec_ptcut;
 }
+
+struct JsonInfo
+{
+    JsonInfo( const char* jsonfile )
+    {
+        pt::ptree root;
+        pt::read_json(jsonfile, root);
+        ebee        = root.get<int>("phoEtaBin"  , 0 );
+        jetbin      = root.get<int>("jetEtaBin"  , 0 );
+        ptbin       = root.get<int>("phoPtBin"   , 0 );
+        rebinoption = root.get<int>("rebinOption", 5 );
+        sb1         = root.get<int>("sidebandlower", 14);
+        sb2         = root.get<int>("sidebandupper", 20);
+
+        datafile    = root.get<std::string>("data", "");
+        sig_file    = root.get<std::string>("sig" , "");
+        bkg_file    = root.get<std::string>("bkg" , "");
+        out_name    = root.get<std::string>("out" , "");
+
+    }
+    JsonInfo() {}
+    
+    int ebee, jetbin, ptbin, rebinoption, sb1, sb2;
+    std::string datafile, sig_file, bkg_file;
+    std::string out_name;
+
+    const char* Data()  const { return datafile.c_str(); }
+    const char* SigMC() const { return sig_file.c_str(); }
+    const char* BkgMC() const { return bkg_file.c_str(); }
+
+    
+};
 struct VARList
 {
     enum vars
@@ -88,13 +120,13 @@ TH2F* GetHistFromFile_IsovsBDT(TFile* infile, int isBkg,
 {
     TH2F* hist;
     char hname[200];
-    sprintf(hname,"IsovsBDT/IsovsBDT.%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
+    sprintf(hname,"h_IsovsBDT_%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
     hist = (TH2F*)infile->Get(hname);
     if ( jetbin == 0 || jetbin == 1 ) return hist;
     
     while ( jetbin-- )
     {
-        sprintf(hname,"IsovsBDT/IsovsBDT.%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
+        sprintf(hname,"h_IsovsBDT_%d_%d_%d_%d_%d", ebee, jetbin, ptbin, isBkg, IsoOption);  
         hist->Add( (TH2F*)infile->Get(hname) );
     }
     return hist;
@@ -114,11 +146,11 @@ TH2F* GetBkgVarHistFromFile(TFile* infile, const char* var,
 { return GetHistFromFile_General(infile, var, 1, ebee, jetbin, ptbin); }
 
 const char* GetQCD_madgraph()
-{ return "../step2.makehistos/storeroot/makehisto_QCD.root"; }
+{ return "../step2.makehistos/storeroot/makehisto_QCD_madgraph.root"; }
 const char* GetData()
 { return "../step2.makehistos/storeroot/makehisto_data.root"; }
 const char* GetSig_madgraph()
-{ return "../step2.makehistos/storeroot/makehisto_sig.root"; }
+{ return "../step2.makehistos/storeroot/makehisto_sig_madgraph.root"; }
 const char* FakeDataSample(int opt)
 {
     switch ( opt )
@@ -163,11 +195,20 @@ const char* GetFile( int fileopt )
 
 
 
-int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, const char* datafilename=""){
-  TFile *fdata = TFile::Open( datafilename                 );
+
+int mainfunc( const JsonInfo& args )
+{
+    int ebee = args.ebee;
+    int jetbin = args.jetbin;
+    int ptbin = args.ptbin;
+    int rebinoption = args.rebinoption;
+    int sb1 = args.sb1;
+    int sb2 = args.sb2;
+    
+  TFile *fdata = TFile::Open( args.Data() );
   
-  TFile *fqcd  = TFile::Open( GetFile(fileid::qcdmadgraph) );
-  TFile *fgjet = TFile::Open( GetFile(fileid::sigmadgraph) );
+  TFile *fqcd  = TFile::Open( args.SigMC() );
+  TFile *fgjet = TFile::Open( args.BkgMC() );
   std::cout << "details of data sample : ";
   fdata->Print();
   std::cout << "details of QCD         : ";
@@ -450,6 +491,19 @@ if ( hqcd  == nullptr ) { std::cerr << "nothing found in QCD!\n";    throw "fail
 
   return 0;
 }
+int mainfunc(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20, const char* datafilename=""){
+    JsonInfo a;
+    a.ebee = ebee;
+    a.jetbin = jetbin;
+    a.ptbin = ptbin;
+    a.rebinoption = rebinoption;
+    a.sb1 = sb1;
+    a.sb2 = sb2;
+    a.datafile = datafilename;
+    a.sig_file = GetFile(fileid::sigmadgraph);
+    a.bkg_file = GetFile(fileid::qcdmadgraph);
+    return mainfunc(a);
+}
 
 void Draw_Isoeff(){
   std::vector<float> vec_ptcut = ptbin_ranges();
@@ -546,6 +600,12 @@ void Draw_IsovsBDT(int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, in
 
     mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, filename);
 }
-void Draw_IsovsBDT(const char* ifilename, int ebee=0, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
+void Draw_IsovsBDT(const char* ifilename, int ebee, int jetbin=0, int ptbin=14, int rebinoption=5, int sb1=14, int sb2=20){
     mainfunc(ebee,jetbin,ptbin,rebinoption,sb1,sb2, ifilename);
+}
+void Draw_IsovsBDT(const char* jsonName){
+    JsonInfo ivars(jsonName);
+
+    mainfunc(ivars.ebee,ivars.jetbin,ivars.ptbin,ivars.rebinoption,ivars.sb1,ivars.sb2, ivars.datafile.c_str());
+    //mainfunc(ivars);
 }
