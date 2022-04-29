@@ -14,7 +14,12 @@ echo "sign : $signfile"
 echo "fake : $fakefile"
 sleep 2
 
+# cleaning workspace
+touch makehisto.root; /bin/rm makehisto*.root
 
 cd step2.makehistos
+# cleaning workspace
+touch makehisto.root; /bin/rm makehisto*.root
+
 sh run.sh $datafile $signfile $fakefile
 mv makehisto*.root ..
