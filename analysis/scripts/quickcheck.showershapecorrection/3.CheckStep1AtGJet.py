@@ -9,8 +9,9 @@ def PrintHelp():
     print '## Use TTree::Draw() feature to plot the    ##'
     print '## compairson of data / MC plot. The canvas ##'
     print '## is separated in upper and lower pads for ##'
-    print '## comparison. Single Data/MC comparison is ##'
-    print '## shown in each figure.                    ##'
+    print '## comparison. Comparison between original  ##'
+    print '## MC and re-weighted MC will be shown in   ##'
+    print '## one plot.                                ##'
     print '## Usage :                                  ##'
     print '##   ./this.py input.json                   ##'
     print '##############################################'
@@ -238,78 +239,72 @@ if __name__ == "__main__":
 
     import xPhoton.analysis.SelectionsMgr as Selections
     pre_selections=[
-        Selections.DrawCutStr_ZmassWindow(),
-        Selections.DrawCutStr_data_PurifyZ(),
+            'chIsoRaw<2',
         ]
     listofvars=[]
-
     for eta in ('barrel','endcap'):
         selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
         selections.extend(pre_selections)
         cut='&&'.join( selections )
 
-        hsetting='(100,60,120)'
-        varname='Zmass'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting),
-                '&&'.join( [Selections.DrawCutStr_data_PurifyZ(), Selections.DrawCutStr_EtaRegion(eta)] )
-                )
-        tsimu.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting),
-                '&&'.join( [Selections.DrawCutStr_data_PurifyZ(), Selections.DrawCutStr_EtaRegion(eta)] )
-                )
-
         hsetting='(10,-1.,1.)'
         varname='mva'
         listofvars.append( (varname, eta) )
+        print 'hdata.%s_%s'%(eta,varname)
         tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        #tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('mva                           >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
-        '''
         hsetting='(40,0.,0.05)'
         varname='scEtaWidth'
         listofvars.append( (varname, eta) )
         tdata.Draw('scEtaWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('scEtaWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_scEtaWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.,0.2)'
         varname='scPhiWidth'
         listofvars.append( (varname, eta) )
         tdata.Draw('scPhiWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('scPhiWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_scPhiWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.,1.2)'
         varname='r9Full5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('r9Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('r9Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_r9Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.2,1.)'
         varname='s4Full5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('s4Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('s4Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_s4Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.002,0.045)'
         varname='sieieFull5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('sieieFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('sieieFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_sieieFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,-0.0015,0.0015)' if eta == 'endcap' else '(40,-0.0002,0.0002)'
         varname='sieipFull5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('sieipFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('sieipFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_sieipFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
         hsetting='(40,0.,1.)'
         varname='esEnergyOverSCRawEnergy'
         listofvars.append( (varname, eta) )
         tdata.Draw('esEnergyOverSCRawEnergy       >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('esEnergyOverSCRawEnergy       >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-        '''
 
-
+    print("figure saving...");
     canv.Clear()
     upperpad=PlotObjectMgr.UpperPad()
     lowerpad=PlotObjectMgr.LowerPad()
@@ -317,9 +312,9 @@ if __name__ == "__main__":
     upperpad.Draw()
     lowerpad.Draw()
 
-    #plots=Mgr_2RatioPlot(upperpad,lowerpad)
-    plots=Mgr_1RatioPlot(upperpad,lowerpad)
+    plots=Mgr_2RatioPlot(upperpad,lowerpad)
+    #plots=Mgr_1RatioPlot(upperpad,lowerpad)
     for vname, etaregion in listofvars:
         plots.DrawToCanvas(canv, etaregion, vname)
 
-        canv.SaveAs('ratioplot_Single.%s_%s.pdf' % (etaregion,vname) )
+        canv.SaveAs('ratioplot.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )

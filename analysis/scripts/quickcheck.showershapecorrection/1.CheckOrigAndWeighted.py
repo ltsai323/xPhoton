@@ -102,7 +102,6 @@ def ShowRatioPlot(pad, etaregion, varname, figFrags=FigPartContainer()):
     return figFrags
 
 def ShowOriginalDist(pad, etaregion, varname, figFrags=FigPartContainer()):
-    print 'hdata.'+'_'.join([etaregion,varname])
     hdata = ROOT.gROOT.FindObject( 'hdata.'+'_'.join([etaregion,varname]) )
     hsimu = ROOT.gROOT.FindObject( 'hsimu.'+'_'.join([etaregion,varname]) )
     hcalb = ROOT.gROOT.FindObject( 'hcalb.'+'_'.join([etaregion,varname]) )
@@ -307,7 +306,7 @@ if __name__ == "__main__":
         tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
 
     print("figure saving...");
-    #canv.Clear()
+    canv.Clear()
     upperpad=PlotObjectMgr.UpperPad()
     lowerpad=PlotObjectMgr.LowerPad()
     canv.cd()
@@ -319,4 +318,4 @@ if __name__ == "__main__":
     for vname, etaregion in listofvars:
         plots.DrawToCanvas(canv, etaregion, vname)
 
-        canv.SaveAs('ratioplot.%s_%s.pdf' % (etaregion,vname) )
+        canv.SaveAs('ratioplot.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )
