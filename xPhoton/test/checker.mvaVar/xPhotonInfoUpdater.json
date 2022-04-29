@@ -1,0 +1,15 @@
+{
+    "nJobs": 10,
+    "updateMVA":true,
+    "updatePU":false,
+    "updateBTagCalibration":false,
+    "isMC":false,
+    "dataera":"UL2018",
+    "InputFiles":["newfile.root"],
+
+    "xmlFiles":[
+        "/home/ltsai/ReceivedFile/hii/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml",
+        "/home/ltsai/ReceivedFile/hii/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml"
+        ],
+    "OutputFileName":"testing.root"
+}

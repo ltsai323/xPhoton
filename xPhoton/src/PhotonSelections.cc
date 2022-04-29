@@ -466,12 +466,8 @@ PhotonMVACalculator::~PhotonMVACalculator()
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapter* SScorr_ )
 {
     LoadingVars( iPho_);
-
-    if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(SScorr_, _data, iPho_) )
-    {
-        ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr_, _data, iPho_);
-        SScorr_->CalculateCorrections();
-    }
+    ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr_, _data, iPho_);
+    SScorr_->CalculateCorrections();
     phoR9Full5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::r9       );
     s4Full5x5       = SScorr_->Corrected( ShowerShapeCorrectionAdapter::s4       );
     sieieFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieie    );

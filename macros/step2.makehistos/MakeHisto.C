@@ -33,7 +33,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
     TFile *fout = new TFile( Form("makehisto_%s.root", _outputlabel),"recreate");
     fout->cd();
-
+    cout << "OUTPUT:" << Form("makehisto_%s.root", _outputlabel) << endl;
     HistMgr1D _h_BDT_all ( "BDT_all.%d_%d_%d_%d",
             {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
     HistMgr1D _h_BDT     ( "BDT.%d_%d_%d_%d",
@@ -115,6 +115,11 @@ void MakeHisto::Loop(Int_t extracut = 0)
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
+
+        if (jentry % 100000 == 0){
+            fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries);
+          }
+
 
         Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
         Float_t photonpt = recoPtCalib;
@@ -256,6 +261,12 @@ void MakeHisto::Loop(Int_t extracut = 0)
                 else    phoMatchStatIdx = 1;
             }
         }
+        else //data
+        {
+            if ( chIsoRaw<2.0 ) phoMatchStatIdx = 0;
+            else    phoMatchStatIdx = 1;
+        }
+
 	
 
         float evtws=0.;
@@ -263,17 +274,17 @@ void MakeHisto::Loop(Int_t extracut = 0)
         float evtws_down=0.;
 
         if(jetflvBin==0){
-            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_hf;
-            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_hf;
+            evtws      =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_central : 1.;
+            evtws_up   =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_up_hf   : 1.;
+            evtws_down =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_down_hf : 1.;
         }else if(jetflvBin==1){
-            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_cferr1;
-            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_cferr1;
+            evtws      =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_central     : 1.;
+            evtws_up   =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_up_cferr1   : 1.;
+            evtws_down =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_down_cferr1 : 1.;
         }else {
-            evtws      =  puwei * mcweight* jetSF_DeepCSV_central;
-            evtws_up   =  puwei * mcweight* jetSF_DeepCSV_up_lf;  
-            evtws_down =  puwei * mcweight* jetSF_DeepCSV_down_lf;
+            evtws      =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_central : 1.;
+            evtws_up   =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_up_lf   : 1.;  
+            evtws_down =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_down_lf : 1.;
         }
 
 
@@ -338,7 +349,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     h_btagDeepCSV_secVtxMass_down   .Write( btagdir );
 
     fout->Close();
-    std::cerr << "hi-3\n";
+    //std::cerr << "hi-3\n";
 }
 
 

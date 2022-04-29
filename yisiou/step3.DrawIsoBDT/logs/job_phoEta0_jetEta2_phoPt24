@@ -1,0 +1,56 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.12/07                http://root.cern.ch |
+  |                               (c) 1995-2017, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 9 February 2018                                 |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+details of data sample : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_data.root, title=, option=READ
+details of QCD         : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_sig_madgraph.root, title=, option=READ
+details of signal      : TFile: name=../step2.makehistos/storeroot_mcweightcut_on_lightcut_1/makehisto_QCD_madgraph.root, title=, option=READ
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_2_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_2_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_2_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_1_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_BvsAll_0_0_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_2_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_2_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_2_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_1_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsB_0_0_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_2_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_2_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_24_0_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_2_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_1_24_1_0
+get nameing : h_deepCSVDiscriminatorTags_CvsL_0_0_24_1_0
+get nameing : h_subVtxMass_0_2_24_0_0
+get nameing : h_subVtxMass_0_1_24_0_0
+get nameing : h_subVtxMass_0_0_24_0_0
+get nameing : h_subVtxMass_0_2_24_0_0
+get nameing : h_subVtxMass_0_1_24_0_0
+get nameing : h_subVtxMass_0_0_24_0_0
+get nameing : h_subVtxMass_0_2_24_1_0
+get nameing : h_subVtxMass_0_1_24_1_0
+get nameing : h_subVtxMass_0_0_24_1_0
+data 0, signal 0.00, bkg 0.00 
+
+sig fraction of 24 0 SB/all  = -nan 
+sig fraction of 24 0 sig/all = -nan 
+sig fit correction       -nan 
+zone1 sig faction of left / right = -nan 
+zone2 SB  faction of left / right = -nan 
+Data faction of SB/all = -nan 
+Data faction of sig/all = -nan 
