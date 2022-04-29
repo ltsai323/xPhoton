@@ -1,0 +1,12 @@
+{
+    "phoEtaBin": 0,
+    "jetEtaBin": 1,
+    "phoPtBin":  7,
+    "rebinOption":1,
+    "sidebandlower":14,
+    "sidebandupper":20,
+    "data":"../makehisto_data.root",
+    "bkg": "../makehisto_QCD.root",
+    "sig": "../makehisto_sig.root",
+    "out_template": "disabled"
+}
