@@ -290,7 +290,8 @@ void ZtoMuMuG(std::string ipath, int outID)
 }
 std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr)
 {
-    const int PASS_HLTBIT = 10; // HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ @ UL2018
+    //const int PASS_HLTBIT = 10; // HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ @ UL2018
+    const int PASS_HLTBIT = 8; // HLT_Mu17_TkMu8_DZ @ UL2018
 
     // muon types from github
     // https://github.com/cms-sw/cmssw/blob/CMSSW_10_6_X/DataFormats/MuonReco/interface/Muon.h
