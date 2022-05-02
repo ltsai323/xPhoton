@@ -129,10 +129,15 @@ void ZtoMuMuG(
         for ( auto photon : photons )
         {
             TLorentzCand ZcandP4;
-            ZcandP4 = trigMuons[0] + trigMuons[1];
-            ZcandP4 += photon;
+            TLorentzCand mumuP4;
+            mumuP4 = trigMuons[0] + trigMuons[1];
+            ZcandP4 = mumuP4 + photon;
 
             ZcandP4.SetAlive(false);
+
+            if ( trigMuons[0].DeltaR(photon) < 0.8 ) continue;
+            if ( trigMuons[1].DeltaR(photon) < 0.8 ) continue;
+            if ( mumuP4.M() < 35. ) continue;
             if ( ZcandP4.M() < MASS_Z-WINDOW_Z ) continue; // lower bond
             if ( ZcandP4.M() > MASS_Z+WINDOW_Z ) continue; // upper bond
 
@@ -345,8 +350,9 @@ std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr)
         if ( muPixelHits[idx] == 0 ) continue;
         if ( muTrkLayers[idx] < 6 ) continue;
         if (((trg[idx]>>PASS_HLTBIT)&1) ) hists.FillStatus("NumMuonPassedHLT", testidx++);
-        if ( outputs.size() == 0 ) if ( pt[idx] < 17 ) continue;
-        if ( outputs.size() == 1 ) if ( pt[idx] <  8 ) continue;
+        if ( pt[idx] < 20. ) continue; // asdf not to use HLT due to nothing stored in ggAnalysis
+        //if ( outputs.size() == 0 ) if ( pt[idx] < 17 ) continue;
+        //if ( outputs.size() == 1 ) if ( pt[idx] <  8 ) continue;
 
         TLorentzCand output(
                     idx,
@@ -354,6 +360,9 @@ std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr)
                     pt[idx],eta[idx],phi[idx], MASS_MUON );
         int genIdx = FindMatchedIdx_Muon( dataptr, output );
         if ( genIdx >= 0 ) output.SetGenIdx( genIdx );
+
+        //if ( outputs.size() == 1 ) // find opposite charged muon
+        //    if ( outputs[0].charge() * output.charge() > 0 ) continue;
         outputs.push_back(output);
         LOG_DEBUG("Got Triggered muon : %d in 2", int(outputs.size()) );
         if ( outputs.size() == 2 ) return outputs;
