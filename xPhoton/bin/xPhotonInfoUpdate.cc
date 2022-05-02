@@ -128,11 +128,14 @@ class UpdateMVAProcedure
             }
             else { throw "Error ! input dataera is not defined. So variable order is needed to be modified\n"; }
         }
-        outtree->SetBranchStatus("mva", 0);
-        if ( outtree->GetListOfBranches()->FindObject("calib_mva") )
-            outtree->SetBranchStatus("calib_mva", 0);
         outtree->Branch("mva", &mva, "mva/F");
         outtree->Branch("calib_mva", &calib_mva, "calib_mva/F");
+    }
+    static void DisableTree(TTree* iTree)
+    {
+        iTree->SetBranchStatus("mva", 0);
+        if ( iTree->GetListOfBranches()->FindObject("calib_mva") )
+            iTree->SetBranchStatus("calib_mva", 0);
     }
 
     void UpdateValue(TreeReader* data)
@@ -208,6 +211,8 @@ int main(int argc, char** argv)
 
     TFile* outfile = new TFile( inputvars.outputfilename.c_str(), "RECREATE" );
     outfile->cd();
+
+    if ( inputvars.updateMVA ) UpdateMVAProcedure::DisableTree(ch);
     TTree* outtree = ch->CloneTree(0);
     outtree->SetAutoSave(ANNOUNSE_INTERVAL);
 
