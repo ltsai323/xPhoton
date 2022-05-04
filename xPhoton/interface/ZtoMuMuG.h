@@ -73,9 +73,10 @@ struct rec_Z
         recoMass,
         recoPt,
         mumuMass,
-        mumuPt;
+        oumuPt;
 
     Int_t
+        eventOrder,
         isMatched;
 };
 struct rec_Mu
@@ -107,7 +108,7 @@ struct rec_Event
         HLTPhoIsPrescaled,
         event;
 };
-std::vector<TLorentzCand> TriggeredDiMuon(TreeReader* dataptr);
+std::vector<TLorentzCand> TriggeredMuons(TreeReader* dataptr);
 std::vector<TLorentzCand> RecoPhoton(TreeReader* dataptr);
 int                      FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand);
 int                      FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand);
