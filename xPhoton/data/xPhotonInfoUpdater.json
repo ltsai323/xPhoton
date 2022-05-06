@@ -3,6 +3,7 @@
     "updateMVA":true,
     "updatePU":false,
     "updateBTagCalibration":false,
+    "updateChIso":true,
     "isMC":false,
     "dataera":"UL2018",
     "InputFiles":[ "/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/correctMVA/data.root" ],

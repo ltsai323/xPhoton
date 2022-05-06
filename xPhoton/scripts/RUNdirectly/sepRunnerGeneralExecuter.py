@@ -47,7 +47,6 @@ if __name__ == '__main__':
     import os
     import sys
     import json
-    CheckENV_X509()
     pathsfile=GetArg_TextPath(sys.argv)
     nCoresSep=GetArg_NumThread(sys.argv)
     exeCmdStr=GetArg_Executable(sys.argv)
@@ -79,6 +78,7 @@ if __name__ == '__main__':
             fout.close()
 
             if useRemote:
+                CheckENV_X509()
                 os.system( 'python sepRunnerFrag_remoteFile.py %s %s %d &'%(jsonname,exeCmdStr,iThread) )
             else:
                 os.system( 'python sepRunnerFrag_localFile.py  %s %s %d &'%(jsonname,exeCmdStr,iThread) )
