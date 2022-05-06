@@ -77,7 +77,8 @@ struct BinInfo
 
     const char* BinnedName(const char* nTemplate) const { return Form(nTemplate, ebee, jetbin, ptbin); }
     TObject* Get(const char* varTemplate) { if ( tag=="") throw std::runtime_error("TFile not loaded!\n"); return file->Get( BinnedName(varTemplate) ); }
-    void SetTagAndFile(const std::string& t, TFile* f) { tag=t; file=f; }
+    void SetFile(TFile* f) { file=f; }
+    void SetOutputHistTemplate( const std::string& t ) { tag = t; }
 };
 std::vector<float> ptbin_ranges()
 {
@@ -98,6 +99,7 @@ bool IsJetEndcap( int jetEtaBin )
 TH2F* GetHist(BinInfo args, const char* histNameTemplate )
 {
     const int EXCLUSIVE_PHOTON = 2;
+
     TH2F* hout = (TH2F*) args.Get( histNameTemplate );
     if ( args.jetbin != EXCLUSIVE_PHOTON ) return hout;
 
@@ -136,7 +138,8 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
     TH2F* hdata = GetHist( args, histNameTemplate );
 
     TH2F* hdata_all = (TH2F*) hdata->Clone(); 
-    std::string allname = args.tag + "_all_%d_%d_%d";
+    //std::string allname = args.tag + "_all_%d_%d_%d";
+    std::string allname = args.tag + "_all";
     hdata_all->SetName( args.BinnedName(allname.c_str()) );
     hdata->Rebin2D(args.rebinoption,2);
 
@@ -164,9 +167,9 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
 
     //for chIso SB
 
-    std::string zone1name = args.tag + "_%d_%d_%d_px1_chIso";
+    std::string zone1name = args.tag + "_px1_chIso";
     TH1D *h_data_zone1 = (TH1D*)hdata->ProjectionX(args.BinnedName(zone1name.c_str()),zone1_low, zone1_high);
-    std::string zone2name = args.tag + "_%d_%d_%d_px2_chIso";
+    std::string zone2name = args.tag + "_px2_chIso";
     TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(args.BinnedName(zone2name.c_str()),zone2_low, zone2_high);
 
 
@@ -175,7 +178,7 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
     out.hpx1 = h_data_zone2;
     out.hall = hdata_all;
 
-    PrintSigAndSideBandBasicInfo(out);
+    //PrintSigAndSideBandBasicInfo(out);
     return out;
 }
 
@@ -188,14 +191,35 @@ void Draw_IsovsBDT(const char* jsonName){
     TFile *fgjet = TFile::Open( args.SigMC() );
 
     BinInfo arg_data(args), arg_gjet(args), arg_qcd(args);
-    arg_data.SetTagAndFile("data",fdata);
-    arg_gjet.SetTagAndFile("gjet",fgjet);
-    arg_qcd .SetTagAndFile("qcd" ,fqcd );
+    arg_data.SetFile(fdata);
+    arg_gjet.SetFile(fgjet);
+    arg_qcd .SetFile(fqcd );
 
     std::vector<HistsNeedStored> outputHists;
+    arg_gjet.SetOutputHistTemplate("gjet_%d_%d_%d");
     outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0"));
+    arg_data.SetOutputHistTemplate("data_%d_%d_%d");
     outputHists.push_back(SigAndSidebandHistCalc(arg_data, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0"));
+    arg_qcd .SetOutputHistTemplate("qcd_%d_%d_%d" );
     outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0"));
+    for ( int systType = 0; systType < 3; ++systType )
+        for ( int btagvar = 0; btagvar < 4; ++btagvar )
+            for ( int jetflav = 0; jetflav < 3; ++jetflav )
+                for ( int matchedPhoStat = 0; matchedPhoStat < 5; ++matchedPhoStat )
+                    for ( int parityIdx = 0; parityIdx < 2; ++parityIdx )
+                    {
+                        const char* histname = Form( "btagDeepCSV/btagDeepCSV.%d_%d_%d__%s__%d_%d",
+                                systType, btagvar, jetflav, "%d_%d_%d", matchedPhoStat, parityIdx );
+                        std::string  outname = Form(             "btagDeepCSV.%d_%d_%d__%s__%d_%d",
+                                systType, btagvar, jetflav, "%d_%d_%d", matchedPhoStat, parityIdx );
+                        arg_gjet.SetOutputHistTemplate("gjet_"+outname);
+                        outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, histname));
+                        arg_data.SetOutputHistTemplate("data_"+outname);
+                        outputHists.push_back(SigAndSidebandHistCalc(arg_data, histname));
+                        arg_qcd .SetOutputHistTemplate("qcd_" +outname);
+                        outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , histname));
+                    }
+
 
     TFile* fout = new TFile( arg_data.BinnedName("iso_%d_%d_%d.root"), "RECREATE" );
     for ( auto outhists : outputHists )
