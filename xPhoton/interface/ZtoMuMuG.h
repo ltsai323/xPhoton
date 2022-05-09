@@ -73,7 +73,7 @@ struct rec_Z
         recoMass,
         recoPt,
         mumuMass,
-        oumuPt;
+        mumuPt;
 
     Int_t
         eventOrder,
