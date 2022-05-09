@@ -67,43 +67,43 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 
 
-    HistMgr1D h_btagDeepCSV_BvsAll_central    ( "btagDeepCSV.0_0_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_BvsAll_up         ( "btagDeepCSV.1_0_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_BvsAll_down       ( "btagDeepCSV.2_0_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_CvsL_central      ( "btagDeepCSV.0_1_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_CvsL_up           ( "btagDeepCSV.1_1_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_CvsL_down         ( "btagDeepCSV.2_1_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_CvsB_central      ( "btagDeepCSV.0_2_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_CvsB_up           ( "btagDeepCSV.1_2_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_CvsB_down         ( "btagDeepCSV.2_2_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_secVtxMass_central( "btagDeepCSV.0_3_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_secVtxMass_up     ( "btagDeepCSV.1_3_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr1D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV.2_3_%d__%d_%d_%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_BvsAll_central    ( "btagDeepCSV.0_0_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_BvsAll_up         ( "btagDeepCSV.1_0_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_BvsAll_down       ( "btagDeepCSV.2_0_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_CvsL_central      ( "btagDeepCSV.0_1_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_CvsL_up           ( "btagDeepCSV.1_1_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_CvsL_down         ( "btagDeepCSV.2_1_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_CvsB_central      ( "btagDeepCSV.0_2_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_CvsB_up           ( "btagDeepCSV.1_2_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_CvsB_down         ( "btagDeepCSV.2_2_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_secVtxMass_central( "btagDeepCSV.0_3_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_secVtxMass_up     ( "btagDeepCSV.1_3_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
+    HistMgr2D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV.2_3_%d__%d_%d_%d__%d_%d",
+                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
 
-    h_btagDeepCSV_BvsAll_central    .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_BvsAll_up         .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_BvsAll_down       .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_CvsL_central      .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_CvsL_up           .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_CvsL_down         .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_CvsB_central      .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_CvsB_up           .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_CvsB_down         .SetXaxis( 10, 0., 1.);
-    h_btagDeepCSV_secVtxMass_central.SetXaxis( 10, 0., 5.);
-    h_btagDeepCSV_secVtxMass_up     .SetXaxis( 10, 0., 5.);
-    h_btagDeepCSV_secVtxMass_down   .SetXaxis( 10, 0., 5.);
+    h_btagDeepCSV_BvsAll_central    .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_BvsAll_up         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_BvsAll_down       .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_CvsL_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_CvsL_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_CvsL_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_CvsB_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_CvsB_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_CvsB_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    h_btagDeepCSV_secVtxMass_central.SetXYaxis(100, 0., 5., 30, 0., 15.);
+    h_btagDeepCSV_secVtxMass_up     .SetXYaxis(100, 0., 5., 30, 0., 15.);
+    h_btagDeepCSV_secVtxMass_down   .SetXYaxis(100, 0., 5., 30, 0., 15.);
 
 
     Long64_t nentries = fChain->GetEntries();
@@ -289,30 +289,30 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 
 
-        h_btagDeepCSV_BvsAll_central    .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws);
-        h_btagDeepCSV_BvsAll_up         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws_up);
-        h_btagDeepCSV_BvsAll_down       .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_BvsAll ,evtws_down);
-        h_btagDeepCSV_CvsL_central      .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws);
-        h_btagDeepCSV_CvsL_up           .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws_up);
-        h_btagDeepCSV_CvsL_down         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsL   ,evtws_down);
-        h_btagDeepCSV_CvsB_central      .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws);
-        h_btagDeepCSV_CvsB_up           .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws_up);
-        h_btagDeepCSV_CvsB_down         .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsB   ,evtws_down);
-        h_btagDeepCSV_secVtxMass_central.GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetSubVtxMass                      ,evtws);
-        h_btagDeepCSV_secVtxMass_up     .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetSubVtxMass                      ,evtws_up);
-        h_btagDeepCSV_secVtxMass_down   .GetBin({jetflvBin,ebee,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetSubVtxMass                      ,evtws_down);
+        h_btagDeepCSV_BvsAll_central    .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll , chIsoRaw,evtws);
+        h_btagDeepCSV_BvsAll_up         .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll , chIsoRaw,evtws_up);
+        h_btagDeepCSV_BvsAll_down       .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_BvsAll , chIsoRaw,evtws_down);
+        h_btagDeepCSV_CvsL_central      .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   , chIsoRaw,evtws);
+        h_btagDeepCSV_CvsL_up           .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   , chIsoRaw,evtws_up);
+        h_btagDeepCSV_CvsL_down         .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsL   , chIsoRaw,evtws_down);
+        h_btagDeepCSV_CvsB_central      .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   , chIsoRaw,evtws);
+        h_btagDeepCSV_CvsB_up           .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   , chIsoRaw,evtws_up);
+        h_btagDeepCSV_CvsB_down         .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetDeepCSVDiscriminatorTags_CvsB   , chIsoRaw,evtws_down);
+        h_btagDeepCSV_secVtxMass_central.GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      , chIsoRaw,evtws);
+        h_btagDeepCSV_secVtxMass_up     .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      , chIsoRaw,evtws_up);
+        h_btagDeepCSV_secVtxMass_down   .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
+            Fill(jetSubVtxMass                      , chIsoRaw,evtws_down);
     }
 
     fout->cd();
