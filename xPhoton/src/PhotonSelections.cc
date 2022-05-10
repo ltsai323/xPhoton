@@ -473,7 +473,7 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapt
     sieieFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieie    );
     sieipFull5x5    = SScorr_->Corrected( ShowerShapeCorrectionAdapter::sieip    );
     phoSCEtaWidth	= SScorr_->Corrected( ShowerShapeCorrectionAdapter::etaWidth );
-    phoSCPhiWidth	= SScorr_->Corrected( ShowerShapeCorrectionAdapter::etaWidth );
+    phoSCPhiWidth	= SScorr_->Corrected( ShowerShapeCorrectionAdapter::phiWidth );
     phoESEnToRawE   = SScorr_->Corrected( ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
 
     return tmvaReader[isEE]->EvaluateMVA("BDT");
