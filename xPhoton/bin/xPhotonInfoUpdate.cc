@@ -173,7 +173,7 @@ class UpdateMVAProcedure
             sieieFull5x5            = SScorr->Corrected( ShowerShapeCorrectionAdapter::sieie    );
             sieipFull5x5            = SScorr->Corrected( ShowerShapeCorrectionAdapter::sieip    );
             scEtaWidth   	        = SScorr->Corrected( ShowerShapeCorrectionAdapter::etaWidth );
-            scPhiWidth   	        = SScorr->Corrected( ShowerShapeCorrectionAdapter::etaWidth );
+            scPhiWidth   	        = SScorr->Corrected( ShowerShapeCorrectionAdapter::phiWidth );
             esEnergyOverSCRawEnergy = SScorr->Corrected( ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
         }
         calib_mva = tmvaReader[isEE]->EvaluateMVA("BDT");
