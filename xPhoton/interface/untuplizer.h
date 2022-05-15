@@ -120,10 +120,10 @@ class TreeReader {
    };
 
    // TTree/TChain initializers
-   TreeReader(TTree* tree);
-   TreeReader(const char* patt,               const char* treename = "ggNtuplizer/EventTree");
-   TreeReader(const char** paths, int npaths, const char* treename = "ggNtuplizer/EventTree");
-   TreeReader(std::vector<std::string> paths, const char* treename = "ggNtuplizer/EventTree");
+   TreeReader(TTree* tree, const char* mcbranch = "nMC");
+   TreeReader(const char* patt,               const char* treename = "ggNtuplizer/EventTree", const char* mcbranch = "nMC");
+   TreeReader(const char** paths, int npaths, const char* treename = "ggNtuplizer/EventTree", const char* mcbranch = "nMC");
+   TreeReader(std::vector<std::string> paths, const char* treename = "ggNtuplizer/EventTree", const char* mcbranch = "nMC");
 
    virtual ~TreeReader();
 
@@ -173,7 +173,8 @@ class TreeReader {
 
  protected:
 
-   void  InitTreeChain(std::vector<std::string> paths, const char* treename);
+   //void  InitTreeChain(std::vector<std::string> paths, const char* treename);
+   void  InitTreeChain(std::vector<std::string> paths, const char* treename, const char* mcbranch = "nMC");
    void  FindLeaf(const char* bname);
 
    TFile*   fFile;     // file handle associated with fTree
