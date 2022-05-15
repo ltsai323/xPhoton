@@ -76,9 +76,6 @@ class UpdateCalibChIsoProcedure
     UpdateCalibChIsoProcedure( const JsonInfo* jobInfo_, TTree* outtree ) : jobInfo(jobInfo_)
     {
         if (!jobInfo->updateChIso ) return;
-
-        if ( outtree->GetListOfBranches()->FindObject("calib_chIso") )
-            outtree->SetBranchStatus("calib_chIso", 0);
         outtree->Branch("calib_chIso", &calib_chIso, "calib_chIso/F");
     }
 
@@ -90,6 +87,11 @@ class UpdateCalibChIsoProcedure
         float chIsoRaw  = data->GetFloat("chIsoRaw");
 
         calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
+    }
+    static void DisableTree(TTree* iTree)
+    {
+        if ( iTree->GetListOfBranches()->FindObject("calib_chIso") )
+            iTree->SetBranchStatus("calib_chIso", 0);
     }
     const JsonInfo* jobInfo;
     float calib_chIso;
@@ -212,7 +214,8 @@ int main(int argc, char** argv)
     TFile* outfile = new TFile( inputvars.outputfilename.c_str(), "RECREATE" );
     outfile->cd();
 
-    if ( inputvars.updateMVA ) UpdateMVAProcedure::DisableTree(ch);
+    if ( inputvars.updateMVA   ) UpdateMVAProcedure::DisableTree(ch);
+    if ( inputvars.updateChIso ) UpdateCalibChIsoProcedure::DisableTree(ch);
     TTree* outtree = ch->CloneTree(0);
     outtree->SetAutoSave(ANNOUNSE_INTERVAL);
 
@@ -243,4 +246,10 @@ int main(int argc, char** argv)
     outfile->Close();
     return 0;
 }
-
+// unused functions
+std::string outputname( std::string iname, std::string tags )
+{
+    std::string relativename = iname;
+    if (iname.find("/") ) relativename = iname.substr( iname.find_last_of("/") + 1 );
+    return tags + "_" + relativename;
+}
