@@ -68,7 +68,8 @@ public :
    Float_t         esRR;
    Float_t         esEn;
    Float_t         mva;
-   Float_t         mva_nocorr;
+   Float_t         calib_mva;
+   //Float_t         mva_nocorr;
    Float_t         photonIDmva;
    Int_t           phoIDbit;
    Float_t         MET;
@@ -203,7 +204,8 @@ public :
    TBranch        *b_esRR;   //!
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
-   TBranch        *b_mva_nocorr;   //!
+   //TBranch        *b_mva_nocorr;   //!
+   TBranch        *b_calib_mva;   //!
    TBranch        *b_photonIDmva;   //!
    TBranch        *b_phoIDbit;   //!
    TBranch        *b_MET;   //!
@@ -509,12 +511,13 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    if ( IsMC() )
    {
-   fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   //fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   fChain->SetBranchAddress("calib_mva", &calib_mva, &b_calib_mva);
    }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
-   if ( IsMC() )
+   if (!IsMC() )
    {
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
    }

@@ -44,7 +44,13 @@ void MakeHisto::Loop(Int_t extracut = 0)
             {NUMBIN_PHOETA,2});
     HistMgr1D _h_Ptspec  ( "Pt_spec.%d_%d",
             {NUMBIN_PHOETA,2});
-    HistMgr2D _h_IsovsBDT( "IsovsBDT.%d_%d_%d_%d_%d",
+    HistMgr2D _h_IsovsBDT    ( "IsovsBDT.%d_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
+    HistMgr2D _h_IsovsBDTorig( "IsovsBDTorig.%d_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
+    HistMgr2D jc_IsovsBDT    ( "jetcut_IsovsBDT.%d_%d_%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
+    HistMgr2D jc_IsovsBDTorig( "jetcut_IsovsBDTorig.%d_%d_%d_%d_%d",
             {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
     HistMgr1D _h_HLT_all( "HLT_ebee.%d_bit%d",
             {NUMBIN_PHOETA,NUMBIT_HLT} );
@@ -57,6 +63,9 @@ void MakeHisto::Loop(Int_t extracut = 0)
     _h_Pt      .SetXaxis( 200, 0., 2000.);
     _h_Ptspec  .SetXaxis( 200, 0., 2000.);
     _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    _h_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    jc_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    jc_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
     _h_HLT_all .SetXaxis(2000,0.,2000.);
     _h_HLTpass .SetXaxis(2000,0.,2000.);
     TH1F *h_EB_HLTall = new TH1F("EB_HLTall","all HLT photon", 1000, 0., 1000.);
@@ -133,7 +142,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         //test new mva with isolation smearing
         //if(isData!=1) 
         //Float_t bdt_score = mva;// norminall
-        Float_t bdt_score = IsMC() ? mva_nocorr : mva; // use non corrected BDT score.
+        Float_t bdt_score = IsMC() ? calib_mva : mva; // for MC, use of weighted bdt score.
+        Float_t orig_bdt = IsMC() ? mva : -999; // for MC, get use this to be syst err.
         // bdt_score = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
         // bdt_score = mva - trd->Gaus(0.025,0.05);
         // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
@@ -193,10 +203,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if ( dataera == "UL2018" )
             if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
 
-        //float dr_wg = TMath::Sqrt(deta_wg*deta_wg+dphi_wg*dphi_wg);// deta_wg
-        // if(MTm>0. && ebee==0 &&dr_wg<0.4) continue;
-        // if(MTm>0. && ebee==1 &&dr_wg<1.) continue;
-        // if(MTm>0. && dr_wg<0.4) continue;
 
         int isfakephoton = 0;
         if( IsMC() &&  isMatched!=1 && isConverted!=1 && isMatchedEle!=1) isfakephoton=1; //fake
@@ -209,32 +215,39 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
         if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
 
-        // YiShou's code disabled {{{
-        //   // jet selections
-        //   if ( jetPt < 30. ) continue;
-        //   if ( fabs(jetEta) > 2.5 ) continue;
-        //   if ( jetDeepCSVTags_c < -0.99 ) continue;
-        //   if ( jetID != 1 ) continue;
-        //   if ( jetPUIDbit != 7 ) continue;
+        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
+        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
+        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
+        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
+        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(orig_bdt, chIsoRaw, eventweight);
+        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(orig_bdt, phoIsoRaw, eventweight);
+        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(orig_bdt, chIsoRaw+phoIsoRaw, eventweight);
+        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(orig_bdt, chWorstRaw, eventweight);
+        // YiShou's code enabled and checking {{{
+        // jet selections
+        if ( jetPt < 30. ) continue;
+        if ( fabs(jetEta) > 2.5 ) continue;
+        if ( jetDeepCSVTags_c < -0.99 ) continue;
+        if ( jetID != 1 ) continue;
+        if ( jetPUIDbit != 7 ) continue;
 
-        //   //if ( mcweight>3000. ) continue;
-        //   if ( extracut == 1 ){
-        //       if ( jetSubVtxMass == 0 ) continue;
-        //   }else if ( extracut == 2 ){
-        //       if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
-        //   }
-        // YiShou's code disabled }}}
+        //if ( mcweight>3000. ) continue;
+        if ( extracut == 1 ){
+            if ( jetSubVtxMass == 0 ) continue;
+        }else if ( extracut == 2 ){
+            if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
+        }
+        // YiShou's code enabled and checking }}}
+        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
+        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
+        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
+        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
+        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(orig_bdt, chIsoRaw, eventweight);
+        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(orig_bdt, phoIsoRaw, eventweight);
+        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(orig_bdt, chIsoRaw+phoIsoRaw, eventweight);
+        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(orig_bdt, chWorstRaw, eventweight);
 
-        _h_BDT     .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
-        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
-        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
-        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
-        _h_IsovsBDT.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
 
-
-
-        _h_Pt       .GetBin({ebee,isfakephoton})->Fill(photonpt, eventweight);
-        _h_Ptspec   .GetBin({ebee,isfakephoton})->Fill( phop4->Et(), eventweight);
 
 
         if ( TMath::Abs(recoEta)<1.4442 )
@@ -323,6 +336,9 @@ void MakeHisto::Loop(Int_t extracut = 0)
     _h_Pt      .Write(_h_Pt      .MakeDirectory(fout));
     _h_Ptspec  .Write(_h_Ptspec  .MakeDirectory(fout));
     _h_IsovsBDT.Write(_h_IsovsBDT.MakeDirectory(fout));
+    _h_IsovsBDTorig.Write(_h_IsovsBDTorig.MakeDirectory(fout));
+    jc_IsovsBDT.Write(jc_IsovsBDT.MakeDirectory(fout));
+    jc_IsovsBDTorig.Write(jc_IsovsBDTorig.MakeDirectory(fout));
     
     TDirectory* HLTdir =_h_HLT_all .MakeDirectory(fout);
     _h_HLT_all .Write(HLTdir);

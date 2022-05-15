@@ -133,15 +133,18 @@ void PrintSigAndSideBandBasicInfo( const HistsNeedStored& hists )
     printf("sig fraction : %5.2f %% and fake fraction %5.2f %%\n", 100.*hists.hpx0->Integral()/hists.hall->Integral(), 100.*hists.hpx1->Integral()/hists.hall->Integral() );
 }
 
-HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNameTemplate)
+HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNameTemplate, const char* errhistTemplate = nullptr )
 {
     TH2F* hdata = GetHist( args, histNameTemplate );
+    bool hasErr = errhistTemplate != nullptr;
+    TH2F* herrs = hasErr ? GetHist( args, errhistTemplate ) : nullptr;
 
     TH2F* hdata_all = (TH2F*) hdata->Clone(); 
     //std::string allname = args.tag + "_all_%d_%d_%d";
     std::string allname = args.tag + "_all";
     hdata_all->SetName( args.BinnedName(allname.c_str()) );
     hdata->Rebin2D(args.rebinoption,2);
+    if ( hasErr ) herrs->Rebin2D(args.rebinoption,2);
 
     int nbinx = hdata->GetNbinsX();
 
@@ -169,8 +172,30 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
 
     std::string zone1name = args.tag + "_px1_chIso";
     TH1D *h_data_zone1 = (TH1D*)hdata->ProjectionX(args.BinnedName(zone1name.c_str()),zone1_low, zone1_high);
+    if ( hasErr )
+    {
+        TH1D* HDATA = h_data_zone1;
+        int bin_l = zone1_low;
+        int bin_r = zone1_high;
+        TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hi", bin_l, bin_r);
+        for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
+            HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
+            //HDATA->SetBinError( ibin, 10 );
+    }
+
+
     std::string zone2name = args.tag + "_px2_chIso";
     TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(args.BinnedName(zone2name.c_str()),zone2_low, zone2_high);
+    if ( hasErr )
+    {
+        TH1D* HDATA = h_data_zone2;
+        int bin_l = zone2_low;
+        int bin_r = zone2_high;
+        TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hj", bin_l, bin_r);
+        for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
+            HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
+        //std::cerr << "the error bar has been updated!\n";
+    }
 
 
     HistsNeedStored out;
@@ -196,12 +221,19 @@ void Draw_IsovsBDT(const char* jsonName){
     arg_qcd .SetFile(fqcd );
 
     std::vector<HistsNeedStored> outputHists;
+    // testing
+    TFile *fgjet2= TFile::Open( args.SigMC() );
+    BinInfo arg_gjet2(args);
+    arg_gjet2.SetFile(fgjet2);
+    arg_gjet2.SetOutputHistTemplate("gjetChecking_%d_%d_%d");
+    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet2, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
+    // tested
     arg_gjet.SetOutputHistTemplate("gjet_%d_%d_%d");
-    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0"));
+    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_0_0"));
     arg_data.SetOutputHistTemplate("data_%d_%d_%d");
-    outputHists.push_back(SigAndSidebandHistCalc(arg_data, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0"));
+    outputHists.push_back(SigAndSidebandHistCalc(arg_data, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
     arg_qcd .SetOutputHistTemplate("qcd_%d_%d_%d" );
-    outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0"));
+    outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_1_0"));
     for ( int systType = 0; systType < 3; ++systType )
         for ( int btagvar = 0; btagvar < 4; ++btagvar )
             for ( int jetflav = 0; jetflav < 3; ++jetflav )
