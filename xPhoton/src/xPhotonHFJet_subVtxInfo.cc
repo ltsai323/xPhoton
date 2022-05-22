@@ -1346,7 +1346,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             //mva_nocorr = mvaloader.GetMVA_noIso(ipho);
             mva = mvaloader.GetMVA_noIso(ipho);
             //mva_nocorr = mvaloader.GetMVA_noIso(ipho,&&SScorr);
-            calib_mva = mvaloader.GetMVA_noIso(ipho,&SScorr);
+            if ( data.HasMC() )
+                calib_mva = mvaloader.GetMVA_noIso(ipho,&SScorr);
             
             photonIDmva = phoIDMVA[ipho];
 
