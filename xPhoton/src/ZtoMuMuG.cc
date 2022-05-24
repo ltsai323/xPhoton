@@ -6,6 +6,7 @@
 #include "xPhoton/xPhoton/interface/histMgr.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
+#include "xPhoton/xPhoton/interface/RhoCorrection.h"
 #include <TLorentzVector.h>
 #include <map>
 #include <TNtuple.h>
@@ -188,7 +189,7 @@ void ZtoMuMuG(
                     record_photon.calib_chIso  = CorrectedRho(
                             data.GetPtrFloat("phoPFChIso")[recoIdx],
                             data.GetFloat("rho"),
-                            EffectiveArea_ChIso(recoSCEta,"UL2018") );
+                            EffectiveArea_ChIso( record_photon.recoSCEta,"UL2018") );
                     record_photon.esEnergyOverSCRawEnergy = record_photon.esEn / record_photon.rawE;
 
                     record_photon.isMatched    = photon.genidx() >= 0;
