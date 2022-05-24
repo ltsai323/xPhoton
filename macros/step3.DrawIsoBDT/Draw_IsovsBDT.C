@@ -180,7 +180,7 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
         TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hi", bin_l, bin_r);
         for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
             HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
-            //HDATA->SetBinError( ibin, 10 );
+            //HDATA->SetBinError( ibin, HDATA->GetBinContent(ibin) );
     }
 
 
@@ -194,6 +194,7 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
         TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hj", bin_l, bin_r);
         for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
             HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
+            //HDATA->SetBinError( ibin, HDATA->GetBinContent(ibin) );
         //std::cerr << "the error bar has been updated!\n";
     }
 
