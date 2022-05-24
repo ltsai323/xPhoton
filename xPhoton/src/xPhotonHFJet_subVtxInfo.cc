@@ -507,6 +507,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
+        if ( ev %10000 == 0 ) 
+            LOG_INFO(" processing entries %lld in %lld \n", ev, data.GetEntriesFast());
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);

@@ -63,3 +63,4 @@ storefig
 *.dat
 *.tar
 seplist*.json
+fullrun.inputfiles.conf
