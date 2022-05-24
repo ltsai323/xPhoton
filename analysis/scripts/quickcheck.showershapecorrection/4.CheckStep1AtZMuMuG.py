@@ -9,8 +9,9 @@ def PrintHelp():
     print '## Use TTree::Draw() feature to plot the    ##'
     print '## compairson of data / MC plot. The canvas ##'
     print '## is separated in upper and lower pads for ##'
-    print '## comparison. Single Data/MC comparison is ##'
-    print '## shown in each figure.                    ##'
+    print '## comparison. Comparison between original  ##'
+    print '## MC and re-weighted MC will be shown in   ##'
+    print '## one plot.                                ##'
     print '## Usage :                                  ##'
     print '##   ./this.py input.json                   ##'
     print '##############################################'
@@ -108,13 +109,14 @@ def ShowOriginalDist(pad, etaregion, varname, figFrags=FigPartContainer()):
     PlotObjectMgr.HistSetting_Visualization_data( hdata, LineWidth_ =2 )
     PlotObjectMgr.HistSetting_GeneralStyling    ( hdata, xlabel_=varname, ylabel_='Entries / %.1e' % hdata.GetBinWidth(1) )
 
-    PlotObjectMgr.HistSetting_Visualization_MC  ( hsimu, LineColor_ = 38 )
+    PlotObjectMgr.HistSetting_Visualization_MC  ( hsimu, LineColor_ = 14 )
     PlotObjectMgr.HistSetting_GeneralStyling    ( hsimu, xlabel_=varname, ylabel_='Entries / %.1e' % hsimu.GetBinWidth(1) )
     hsimu.Scale( hdata.Integral() / hsimu.Integral() )
 
-    PlotObjectMgr.HistSetting_Visualization_MC  ( hcalb, LineColor_ = 46 )
+    PlotObjectMgr.HistSetting_Visualization_MC  ( hcalb, LineColor_ = 2 )
     PlotObjectMgr.HistSetting_GeneralStyling    ( hcalb, xlabel_=varname, ylabel_='Entries / %.1e' % hcalb.GetBinWidth(1) )
     hcalb.Scale( hdata.Integral() / hcalb.Integral() )
+
 
     leg=ROOT.TLegend( 0.2, 0.67, 0.8, 0.85 )
     leg.SetTextAlign(32)
@@ -131,8 +133,9 @@ def ShowOriginalDist(pad, etaregion, varname, figFrags=FigPartContainer()):
     leg.SetFillStyle(4000)
 
     pad.cd()
-    hdata.GetXaxis().SetLabelSize(0)
-    hdata.Draw('axis')
+    hh=hdata if hdata.GetMaximum() > hsimu.GetMaximum() else hsimu
+    hh.GetXaxis().SetLabelSize(0)
+    hh.Draw('axis')
     hsimu.Draw('hist same')
     hcalb.Draw('hist same')
     hdata.Draw('e0 p same')
@@ -177,7 +180,7 @@ def ShowOriginalDist_1(pad, etaregion, varname, figFrags=FigPartContainer()):
     PlotObjectMgr.HistSetting_Visualization_data( hdata, LineWidth_ =2, MarkerSize_=4 )
     PlotObjectMgr.HistSetting_GeneralStyling    ( hdata, xlabel_=varname, ylabel_='Entries / %.1e' % hdata.GetBinWidth(1) )
 
-    PlotObjectMgr.HistSetting_Visualization_MC  ( hcalb, LineColor_ = 46, FillColor_=46, FillStyle_=1 )
+    PlotObjectMgr.HistSetting_Visualization_MC  ( hcalb, LineColor_ = 2, FillColor_=2, FillStyle_=1 )
     PlotObjectMgr.HistSetting_GeneralStyling    ( hcalb, xlabel_=varname, ylabel_='Entries / %.1e' % hcalb.GetBinWidth(1) )
     hcalb.Scale( hdata.Integral() / hcalb.Integral() )
     hcalb.SetFillColor(hcalb.GetLineColor())
@@ -197,6 +200,7 @@ def ShowOriginalDist_1(pad, etaregion, varname, figFrags=FigPartContainer()):
     pad.cd()
     hdata.GetXaxis().SetLabelSize(0)
     hdata.Draw('axis')
+
     hcalb.Draw('hist same')
     hdata.Draw('e0 p same')
     leg.Draw()
@@ -238,77 +242,89 @@ if __name__ == "__main__":
 
     import xPhoton.analysis.SelectionsMgr as Selections
     pre_selections=[
-        Selections.DrawCutStr_ZmassWindow(),
-        Selections.DrawCutStr_data_PurifyZ(),
+        #Selections.DrawCutStr_ZmassWindow(),
+        "Z.mumuMass < 80 && (mu1.deltaR<0.8) &&((mu0.idbit>>2)&1)&&((mu0.idbit>>9)&1)",
+        #"recoPt > 10",
+        #"chIsoRaw < 15. && phoIsoRaw < 15. && chWorstIso < 15.",
+        #"( (fabs(recoSCEta)<1.4442 && HoverE < 0.08 && sieieFull5x5 < 0.015) || (fabs(recoSCEta)>1.566 && HoverE < 0.05 && sieieFull5x5 < 0.045) )",
         ]
     listofvars=[]
     for eta in ('barrel','endcap'):
         selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
         selections.extend(pre_selections)
+        cut_zwindow='&&'.join( selections )
+        selections.append( Selections.DrawCutStr_ZmassWindow() )
         cut='&&'.join( selections )
 
-        hsetting='(100,60,120)'
-        varname='Zmass'
-        listofvars.append( (varname, eta) )
-        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting),
-                '&&'.join( [Selections.DrawCutStr_data_PurifyZ(), Selections.DrawCutStr_EtaRegion(eta)] )
-                )
-        tsimu.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting),
-                '&&'.join( [Selections.DrawCutStr_data_PurifyZ(), Selections.DrawCutStr_EtaRegion(eta)] )
-                )
+        sigsel = [ Selections.DrawCutStr_EtaRegion(eta), 'Z.isMatched==1' ]
+        sigsel.extend(pre_selections)
+        sigcut_zwindow='&&'.join( sigsel )
+        sigsel.append( Selections.DrawCutStr_ZmassWindow() )
+        sigcut = '&&'.join( sigsel )
 
-        hsetting='(10,-1.,1.)'
+        #hsetting='(100,50.,130.)'
+        #varname='ZrecoMass'
+        #tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        #tsimu.Draw('Z.recoMass                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+
+        hsetting='(20,-1.,1.)'
         varname='mva'
         listofvars.append( (varname, eta) )
+        print 'hdata.%s_%s'%(eta,varname)
         tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        #tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('mva                           >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('mva                           >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_mva                     >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        '''
-        hsetting='(40,0.,0.05)'
+        hsetting='(40,0.,0.035)'
         varname='scEtaWidth'
         listofvars.append( (varname, eta) )
         tdata.Draw('scEtaWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_scEtaWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('scEtaWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_scEtaWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        hsetting='(40,0.,0.2)'
+        hsetting='(40,0.,0.14)'
         varname='scPhiWidth'
         listofvars.append( (varname, eta) )
         tdata.Draw('scPhiWidth                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_scPhiWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('scPhiWidth                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_scPhiWidth              >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        hsetting='(40,0.,1.2)'
+        hsetting='(40,0.2,1.1)'
         varname='r9Full5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('r9Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_r9Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('r9Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_r9Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        hsetting='(40,0.2,1.)'
+        hsetting='(40,0.3,1.)'
         varname='s4Full5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('s4Full5x5                     >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_s4Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('s4Full5x5                     >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_s4Full5x5               >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        hsetting='(40,0.002,0.045)'
+        hsetting='(40,0.002,0.015)' if eta == 'barrel' else '(40,0.002,0.045)'
         varname='sieieFull5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('sieieFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_sieieFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('sieieFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_sieieFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        hsetting='(40,-0.0015,0.0015)' if eta == 'endcap' else '(40,-0.0002,0.0002)'
+        hsetting= '(40,-0.0001,0.0001)' if eta == 'barrel' else '(40,-0.0015,0.0015)'
         varname='sieipFull5x5'
         listofvars.append( (varname, eta) )
         tdata.Draw('sieipFull5x5                  >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_sieipFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('sieipFull5x5                  >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_sieipFull5x5            >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-        hsetting='(40,0.,1.)'
+        hsetting='(40,0.,0.5)'
         varname='esEnergyOverSCRawEnergy'
         listofvars.append( (varname, eta) )
         tdata.Draw('esEnergyOverSCRawEnergy       >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), cut)
-        '''
+        tsimu.Draw('esEnergyOverSCRawEnergy       >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
-
+    print("figure saving...");
     canv.Clear()
     upperpad=PlotObjectMgr.UpperPad()
     lowerpad=PlotObjectMgr.LowerPad()
@@ -316,9 +332,9 @@ if __name__ == "__main__":
     upperpad.Draw()
     lowerpad.Draw()
 
-    #plots=Mgr_2RatioPlot(upperpad,lowerpad)
-    plots=Mgr_1RatioPlot(upperpad,lowerpad)
+    plots2D=Mgr_2RatioPlot(upperpad,lowerpad)
+    #plots=Mgr_1RatioPlot(upperpad,lowerpad)
     for vname, etaregion in listofvars:
-        plots.DrawToCanvas(canv, etaregion, vname)
+        plots2D.DrawToCanvas(canv, etaregion, vname)
 
-        canv.SaveAs('ratiopresentplots.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )
+        canv.SaveAs('ratioplot.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )
