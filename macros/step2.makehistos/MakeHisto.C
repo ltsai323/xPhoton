@@ -56,6 +56,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
             {NUMBIN_PHOETA,NUMBIT_HLT} );
     HistMgr1D _h_HLTpass( "HLT_ebee.%d_bit%d_pass",
             {NUMBIN_PHOETA,NUMBIT_HLT} );
+    TH1F* _h_phopt = new TH1F("phoptDist", "overall pho pt distribution", 200, 0., 500.);
+    TH1F* _h_jetpt = new TH1F("jetptDist", "overall jet pt distribution", 200, 0., 500.);
 
     _h_BDT_all .SetXaxis( 100,-1.,1.);
     _h_BDT     .SetXaxis( 100,-1.,1.);
@@ -228,8 +230,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if ( jetPt < 30. ) continue;
         if ( fabs(jetEta) > 2.5 ) continue;
         if ( jetDeepCSVTags_c < -0.99 ) continue;
-        if ( jetID != 1 ) continue;
-        if ( jetPUIDbit != 7 ) continue;
+        if ( IsMC() && jetID != 1 ) continue;
+        if ( IsMC() && jetPUIDbit != 7 ) continue;
 
         //if ( mcweight>3000. ) continue;
         if ( extracut == 1 ){
@@ -326,9 +328,13 @@ void MakeHisto::Loop(Int_t extracut = 0)
             Fill(jetSubVtxMass                      , chIsoRaw,evtws_up);
         h_btagDeepCSV_secVtxMass_down   .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
             Fill(jetSubVtxMass                      , chIsoRaw,evtws_down);
+        _h_phopt->Fill(photonpt, eventweight);
+        _h_jetpt->Fill(jetPt, eventweight);
     }
 
     fout->cd();
+    _h_phopt->Write();
+    _h_jetpt->Write();
 
 
     _h_BDT     .Write(_h_BDT     .MakeDirectory(fout));
