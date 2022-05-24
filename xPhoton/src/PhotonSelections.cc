@@ -422,40 +422,87 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
     // 0 : EB, 1 : EE
     for ( int iBE = 0; iBE < 2; ++iBE )
     {
-   //if (!tmvaReader[iBE]) {
-     tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
- 
-     // add classification variables
-     tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9Full5x5);
-     tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
-     tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
-     if ( _dataEra == "2016ReReco" )
-         tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
-        if ( _dataEra == "UL2018" )
-             tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );	       
-     tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE);
-     tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth);
-     tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth);
-     if (iBE == 1) {
-         if ( _dataEra == "2016ReReco" )
+        //if (!tmvaReader[iBE]) {
+        tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
+
+        // add classification variables
+        /*
+           tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9Full5x5);
+           tmvaReader[iBE]->AddVariable( "sieieFull5x5",       	      &sieieFull5x5 );     
+           tmvaReader[iBE]->AddVariable( "sieipFull5x5",       	      &sieipFull5x5 );     
+           if ( _dataEra == "2016ReReco" )
+           tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );	       
+           if ( _dataEra == "UL2018" )
+           tmvaReader[iBE]->AddVariable( "s4Full5x5",    &s4Full5x5 );	       
+           tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE);
+           tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth);
+           tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth);
+           if (iBE == 1) {
+           if ( _dataEra == "2016ReReco" )
            tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE);
-         if ( _dataEra == "UL2018" )
+           if ( _dataEra == "UL2018" )
            tmvaReader[iBE]->AddVariable("esEnergyOverSCRawEnergy", &phoESEnToRawE);
-       tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR);
-     }
-     tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi);
-     tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta);
-     tmvaReader[iBE]->AddVariable("rho", &rho);
+           tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR);
+           }
+           tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi);
+           tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta);
+           tmvaReader[iBE]->AddVariable("rho", &rho);
+           */
+
+        if ( dataEra_ == "2016ReReco" )
+        {
+            // add classification variables
+            tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi);
+            tmvaReader[iBE]->AddVariable("r9", &phoR9Full5x5);
+            tmvaReader[iBE]->AddVariable( "sieieFull5x5",                 &sieieFull5x5 );     
+            tmvaReader[iBE]->AddVariable( "sieipFull5x5",                 &sieipFull5x5 );     
+            tmvaReader[iBE]->AddVariable( "s4 := e2x2Full5x5/e5x5Full5x5",    &s4Full5x5 );        
+            tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta);
+            tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE);
+            tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth);
+            tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth);
+            if (iBE == 1) {
+                tmvaReader[iBE]->AddVariable("ESEn := esEn/rawE", &phoESEnToRawE);
+                tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR);
+            }
+            tmvaReader[iBE]->AddVariable("rho", &rho);
+
+
+            //std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, dataEra_) << std::endl;
+            //tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, dataEra_) );
+        }
+        else
+        if ( dataEra_ == "UL2018" )
+        {
+            tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9Full5x5);
+            tmvaReader[iBE]->AddVariable( "sieieFull5x5", &sieieFull5x5 );
+            tmvaReader[iBE]->AddVariable( "sieipFull5x5", &sieipFull5x5 );     
+            tmvaReader[iBE]->AddVariable( "s4Full5x5", &s4Full5x5 );	       
+            tmvaReader[iBE]->AddVariable("rawE", &phoSCRawE );
+            tmvaReader[iBE]->AddVariable("scEtaWidth", &phoSCEtaWidth );
+            tmvaReader[iBE]->AddVariable("scPhiWidth", &phoSCPhiWidth );
+            if (iBE == 1)
+            {
+                tmvaReader[iBE]->AddVariable("esEnergyOverSCRawEnergy", &phoESEnToRawE );
+                tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR );
+            }
+            tmvaReader[iBE]->AddVariable("recoPhi", &phoPhi );
+            tmvaReader[iBE]->AddVariable("recoSCEta", &phoSCEta );
+            tmvaReader[iBE]->AddVariable("rho", &rho);
+
+
+            //std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, dataEra_) << std::endl;
+            //tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, dataEra_) );
+        }
 
 
 
 
- 
- 
-     std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) << std::endl;
-     tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) );
-   }
-}
+
+        std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) << std::endl;
+        tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) );
+    }
+    }
 PhotonMVACalculator::~PhotonMVACalculator()
 {
     _data = nullptr;

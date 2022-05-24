@@ -5,8 +5,8 @@
 // found on file: /home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root
 //////////////////////////////////////////////////////////
 
-#ifndef MakeHisto_h
-#define MakeHisto_h
+#ifndef MakeBinning_h
+#define MakeBinning_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -16,7 +16,7 @@
 
 // Header file for the classes stored in the TTree if any.
 
-class MakeHisto {
+class MakeBinning {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -68,8 +68,7 @@ public :
    Float_t         esRR;
    Float_t         esEn;
    Float_t         mva;
-   Float_t         calib_mva;
-   //Float_t         mva_nocorr;
+   Float_t         mva_nocorr;
    Float_t         photonIDmva;
    Int_t           phoIDbit;
    Float_t         MET;
@@ -204,8 +203,7 @@ public :
    TBranch        *b_esRR;   //!
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
-   //TBranch        *b_mva_nocorr;   //!
-   TBranch        *b_calib_mva;   //!
+   TBranch        *b_mva_nocorr;   //!
    TBranch        *b_photonIDmva;   //!
    TBranch        *b_phoIDbit;   //!
    TBranch        *b_MET;   //!
@@ -295,10 +293,10 @@ public :
    //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
    TBranch        *b_isQCD;   //!
 
-   MakeHisto(Int_t option=0);
-   MakeHisto(const char* fname, const char* outputlabel_, bool isMC);
+   MakeBinning(Int_t option=0);
+   MakeBinning(const char* fname, const char* outputlabel_, bool isMC);
    void fitVarsInit();
-   virtual ~MakeHisto();
+   virtual ~MakeBinning();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
@@ -341,8 +339,8 @@ public :
 
 #endif
 
-#ifdef MakeHisto_cxx
-MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0)
+#ifdef MakeBinning_cxx
+MakeBinning::MakeBinning(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0)
 {
   printf("option %d \n", option);
   TChain *tc = new TChain("t");
@@ -402,7 +400,7 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLT
   _outputlabel="hi";
   Init(tc);
 }
-MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) :
+MakeBinning::MakeBinning(const char* fname, const char* outputlabel_, bool isMC) :
     fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
 {
   printf("Input file name is : %s", fname);
@@ -412,19 +410,19 @@ MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) :
   Init(tc);
 }
 
-MakeHisto::~MakeHisto()
+MakeBinning::~MakeBinning()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
 
-Int_t MakeHisto::GetEntry(Long64_t entry)
+Int_t MakeBinning::GetEntry(Long64_t entry)
 {
 // Read contents of entry.
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
-Long64_t MakeHisto::LoadTree(Long64_t entry)
+Long64_t MakeBinning::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
    if (!fChain) return -5;
@@ -437,7 +435,7 @@ Long64_t MakeHisto::LoadTree(Long64_t entry)
    return centry;
 }
 
-void MakeHisto::Init(TTree *tree)
+void MakeBinning::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -511,13 +509,12 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    if ( IsMC() )
    {
-   //fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
-   fChain->SetBranchAddress("calib_mva", &calib_mva, &b_calib_mva);
+   fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
    }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
-   if (!IsMC() )
+   if ( IsMC() )
    {
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
    }
@@ -620,7 +617,7 @@ void MakeHisto::Init(TTree *tree)
    Notify();
 }
 
-Bool_t MakeHisto::Notify()
+Bool_t MakeBinning::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -631,14 +628,14 @@ Bool_t MakeHisto::Notify()
    return kTRUE;
 }
 
-void MakeHisto::Show(Long64_t entry)
+void MakeBinning::Show(Long64_t entry)
 {
 // Print contents of entry.
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
 }
-Int_t MakeHisto::Cut(Long64_t entry)
+Int_t MakeBinning::Cut(Long64_t entry)
 {
 // This function may be called from Loop.
 // returns  1 if entry is accepted.
@@ -646,7 +643,7 @@ Int_t MakeHisto::Cut(Long64_t entry)
    return 1;
 }
 
-bool MakeHisto::IsMC()
+bool MakeBinning::IsMC()
 { return fkMC; }
 struct HistMgr
 {
@@ -776,4 +773,4 @@ struct HistMgr2D : public HistMgr
     { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
     std::vector<TH2F*> hists;
 };
-#endif // #ifdef MakeHisto_cxx
+#endif // #ifdef MakeBinning_cxx

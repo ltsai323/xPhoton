@@ -76,7 +76,7 @@ class FittingWorkspace(ROOT.RooWorkspace):
         datahist_bkg=ROOT.RooDataHist( mybin.naming('dh_bkg.%d_%d_%d'), '', ROOT.RooArgList(var), hist_bkg )
         self.myImport(datahist_sig)
         self.myImport(datahist_bkg)
-        allnum=h_data.GetEntries()
+        allnum=datahist_data.sumEntries()
         mylog.debug('TwoComponentFit() : status 02: Creating signal PDF')
         pdf_sig=PDFComponent(
                 ROOT.RooHistPdf( mybin.naming('pdf_sig.%d_%d_%d'), '', ROOT.RooArgSet(var), datahist_sig, 0),
@@ -95,7 +95,7 @@ class FittingWorkspace(ROOT.RooWorkspace):
             #pdf_all.fitTo(datahist_data, ROOT.RooFit.PrintLevel(-1))
             pdf_all.fitTo(datahist_data)
         mylog.debug('TwoComponentFit() : status 06: import fit fragments into workspace.')
-        space.myImport(pdf_all)
+        self.myImport(pdf_all)
 
         print('-----------------------------------------------------')
         print('Data %5.1f events, and %5.1f fitted'%( datahist_data.sumEntries(), (pdf_sig.num.getVal()+pdf_bkg.num.getVal()) ))
