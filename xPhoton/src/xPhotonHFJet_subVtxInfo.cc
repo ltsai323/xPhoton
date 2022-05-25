@@ -387,7 +387,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
     outtree_->Branch("nhIsoRaw",     &nhIsoRaw,     "nhIsoRaw/F");
     outtree_->Branch("rho",          &rho,          "rho/F"); 
+    if (!data.HasMC() )
+    {
     outtree_->Branch("calib_chIso",  &calib_chIso, "calib_chIso/F");
+    }
 
     outtree_->Branch("rawE",         &rawE,         "rawE/F");
     outtree_->Branch("scEtaWidth",   &scEtaWidth,   "scEtaWidth/F");
@@ -1308,7 +1311,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
-            calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
+            calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
 
 
             rawE       = phoSCRawE[ipho];
