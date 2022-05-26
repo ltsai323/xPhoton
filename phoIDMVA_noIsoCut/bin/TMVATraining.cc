@@ -335,8 +335,8 @@ int main( int argc, char** argv )
    TCut mycuts = " (isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)<1.5";
    TCut mycutb = "!(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)<1.5";
    if (isEndcap == 1) {
-     mycuts = " (isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)>1.5";
-     mycutb = "!(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)>1.5";
+     mycuts =    " (isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)>1.5";
+     mycutb =    "!(isMatched==1||isConverted==1)&&isMatchedEle!=1&&TMath::Abs(recoSCEta)>1.5";
    }
 
    // for high pt photon
