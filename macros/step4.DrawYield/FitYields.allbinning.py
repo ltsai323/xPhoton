@@ -117,18 +117,24 @@ class FittingWorkspace(ROOT.RooWorkspace):
         xframe.SetTitle('')
         dataset.plotOn(xframe)
         xframe.SetMaximum( xframe.GetMaximum() * 1.5 )
-        pdf_all.plotOn(xframe, ROOT.RooFit.Name('fitpdf'),
-                ROOT.RooFit.FillColor(30),
-                ROOT.RooFit.LineColor(0),
-                ROOT.RooFit.DrawOption('F')
+        pdf_all.plotOn(xframe,
+                ROOT.RooFit.FillColor(0),
+                ROOT.RooFit.LineColor(2),
+                ROOT.RooFit.DrawOption('l')
                 )
         chi2Val=xframe.chiSquare()
 
         plotComponent(pdf_all, xframe, self.pdf(fitres['components'][1]), name='bkg',
-                fillcolor=42, fillstyle=1001, drawopt='f'
+                linecolor=1,linewidth=1,fillcolor=38, fillstyle=3001, drawopt='f'
                 )
         plotComponent(pdf_all, xframe, self.pdf(fitres['components'][0]), name='sig',
-                linewidth=7, linecolor=46, drawopt='l'
+                linecolor=1,linewidth=1,fillcolor=46, fillstyle=3002, drawopt='f'
+                )
+        pdf_all.plotOn(xframe, ROOT.RooFit.Name('fitpdf'),
+                ROOT.RooFit.FillColor(0),
+                ROOT.RooFit.LineColor(2),
+                ROOT.RooFit.LineWidth(4),
+                ROOT.RooFit.DrawOption('l')
                 )
         dataset.plotOn(xframe, ROOT.RooFit.MarkerSize(2))
         xframe.Draw()
@@ -140,13 +146,15 @@ class FittingWorkspace(ROOT.RooWorkspace):
         Nsig=self.var( mybin.naming('num_sig.%s_%s_%s') )
         Nbkg=self.var( mybin.naming('num_bkg.%s_%s_%s') )
         leg.AddEntry( dataset, 'Data', 'p')
-        leg.AddEntry( xframe.findObject('sig'), '#splitline{signal photon}{ = %.1f #pm %.1f}'%(Nsig.getVal(),Nsig.getError()), 'l' )
-        leg.AddEntry( xframe.findObject('fitpdf'), 'Fitting', 'f' )
+        leg.AddEntry( xframe.findObject('fitpdf'), 'Fitting', 'l' )
+        leg.AddEntry( xframe.findObject('sig'), '#splitline{signal photon}{ = %.1f #pm %.1f}'%(Nsig.getVal(),Nsig.getError()), 'f' )
         leg.AddEntry( xframe.findObject('bkg'), '#splitline{fake photon}{ = %.1f #pm %.1f}'%(Nbkg.getVal(),Nbkg.getError()), 'f' )
 
         leg.SetBorderSize(0)
         leg.SetNColumns(2)
-        leg.SetTextAlign(32)
+        #leg.SetTextAlign(32)
+        leg.SetFillColor(4000)
+        leg.SetFillStyle(4000)
         leg.Draw()
 
         print 'fitting quality : chi2/nDof = %.3f / %s = %.3f' % ( chi2Val, '10-2', chi2Val/8 )
