@@ -134,6 +134,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
         Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
         Float_t photonpt = recoPtCalib;
+        chIsoRaw = calib_chIso; // substitute with calib chIso.
 
         // if (Cut(ientry) < 0) continue;
         if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
@@ -371,7 +372,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
     h_btagDeepCSV_secVtxMass_down   .Write( btagdir );
 
     fout->Close();
-    //std::cerr << "hi-3\n";
 }
 
 

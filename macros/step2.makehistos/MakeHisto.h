@@ -58,6 +58,7 @@ public :
    Int_t           eleVeto;
    Float_t         HoverE;
    Float_t         chIsoRaw;
+   Float_t         calib_chIso;
    Float_t         chWorstRaw;
    Float_t         phoIsoRaw;
    Float_t         nhIsoRaw;
@@ -194,6 +195,7 @@ public :
    TBranch        *b_eleVeto;   //!
    TBranch        *b_HoverE;   //!
    TBranch        *b_chIsoRaw;   //!
+   TBranch        *b_calib_chIso;   //!
    TBranch        *b_chWorstIso;   //!
    TBranch        *b_phoIsoRaw;   //!
    TBranch        *b_nhIsoRaw;   //!
@@ -499,6 +501,10 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
    fChain->SetBranchAddress("chIsoRaw", &chIsoRaw, &b_chIsoRaw);
+   if (!IsMC() )
+   {
+   fChain->SetBranchAddress("calib_chIso", &calib_chIso, &b_calib_chIso);
+   }
    fChain->SetBranchAddress("chWorstRaw", &chWorstRaw, &b_chWorstIso);
    fChain->SetBranchAddress("phoIsoRaw", &phoIsoRaw, &b_phoIsoRaw);
    fChain->SetBranchAddress("nhIsoRaw", &nhIsoRaw, &b_nhIsoRaw);
