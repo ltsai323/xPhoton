@@ -1,0 +1,19 @@
+{
+    "summaryfile":"../data/summaryJson/summary_sigMC_pythia.json",
+    "dataera": 2016,
+    "isQCD": true,
+    "fileDict":{
+        "GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8": {
+            "v3-v2":
+                "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8.root"
+        },
+        "GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8": {
+            "v3-v2":
+                "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root"
+        },
+            "GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8": {
+                "v3-v1_backup":
+                    "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root"
+            }
+    }
+}

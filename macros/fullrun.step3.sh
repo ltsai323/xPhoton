@@ -28,7 +28,7 @@ cat > $tmpjson <<EOF
 }
 EOF
 
-root -b > logs/job_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin} 2> /dev/null <<EOF
+root -b > logs/job_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin}  <<EOF
 .L Draw_IsovsBDT.C+
 Draw_IsovsBDT("$tmpjson")
 EOF
@@ -36,4 +36,4 @@ done; done; done
 
 /bin/rm $tmpjson
 hadd -f ../isovsbdt_template.root iso_*.root
-#/bin/rm  iso_*.root
+/bin/rm  iso_*.root

@@ -1,8 +1,0 @@
-{
-    "luminosity": 59.96,
-    "MarkerStyle": 22,
-    "MarkerColor": 2,
-    "Label": "UL2018",
-    "DATfile": "../data.yield.dat",
-    "histnaming": "2018Yield_%d_%d"
-}

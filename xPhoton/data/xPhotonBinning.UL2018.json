@@ -1,0 +1,5 @@
+{
+    "dataera":"UL2018",
+    "InputFiles":[ "/home/ltsai/ReceivedFile/GJet/latestsample/UL2018/correctMVA/data.root" ],
+    "OutputFileName":"updated.root"
+}
