@@ -243,12 +243,16 @@ if __name__ == "__main__":
     import xPhoton.analysis.SelectionsMgr as Selections
     pre_selections=[
         #Selections.DrawCutStr_ZmassWindow(),
-        "Z.mumuMass < 80 && (mu1.deltaR<0.8) &&((mu0.idbit>>2)&1)&&((mu0.idbit>>9)&1)",
+        #"Z.mumuMass < 80 && (mu1.deltaR<0.8) &&((mu0.idbit>>2)&1)&&((mu0.idbit>>9)&1)",
+        #'((mu0.idbit>>2)&1)&&( (mu1.idbit>>2)&1) && Z.mumuMass < 80 && recoPt > 20'
+        #'((mu0.idbit>>2)&1)&&( (mu1.idbit>>2)&1) && Z.mumuMass < 80 && recoPt > 20 && officalIDmva>0'
+        "((mu0.idbit>>2)&1)&&( (mu1.idbit>>2)&1) && Z.mumuMass < 80 && recoPt > 20 && mu1.deltaR<0.3 && ((mu0.idbit>>18)&1) && mu0.recoPt > 25"
         #"recoPt > 10",
         #"chIsoRaw < 15. && phoIsoRaw < 15. && chWorstIso < 15.",
         #"( (fabs(recoSCEta)<1.4442 && HoverE < 0.08 && sieieFull5x5 < 0.015) || (fabs(recoSCEta)>1.566 && HoverE < 0.05 && sieieFull5x5 < 0.045) )",
         ]
     listofvars=[]
+    listofvars1D=[]
     for eta in ('barrel','endcap'):
         selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
         selections.extend(pre_selections)
@@ -262,11 +266,31 @@ if __name__ == "__main__":
         sigsel.append( Selections.DrawCutStr_ZmassWindow() )
         sigcut = '&&'.join( sigsel )
 
-        #hsetting='(100,50.,130.)'
-        #varname='ZrecoMass'
-        #tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        #tsimu.Draw('Z.recoMass                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
+        ### 1D comparison
+        hsetting='(30,60.,120.)'
+        varname='ZrecoMass'
+        listofvars1D.append( (varname,eta) )
+        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut_zwindow)
+        tsimu.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut_zwindow)
 
+        hsetting='(20,-1.,1.)'
+        varname='mva'
+        listofvars1D.append( (varname, eta) )
+        print 'hdata.%s_%s'%(eta,varname)
+        tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('calib_mva                     >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
+
+        # only for checking valid photon in Zmumug data sample
+        # sigsel = [ Selections.DrawCutStr_EtaRegion(eta), 'officalIDmva>0' ]
+        # sigsel.extend(pre_selections)
+        # sigcut_zwindow='&&'.join( sigsel )
+        # #sigsel.append( Selections.DrawCutStr_ZmassWindow() )
+        # sigsel.append( 'fabs(Z.recoMass-90) < 10' )
+        # sigcut = '&&'.join( sigsel )
+        # tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut_zwindow)
+        # tdata.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut_zwindow)
+
+        ### 2D comparison
         hsetting='(20,-1.,1.)'
         varname='mva'
         listofvars.append( (varname, eta) )
@@ -333,8 +357,12 @@ if __name__ == "__main__":
     lowerpad.Draw()
 
     plots2D=Mgr_2RatioPlot(upperpad,lowerpad)
-    #plots=Mgr_1RatioPlot(upperpad,lowerpad)
     for vname, etaregion in listofvars:
         plots2D.DrawToCanvas(canv, etaregion, vname)
 
         canv.SaveAs('ratioplot.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )
+    plots1D=Mgr_1RatioPlot(upperpad,lowerpad)
+    for vname, etaregion in listofvars1D:
+        plots1D.DrawToCanvas(canv, etaregion, vname)
+
+        canv.SaveAs('ratioplot1D.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )

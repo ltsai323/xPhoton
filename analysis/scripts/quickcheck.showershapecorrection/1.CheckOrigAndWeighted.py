@@ -246,7 +246,7 @@ if __name__ == "__main__":
         Selections.DrawCutStr_data_PurifyZ(),
         ]
     listofvars=[]
-    listofvars1d=[]
+    ### 2D comparison
     for eta in ('barrel','endcap'):
        # selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
        # selections.extend(pre_selections)
@@ -263,16 +263,10 @@ if __name__ == "__main__":
         sigsel.append( Selections.DrawCutStr_ZmassWindow() )
         sigcut = '&&'.join( sigsel )
 
-        hsetting='(100,50.,130.)'
-        varname='ZrecoMass'
-        listofvars1d.append( (varname, eta) )
-        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
-        tsimu.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
         hsetting='(20,-1.,1.)'
         varname='mva'
         listofvars.append( (varname, eta) )
-        print 'hdata.%s_%s'%(eta,varname)
         tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
         tsimu.Draw('mva_nocorr                    >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
         tsimu.Draw('mva                           >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
@@ -326,6 +320,35 @@ if __name__ == "__main__":
         tsimu.Draw('esEnergyOverSCRawEnergy       >> hsimu.%s_%s%s'%(eta,varname, hsetting), sigcut)
         tsimu.Draw('calib_esEnergyOverSCRawEnergy >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
 
+    ### 1D comparison
+    listofvars1d=[]
+    for eta in ('barrel','endcap'):
+        selections=[ Selections.DrawCutStr_EtaRegion(eta) ]
+        selections.extend(pre_selections)
+        cut_zwindow='&&'.join( selections )
+        selections.append( Selections.DrawCutStr_ZmassWindow() )
+        cut='&&'.join( selections )
+
+        sigsel = [ Selections.DrawCutStr_EtaRegion(eta), 'Z.isMatched==1' ]
+        sigsel.extend(pre_selections)
+        sigcut_zwindow='&&'.join( sigsel )
+        sigsel.append( Selections.DrawCutStr_ZmassWindow() )
+        sigcut = '&&'.join( sigsel )
+
+
+        hsetting='(100,50.,130.)'
+        varname='ZrecoMass'
+        listofvars1d.append( (varname, eta) )
+        tdata.Draw('Z.recoMass                    >> hdata.%s_%s%s'%(eta,varname, hsetting), cut_zwindow)
+        tsimu.Draw('Z.recoMass                    >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut_zwindow)
+        hsetting='(20,-1.,1.)'
+        varname='mva'
+        listofvars1d.append( (varname, eta) )
+        print 'hdata.%s_%s'%(eta,varname)
+        tdata.Draw('mva                           >> hdata.%s_%s%s'%(eta,varname, hsetting), cut)
+        tsimu.Draw('mva                           >> hcalb.%s_%s%s'%(eta,varname, hsetting), sigcut)
+
+
     print("figure saving...");
     canv.Clear()
     upperpad=PlotObjectMgr.UpperPad()
@@ -343,5 +366,5 @@ if __name__ == "__main__":
     for vname, etaregion in listofvars1d:
         plots1.DrawToCanvas(canv, etaregion, vname)
 
-        canv.SaveAs('ratioplot.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )
+        canv.SaveAs('ratioplot1D.%s.%s_%s.pdf' % (args.tag,etaregion,vname) )
 
