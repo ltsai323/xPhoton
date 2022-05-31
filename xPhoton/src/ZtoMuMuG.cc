@@ -6,6 +6,7 @@
 #include "xPhoton/xPhoton/interface/histMgr.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
+#include "xPhoton/xPhoton/interface/RhoCorrection.h"
 #include <TLorentzVector.h>
 #include <map>
 #include <TNtuple.h>
@@ -69,6 +70,7 @@ void ZtoMuMuG(
     // -1: the total number of events.
     //  n: n electrons matched in each event.
     hists.Create("nEleMatched", 5, 0, 5);
+    hists.Create("nTrigMuon", 5, 0., 5. );
 
     hists.Create("DeltaR", BINNING, 0., 0.10);
     hists.Create("ptratio", BINNING, 0., 2.0);
@@ -84,7 +86,6 @@ void ZtoMuMuG(
     hists.Create("numGenZee", 4, 0., 4.);
     hists.Create("NumMuonPassedHLT", 4, 0., 4.);
     hists.Create("MuonHLTPassedBits", 32, 0., 32.);
-    hists.Create("HLTEleMuXEvt", 64, 0., 64);
 
     std::string dataEra = "UL2018";
     ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
@@ -103,6 +104,7 @@ void ZtoMuMuG(
         // 3. build reco Z candidate
         // 4. fill tree
         // 5. load photon mva
+        data.GetTree()->GetEntry(ev);
         data.GetEntry(ev);
         if ( data.HasMC() )
         {
@@ -111,16 +113,13 @@ void ZtoMuMuG(
                 if ( data.GetFloat("genWeight") != 1. )
                     hasNon1Val = 1;
         }
-        Long64_t kkk = data.GetLong64("HLTEleMuX");
-        for ( int ibit = 0; ibit < 64; ++ibit ) if ( (kkk>>ibit)&1 ) hists.FillStatus("HLTEleMuXEvt", ibit);
 
 
-        LOG_DEBUG(" check point 01");
         std::vector<TLorentzCand> trigMuons = TriggeredMuons(&data);
+        hists.FillStatus("nTrigMuon", trigMuons.size() );
         if ( trigMuons.size() < 2 ) continue;
 
         int nZCand = 0;
-        LOG_DEBUG(" check point 02");
 
         std::vector<TLorentzCand> photons = RecoPhoton(&data);
         LOG_DEBUG(" number of reco photon : %d", int(photons.size()) );
@@ -130,8 +129,10 @@ void ZtoMuMuG(
             for ( unsigned mu1Idx = mu0Idx + 1 ; mu1Idx < trigMuons.size(); ++mu1Idx )
             {
                 std::vector<TLorentzCand> selectedPhoton;
+                selectedPhoton.clear();
                 for ( auto photon : photons )
                 {
+                    if (!PassPhotonPreselection(&data, photon) ) continue;
                     TLorentzCand ZcandP4;
                     TLorentzCand mumuP4;
                     mumuP4 = trigMuons[mu0Idx] + trigMuons[mu1Idx];
@@ -154,7 +155,6 @@ void ZtoMuMuG(
                     
                 for ( auto photon : selectedPhoton )
                 {
-                    LOG_DEBUG("starting to fill event");
                     ClearStruct(&record_photon);
                     ClearStruct(&record_Mu[0]);
                     ClearStruct(&record_Mu[1]);
@@ -178,8 +178,7 @@ void ZtoMuMuG(
                     record_photon.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
                     record_photon.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
                                                  data.GetPtrFloat("phoESEnP2")[recoIdx];
-                    record_photon.mva          = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
-                    record_photon.mva_nocorr   = mvaloader.GetMVA_noIso(recoIdx);
+                    record_photon.mva          = mvaloader.GetMVA_noIso(recoIdx);
                     record_photon.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
                     record_photon.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
                     record_photon.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
@@ -187,6 +186,10 @@ void ZtoMuMuG(
                     record_photon.sipipFull5x5 = data.GetPtrFloat("phoSigmaIPhiIPhiFull5x5")[recoIdx];
                     record_photon.s4Full5x5    = data.GetPtrFloat("phoE2x2Full5x5")[recoIdx] /
                                                  data.GetPtrFloat("phoE5x5Full5x5")[recoIdx];
+                    record_photon.calib_chIso  = CorrectedRho(
+                            data.GetPtrFloat("phoPFChIso")[recoIdx],
+                            data.GetFloat("rho"),
+                            EffectiveArea_ChIso( record_photon.recoSCEta,"UL2018") );
                     record_photon.esEnergyOverSCRawEnergy = record_photon.esEn / record_photon.rawE;
 
                     record_photon.isMatched    = photon.genidx() >= 0;
@@ -198,11 +201,9 @@ void ZtoMuMuG(
                         int genIdx = photon.genidx();
                     record_photon.mcPt         = genIdx < 0 ? 0 : data.GetPtrFloat("mcPt")[genIdx];
                     record_photon.mcEta        = genIdx < 0 ? 0 : data.GetPtrFloat("mcEta")[genIdx];
-                    
-                    
+
                     ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, recoIdx);
                     SScorr.CalculateCorrections();
-
                     record_photon.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
                     record_photon.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
                     record_photon.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
@@ -210,6 +211,7 @@ void ZtoMuMuG(
                     record_photon.scEtaWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
                     record_photon.scPhiWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
                     record_photon.esEnergyOverSCRawEnergy_corrected = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+                    record_photon.calib_mva    = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
                     }
 
                 // add Mu block
@@ -217,10 +219,12 @@ void ZtoMuMuG(
                 record_Mu[0].recoEta = trigMuons[mu0Idx].Eta();
                 record_Mu[0].deltaR  = trigMuons[mu0Idx].DeltaR(photon);
                 record_Mu[0].trg     = data.GetPtrLong64("muFiredTrgs")[ trigMuons[mu0Idx].idx() ];
+                record_Mu[0].idbit   = data.GetPtrInt("muIDbit")[ trigMuons[mu0Idx].idx() ];
                 record_Mu[1].recoPt  = trigMuons[mu1Idx].Pt();
                 record_Mu[1].recoEta = trigMuons[mu1Idx].Eta();
                 record_Mu[1].deltaR  = trigMuons[mu1Idx].DeltaR(photon);
                 record_Mu[1].trg     = data.GetPtrLong64("muFiredTrgs")[ trigMuons[mu1Idx].idx() ];
+                record_Mu[1].idbit   = data.GetPtrInt("muIDbit")[ trigMuons[mu1Idx].idx() ];
                 // ZcandP4 does not exist
 
                 TLorentzCand mumuP4 = trigMuons[mu0Idx] + trigMuons[mu1Idx];
@@ -228,14 +232,25 @@ void ZtoMuMuG(
 
                 if ( data.HasMC() )
                 {
-                    int ZMCidx = data.GetPtrInt("mcMomPID")[mumuP4.daughters().at(0).idx()];
+                    //int ZMCidx = data.GetPtrInt("mcMomPID")[mumuP4.daughters().at(0).idx()];
                 record_Z.mcPt      = 0;
                 }
                 record_Z.recoMass  = ZcandP4.M();
                 record_Z.recoPt    = ZcandP4.Pt();
-                record_Z.isMatched = trigMuons[mu0Idx].genidx() >= 0 && trigMuons[mu1Idx].genidx() >= 0;
+                //record_Z.isMatched = trigMuons[mu0Idx].genidx() >= 0 && trigMuons[mu1Idx].genidx() >= 0;
+                int isMatchedZ = 0;
+                if ( data.HasMC() )
+                {
+                    int mcIdx0 = trigMuons[mu0Idx].genidx();
+                    int mcIdx1 = trigMuons[mu1Idx].genidx();
+                    //Int_t* stat = data.GetPtrInt("mcStatus");
+                    //int isMatchedZ = mcIdx0>=0 && mcIdx1>=0 && !(stat[mcIdx0]==1 && stat[mcIdx1]==1);
+                    isMatchedZ = mcIdx0>=0 && mcIdx1>=0 && photon.genidx()>=0;
+                }
+                record_Z.isMatched = isMatchedZ;
                 record_Z.mumuMass  = mumuP4.M();
                 record_Z.mumuPt    = mumuP4.Pt();
+                record_Z.charge    = trigMuons[mu0Idx].charge() + trigMuons[mu1Idx].charge();
                 record_Z.eventOrder = nZCand++;
 
                 record_evt.run               = data.GetInt("run"); 
@@ -267,7 +282,6 @@ void ZtoMuMuG(
                 outtree_->Fill();
                 }
             }} // end of muon candidate
-        LOG_DEBUG("one event ended");
     }
     LOG_DEBUG("event loop ended");
     
@@ -291,7 +305,7 @@ void ZtoMuMuG(
 }
 void ZtoMuMuG(std::string ipath, int outID)
 {
-   char fname[200];
+   //char fname[200];
    std::vector<std::string> pathes;
 
    pathes.push_back(ipath);
@@ -337,13 +351,38 @@ std::vector<TLorentzCand> TriggeredMuons(TreeReader* dataptr)
     Int_t* muTrkLayers= dataptr->GetPtrInt("muTrkLayers");
 
     Long64_t* trg = dataptr->GetPtrLong64("muFiredTrgs");
+    Int_t* muBit       = dataptr->GetPtrInt("muIDbit");
+
+// https://github.com/ltsai323/ggAnalysis/blob/106X/ggNtuplizer/plugins/ggNtuplizer_muons.cc
+//    if (iMu->passed(reco::Muon::CutBasedIdLoose))        tmpmuIDbit += pow(2,  0);
+//    if (iMu->passed(reco::Muon::CutBasedIdMedium))       tmpmuIDbit += pow(2,  1);
+//    if (iMu->passed(reco::Muon::CutBasedIdMediumPrompt)) tmpmuIDbit += pow(2,  2);
+//    if (iMu->passed(reco::Muon::CutBasedIdTight))        tmpmuIDbit += pow(2,  3);
+//    if (iMu->passed(reco::Muon::CutBasedIdGlobalHighPt)) tmpmuIDbit += pow(2,  4);
+//    if (iMu->passed(reco::Muon::CutBasedIdTrkHighPt))    tmpmuIDbit += pow(2,  5);
+//    if (iMu->passed(reco::Muon::PFIsoVeryLoose))         tmpmuIDbit += pow(2,  6);
+//    if (iMu->passed(reco::Muon::PFIsoLoose))             tmpmuIDbit += pow(2,  7);
+//    if (iMu->passed(reco::Muon::PFIsoMedium))            tmpmuIDbit += pow(2,  8);
+//    if (iMu->passed(reco::Muon::PFIsoTight))             tmpmuIDbit += pow(2,  9);
+//    if (iMu->passed(reco::Muon::PFIsoVeryTight))         tmpmuIDbit += pow(2, 10);
+//    if (iMu->passed(reco::Muon::TkIsoLoose))             tmpmuIDbit += pow(2, 11);
+//    if (iMu->passed(reco::Muon::TkIsoTight))             tmpmuIDbit += pow(2, 12);
+//    if (iMu->passed(reco::Muon::SoftCutBasedId))         tmpmuIDbit += pow(2, 13);
+//    if (iMu->passed(reco::Muon::SoftMvaId))              tmpmuIDbit += pow(2, 14);
+//    if (iMu->passed(reco::Muon::MvaLoose))               tmpmuIDbit += pow(2, 15);
+//    if (iMu->passed(reco::Muon::MvaMedium))              tmpmuIDbit += pow(2, 16);
+//    if (iMu->passed(reco::Muon::MvaTight))               tmpmuIDbit += pow(2, 17);
+//    if (iMu->passed(reco::Muon::MiniIsoLoose))           tmpmuIDbit += pow(2, 18);
+//    if (iMu->passed(reco::Muon::MiniIsoMedium))          tmpmuIDbit += pow(2, 19);
+//    if (iMu->passed(reco::Muon::MiniIsoTight))           tmpmuIDbit += pow(2, 20);
+//    if (iMu->passed(reco::Muon::MiniIsoVeryTight))       tmpmuIDbit += pow(2, 21);
 
     std::vector<TLorentzCand> outputs;
     int testidx = 0;
     for ( Int_t idx = 0; idx < nCand; ++idx )
     {
         for ( int ibit = 0; ibit < 32; ++ibit ) if ( (trg[idx]>>ibit)&1 ) hists.FillStatus("MuonHLTPassedBits", ibit);
-        if ( !((muType[idx]>>WP_GM)&1) && !((muType[idx]>>WP_GM)&1) ) continue;
+        if ( !((muType[idx]>>WP_GM)&1) && !((muType[idx]>>WP_PF)&1) ) continue;
         if ( fabs(eta[idx]) > 2.4 ) continue;
 
         if ( muChi2NDF[idx] > 10 ) continue;
@@ -355,6 +394,7 @@ std::vector<TLorentzCand> TriggeredMuons(TreeReader* dataptr)
         if ( muTrkLayers[idx] < 6 ) continue;
         if (((trg[idx]>>PASS_HLTBIT)&1) ) hists.FillStatus("NumMuonPassedHLT", testidx++);
         if ( pt[idx] < 20. ) continue; // asdf not to use HLT due to nothing stored in ggAnalysis
+        if (!((muBit[idx]>>1)&1) ) continue; // medium cut based ID
 
         TLorentzCand output(
                     idx,
@@ -388,7 +428,8 @@ void RegBranchZMuMu( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"esRR").c_str()               ,&var->esRR         , (name+"esRR/F").c_str()             );
     t->Branch( (name+"esEn").c_str()               ,&var->esEn         , (name+"esEn/F").c_str()             );
     t->Branch( (name+"mva").c_str()                ,&var->mva          , (name+"mva/F").c_str()              );
-    t->Branch( (name+"mva_nocorr").c_str()         ,&var->mva_nocorr   , (name+"mva_nocorr/F").c_str()       );
+    t->Branch( (name+"calib_mva").c_str()          ,&var->calib_mva    , (name+"calib_mva/F").c_str()        );
+    t->Branch( (name+"calib_chIso").c_str()        ,&var->calib_chIso  , (name+"calib_chIso/F").c_str()      );
     t->Branch( (name+"officalIDmva").c_str()       ,&var->officalIDmva , (name+"officalIDmva/F").c_str()     );
     t->Branch( (name+"r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+"r9Full5x5/F").c_str()        );
     t->Branch( (name+"sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+"sieieFull5x5/F").c_str()     );
@@ -421,6 +462,7 @@ void RegBranchZMuMu( TTree* t, const std::string& name, rec_Z* var )
     t->Branch( (name+".mumuPt"  ).c_str()       ,&var->mumuMass  , (name+".mumuPt/F"  ).c_str()   );
 
     t->Branch( (name+".eventOrder").c_str()     ,&var->isMatched , (name+".eventOrder/I").c_str()  );
+    t->Branch( (name+".charge"    ).c_str()     ,&var->isMatched , (name+".charge/I")    .c_str()  );
     t->Branch( (name+".isMatched").c_str()      ,&var->isMatched , (name+".isMatched/I").c_str()  );
 }
 void RegBranchZMuMu( TTree* t, const std::string& name, rec_Mu* var )
@@ -429,6 +471,7 @@ void RegBranchZMuMu( TTree* t, const std::string& name, rec_Mu* var )
     t->Branch( (name+".recoEta").c_str()        ,&var->recoEta   , (name+".recoEta/F").c_str()    );
     t->Branch( (name+".deltaR").c_str()         ,&var->deltaR    , (name+".deltaR/F").c_str()     );
     t->Branch( (name+".trg").c_str()            ,&var->trg       , (name+".trg/L").c_str()        );
+    t->Branch( (name+".idbit").c_str()          ,&var->idbit     , (name+".idbit/L").c_str()      );
 }
 void RegBranchZMuMu( TTree* t, const string& name, rec_Event* var )
 {
@@ -457,7 +500,7 @@ bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
     //const int HLTWP = 3;
 
     unsigned idx = cand.idx();
-    LOG_DEBUG("cand idx = %d / %d", idx , dataptr->GetInt("nPho") );
+    //LOG_DEBUG("cand idx = %d / %d", idx , dataptr->GetInt("nPho") );
     Float_t Et            = dataptr->GetPtrFloat("phoCalibEt")[idx];
     Float_t Eta           = dataptr->GetPtrFloat("phoSCEta")[idx];
     Float_t SigmaIetaIeta = dataptr->GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[idx];
@@ -491,17 +534,19 @@ bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& cand)
 int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand)
 {
     const int NOTHING_MATCHED=-1;
+    //const double CUT_DELTA_R = 0.20;
     const double CUT_DELTA_R = 0.20;
-    const double CUT_PT_RATIO = 1.0;
+    //const double CUT_PT_RATIO = 1.0;
+    const double CUT_PT_RATIO = 0.3;
     const int PID_Z = 23;
     const int PID_MUON = 13;
-    const int STATUS_FINALSTATE = 3;
+    //const int STATUS_FINALSTATE = 3;
     if (!dataptr->HasMC() ) return NOTHING_MATCHED;
 
     Int_t  nMC_         = dataptr->GetInt("nMC");
     Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
     Int_t* genMomPID_   = dataptr->GetPtrInt("mcMomPID");
-    Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
+    //Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
 
     Float_t* genpt_     = dataptr->GetPtrFloat("mcPt");
     Float_t* geneta_    = dataptr->GetPtrFloat("mcEta");
@@ -509,7 +554,8 @@ int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand)
 
 
     for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
-        if ( abs(genPID_[iMC]) == PID_MUON && genStatus_[iMC] <= STATUS_FINALSTATE && genMomPID_[iMC] == PID_Z )
+        if ( abs(genPID_[iMC]) == PID_MUON && genMomPID_[iMC] == PID_Z )
+        //if ( abs(genPID_[iMC]) == PID_MUON && genStatus_[iMC] <= STATUS_FINALSTATE && genMomPID_[iMC] == PID_Z )
         {
             TLorentzCand genCand(iMC,
                     genPID_[iMC] == PID_MUON ? -1 : 1, // charge
@@ -520,8 +566,8 @@ int FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand)
 
             double deltaR = genCand.DeltaR(recoCand);
             double ptratio = (recoCand.Pt()-genCand.Pt()) / genCand.Pt();
-            hists.Fill("DeltaR", deltaR);
-            hists.Fill("ptratio", ptratio);
+            if ( ptratio < CUT_PT_RATIO ) hists.Fill("DeltaR", deltaR);
+            if ( deltaR < CUT_DELTA_R   ) hists.Fill("ptratio", ptratio);
             if ( deltaR < CUT_DELTA_R && ptratio < CUT_PT_RATIO )
                 return iMC;
         }
@@ -535,14 +581,13 @@ int FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand)
     const int PID_Z = 23;
     const int PID_MUON = 13;
     const int PID_PHOTON = 22;
-    const int STATUS_FINALSTATE = 3;
     if (!dataptr->HasMC() ) return NOTHING_MATCHED;
 
     Int_t  nMC_         = dataptr->GetInt("nMC");
     Int_t* genPID_      = dataptr->GetPtrInt("mcPID");
     Int_t* genMomPID_   = dataptr->GetPtrInt("mcMomPID");
-    Int_t* genGMomPID_  = dataptr->GetPtrInt("mcGMomPID");
-    Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
+    //Int_t* genGMomPID_  = dataptr->GetPtrInt("mcGMomPID");
+    //Int_t* genStatus_   = dataptr->GetPtrInt("mcStatus");
 
     Float_t* genpt_     = dataptr->GetPtrFloat("mcPt");
     Float_t* geneta_    = dataptr->GetPtrFloat("mcEta");
@@ -550,7 +595,7 @@ int FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand)
 
 
     for ( Int_t iMC = 0; iMC < nMC_; ++iMC )
-        if ( genPID_[iMC] == PID_PHOTON && abs(genMomPID_[iMC]) == PID_MUON && genMomPID_[iMC] == PID_Z )
+        if ( genPID_[iMC] == PID_PHOTON && (abs(genMomPID_[iMC]) == PID_MUON || genMomPID_[iMC] == PID_Z) )
         {
             TLorentzCand genCand(iMC,
                     0, // charge
@@ -561,8 +606,8 @@ int FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand)
 
             double deltaR = genCand.DeltaR(recoCand);
             double ptratio = (recoCand.Pt()-genCand.Pt()) / genCand.Pt();
-            hists.Fill("DeltaR", deltaR);
-            hists.Fill("ptratio", ptratio);
+            //hists.Fill("DeltaR", deltaR);
+            //hists.Fill("ptratio", ptratio);
             if ( deltaR < CUT_DELTA_R && ptratio < CUT_PT_RATIO )
                 return iMC;
         }
