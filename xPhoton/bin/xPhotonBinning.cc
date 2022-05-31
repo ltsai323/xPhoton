@@ -89,6 +89,7 @@ const char* GetJsonFromArg( int argc, char** argv )
 void record_BinnedXPhoton::RegBranch( TTree* t )
 {
     t->Branch("region_pho"         ,&region_pho         , "region_pho/I");        
+    t->Branch("region_phoOrig"     ,&region_phoOrig     , "region_phoOrig/I");        
     t->Branch("bin_phopt"          ,&bin_phopt          , "bin_phopt/I");         
     t->Branch("bin_phoeta"         ,&bin_phoeta         , "bin_phoeta/I");        
     t->Branch("bin_jeteta"         ,&bin_jeteta         , "bin_jeteta/I");        
@@ -145,42 +146,34 @@ bool EventFragmentCollector::passedJetSelection(TreeReader* data)
 }
 void EventFragmentCollector::recordEvent(TreeReader* data, record_BinnedXPhoton& ovar)
 {
-    //ovar.region_pho         = BinningMethod::SignalPhoton( data->HasMC() ?
-    //                            data->GetFloat("chIsoRaw") : data->GetFloat("calib_chIso") );
-    ovar.region_pho         = BinningMethod::SignalPhoton( data->GetFloat("chIsoRaw") );
+    ovar.region_pho         = BinningMethod::SignalPhoton( data->HasMC() ?
+                                data->GetFloat("chIsoRaw") : data->GetFloat("calib_chIso") );
+    ovar.region_phoOrig     = BinningMethod::SignalPhoton( data->GetFloat("chIsoRaw") );
     ovar.bin_phopt          = BinningMethod::PtBin( data->GetFloat("recoPtCalib"), _ptrange );
     ovar.bin_phoeta         = BinningMethod::EtaBin( data->GetFloat("recoSCEta") );
     ovar.bin_jeteta         = BinningMethod::EtaBin( data->GetFloat("jetEta") );
     ovar.bin_phoHLT         = 0;
     ovar.bin_matchedphostat = BinningMethod::PhoMatchStatus(data);
     ovar.bin_evtparity      = _eventRec % 2;
+    ovar.bin_jetflvr        = data->HasMC() ? BinningMethod::JetFlavourBin( data->GetInt("jetHadFlvr") ) : -1;
+
     ovar.jetSel             = passedJetSelection(data) ? 1 : 0;
     ovar.isMatched          = data->HasMC() ? data->GetInt("isMatched") : 0;
 
 
     ovar.mva                = data->GetFloat("mva");
+    ovar.calib_mva          = data->HasMC() ? data->GetFloat("calib_mva") : 0;
     ovar.phoIsoRaw          = data->GetFloat("phoIsoRaw");
     ovar.chIsoRaw           = data->GetFloat("chIsoRaw");
-    //ovar.calib_chIsoRaw     = data->GetFloat("calib_chIsoRaw");
-    ovar.calib_chIsoRaw     = 0;
+    ovar.calib_chIsoRaw     = data->GetFloat("calib_chIso");
 
     ovar.btag_BvsAll        = data->GetFloat("jetDeepCSVDiscriminatorTags_BvsAll");
     ovar.btag_CvsL          = data->GetFloat("jetDeepCSVDiscriminatorTags_CvsL");
     ovar.btag_CvsB          = data->GetFloat("jetDeepCSVDiscriminatorTags_CvsB");
     ovar.btag_secvtxmass    = data->GetFloat("jetSubVtxMass");
 
-    ovar.w_evt              = 1.;
-    ovar.w_central          = 1.;
-    ovar.w_up               = 1.;
-    ovar.w_down             = 1.;
-
-
-    if (!data->HasMC() ) return;
-    ovar.bin_jetflvr        = BinningMethod::JetFlavourBin( data->GetInt("jetHadFlvr") );
-    ovar.calib_mva          = data->GetFloat("calib_mva");
-
-    ovar.w_evt              = data->GetFloat("mcweight") * data->GetFloat("puwei");
-    ovar.w_central          = data->GetFloat("jetSF.DeepCSV.central");
+    ovar.w_evt              = data->HasMC() ? data->GetFloat("mcweight") * data->GetFloat("puwei") : 1.;
+    ovar.w_central          = data->HasMC() ? data->GetFloat("jetSF.DeepCSV.central") : 1.;
 
     if ( ovar.bin_jetflvr == 2 )
     {
@@ -197,7 +190,11 @@ void EventFragmentCollector::recordEvent(TreeReader* data, record_BinnedXPhoton&
         ovar.w_up           = data->GetFloat("jetSF.DeepCSV.up_lf");
         ovar.w_down         = data->GetFloat("jetSF.DeepCSV.down_lf");
     }
-    else throw "error jet flavor found!\n";
+    else
+    {
+        ovar.w_up           = 1.;
+        ovar.w_down         = 1.;
+    }
     return;
 }
 std::vector<float> BinningMethod::ptranges( std::string dataera )

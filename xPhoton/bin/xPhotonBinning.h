@@ -15,7 +15,7 @@ struct JsonInfo
 
 struct record_BinnedXPhoton
 {
-    Int_t bin_phopt, bin_phoeta, bin_jeteta, bin_phoHLT, region_pho;
+    Int_t bin_phopt, bin_phoeta, bin_jeteta, bin_phoHLT, region_pho, region_phoOrig;
     Int_t bin_matchedphostat, bin_evtparity, bin_jetflvr;
     Int_t jetSel;
     Int_t isMatched;
