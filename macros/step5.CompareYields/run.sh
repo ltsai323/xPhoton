@@ -1,5 +1,8 @@
+#!/usr/bin/env sh
+arg_trg=arg_2015incl.json
+arg_cmp=$1
 
 root -b <<EOF
-.L yield_cmp_plot.C
-yield_cmp_plot()
+.L CompareYields.C
+CompareYields("$arg_trg","$arg_cmp")
 EOF
