@@ -51,7 +51,7 @@ if __name__ == '__main__':
         for ver, rootfile in info.iteritems():
             print rootfile
             xs=GetXS(pd, ver, arg.arg_summaryfile)
-            print( 'input information :\n  ->  xs:%20.10f\n  ->  int weight:%20.10f\n  ->  dataera: %d\n  ->  isQCD? %s\n  ->  rootfile : %s\n' %( xs, integratedgenweights[pd], arg.arg_dataera, 'True' if arg.arg_isQCD else 'False', rootfile ) )
-            #executeCommandToTmp( xs, integratedgenweights[pd], arg.arg_dataera, arg.arg_isQCD, rootfile )
+            #print( 'input information :\n  ->  xs:%20.10f\n  ->  int weight:%20.10f\n  ->  dataera: %d\n  ->  isQCD? %s\n  ->  rootfile : %s\n' %( xs, integratedgenweights[pd], arg.arg_dataera, 'True' if arg.arg_isQCD else 'False', rootfile ) )
+            executeCommandToTmp( xs, integratedgenweights[pd], arg.arg_dataera, arg.arg_isQCD, rootfile )
         MergeOutputs(pd, info)
 
