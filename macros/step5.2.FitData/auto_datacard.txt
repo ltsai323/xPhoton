@@ -1,0 +1,34 @@
+imax * 
+jmax * 
+kmax * 
+--------------- 
+shapes sigB  cat0 ./templates.root MC_tag0_B 
+shapes sigC  cat0 ./templates.root MC_tag0_C 
+shapes bkgL  cat0 ./templates.root MC_tag0_L 
+shapes fake  cat0 ./templates.root MC_tag0_FAKE 
+shapes sigB  cat1 ./templates.root MC_tag1_B 
+shapes sigC  cat1 ./templates.root MC_tag1_C 
+shapes bkgL  cat1 ./templates.root MC_tag1_L 
+shapes fake  cat1 ./templates.root MC_tag1_FAKE 
+shapes sigB  cat2 ./templates.root MC_tag2_B 
+shapes sigC  cat2 ./templates.root MC_tag2_C 
+shapes bkgL  cat2 ./templates.root MC_tag2_L 
+shapes fake  cat2 ./templates.root MC_tag2_FAKE 
+shapes sigB  cat3 ./templates.root MC_tag3_B 
+shapes sigC  cat3 ./templates.root MC_tag3_C 
+shapes bkgL  cat3 ./templates.root MC_tag3_L 
+shapes fake  cat3 ./templates.root MC_tag3_FAKE 
+
+shapes data_obs cat0 ./templates.root DATA_tag0 
+shapes data_obs cat1 ./templates.root DATA_tag1 
+shapes data_obs cat2 ./templates.root DATA_tag2 
+shapes data_obs cat3 ./templates.root DATA_tag3 
+--------------- 
+bin          cat0    cat1    cat2 
+observation  -1      -1      -1   
+------------------------------ 
+bin          cat0    cat0    cat0    cat0    cat1    cat1    cat1    cat1    cat2    cat2    cat2    cat2 
+process      sigB    sigC    bkgL    fake    sigB    sigC    bkgL    fake    sigB    sigC    bkgL    fake 
+process      -1      0       1       2       -1      0       1       2       -1      0       1       2 
+rate         1       1       1       63.700001      1       1       1       63.700001      1       1       1       63.700001 
+--------------------------------     

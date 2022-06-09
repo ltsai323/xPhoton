@@ -2,7 +2,7 @@ void Draw_svxmass(int argc){
 
   
   TFile *f = new TFile("postfit.root");
-  TFile *f1 = new TFile("templates.root");
+  TFile *f1 = new TFile("toy.root");
 
   std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000};
   TH1F *h1[30];
@@ -21,11 +21,11 @@ void Draw_svxmass(int argc){
   TCanvas *c1 = new TCanvas("c1","c1",1800, 800);
   c1->Divide(3,1);
 
+  const std::vector< const char* > tagName = { "BvsAll", "CvsL", "CvsB", "Svxmass" };
 
   for(int nn=0; nn<nalgo; nn++){ //tagalgo                                                                          
 
-      sprintf(hname,"DATA_tag%d",nn);
-      hdata[nn] = (TH1F*)f1->Get(hname);
+      hdata[nn] = (TH1F*)f1->Get(Form("toydata_%s", tagName[nn]));
       hdata[nn]->SetMarkerStyle(8);
       hdata[nn]->SetTitle("");
       hdata[nn]->SetMinimum(0.);
@@ -220,16 +220,9 @@ void Draw_svxmass(int argc){
   }
 
 
-  sprintf(fname,"./plots_fitdata/%d.pdf",argc);
+  sprintf(fname,"./plots_toy/%d.pdf",argc);
   c1->SaveAs(fname);
-  sprintf(fname,"./plots_fitdata/%d.png",argc);
+  sprintf(fname,"./plots_toy/%d.png",argc);
   c1->SaveAs(fname);
         
-  ofstream ofs;
-  ofs.open("Nfitted.txt", std::ios::app);
-  if (!ofs.is_open()) {
-       cout << "Failed to open file.\n";
-  } else {
-		ofs <<  hdata[0]->Integral() << "\t" << h1[0]->Integral() << "\t" << h1[1]->Integral()-h1[0]->Integral() << "\t" << h1[2]->Integral()-h1[1]->Integral() << "\t" << h1[3]->Integral()-h1[2]->Integral() << "\n";
-  }
 }

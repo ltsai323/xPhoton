@@ -21,7 +21,7 @@ print(str2)
 os.system(str2)
 
 
-for ptbin in range(6, 7):
+for ptbin in range(19, 20):
 
     string0 = "root.exe -q 'data_preparation.C("+str(ptbin)+")'"
     print(string0)
@@ -73,7 +73,7 @@ for ptbin in range(6, 7):
 
     #string0 = "root.exe -q 'data_preparation.C("+str(ptbin)+")'"
 
-    string1 = 'text2workspace.py auto_datacard.txt -o ws.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO "map=.*/sigB.*:mu1[1000,0,1000000]" --PO "map=.*/sigC.*:mu2[1000,0,1000000]" --PO "map=.*/bkgL.*:mu3[1000,0,5000000]" --PO "map=.*/fake.*:mu4[1000,1,1]"'
+    string1 = 'text2workspace.py auto_datacard.txt -o ws.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO "map=.*/sigB.*:mu1[1000,0,500000]" --PO "map=.*/sigC.*:mu2[1000,0,500000]" --PO "map=.*/bkgL.*:mu3[1000,0,500000]" --PO "map=.*/fake.*:mu4[1,1,1]"'
 
     string2 = 'combine --saveWorkspace -M MultiDimFit -d ws.root --saveFitResult --saveNLL --robustFit on'
 
