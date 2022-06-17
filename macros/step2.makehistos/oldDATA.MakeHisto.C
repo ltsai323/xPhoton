@@ -1,5 +1,5 @@
 #define MakeHisto_cxx
-#include "MakeHisto.h"
+#include "oldDATA.MakeHisto.h"
 #include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
@@ -17,13 +17,15 @@
 #define NUM_BTAGVAR 4
 #define NUM_PARITY 2
 
-const bool TESTER = true;
-
 std::vector<float> ptbin_ranges()
 {
     // for 2016
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
     std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+
+    // // 2015
+    // std::vector<float> vec_ptcut{15, 30, 35, 60, 75, 90, 100,  120, 135, 150, 165, 175, 185,
+	// 	     190, 200, 220, 250, 300, 350, 400, 500, 750, 1000, 1500, 2000, 3000, 10000}; //22 bins
     return vec_ptcut;
 }
 void MakeHisto::Loop(Int_t extracut = 0)
@@ -68,15 +70,10 @@ void MakeHisto::Loop(Int_t extracut = 0)
     _h_Ptspec  .SetXaxis( 200, 0., 2000.);
     _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
     _h_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
-    
-    if (!TESTER )
-    {
-    jc_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
-    jc_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
-    _h_HLT_all .SetXaxis(2000,0.,2000.);
-    _h_HLTpass .SetXaxis(2000,0.,2000.);
-    }
-
+    //jc_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    //jc_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    //_h_HLT_all .SetXaxis(2000,0.,2000.);
+    //_h_HLTpass .SetXaxis(2000,0.,2000.);
     TH1F *h_EB_HLTall = new TH1F("EB_HLTall","all HLT photon", 1000, 0., 1000.);
     TH1F *h_EE_HLTall = new TH1F("EE_HLTall","all HLT photon", 1000, 0., 1000.);
 
@@ -110,22 +107,18 @@ void MakeHisto::Loop(Int_t extracut = 0)
     HistMgr2D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV.2_3_%d__%d_%d_%d__%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
 
-    if (!TESTER )
-    {
-    h_btagDeepCSV_BvsAll_central    .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_BvsAll_up         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_BvsAll_down       .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsL_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsL_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsL_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsB_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsB_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsB_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_secVtxMass_central.SetXYaxis(100, 0., 5., 30, 0., 15.);
-    h_btagDeepCSV_secVtxMass_up     .SetXYaxis(100, 0., 5., 30, 0., 15.);
-    h_btagDeepCSV_secVtxMass_down   .SetXYaxis(100, 0., 5., 30, 0., 15.);
-    }
-
+    //h_btagDeepCSV_BvsAll_central    .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_BvsAll_up         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_BvsAll_down       .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_CvsL_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_CvsL_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_CvsL_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_CvsB_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_CvsB_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_CvsB_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
+    //h_btagDeepCSV_secVtxMass_central.SetXYaxis(100, 0., 5., 30, 0., 15.);
+    //h_btagDeepCSV_secVtxMass_up     .SetXYaxis(100, 0., 5., 30, 0., 15.);
+    //h_btagDeepCSV_secVtxMass_down   .SetXYaxis(100, 0., 5., 30, 0., 15.);
 
 
     Long64_t nentries = fChain->GetEntries();
@@ -138,32 +131,36 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
 
+//        std::cout << "event stat 01\n";
         if (jentry % 100000 == 0){
             fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries);
           }
 
+        //std::cout << "event stat 02\n";
 
-        // new
+        //Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
         Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
+        //Float_t eventweight =xsweight * puwei;
         Float_t photonpt = recoPt;
-        // old
-        //Float_t eventweight = IsMC() ? xsweight * puwei : 1.;
-        chIsoRaw = calib_chIso; // substitute with calib chIso.
+        //chIsoRaw = calib_chIso; // substitute with calib chIso.
 
         // if (Cut(ientry) < 0) continue;
         if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
         if(TMath::Abs(recoEta)>2.5) continue;
 
         if(MET/photonpt > 0.7) continue;
+        //if(MET/recoPt > 0.7) continue;
 
+        //std::cout << "event stat 04\n";
         //test new mva with isolation smearing
         //if(isData!=1) 
         //Float_t bdt_score = mva;// norminall
-        Float_t bdt_score = IsMC() ? calib_mva : mva; // for MC, use of weighted bdt score.
-        Float_t orig_bdt = IsMC() ? mva : -999; // for MC, get use this to be syst err.
-        // old
+        
+        // isOldSample
         //Float_t bdt_score = mva; // for MC, use of weighted bdt score.
         //Float_t orig_bdt = IsMC() ? mva_nocorr : -999.;
+        Float_t bdt_score = IsMC() ? calib_mva : mva; // for MC, use of weighted bdt score.
+        Float_t orig_bdt = IsMC() ? mva : -999.;
         // bdt_score = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
         // bdt_score = mva - trd->Gaus(0.025,0.05);
         // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
@@ -174,8 +171,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         //printf("photon eta %.2f, bin %d,  pt %.2f, bin %d , hltbit %d\n", recoEta, EBEE(recoEta), photonpt, Ptbin(photonpt) , HLTbit(photonpt));
         int ebee = EBEE(recoEta);
         //if(recoEta>-1.8 && recoEta<-1.5) printf("ebee bin %d \n", ebee);
-        int ptbin = IsMC() ? Ptbin(recoPt) : Ptbin(recoPtCalib); // only pt bin used calibrated pt in data
-        //int ptbin = Ptbin(photonpt*0.99); //playing with photon energy scale
+        //int ptbin = Ptbin(recoPtCalib); // only Pt bin use calibrated pt
+        int ptbin = Ptbin(photonpt); //playing with photon energy scale
         int hltbit = HLTbit(photonpt);
         int jetbin = JetEtaBin(jetY);
 
@@ -185,21 +182,26 @@ void MakeHisto::Loop(Int_t extracut = 0)
         phop4->SetPtEtaPhiM(photonpt, recoEta, recoPhi,0.);
 
 
-
         if ( eleVeto == 0 ) continue;
 
+        //std::cout << "event stat 06\n";
+
+        //if(run == 256729) continue;
+        //if(run == 256734 ) continue;
 
 
         if(ptbin<0) continue;
+        //std::cout << "event stat 07\n";
         //if(photon_jetID==1) continue;
         // if(isData==1 && ((phoFiredTrgs>>triggerbit(ptbin))&1)==0) continue;
         // if(isData==1 && !(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
         //if(!(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
-        std::string dataera = "2016ReReco";
-        if ( dataera == "2016ReReco" )
-            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
-        if ( dataera == "UL2018" )
-            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
+//        std::string dataera = "2016ReReco";
+//        if ( dataera == "2016ReReco" )
+//            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
+//        if ( dataera == "UL2018" )
+//            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
+        //std::cout << "event stat 08\n";
 
 
         int isfakephoton = 0;
@@ -212,6 +214,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // asdf selections
         if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
         if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
+        //std::cout << "event stat 09\n";
 
         _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
         _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
@@ -221,8 +224,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(orig_bdt, phoIsoRaw, eventweight);
         _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(orig_bdt, chIsoRaw+phoIsoRaw, eventweight);
         _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(orig_bdt, chWorstRaw, eventweight);
-if (!TESTER)
-{
+        //std::cout << "event filled\n";
+        continue;
         // YiShou's code enabled and checking {{{
         // jet selections
         if ( jetPt < 30. ) continue;
@@ -255,6 +258,7 @@ if (!TESTER)
                 h_chiso_sg->Fill(chIsoRaw);
                 h_chworst_sg->Fill(chWorstRaw+phoIsoRaw);
             }
+
         //jetflvr
         int jetflvBin = JetFlavourBin(jetHadFlvr);
         int phoMatchStatIdx = 0;
@@ -328,12 +332,15 @@ if (!TESTER)
             Fill(jetSubVtxMass                      , chIsoRaw,evtws_down);
         _h_phopt->Fill(photonpt, eventweight);
         _h_jetpt->Fill(jetPt, eventweight);
-}
     }
+    std::cout << "finished event looping\n";
 
     fout->cd();
+    std::cout << "hi01\n";
     _h_phopt->Write();
+    std::cout << "hi02\n";
     _h_jetpt->Write();
+    std::cout << "hi03\n";
 
 
     _h_BDT     .Write(_h_BDT     .MakeDirectory(fout));
@@ -341,21 +348,26 @@ if (!TESTER)
     _h_Pt      .Write(_h_Pt      .MakeDirectory(fout));
     _h_Ptspec  .Write(_h_Ptspec  .MakeDirectory(fout));
     _h_IsovsBDT.Write(_h_IsovsBDT.MakeDirectory(fout));
+    std::cout << "hi04\n";
     _h_IsovsBDTorig.Write(_h_IsovsBDTorig.MakeDirectory(fout));
-if (!TESTER )
-{
+
+    /*
     jc_IsovsBDT.Write(jc_IsovsBDT.MakeDirectory(fout));
     jc_IsovsBDTorig.Write(jc_IsovsBDTorig.MakeDirectory(fout));
+    std::cout << "hi05\n";
     
     TDirectory* HLTdir =_h_HLT_all .MakeDirectory(fout);
+    std::cout << "hi06\n";
     _h_HLT_all .Write(HLTdir);
     _h_HLTpass .Write(HLTdir);
     
+    std::cout << "hi07\n";
     fout->cd();
     h_EB_HLTall->Write();
     h_EE_HLTall->Write();
     h_chiso_sg->Write();
     h_chworst_sg->Write();
+    std::cout << "hi08\n";
 
     TDirectory* btagdir = h_btagDeepCSV_BvsAll_central.MakeDirectory(fout);
     h_btagDeepCSV_BvsAll_central    .Write( btagdir );
@@ -370,10 +382,11 @@ if (!TESTER )
     h_btagDeepCSV_secVtxMass_central.Write( btagdir );
     h_btagDeepCSV_secVtxMass_up     .Write( btagdir );
     h_btagDeepCSV_secVtxMass_down   .Write( btagdir );
-}
-    
+    */
 
+    std::cout << "hi09\n";
     fout->Close();
+    std::cout << "close file\n";
 }
 
 

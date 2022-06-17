@@ -13,8 +13,8 @@ label=data
 ifile=$datafile
 isMC=false
 root -b <<EOF
-.L MakeHisto.C
-MakeHisto t("$ifile","$label",$isMC, 0)
+.L oldDATA.MakeHisto.C
+MakeHisto t("$ifile","$label",$isMC, 1)
 t.Loop(1)
 EOF
 
@@ -22,18 +22,18 @@ label=sig
 ifile=$signfile
 isMC=true
 root -b <<EOF
-.L MakeHisto.C
+.L oldDATA.MakeHisto.C
 MakeHisto t("$ifile","$label",$isMC, 0)
 t.Loop(1)
 EOF
-# 
-# 
-# label=QCD
-# ifile=$fakefile
-# isMC=true
-# 
-# root -b <<EOF
-# .L MakeHisto.C+
-# MakeHisto t("$ifile","$label",$isMC, 1)
-# t.Loop(1)
-# EOF
+
+
+#label=QCD
+#ifile=$fakefile
+#isMC=true
+#
+#root -b <<EOF
+#.L oldDATA.MakeHisto.C+
+#MakeHisto t("$ifile","$label",$isMC, 1)
+#t.Loop(1)
+#EOF

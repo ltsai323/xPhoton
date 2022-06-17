@@ -14,6 +14,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 
+const bool isOldSample = false;
 // Header file for the classes stored in the TTree if any.
 
 class MakeHisto {
@@ -70,7 +71,7 @@ public :
    Float_t         esEn;
    Float_t         mva;
    Float_t         calib_mva;
-   //Float_t         mva_nocorr;
+   Float_t         mva_nocorr;
    Float_t         photonIDmva;
    Int_t           phoIDbit;
    Float_t         MET;
@@ -206,7 +207,7 @@ public :
    TBranch        *b_esRR;   //!
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
-   //TBranch        *b_mva_nocorr;   //!
+   TBranch        *b_mva_nocorr;   //!
    TBranch        *b_calib_mva;   //!
    TBranch        *b_photonIDmva;   //!
    TBranch        *b_phoIDbit;   //!
@@ -298,7 +299,7 @@ public :
    TBranch        *b_isQCD;   //!
 
    MakeHisto(Int_t option=0);
-   MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int HLTOPTION_ = 0);
+   MakeHisto(const char* fname, const char* outputlabel_, bool isMC,int HLTOPTION_=0);
    void fitVarsInit();
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
@@ -455,11 +456,14 @@ void MakeHisto::Init(TTree *tree)
    fCurrent = -1;
    fChain->SetMakeClass(1);
 
+if (!isOldSample )
+{
    fChain->SetBranchAddress("jetSubVtxPt", &jetSubVtxPt, &b_jetSubVtxPt);
    fChain->SetBranchAddress("jetSubVtxMass", &jetSubVtxMass, &b_jetSubVtxMass);
    fChain->SetBranchAddress("jetSubVtx3DVal", &jetSubVtx3DVal, &b_jetSubVtx3DVal);
    fChain->SetBranchAddress("jetSubVtx3DErr", &jetSubVtx3DErr, &b_jetSubVtx3DErr);
    fChain->SetBranchAddress("jetSubVtxNtrks", &jetSubVtxNtrks, &b_jetSubVtxNtrks);
+}
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
@@ -468,6 +472,9 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("HLT", &HLT, &b_HLT);
    fChain->SetBranchAddress("HLTIsPrescaled", &HLTIsPrescaled, &b_HLTIsPrescaled);
    }
+if (isOldSample)
+   fChain->SetBranchAddress("phoFiredTrg", &phoFiredTrgs, &b_phoFiredTrgs);
+else
    fChain->SetBranchAddress("phoFiredTrgs", &phoFiredTrgs, &b_phoFiredTrgs);
    if ( IsMC() )
    {
@@ -480,7 +487,10 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mcTrkIso04", &mcTrkIso04, &b_mcTrkIso04);
    }
    fChain->SetBranchAddress("recoPt", &recoPt, &b_recoPt);
+if (!isOldSample)   
+{
    fChain->SetBranchAddress("recoPtCalib", &recoPtCalib, &b_recoPtCalib);
+}
    fChain->SetBranchAddress("recoEta", &recoEta, &b_recoEta);
    fChain->SetBranchAddress("recoPhi", &recoPhi, &b_recoPhi);
    fChain->SetBranchAddress("recoSCEta", &recoSCEta, &b_recoSCEta);
@@ -517,7 +527,9 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    if ( IsMC() )
    {
-   //fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+if (isOldSample)
+   fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+else
    fChain->SetBranchAddress("calib_mva", &calib_mva, &b_calib_mva);
    }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
@@ -539,6 +551,8 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("jetEta", &jetEta, &b_jetEta);
    fChain->SetBranchAddress("jetPhi", &jetPhi, &b_jetPhi);
    fChain->SetBranchAddress("jetY", &jetY, &b_jetY);
+if (!isOldSample )
+{
    fChain->SetBranchAddress("jetJECUnc", &jetJECUnc, &b_jetJECUnc);
    if ( IsMC() )
    {
@@ -579,6 +593,9 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("lhePz", lhePz, &b_lhePz);
    fChain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
    }
+}
+if (!isOldSample )
+{
    fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
    if (!IsMC() && fChain->GetListOfBranches()->FindObject("HLT") ) // for fake data, there is no HLT found
@@ -587,13 +604,17 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("SeedEnergy", &SeedEnergy, &b_SeedEnergy);
    fChain->SetBranchAddress("MIPTotEnergy", &MIPTotEnergy, &b_MIPTotEnergy);
    }
+}
    if ( IsMC() )
    {
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
+if (!isOldSample )
+{
    fChain->SetBranchAddress("crossSection", &crossSection, &b_crossSection);
    fChain->SetBranchAddress("integratedLuminosity", &integratedLuminosity, &b_integratedLuminosity);
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
+   
    fChain->SetBranchAddress("jetSF.DeepCSV.central", &jetSF_DeepCSV_central, &b_jetSF_DeepCSV_central);
    fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr1", &jetSF_DeepCSV_down_cferr1, &b_jetSF_DeepCSV_down_cferr1);
    fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr2", &jetSF_DeepCSV_down_cferr2, &b_jetSF_DeepCSV_down_cferr2);
@@ -621,7 +642,9 @@ void MakeHisto::Init(TTree *tree)
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_cferr2", &jetSF_DeepFlavour_JESReduced_up_cferr2, &b_jetSF_DeepFlavour_JESReduced_up_cferr2);
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
+
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
+}
    }
    Notify();
 }
