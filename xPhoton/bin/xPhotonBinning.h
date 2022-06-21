@@ -47,7 +47,7 @@ namespace BinningMethod
     Int_t JetFlavourBin( int jethadflvr );
 
     // -1 : sideband region, 1 : signal region, 0 : others
-    Int_t SignalPhoton(float isovar);
+    Int_t SignalPhoton(float isovar, bool isEndcap);
     // 2: fake contribution in signal region of QCD sample.
     // 3: fake contribution in sideband region of QCD sample.
     // 4: all other contribution in QCD sample.
