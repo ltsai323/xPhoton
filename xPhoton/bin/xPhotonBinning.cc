@@ -149,11 +149,11 @@ bool EventFragmentCollector::passedJetSelection(TreeReader* data)
 void EventFragmentCollector::recordEvent(TreeReader* data, record_BinnedXPhoton& ovar)
 {
     ovar.region_pho         = BinningMethod::SignalPhoton( data->HasMC() ?
-                                data->GetFloat("chIsoRaw") : data->GetFloat("calib_chIso") );
+                                data->GetFloat("chIsoRaw") : data->GetFloat("calib_chIso"),
+                                data->GetFloat("recoEta") );
     ovar.region_phoOrig     = BinningMethod::SignalPhoton( data->GetFloat("chIsoRaw"), data->GetFloat("recoEta") );
-    ovar.bin_phopt          = BinningMethod::PtBin(
-                                data->HasMC() ? data->GetFloat("recoPt") : data->GetFloat("recoPtCalib")
-                                , _ptrange ):
+    ovar.bin_phopt          = BinningMethod::PtBin( _ptrange,
+                                data->HasMC() ? data->GetFloat("recoPt") : data->GetFloat("recoPtCalib") );
     ovar.bin_phoeta         = BinningMethod::EtaBin( data->GetFloat("recoEta") );
     ovar.bin_jeteta         = BinningMethod::EtaBin( data->GetFloat("jetEta") );
     ovar.bin_phoHLT         = 0;
@@ -207,7 +207,7 @@ std::vector<float> BinningMethod::ptranges( std::string dataera )
 {
      return std::vector<float>({25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}); // size = 16. ptbin = [0,15]
 }
-Int_t BinningMethod::PtBin(float pt, const std::vector<float>& ptranges )
+Int_t BinningMethod::PtBin( const std::vector<float>& ptranges,float pt )
 {
     int idx = ptranges.size();
     while ( idx-- )

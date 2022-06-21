@@ -40,7 +40,7 @@ int main(int argc, char** argv);
 namespace BinningMethod
 {
     std::vector<float> ptranges( std::string dataera );
-    Int_t PtBin(float pt, const std::vector<float>& ptranges);
+    Int_t PtBin(const std::vector<float>& ptranges, float pt);
     Int_t EtaBin(float eta);
     Int_t HLTBin(int ptbin, std::string dataera);
     // jetflvr bin : 0=light, 1=c-jet, 2=b-jet
