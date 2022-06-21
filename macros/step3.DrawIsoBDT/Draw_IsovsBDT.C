@@ -15,6 +15,7 @@ namespace pt = boost::property_tree;
 //    input data / sigMC / bkgMC and return binning histogram with all and sideband BDT distribution.
 //    which all distribution is 2D histogram. But sideband is 1D.
 
+const bool useNewSample = true;
 
 
 struct JsonInfo
@@ -27,8 +28,8 @@ struct JsonInfo
         jetbin      = root.get<int>("jetEtaBin"  , 0 );
         ptbin       = root.get<int>("phoPtBin"   , 0 );
         rebinoption = root.get<int>("rebinOption", 5 );
-        sb1         = root.get<int>("sidebandlower", 14);
-        sb2         = root.get<int>("sidebandupper", 20);
+        //sb1         = root.get<int>("sidebandlower", 14);
+        //sb2         = root.get<int>("sidebandupper", 20);
 
         datafile    = root.get<std::string>("data", "");
         sig_file    = root.get<std::string>("sig" , "");
@@ -36,7 +37,7 @@ struct JsonInfo
         out_template= root.get<std::string>("out_template" , "");
 
     }
-    int ebee, jetbin, ptbin, rebinoption, sb1, sb2;
+    int ebee, jetbin, ptbin, rebinoption; //, sb1, sb2;
     std::string datafile, sig_file, bkg_file;
     std::string out_template;
 
@@ -53,8 +54,6 @@ struct BinInfo
         jetbin      = args.jetbin      ;
         ptbin       = args.ptbin       ;
         rebinoption = args.rebinoption ;
-        sb1         = args.sb1         ;
-        sb2         = args.sb2         ;
         tag="";
         file=nullptr;
     }
@@ -64,13 +63,11 @@ struct BinInfo
         this->jetbin =        input.jetbin ;
         this->ptbin =         input.ptbin ;
         this->rebinoption =   input.rebinoption ;
-        this->sb1 =           input.sb1 ;
-        this->sb2 =           input.sb2 ;
         this->tag =           input.tag;
         this->file =          input.file;
     }
     BinInfo() {} 
-    int ebee, jetbin, ptbin, rebinoption, sb1, sb2;
+    int ebee, jetbin, ptbin, rebinoption; 
     std::string tag;
     TFile* file;
 
@@ -150,7 +147,6 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
 
     int zone1_low = 1;
     int zone1_high = 4; 
-    //if(args.ebee>=2) { //EE
     int IsoOption=0; //0 chIso, 1 phoIso, 2 combIso, 3 chWorst
     if( IsPhoEndcap(args.ebee) ) { //EE
         if     (IsoOption==0) zone1_high=3;
@@ -159,14 +155,20 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
         else if(IsoOption==3) zone1_high=6;
     }
 
-    int zone2_low = args.sb1;
-    int zone2_high = args.sb2;
+    int zone2_low = 10;
+    int zone2_high = 20;
     //for production 
     //if(args.ebee<=1) {zone2_low=14; zone2_high=26;} //EB
     //else {zone2_low=12; zone2_high=24;}
-    if( IsPhoBarrel(args.ebee) ) {zone2_low=7; zone2_high=20;} //EB //asdf need to redefine EBEE 
     //else if(args.ebee==2) {zone2_low=7; zone2_high=20;}
-    else {zone2_low=6; zone2_high=20;}
+
+    // This formula shows the characteristics of the binning.
+    // upper limit and lower limit calculation is not the same
+    // SB region from 2~10 means 2 = (x-1) * 0.5 and 10 = (x) * 0.5
+    //if( IsPhoBarrel(args.ebee) ) {zone2_low=7; zone2_high=20;} // EE = [3.0, 10]
+    //if( IsPhoEndcap(args.ebee) ) {zone2_low=6; zone2_high=20;} // EE = [2.5, 10]
+    if( IsPhoBarrel(args.ebee) ) {zone2_low=15; zone2_high=26;} // EE = [7.0, 13]
+    if( IsPhoEndcap(args.ebee) ) {zone2_low=13; zone2_high=24;} // EE = [6.0, 12]
 
     //for chIso SB
 
@@ -222,36 +224,48 @@ void Draw_IsovsBDT(const char* jsonName){
     arg_qcd .SetFile(fqcd );
 
     std::vector<HistsNeedStored> outputHists;
-    // testing
+    /* check for mva syst error
     TFile *fgjet2= TFile::Open( args.SigMC() );
     BinInfo arg_gjet2(args);
     arg_gjet2.SetFile(fgjet2);
     arg_gjet2.SetOutputHistTemplate("gjetChecking_%d_%d_%d");
     outputHists.push_back(SigAndSidebandHistCalc(arg_gjet2, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
-    // tested
+    */
     arg_gjet.SetOutputHistTemplate("gjet_%d_%d_%d");
-    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_0_0"));
+    //outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_0_0")); // add error bar
+    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
     arg_data.SetOutputHistTemplate("data_%d_%d_%d");
     outputHists.push_back(SigAndSidebandHistCalc(arg_data, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
     arg_qcd .SetOutputHistTemplate("qcd_%d_%d_%d" );
-    outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_1_0"));
-    for ( int systType = 0; systType < 3; ++systType )
-        for ( int btagvar = 0; btagvar < 4; ++btagvar )
-            for ( int jetflav = 0; jetflav < 3; ++jetflav )
-                for ( int matchedPhoStat = 0; matchedPhoStat < 5; ++matchedPhoStat )
-                    for ( int parityIdx = 0; parityIdx < 2; ++parityIdx )
-                    {
-                        const char* histname = Form( "btagDeepCSV/btagDeepCSV.%d_%d_%d__%s__%d_%d",
-                                systType, btagvar, jetflav, "%d_%d_%d", matchedPhoStat, parityIdx );
-                        std::string  outname = Form(             "btagDeepCSV.%d_%d_%d__%s__%d_%d",
-                                systType, btagvar, jetflav, "%d_%d_%d", matchedPhoStat, parityIdx );
-                        arg_gjet.SetOutputHistTemplate("gjet_"+outname);
-                        outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, histname));
-                        arg_data.SetOutputHistTemplate("data_"+outname);
-                        outputHists.push_back(SigAndSidebandHistCalc(arg_data, histname));
-                        arg_qcd .SetOutputHistTemplate("qcd_" +outname);
-                        outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , histname));
-                    }
+    //outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_1_0"));
+    outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0") );
+
+    // after jet selection
+    arg_gjet.SetOutputHistTemplate("jetSel_gjet_%d_%d_%d");
+    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "jetcut_IsovsBDT/jetcut_IsovsBDT.%d_%d_%d_0_0") );
+    arg_data.SetOutputHistTemplate("jetSel_data_%d_%d_%d");
+    outputHists.push_back(SigAndSidebandHistCalc(arg_data, "jetcut_IsovsBDT/jetcut_IsovsBDT.%d_%d_%d_0_0") );
+    arg_qcd .SetOutputHistTemplate("jetSel_qcd_%d_%d_%d" );
+    outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "jetcut_IsovsBDT/jetcut_IsovsBDT.%d_%d_%d_1_0") );
+    if ( useNewSample ) {
+        for ( int systType = 0; systType < 3; ++systType ) {
+        for ( int btagvar = 0; btagvar < 4; ++btagvar ) {
+        for ( int jetflav = 0; jetflav < 3; ++jetflav ) {
+        for ( int matchedPhoStat = 0; matchedPhoStat < 5; ++matchedPhoStat ) {
+        for ( int parityIdx = 0; parityIdx < 2; ++parityIdx )
+        {
+            const char* histname = Form( "btagDeepCSV/btagDeepCSV.%d_%d_%d__%s__%d_%d",
+                    systType, btagvar, jetflav, "%d_%d_%d", matchedPhoStat, parityIdx );
+            std::string  outname = Form(             "btagDeepCSV.%d_%d_%d__%s__%d_%d",
+                    systType, btagvar, jetflav, "%d_%d_%d", matchedPhoStat, parityIdx );
+            arg_gjet.SetOutputHistTemplate("gjet_"+outname);
+            outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, histname));
+            arg_data.SetOutputHistTemplate("data_"+outname);
+            outputHists.push_back(SigAndSidebandHistCalc(arg_data, histname));
+            arg_qcd .SetOutputHistTemplate("qcd_" +outname);
+            outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , histname));
+        } } } } }
+    }
 
 
     TFile* fout = new TFile( arg_data.BinnedName("iso_%d_%d_%d.root"), "RECREATE" );
