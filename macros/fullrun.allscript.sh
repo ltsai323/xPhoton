@@ -15,10 +15,10 @@ EOF
 /bin/rm *.tar
 
 
-#sh fullrun.step2.sh $PWD/fullrun.inputfiles.conf
-##sh testrun.step2.oldDATA.sh $PWD/fullrun.inputfiles.conf
+sh fullrun.step2.sh $PWD/fullrun.inputfiles.conf
+#sh testrun.step2.oldDATA.sh $PWD/fullrun.inputfiles.conf
 sh fullrun.step3.sh
-#sh fullrun.step4.sh
+sh fullrun.step4.sh
 
 
 # old for 2016
@@ -68,12 +68,10 @@ EOF
 #    "DATfile": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/data.yield.dat"
 #}
 #EOF
-#arg_trg=arg_orig.json
-#arg_cmp=arg_comp.json
-arg_trg=arg_comp.json
-arg_cmp=arg_orig.json
+arg_trg=arg_orig.json
+arg_cmp=arg_comp.json
 
-#root -b <<EOF
-#.L /wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/CompareYields.C
-#CompareYields("$arg_trg","$arg_cmp")
-#EOF
+root -b <<EOF
+.L /wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/CompareYields.C
+CompareYields("$arg_trg","$arg_cmp")
+EOF
