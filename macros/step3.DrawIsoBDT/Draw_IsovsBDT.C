@@ -148,6 +148,7 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
     int zone1_low = 1;
     int zone1_high = 4; 
     int IsoOption=0; //0 chIso, 1 phoIso, 2 combIso, 3 chWorst
+    // EB = [0,2] and EE=[0,1.5]
     if( IsPhoEndcap(args.ebee) ) { //EE
         if     (IsoOption==0) zone1_high=3;
         else if(IsoOption==1) zone1_high=5;

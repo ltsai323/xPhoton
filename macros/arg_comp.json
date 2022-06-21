@@ -1,0 +1,8 @@
+{
+    "luminosity": 35.9,
+    "MarkerStyle": 22,
+    "MarkerColor": 39,
+    "Title": "2016 ReReco in old processed AGAIN",
+    "Label": "New",
+    "DATfile": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/data.yield.dat"
+}

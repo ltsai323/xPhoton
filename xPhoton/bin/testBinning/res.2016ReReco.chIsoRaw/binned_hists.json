@@ -1,0 +1,11 @@
+{
+    "bin_phopt":18,
+    "bin_phoeta":0,
+    "bin_jeteta":0,
+
+    "file_data": "binned_2016ReReco_data.root",
+    "file_QCD": "binned_2016ReReco_QCD.root",
+    "file_signal": "binned_2016ReReco_sig.root",
+
+    "OutputNameTemplate":"outputBinningHists"
+}
