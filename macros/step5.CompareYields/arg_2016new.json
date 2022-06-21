@@ -1,0 +1,8 @@
+{
+    "luminosity": 35.9,
+    "MarkerStyle": 22,
+    "MarkerColor": 46,
+    "Label": "2016ReReco",
+    "DATfile": "../data.yield.dat",
+    "histnaming": "newcmp2016ReReco_calibChIso_%d_%d"
+}

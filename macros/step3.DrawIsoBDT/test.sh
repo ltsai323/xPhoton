@@ -20,8 +20,6 @@ cat > $tmpjson <<EOF
     "jetEtaBin": $jetEtaIdx,
     "phoPtBin":  $phoPtBin,
     "rebinOption":1,
-    "sidebandlower":14,
-    "sidebandupper":20,
     "data":"../makehisto_data.root",
     "bkg": "../makehisto_QCD.root",
     "sig": "../makehisto_sig.root",

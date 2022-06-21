@@ -16,7 +16,6 @@ const int ANNOUNSE_INTERVAL = 100000;
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include "xPhoton/xPhoton/bin/xPhotonBinning.h"
-// building
 void PrintHelp()
 {
     fprintf(stderr, "############### Usage ################\n");
@@ -57,7 +56,9 @@ int main(int argc, char** argv)
     std::string dataera = "UL2018";
     process.PhoPtBinnings( BinningMethod::ptranges(dataera) );
 
-    TreeReader data(ch, "calib_s4Full5x5");
+    TreeReader data(ch, "calib_s4");
+    for ( const std::string& ifile : inputvars.inputfiles )
+        printf("HasMC ? %6s in input file %s\n", data.HasMC()?"True":"False", ifile.c_str());
 
     LOG_INFO(" processing entries %lld \n", data.GetEntriesFast());
     for ( Long64_t evtIdx = 0; evtIdx != data.GetEntriesFast(); ++evtIdx )
@@ -91,6 +92,7 @@ void record_BinnedXPhoton::RegBranch( TTree* t )
     t->Branch("region_pho"         ,&region_pho         , "region_pho/I");        
     t->Branch("region_phoOrig"     ,&region_phoOrig     , "region_phoOrig/I");        
     t->Branch("bin_phopt"          ,&bin_phopt          , "bin_phopt/I");         
+    //t->Branch("bin_phoptOrig"      ,&bin_phoptOrig      , "bin_phoptOrig/I");         
     t->Branch("bin_phoeta"         ,&bin_phoeta         , "bin_phoeta/I");        
     t->Branch("bin_jeteta"         ,&bin_jeteta         , "bin_jeteta/I");        
     t->Branch("bin_phoHLT"         ,&bin_phoHLT         , "bin_phoHLT/I");        
@@ -147,10 +149,12 @@ bool EventFragmentCollector::passedJetSelection(TreeReader* data)
 void EventFragmentCollector::recordEvent(TreeReader* data, record_BinnedXPhoton& ovar)
 {
     ovar.region_pho         = BinningMethod::SignalPhoton( data->HasMC() ?
-                                data->GetFloat("chIsoRaw") : data->GetFloat("calib_chIso") );
-    ovar.region_phoOrig     = BinningMethod::SignalPhoton( data->GetFloat("chIsoRaw") );
-    ovar.bin_phopt          = BinningMethod::PtBin( data->GetFloat("recoPtCalib"), _ptrange );
-    ovar.bin_phoeta         = BinningMethod::EtaBin( data->GetFloat("recoSCEta") );
+                                data->GetFloat("chIsoRaw") : data->GetFloat("calib_chIso"),
+                                data->GetFloat("recoEta") );
+    ovar.region_phoOrig     = BinningMethod::SignalPhoton( data->GetFloat("chIsoRaw"), data->GetFloat("recoEta") );
+    ovar.bin_phopt          = BinningMethod::PtBin( _ptrange,
+                                data->HasMC() ? data->GetFloat("recoPt") : data->GetFloat("recoPtCalib") );
+    ovar.bin_phoeta         = BinningMethod::EtaBin( data->GetFloat("recoEta") );
     ovar.bin_jeteta         = BinningMethod::EtaBin( data->GetFloat("jetEta") );
     ovar.bin_phoHLT         = 0;
     ovar.bin_matchedphostat = BinningMethod::PhoMatchStatus(data);
@@ -166,11 +170,13 @@ void EventFragmentCollector::recordEvent(TreeReader* data, record_BinnedXPhoton&
     ovar.phoIsoRaw          = data->GetFloat("phoIsoRaw");
     ovar.chIsoRaw           = data->GetFloat("chIsoRaw");
     ovar.calib_chIsoRaw     = data->GetFloat("calib_chIso");
+    ovar.w_evt              = data->HasMC() ? data->GetFloat("xsweight") * data->GetFloat("puwei") : 1.;
 
     ovar.btag_BvsAll        = data->GetFloat("jetDeepCSVDiscriminatorTags_BvsAll");
     ovar.btag_CvsL          = data->GetFloat("jetDeepCSVDiscriminatorTags_CvsL");
     ovar.btag_CvsB          = data->GetFloat("jetDeepCSVDiscriminatorTags_CvsB");
     ovar.btag_secvtxmass    = data->GetFloat("jetSubVtxMass");
+
 
     ovar.w_evt              = data->HasMC() ? data->GetFloat("mcweight") * data->GetFloat("puwei") : 1.;
     ovar.w_central          = data->HasMC() ? data->GetFloat("jetSF.DeepCSV.central") : 1.;
@@ -201,7 +207,7 @@ std::vector<float> BinningMethod::ptranges( std::string dataera )
 {
      return std::vector<float>({25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}); // size = 16. ptbin = [0,15]
 }
-Int_t BinningMethod::PtBin(float pt, const std::vector<float>& ptranges )
+Int_t BinningMethod::PtBin( const std::vector<float>& ptranges,float pt )
 {
     int idx = ptranges.size();
     while ( idx-- )
@@ -212,11 +218,21 @@ Int_t BinningMethod::EtaBin(float eta)
 { return fabs(eta) < 1.5 ? 0 : 1; }
 Int_t BinningMethod::HLTBin(int ptbin, std::string dataera)
 { return 0; }
-Int_t BinningMethod::SignalPhoton(float isovar)
+Int_t BinningMethod::SignalPhoton(float isovar, bool isEndcap)
 {
+    // signal region : EB=chIso<2, EE=chIso<1.5
+    // sideband region : EB=3.5<chIso<10 EE=3<chIso<10
     float absvar = fabs(isovar);
-    if ( absvar < 2. ) return PHOREGION_SIGNAL;
-    else if ( absvar > 5. && absvar < 15. ) return PHOREGION_SIDEBAND;
+    if ( isEndcap )
+    {
+        if ( absvar < 1.5 ) return PHOREGION_SIGNAL;
+        if ( absvar > 6. && absvar < 12. ) return PHOREGION_SIDEBAND;
+    }
+    else
+    {
+        if ( absvar < 2. ) return PHOREGION_SIGNAL;
+        if ( absvar > 7.&& absvar < 13. ) return PHOREGION_SIDEBAND;
+    }
     return PHOREGION_NONE;
 }
 Int_t BinningMethod::JetFlavourBin( int jethadflvr )

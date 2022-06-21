@@ -1,26 +1,27 @@
-This repository is ready for CMSSW and makefile. Eigher CMSSW or make are able to compile and run code in this repository.
+This repository is ready for CMSSW.
 Also, the shell scripts stored in subrepository/bin folder inform you how to use the exeutables compiled in this repository.
 
 # Installation
 ```bash
+cmsrel CMSSW_11_0_0_pre3
+cd CMSSW_11_0_0_pre3/src
+
 git clone https://github.com/ltsai323/xPhoton
-cd xPhoton/
-source envsetup.sh
-cd xPhoton/
-make all
+git clone https://github.com/youyingli/ShowerShapeCorrection.git
+scram b -j8
 ```
 
-### xPhoton/bin/exe.xPhotonRunner in.root 3
+### exec_xPhotonRunner in.root 3
 inherited from RS's xPhoton_HFJet.C
 Run the whole xPhotonn code.
 First argument is input root file from ggAnalyzer and second output is a integer which is only used for output naming.
-### xPhoton/bin/exe.AppendEventInfo 3.14e-1 in.root out.root
+### exec_AppendEventInfo 3.14e-1 in.root out.root
 The code to add additional information in each event.
 First argument is the MC cross section, second and third argument are the input and output root file from xPhoton.
 ### xPhoton/data/pythonparser/mcinfo_EXEC.py
 Input the files to massively send crab job and read content to connect primary dataset and text file.
 To extract MC informations in primary dataset.
-### xPhoton/bin/exe.xElectronsRunner in.root 3
+### exec_xElectronsRunner in.root 3
 Building...
 For Zee.
 

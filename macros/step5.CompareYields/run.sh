@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
-arg_trg=arg_2015incl.json
+#arg_trg=arg_2015incl.json
+arg_trg=arg_2018.json
 arg_cmp=$1
 
 root -b <<EOF

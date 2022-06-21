@@ -17,8 +17,9 @@ ln -s $sigfragment isovsbdt_fragments.sig.root
 ln -s $bkgfragment isovsbdt_fragments.bkg.root
 ln -s $originalfit isovsbdt_template.root
 
+python FitYields.allbinning.JetSel.py > log.fittingres.jetSel
+python LogInfoExtraction.py log.fittingres.jetSel
+mkdir jetSel ; mv *.dat jetSel/
+
 python FitYields.allbinning.py > log.fittingres
 python LogInfoExtraction.py log.fittingres
-
-
-

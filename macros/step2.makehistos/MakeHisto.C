@@ -17,7 +17,7 @@
 #define NUM_BTAGVAR 4
 #define NUM_PARITY 2
 
-const bool TESTER = true;
+const bool useNewSample = false;
 
 std::vector<float> ptbin_ranges()
 {
@@ -69,7 +69,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
     _h_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
     
-    if (!TESTER )
+    if (useNewSample )
     {
     jc_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
     jc_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
@@ -110,7 +110,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
     HistMgr2D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV.2_3_%d__%d_%d_%d__%d_%d",
                 {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
 
-    if (!TESTER )
+    if (useNewSample )
     {
     h_btagDeepCSV_BvsAll_central    .SetXYaxis( 10, 0., 1., 30, 0., 15.);
     h_btagDeepCSV_BvsAll_up         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
@@ -221,7 +221,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(orig_bdt, phoIsoRaw, eventweight);
         _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(orig_bdt, chIsoRaw+phoIsoRaw, eventweight);
         _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(orig_bdt, chWorstRaw, eventweight);
-if (!TESTER)
+if (useNewSample)
 {
         // YiShou's code enabled and checking {{{
         // jet selections
@@ -342,7 +342,7 @@ if (!TESTER)
     _h_Ptspec  .Write(_h_Ptspec  .MakeDirectory(fout));
     _h_IsovsBDT.Write(_h_IsovsBDT.MakeDirectory(fout));
     _h_IsovsBDTorig.Write(_h_IsovsBDTorig.MakeDirectory(fout));
-if (!TESTER )
+if ( useNewSample )
 {
     jc_IsovsBDT.Write(jc_IsovsBDT.MakeDirectory(fout));
     jc_IsovsBDTorig.Write(jc_IsovsBDTorig.MakeDirectory(fout));

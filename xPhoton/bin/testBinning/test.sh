@@ -1,13 +1,24 @@
 #!/usr/bin/env sh
 
-tag=DATAfull
-ifile=/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/scripts/updatingusedvars/updated_data.root
-cat > hi.json <<EOF
+
+for pPtBin  in {0..20}; do
+for pEtaBin in {0..1} ; do
+for jEtaBin in {0..1} ; do
+    cat > processbinning.json <<EOF
 {
-    "dataera": "UL2018",
-    "InputFiles": ["${ifile}"],
-    "OutputFileName":"binned_test${tag}.root"
+    "bin_phopt":  $pPtBin,
+    "bin_phoeta": $pEtaBin,
+    "bin_jeteta": $jEtaBin,
+
+    "file_data":   "binned_2016ReReco_data.root",
+    "file_QCD":    "binned_2016ReReco_QCD.root",
+    "file_signal": "binned_2016ReReco_sig.root",
+
+    "OutputNameTemplate":"binnedHists"
 }
 EOF
-exec_xPhotonBinning hi.json
+    python BinnedHists.py processbinning.json
+done; done; done
+
+hadd -f binnedHistList.root binnedHists.*.root
 

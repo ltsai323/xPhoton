@@ -40,14 +40,14 @@ int main(int argc, char** argv);
 namespace BinningMethod
 {
     std::vector<float> ptranges( std::string dataera );
-    Int_t PtBin(float pt, const std::vector<float>& ptranges);
+    Int_t PtBin(const std::vector<float>& ptranges, float pt);
     Int_t EtaBin(float eta);
     Int_t HLTBin(int ptbin, std::string dataera);
     // jetflvr bin : 0=light, 1=c-jet, 2=b-jet
     Int_t JetFlavourBin( int jethadflvr );
 
     // -1 : sideband region, 1 : signal region, 0 : others
-    Int_t SignalPhoton(float isovar);
+    Int_t SignalPhoton(float isovar, bool isEndcap);
     // 2: fake contribution in signal region of QCD sample.
     // 3: fake contribution in sideband region of QCD sample.
     // 4: all other contribution in QCD sample.

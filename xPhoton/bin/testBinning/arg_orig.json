@@ -1,0 +1,8 @@
+{
+    "luminosity": 35.9,
+    "MarkerStyle": 22,
+    "MarkerColor": 46,
+    "Title": "2016 ReReco in old code",
+    "Label": "Old",
+    "DATfile": "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/data.yield.dat"
+}

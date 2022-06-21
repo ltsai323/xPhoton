@@ -541,6 +541,7 @@ double BTagCalibrationReader::BTagCalibrationReaderImpl::eval(
     }
   }
 
+  if ( jf != 2 )
   LOG_WARNING("No any scale factor found. return default jetSF = 0. discr = %.3f, flavour = %d (0:B,1:C,2:L), (pt,eta)=(%.3f,%.3f)", discr, jf, pt, eta);
   return 0.;  // default value
 }
