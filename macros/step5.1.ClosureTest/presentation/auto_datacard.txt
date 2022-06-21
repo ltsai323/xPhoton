@@ -1,0 +1,29 @@
+imax * 
+jmax * 
+kmax * 
+--------------- 
+shapes sigB  cat0 ./toy.root toymc_BvsAll_B 
+shapes sigC  cat0 ./toy.root toymc_BvsAll_C 
+shapes bkgL  cat0 ./toy.root toymc_BvsAll_L 
+shapes fake  cat0 ./toy.root toymc_BvsAll_FAKE 
+shapes sigB  cat1 ./toy.root toymc_CvsL_B 
+shapes sigC  cat1 ./toy.root toymc_CvsL_C 
+shapes bkgL  cat1 ./toy.root toymc_CvsL_L 
+shapes fake  cat1 ./toy.root toymc_CvsL_FAKE 
+shapes sigB  cat2 ./toy.root toymc_CvsB_B 
+shapes sigC  cat2 ./toy.root toymc_CvsB_C 
+shapes bkgL  cat2 ./toy.root toymc_CvsB_L 
+shapes fake  cat2 ./toy.root toymc_CvsB_FAKE 
+
+shapes data_obs cat0 ./toy.root toydata_BvsAll 
+shapes data_obs cat1 ./toy.root toydata_CvsL 
+shapes data_obs cat2 ./toy.root toydata_CvsB 
+--------------- 
+bin          cat0    cat1    cat2 
+observation  -1      -1      -1   
+------------------------------ 
+bin          cat0    cat0    cat0    cat0    cat1    cat1    cat1    cat1    cat2    cat2    cat2    cat2 
+process      sigB    sigC    bkgL    fake    sigB    sigC    bkgL    fake    sigB    sigC    bkgL    fake 
+process      -1      0       1       2       -1      0       1       2       -1      0       1       2 
+rate         1       1       1       50000.000854      1       1       1       50000.000854      1       1       1       50000.000854 
+--------------------------------     

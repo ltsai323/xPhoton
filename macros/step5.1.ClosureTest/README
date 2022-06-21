@@ -1,0 +1,17 @@
+need to get the
+    ../makehisto_data.root
+    ../makehisto_sig.root
+    ../makehisto_QCD.root 
+first
+
+python run_FitToy.py
+20 mins
+
+python run_DrawToy.py
+it takes about 30 mins for a full run
+
+python run_2Comp.py
+15 mins
+
+python run_3Comp.py
+15 mins

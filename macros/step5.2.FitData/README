@@ -1,0 +1,6 @@
+need to get the
+    ../data.bkg.dat
+    ../isovsbdt_template.root
+first
+
+sh run.sh
