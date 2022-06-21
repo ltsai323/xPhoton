@@ -24,6 +24,9 @@ struct JsonInfo
         markercolor = root.get<int>("MarkerColor", 1);
 
         label   = root.get<std::string>("Label", "");
+        TString tester = label;
+        if ( tester.Contains(".") ) throw " -> Label contains '.', which is a preserved word.";
+        title   = root.get<std::string>("Title", "");
         datfile     = root.get<std::string>("DATfile", "");
         histnaming  = root.get<std::string>("histnaming", "");
     }
@@ -32,6 +35,7 @@ struct JsonInfo
     std::string datfile;
     std::string histnaming;
     std::string label;
+    std::string title;
     float luminosity;
     int markerstyle;
     int markercolor;
@@ -41,7 +45,8 @@ struct JsonInfo
 NewHistInSquareMatrix1D* FilledHists( const JsonInfo& args )
 {
     DATTree* data_base = new DATTree( args.datfile.c_str() );
-    NewHistInSquareMatrix1D* binnedHists = new NewHistInSquareMatrix1D( args.histnaming.c_str(), {data_base->MaxBin_EtaBin(), data_base->MaxBin_JetBin()} );
+    //NewHistInSquareMatrix1D* binnedHists = new NewHistInSquareMatrix1D( args.histnaming.c_str(), {data_base->MaxBin_EtaBin(), data_base->MaxBin_JetBin()} );
+    NewHistInSquareMatrix1D* binnedHists = new NewHistInSquareMatrix1D( (args.label+".%d_%d").c_str(), {data_base->MaxBin_EtaBin(), data_base->MaxBin_JetBin()} );
     std::vector<float> ptranges = ptbin_ranges();
     float* ptcut = &ptranges.front();
     int nbin = ptranges.size()-1;
@@ -62,6 +67,13 @@ NewHistInSquareMatrix1D* FilledHists( const JsonInfo& args )
     delete data_base;
     return binnedHists;
 }
+TString Label( TH1* h )
+{
+    TString hname( h->GetName() );
+    hname.Remove( hname.Index(".") );
+    return hname;
+}
+
 
 
 void HistSetup(NewHistInSquareMatrix1D* hists, const JsonInfo& args)
@@ -79,8 +91,9 @@ void HistSetup(NewHistInSquareMatrix1D* hists, const JsonInfo& args)
         hist->SetMarkerStyle(args.markerstyle);
         hist->SetLineColor(args.markercolor);
         hist->SetLineWidth(2);
-        hist->GetYaxis()->SetTitleOffset(1.2);
-        hist->SetTitle( args.label.c_str() );
+        hist->GetYaxis()->SetTitleOffset(1.29);
+        hist->GetYaxis()->SetTitleSize(0.035);
+        hist->SetTitle( args.title.c_str() );
         hist->SetStats(false);
     }
 }
@@ -89,15 +102,21 @@ void DrawCmpPlot( NewHistInSquareMatrix1D const * hist_ref, NewHistInSquareMatri
 {
     printf("Entering DrawCmpPlot() block\n");
     TCanvas* c1 = new TCanvas("c1", "", 1000,1200);
-    TPad *pad1 = new TPad("pad1","pad1",0,0.2,1,1);
+    c1->SetFillColor(4000);
+    c1->SetFillStyle(4000);
+    TPad *pad1 = new TPad("pad1","pad1",0,0.25,1,1);
     pad1->SetBottomMargin(0);
+    pad1->SetFillColor(4000);
+    pad1->SetFillStyle(4000);
     pad1->Draw();
     pad1->cd();
     pad1->SetLogy();
 
     c1->cd();
-    TPad *pad2 = new TPad("pad2","pad2",0,0.00,1,0.2);
+    TPad *pad2 = new TPad("pad2","pad2",0,0.0,1,0.25);
     pad2->SetTopMargin(0);
+    pad2->SetFillColor(4000);
+    pad2->SetFillStyle(4000);
     pad2->Draw();
     pad2->cd();
     pad2->SetGridy();
@@ -134,7 +153,7 @@ void DrawCmpPlot( NewHistInSquareMatrix1D const * hist_ref, NewHistInSquareMatri
                     IsJetEndCap(jetbin) ? jetEEmesg : jetEBmesg
                    );
 
-        TLegend *tleg = new TLegend(0.4, 0.68, 0.88, 0.88);
+        TLegend *tleg = new TLegend(0.3, 0.68, 0.85, 0.88);
 
         tleg->SetHeader(title);
         tleg->SetFillColor(0);
@@ -152,14 +171,17 @@ void DrawCmpPlot( NewHistInSquareMatrix1D const * hist_ref, NewHistInSquareMatri
         ratioplot->SetMarkerStyle(21);
 
 
-        ratioplot->GetYaxis()->SetTitle( Form("%s / %s", h1->GetTitle(), h2->GetTitle()) ); //asdf
-        ratioplot->GetYaxis()->SetTitleSize(0.15);
-        ratioplot->GetYaxis()->SetTitleOffset(0.3);
-        ratioplot->GetYaxis()->SetLabelSize(0.12);
+        ratioplot->GetYaxis()->SetTitle( Form("%s / %s", Label(h1).Data(), Label(h2).Data()) );
+        ratioplot->GetYaxis()->SetTitleSize(0.10);
+        ratioplot->GetYaxis()->SetTitleOffset(0.45);
+        ratioplot->GetYaxis()->SetLabelSize(0.09);
+        //ratioplot->GetXaxis()->SetTitle( h1->GetXaxis()->GetTitle() );
         ratioplot->GetXaxis()->SetTitleOffset(1.2);
-        ratioplot->GetXaxis()->SetTitleSize(0.15);
-        ratioplot->GetXaxis()->SetLabelSize(0.15);
+        //ratioplot->GetXaxis()->SetTitleOffset(0.);
+        ratioplot->GetXaxis()->SetTitleSize(0.10);
+        ratioplot->GetXaxis()->SetLabelSize(0.09);
         ratioplot->GetXaxis()->SetTickSize(0.12);
+        ratioplot->SetTitle("");
         ratioplot->Draw("ep");
         ratioplot->GetYaxis()->SetRangeUser(0.5,1.5);
         ratioplot->GetXaxis()->SetRangeUser(0,1000);
