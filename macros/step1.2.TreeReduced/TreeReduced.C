@@ -79,25 +79,3 @@ void TreeReduced( const char* loadedFile, const char* outputlabel )
     t_out->Write();
     f_out->Close();
 }
-        // if (Cut(ientry) < 0) continue;
-        if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
-        if(TMath::Abs(recoEta)>2.5) continue;
-
-        if(MET/photonpt > 0.7) continue;
-        if(eleVeto==1 && bdt_score>0.35 && chIsoRaw<2.){
-            if(ebee==1 && HoverE > 0.01) continue;
-            /*  asdf Modified needed !!!! asdf */
-        std::string dataera = "UL2018";
-        if ( dataera == "2016ReReco" )
-            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
-        if ( dataera == "UL2018" )
-            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
-        // asdf selections
-        if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
-        if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
-	//if ( mcweight>3000. ) continue;
-	if ( extracut == 1 ){
-	  if ( jetSubVtxMass == 0 ) continue;
-	}else if ( extracut == 2 ){
-	  if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
-	}

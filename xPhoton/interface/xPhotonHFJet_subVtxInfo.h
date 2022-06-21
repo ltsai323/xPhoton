@@ -31,8 +31,8 @@ static Int_t gjet15to6000=0; // deleted
 static Int_t genHTcut=0; // deleted
 static Int_t gjetSignal=0; // deleted
 
-static bool hasSubVtxInfo = false;
-static bool testJetSF = false;
+static bool hasSubVtxInfo = true;
+static bool testJetSF = true;
 static bool ELECTRONVETO = false;
 static bool USEHLT = false;
 

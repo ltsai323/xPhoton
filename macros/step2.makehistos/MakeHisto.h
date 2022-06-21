@@ -58,6 +58,7 @@ public :
    Int_t           eleVeto;
    Float_t         HoverE;
    Float_t         chIsoRaw;
+   Float_t         calib_chIso;
    Float_t         chWorstRaw;
    Float_t         phoIsoRaw;
    Float_t         nhIsoRaw;
@@ -68,7 +69,8 @@ public :
    Float_t         esRR;
    Float_t         esEn;
    Float_t         mva;
-   Float_t         mva_nocorr;
+   Float_t         calib_mva;
+   //Float_t         mva_nocorr;
    Float_t         photonIDmva;
    Int_t           phoIDbit;
    Float_t         MET;
@@ -193,6 +195,7 @@ public :
    TBranch        *b_eleVeto;   //!
    TBranch        *b_HoverE;   //!
    TBranch        *b_chIsoRaw;   //!
+   TBranch        *b_calib_chIso;   //!
    TBranch        *b_chWorstIso;   //!
    TBranch        *b_phoIsoRaw;   //!
    TBranch        *b_nhIsoRaw;   //!
@@ -203,7 +206,8 @@ public :
    TBranch        *b_esRR;   //!
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
-   TBranch        *b_mva_nocorr;   //!
+   //TBranch        *b_mva_nocorr;   //!
+   TBranch        *b_calib_mva;   //!
    TBranch        *b_photonIDmva;   //!
    TBranch        *b_phoIDbit;   //!
    TBranch        *b_MET;   //!
@@ -294,7 +298,7 @@ public :
    TBranch        *b_isQCD;   //!
 
    MakeHisto(Int_t option=0);
-   MakeHisto(const char* fname, const char* outputlabel_, bool isMC);
+   MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int HLTOPTION_ = 0);
    void fitVarsInit();
    virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
@@ -400,8 +404,8 @@ MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLT
   _outputlabel="hi";
   Init(tc);
 }
-MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC) :
-    fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
+MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int HLTOPTION_) :
+    fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(HLTOPTION_), _outputlabel(outputlabel_)
 {
   printf("Input file name is : %s", fname);
   TChain *tc = new TChain("t");
@@ -497,6 +501,10 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
    fChain->SetBranchAddress("chIsoRaw", &chIsoRaw, &b_chIsoRaw);
+   if (!IsMC() )
+   {
+   fChain->SetBranchAddress("calib_chIso", &calib_chIso, &b_calib_chIso);
+   }
    fChain->SetBranchAddress("chWorstRaw", &chWorstRaw, &b_chWorstIso);
    fChain->SetBranchAddress("phoIsoRaw", &phoIsoRaw, &b_phoIsoRaw);
    fChain->SetBranchAddress("nhIsoRaw", &nhIsoRaw, &b_nhIsoRaw);
@@ -509,12 +517,13 @@ void MakeHisto::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    if ( IsMC() )
    {
-   fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   //fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   fChain->SetBranchAddress("calib_mva", &calib_mva, &b_calib_mva);
    }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
-   if ( IsMC() )
+   if (!IsMC() )
    {
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
    }

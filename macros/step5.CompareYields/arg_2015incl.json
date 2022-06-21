@@ -1,0 +1,8 @@
+{
+    "luminosity": 2.26,
+    "MarkerStyle": 8,
+    "MarkerColor": 38,
+    "Label": "2015",
+    "DATfile": "15yield_noInclusivePho_newformat.dat",
+    "histnaming": "2015Yield_%d_%d"
+}

@@ -18,5 +18,6 @@
     <bin name="exec_AppendEventInfo"         file="AppendEventInfo.cc"/>
     <bin name="exec_AppendBTagCalibration"   file="AppendBTagCalibration.cc"/>
     <bin name="exec_xPhotonInfoUpdate"       file="xPhotonInfoUpdate.cc"/>
+    <bin name="exec_xPhotonBinning"          file="xPhotonBinning.cc"/>
 </export>
 <flags SKIP_FILES="*.root"/>

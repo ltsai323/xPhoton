@@ -200,7 +200,8 @@ std::vector<std::string> find_files(const char* patt)
    }
 
 //______________________________________________________________________________
-TreeReader::TreeReader(TTree* tree) :
+//TreeReader::TreeReader(TTree* tree) :
+TreeReader::TreeReader(TTree* tree, const char* mcbranch) :
    fFile(0),
    fTree(0),
    fTreeNum(-1),
@@ -221,11 +222,12 @@ TreeReader::TreeReader(TTree* tree) :
    fTree = tree;
 
    // find out availability of MC truth info (check existence of "nMC" branch)
-   fkMC = fTree->GetBranch("nMC") ? kTRUE : kFALSE;
+   fkMC = fTree->GetBranch(mcbranch) ? kTRUE : kFALSE;
 }
 
 //______________________________________________________________________________
-TreeReader::TreeReader(const char* patt, const char* treename) :
+//TreeReader::TreeReader(const char* patt, const char* treename) :
+TreeReader::TreeReader(const char* patt, const char* treename, const char* mcbranch) :
    fFile(0),
    fTree(0),
    fTreeNum(-1),
@@ -272,11 +274,12 @@ TreeReader::TreeReader(const char* patt, const char* treename) :
     * wildcards, while "rfio:rel*e/file*.root" is not.
     */
 
-   InitTreeChain(find_files(patt), treename);
+   InitTreeChain(find_files(patt), treename, mcbranch);
 }
 
 //______________________________________________________________________________
-TreeReader::TreeReader(const char** paths, int npaths, const char* treename) :
+//TreeReader::TreeReader(const char** paths, int npaths, const char* treename) :
+TreeReader::TreeReader(const char** paths, int npaths, const char* treename, const char* mcbranch) :
    fFile(0),
    fTree(0),
    fTreeNum(-1),
@@ -300,11 +303,12 @@ TreeReader::TreeReader(const char** paths, int npaths, const char* treename) :
       for (int i = 0; i < npaths; i++)
          paths_.push_back(paths[i]);
 
-   InitTreeChain(paths_, treename);
+   InitTreeChain(paths_, treename, mcbranch);
 }
 
 //______________________________________________________________________________
-TreeReader::TreeReader(std::vector<std::string> paths, const char* treename) :
+//TreeReader::TreeReader(std::vector<std::string> paths, const char* treename) :
+TreeReader::TreeReader(std::vector<std::string> paths, const char* treename, const char* mcbranch) :
    fFile(0),
    fTree(0),
    fTreeNum(-1),
@@ -322,7 +326,7 @@ TreeReader::TreeReader(std::vector<std::string> paths, const char* treename) :
    if (paths.size() == 1)
       paths = find_files(paths[0].c_str());
 
-   InitTreeChain(paths, treename);
+   InitTreeChain(paths, treename, mcbranch);
 }
 
 //______________________________________________________________________________
@@ -604,7 +608,8 @@ void* TreeReader::GetPtr(const char* branch_name, ETypes cktype, Int_t* nsize)
 }
 
 //______________________________________________________________________________
-void TreeReader::InitTreeChain(std::vector<std::string> paths, const char* treename)
+//void TreeReader::InitTreeChain(std::vector<std::string> paths, const char* treename)
+void TreeReader::InitTreeChain(std::vector<std::string> paths, const char* treename, const char* mcbranch)
 {
    /* Makes TTree or TChain based on the input given.
     */
@@ -646,7 +651,7 @@ void TreeReader::InitTreeChain(std::vector<std::string> paths, const char* treen
    }
 
    // find out availability of MC truth info (check existence of "nMC" branch)
-   fkMC = fTree->GetBranch("nMC") ? kTRUE : kFALSE;
+   fkMC = fTree->GetBranch(mcbranch) ? kTRUE : kFALSE;
 }
 
 //______________________________________________________________________________

@@ -1,0 +1,8 @@
+{
+    "luminosity": 35.9,
+    "MarkerStyle": 22,
+    "MarkerColor": 46,
+    "Label": "2016ReReco",
+    "DATfile": "16yield_newformat.dat",
+    "histnaming": "kkk_%d_%d"
+}

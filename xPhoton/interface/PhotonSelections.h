@@ -48,6 +48,7 @@ struct MVAVariables
         rho;
     virtual void LoadVars( int varIdx ) { }
     bool isEndcap() { return fabs(recoSCEta) > 1.5; }
+    virtual ~MVAVariables() {}
 };
 //void LoadVars_ggAnalysis( TreeReader* data_, std::
 
@@ -55,7 +56,7 @@ class PhotonMVACalculator
 {
     public:
         PhotonMVACalculator( TreeReader* data_, std::string dataEra_ );
-       ~PhotonMVACalculator();
+        virtual ~PhotonMVACalculator();
 
         float GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapter* SScorr_ );
         float GetMVA_noIso( Int_t iPho_, TGraph* tgr[8]);

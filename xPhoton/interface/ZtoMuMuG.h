@@ -42,7 +42,8 @@ struct rec_Electron
         esRR,
         esEn,
         mva,
-        mva_nocorr,
+        calib_mva,
+        calib_chIso,
         officalIDmva,
         r9Full5x5,
         sieieFull5x5,
@@ -77,6 +78,7 @@ struct rec_Z
 
     Int_t
         eventOrder,
+        charge,
         isMatched;
 };
 struct rec_Mu
@@ -86,6 +88,7 @@ struct rec_Mu
         recoEta,
         deltaR;
     Long64_t trg;
+    Int_t idbit;
 };
 struct rec_Event
 {
@@ -110,6 +113,7 @@ struct rec_Event
 };
 std::vector<TLorentzCand> TriggeredMuons(TreeReader* dataptr);
 std::vector<TLorentzCand> RecoPhoton(TreeReader* dataptr);
+bool PassPhotonPreselection(TreeReader* dataptr, const TLorentzCand& recoCand);
 int                      FindMatchedIdx_Muon(TreeReader* dataptr, const TLorentzCand& recoCand);
 int                      FindMatchedIdx_Photon(TreeReader* dataptr, const TLorentzCand& recoCand);
 void RegBranchZMuMu( TTree* t, const std::string& name, rec_Electron* var );

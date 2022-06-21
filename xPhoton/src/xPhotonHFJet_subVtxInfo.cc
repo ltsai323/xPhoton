@@ -387,7 +387,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("phoIsoRaw",    &phoIsoRaw,    "phoIsoRaw/F");
     outtree_->Branch("nhIsoRaw",     &nhIsoRaw,     "nhIsoRaw/F");
     outtree_->Branch("rho",          &rho,          "rho/F"); 
+    if (!data.HasMC() )
+    {
     outtree_->Branch("calib_chIso",  &calib_chIso, "calib_chIso/F");
+    }
 
     outtree_->Branch("rawE",         &rawE,         "rawE/F");
     outtree_->Branch("scEtaWidth",   &scEtaWidth,   "scEtaWidth/F");
@@ -507,6 +510,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
 
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
+        if ( ev %10000 == 0 ) 
+            LOG_INFO(" processing entries %lld in %lld \n", ev, data.GetEntriesFast());
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
@@ -1306,7 +1311,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
-            calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,"UL2018") );
+            calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
 
 
             rawE       = phoSCRawE[ipho];
@@ -1346,7 +1351,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             //mva_nocorr = mvaloader.GetMVA_noIso(ipho);
             mva = mvaloader.GetMVA_noIso(ipho);
             //mva_nocorr = mvaloader.GetMVA_noIso(ipho,&&SScorr);
-            calib_mva = mvaloader.GetMVA_noIso(ipho,&SScorr);
+            if ( data.HasMC() )
+                calib_mva = mvaloader.GetMVA_noIso(ipho,&SScorr);
             
             photonIDmva = phoIDMVA[ipho];
 
