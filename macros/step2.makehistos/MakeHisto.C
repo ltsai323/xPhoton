@@ -148,7 +148,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         Float_t photonpt = recoPt;
         // old
         //Float_t eventweight = IsMC() ? xsweight * puwei : 1.;
-        chIsoRaw = calib_chIso; // substitute with calib chIso.
+        if (!IsMC() ) chIsoRaw = calib_chIso; // substitute with calib chIso.
 
         // if (Cut(ientry) < 0) continue;
         if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
