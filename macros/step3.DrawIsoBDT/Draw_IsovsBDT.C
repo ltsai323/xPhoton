@@ -15,7 +15,7 @@ namespace pt = boost::property_tree;
 //    input data / sigMC / bkgMC and return binning histogram with all and sideband BDT distribution.
 //    which all distribution is 2D histogram. But sideband is 1D.
 
-const bool useNewSample = true;
+const bool useNewSample = false;
 
 
 struct JsonInfo
@@ -140,8 +140,8 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
     //std::string allname = args.tag + "_all_%d_%d_%d";
     std::string allname = args.tag + "_all";
     hdata_all->SetName( args.BinnedName(allname.c_str()) );
-    hdata->Rebin2D(args.rebinoption,2);
-    if ( hasErr ) herrs->Rebin2D(args.rebinoption,2);
+    //hdata->Rebin2D(args.rebinoption,2);
+    //if ( hasErr ) herrs->Rebin2D(args.rebinoption,2);
 
     int nbinx = hdata->GetNbinsX();
 
@@ -241,6 +241,7 @@ void Draw_IsovsBDT(const char* jsonName){
     //outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_1_0"));
     outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "IsovsBDT/IsovsBDT.%d_%d_%d_1_0") );
 
+    if ( useNewSample ) {
     // after jet selection
     arg_gjet.SetOutputHistTemplate("jetSel_gjet_%d_%d_%d");
     outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "jetcut_IsovsBDT/jetcut_IsovsBDT.%d_%d_%d_0_0") );
@@ -248,7 +249,6 @@ void Draw_IsovsBDT(const char* jsonName){
     outputHists.push_back(SigAndSidebandHistCalc(arg_data, "jetcut_IsovsBDT/jetcut_IsovsBDT.%d_%d_%d_0_0") );
     arg_qcd .SetOutputHistTemplate("jetSel_qcd_%d_%d_%d" );
     outputHists.push_back(SigAndSidebandHistCalc(arg_qcd , "jetcut_IsovsBDT/jetcut_IsovsBDT.%d_%d_%d_1_0") );
-    if ( useNewSample ) {
         for ( int systType = 0; systType < 3; ++systType ) {
         for ( int btagvar = 0; btagvar < 4; ++btagvar ) {
         for ( int jetflav = 0; jetflav < 3; ++jetflav ) {
