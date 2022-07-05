@@ -193,8 +193,8 @@ if __name__ == '__main__':
             for phopt in range(21):
                 mylog.debug('indexes are pEta:%d jEta:%d pPt:%d' % (phoeta,jeteta,phopt) )
                 sigbin=MyBin(phopt, phoeta, jeteta)
-                #bkgpt = phopt if phopt < 17 else 17
-                bkgpt = phopt if phopt < 19 else 19
+                bkgpt = phopt if phopt < 17 else 17
+                #bkgpt = phopt if phopt < 19 else 19
                 bkgbin=MyBin(bkgpt, phoeta, jeteta)
 
                 mylog.debug( 'status 01: Loading hists from file.' )
