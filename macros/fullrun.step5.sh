@@ -14,6 +14,7 @@ cat > arg_orig.json <<EOF
     "DATfile": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/16yield_newformat.dat"
 }
 EOF
+qq=1
 fi
 if [ "$origera" == 2015 ]; then
 cat > arg_orig.json <<EOF
@@ -26,6 +27,7 @@ cat > arg_orig.json <<EOF
     "DATfile": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/15yield_noInclusivePho_newformat.dat"
 }
 EOF
+qq=1
 fi
 
 if [ "$dataera" == 2016 ]; then
@@ -39,6 +41,7 @@ cat > arg_comp.json <<EOF
     "DATfile": "data.yield.dat"
 }
 EOF
+qq=1
 fi
 if [ "$dataera" == 2018 ]; then
 cat > arg_comp.json <<EOF
@@ -51,7 +54,13 @@ cat > arg_comp.json <<EOF
     "DATfile": "data.yield.dat"
 }
 EOF
+qq=1
 fi
+
+if [ "$qq" == "" ]; then
+    exit
+fi
+
 arg_trg=arg_orig.json
 arg_cmp=arg_comp.json
 

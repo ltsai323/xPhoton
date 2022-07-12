@@ -27,9 +27,6 @@ struct JsonInfo
         ebee        = root.get<int>("phoEtaBin"  , 0 );
         jetbin      = root.get<int>("jetEtaBin"  , 0 );
         ptbin       = root.get<int>("phoPtBin"   , 0 );
-        rebinoption = root.get<int>("rebinOption", 5 );
-        //sb1         = root.get<int>("sidebandlower", 14);
-        //sb2         = root.get<int>("sidebandupper", 20);
 
         datafile    = root.get<std::string>("data", "");
         sig_file    = root.get<std::string>("sig" , "");
@@ -37,13 +34,26 @@ struct JsonInfo
         out_template= root.get<std::string>("out_template" , "");
 
     }
-    int ebee, jetbin, ptbin, rebinoption; //, sb1, sb2;
-    std::string datafile, sig_file, bkg_file;
-    std::string out_template;
+    JsonInfo( int ebee_, int jetbin_, int ptbin_,
+        std::string data_file_, std::string sig_file_, std::string bkg_file_, std::string out_template_ )
+    {
+        ebee = ebee_;
+        jetbin = jetbin_;
+        ptbin = ptbin_;
+        datafile = data_file_;
+        sig_file = sig_file_;
+        bkg_file = bkg_file_;
+        out_template = out_template_;
+    }
 
     const char* Data()  const { return datafile.c_str(); }
     const char* SigMC() const { return sig_file.c_str(); }
     const char* BkgMC() const { return bkg_file.c_str(); }
+
+    int ebee, jetbin, ptbin;
+    std::string datafile, sig_file, bkg_file;
+    std::string out_template;
+    TFile* file;
 };
 
 struct BinInfo
@@ -53,7 +63,6 @@ struct BinInfo
         ebee        = args.ebee        ;
         jetbin      = args.jetbin      ;
         ptbin       = args.ptbin       ;
-        rebinoption = args.rebinoption ;
         tag="";
         file=nullptr;
     }
@@ -62,12 +71,11 @@ struct BinInfo
         this->ebee =          input.ebee ;
         this->jetbin =        input.jetbin ;
         this->ptbin =         input.ptbin ;
-        this->rebinoption =   input.rebinoption ;
         this->tag =           input.tag;
         this->file =          input.file;
     }
     BinInfo() {} 
-    int ebee, jetbin, ptbin, rebinoption; 
+    int ebee, jetbin, ptbin;
     std::string tag;
     TFile* file;
 
@@ -110,16 +118,18 @@ TH2F* GetHist(BinInfo args, const char* histNameTemplate )
 
 struct HistsNeedStored
 {
-    TH1D* hpx0;
     TH1D* hpx1;
+    TH1D* hpx1_err;
+    TH1D* hpx2;
     TH2F* hall;
 
     void Write( TDirectory* dir = nullptr )
     {
         if ( dir ) dir->cd();
-        hpx0->Write();
         hpx1->Write();
+        hpx2->Write();
         hall->Write();
+        if ( hpx1_err ) hpx1_err->Write();
     }
 };
 
@@ -127,7 +137,7 @@ struct HistsNeedStored
 void PrintSigAndSideBandBasicInfo( const HistsNeedStored& hists )
 {
     printf("In hist %s\n", hists.hall->GetName());
-    printf("sig fraction : %5.2f %% and fake fraction %5.2f %%\n", 100.*hists.hpx0->Integral()/hists.hall->Integral(), 100.*hists.hpx1->Integral()/hists.hall->Integral() );
+    printf("sig fraction : %5.2f %% and fake fraction %5.2f %%\n", 100.*hists.hpx1->Integral()/hists.hall->Integral(), 100.*hists.hpx2->Integral()/hists.hall->Integral() );
 }
 
 HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNameTemplate, const char* errhistTemplate = nullptr )
@@ -175,45 +185,43 @@ HistsNeedStored SigAndSidebandHistCalc( const BinInfo& args, const char* histNam
 
     std::string zone1name = args.tag + "_px1_chIso";
     TH1D *h_data_zone1 = (TH1D*)hdata->ProjectionX(args.BinnedName(zone1name.c_str()),zone1_low, zone1_high);
+    TH1D *h_data_zone1_errUp = nullptr;
     if ( hasErr )
     {
+        std::string zone1errname = args.tag + "_px1_chIso_errUp";
         TH1D* HDATA = h_data_zone1;
-        int bin_l = zone1_low;
-        int bin_r = zone1_high;
-        TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hi", bin_l, bin_r);
-        for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
-            HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
-            //HDATA->SetBinError( ibin, HDATA->GetBinContent(ibin) );
+        h_data_zone1_errUp = (TH1D*)herrs->ProjectionX( args.BinnedName(zone1errname.c_str()), zone1_low, zone1_high);
     }
 
 
     std::string zone2name = args.tag + "_px2_chIso";
     TH1D *h_data_zone2 = (TH1D*)hdata->ProjectionX(args.BinnedName(zone2name.c_str()),zone2_low, zone2_high);
-    if ( hasErr )
-    {
-        TH1D* HDATA = h_data_zone2;
-        int bin_l = zone2_low;
-        int bin_r = zone2_high;
-        TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hj", bin_l, bin_r);
-        for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
-            HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
-            //HDATA->SetBinError( ibin, HDATA->GetBinContent(ibin) );
-        //std::cerr << "the error bar has been updated!\n";
-    }
+    //if ( hasErr )
+    //{
+    //    TH1D* HDATA = h_data_zone2;
+    //    int bin_l = zone2_low;
+    //    int bin_r = zone2_high;
+    //    TH1D *HDATA_ERR = (TH1D*)herrs->ProjectionX("hj", bin_l, bin_r);
+    //    for ( int ibin = HDATA->GetNbinsX()+1; ibin != 0; --ibin )
+    //        HDATA->SetBinError( ibin, fabs(HDATA->GetBinContent(ibin)-HDATA_ERR->GetBinContent(ibin)) );
+    //        //HDATA->SetBinError( ibin, HDATA->GetBinContent(ibin) );
+    //    //std::cerr << "the error bar has been updated!\n";
+    //}
 
 
     HistsNeedStored out;
-    out.hpx0 = h_data_zone1;
-    out.hpx1 = h_data_zone2;
+    out.hpx1 = h_data_zone1;
+    out.hpx2 = h_data_zone2;
     out.hall = hdata_all;
+    out.hpx1_err = h_data_zone1_errUp;
 
     //PrintSigAndSideBandBasicInfo(out);
     return out;
 }
 
 
-void Draw_IsovsBDT(const char* jsonName){
-    JsonInfo args(jsonName);
+void Draw_IsovsBDT(const JsonInfo& args) {
+    //JsonInfo args(jsonName);
 
     TFile *fdata = TFile::Open( args.Data()  );
     TFile *fqcd  = TFile::Open( args.BkgMC() );
@@ -233,8 +241,8 @@ void Draw_IsovsBDT(const char* jsonName){
     outputHists.push_back(SigAndSidebandHistCalc(arg_gjet2, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
     */
     arg_gjet.SetOutputHistTemplate("gjet_%d_%d_%d");
-    //outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_0_0")); // add error bar
-    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
+    outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0", "IsovsBDTorig/IsovsBDTorig.%d_%d_%d_0_0")); // add error bar
+    //outputHists.push_back(SigAndSidebandHistCalc(arg_gjet, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
     arg_data.SetOutputHistTemplate("data_%d_%d_%d");
     outputHists.push_back(SigAndSidebandHistCalc(arg_data, "IsovsBDT/IsovsBDT.%d_%d_%d_0_0") );
     arg_qcd .SetOutputHistTemplate("qcd_%d_%d_%d" );
@@ -276,3 +284,14 @@ void Draw_IsovsBDT(const char* jsonName){
     fout->Close();
 }
 
+void Draw_IsovsBDT(const char* jsonName){
+    JsonInfo args(jsonName);
+    Draw_IsovsBDT(args);
+}
+void Draw_IsovsBDT( int ebee, int jetbin, int ptbin,
+        std::string data_file, std::string sig_file, std::string bkg_file, std::string out_template )
+{
+    JsonInfo args( ebee, jetbin, ptbin,
+            data_file, sig_file, bkg_file, out_template );
+    Draw_IsovsBDT(args);
+}
