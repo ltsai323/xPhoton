@@ -311,7 +311,7 @@ public :
    virtual Int_t    EBEE(Float_t eta);
    virtual Int_t    Ptbin(Float_t pt);
    virtual Int_t    HLTbit(Float_t pt);
-   virtual Int_t    JetEtaBin(Float_t eta);
+   virtual Int_t    JetEtaBin(Float_t pt, Float_t eta);
    virtual Int_t    triggerbit(Int_t ptbin);
    virtual Int_t    JetFlavourBin( int jetHadFlvr );
 

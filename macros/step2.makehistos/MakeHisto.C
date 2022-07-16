@@ -68,6 +68,29 @@ void MakeHisto::Loop(Int_t extracut = 0)
     _h_Ptspec  .SetXaxis( 200, 0., 2000.);
     _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
     _h_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
+
+    HistMgr1D mySigSignalRegionBDTOrig("testBDTsig_signalRegionOrig.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    mySigSignalRegionBDTOrig.SetXaxis(100,-1.,1);
+    HistMgr1D mySigSignalRegionBDT("testBDTsig_signalRegion.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    mySigSignalRegionBDT.SetXaxis(100,-1.,1);
+    HistMgr1D myQCDSignalRegionBDT("testBDTqcd_signalRegion.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    myQCDSignalRegionBDT.SetXaxis(100,-1.,1);
+    HistMgr1D myExpSignalRegionBDT("testBDTexp_signalRegion.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    myExpSignalRegionBDT.SetXaxis(100,-1.,1);
+    HistMgr1D mySigSidebandRegionBDT("testBDTsig_sidebandRegion.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    mySigSidebandRegionBDT.SetXaxis(100,-1.,1);
+    HistMgr1D myQCDSidebandRegionBDT("testBDTqcd_sidebandRegion.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    myQCDSidebandRegionBDT.SetXaxis(100,-1.,1);
+    HistMgr1D myExpSidebandRegionBDT("testBDTexp_sidebandRegion.%d_%d_%d",
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
+    myExpSidebandRegionBDT.SetXaxis(100,-1.,1);
+
     
     if (useNewSample )
     {
@@ -150,9 +173,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         //Float_t eventweight = IsMC() ? xsweight * puwei : 1.;
         if (!IsMC() ) chIsoRaw = calib_chIso; // substitute with calib chIso.
 
-        // if (Cut(ientry) < 0) continue;
-        if(TMath::Abs(recoEta)>1.4442 && TMath::Abs(recoEta)<1.566) continue;
-        if(TMath::Abs(recoEta)>2.5) continue;
+        if(TMath::Abs(recoSCEta)>1.4442 && TMath::Abs(recoSCEta)<1.566) continue;
+        if(TMath::Abs(recoSCEta)>2.5) continue;
 
         if(MET/photonpt > 0.7) continue;
 
@@ -177,7 +199,7 @@ void MakeHisto::Loop(Int_t extracut = 0)
         int ptbin = IsMC() ? Ptbin(recoPt) : Ptbin(recoPtCalib); // only pt bin used calibrated pt in data
         //int ptbin = Ptbin(photonpt*0.99); //playing with photon energy scale
         int hltbit = HLTbit(photonpt);
-        int jetbin = JetEtaBin(jetY);
+        int jetbin = JetEtaBin(jetPt,jetY);
 
         //smearing due to gain switching (G6->G1)    
         TLorentzVector phoP4Orig;
@@ -191,10 +213,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 
         if(ptbin<0) continue;
-        //if(photon_jetID==1) continue;
-        // if(isData==1 && ((phoFiredTrgs>>triggerbit(ptbin))&1)==0) continue;
-        // if(isData==1 && !(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
-        //if(!(((phoFiredTrgs>>8)&1)==1 || MTm>0) ) continue;
         std::string dataera = "2016ReReco";
         if ( dataera == "2016ReReco" )
             if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
@@ -209,10 +227,37 @@ void MakeHisto::Loop(Int_t extracut = 0)
         _h_Pt_all .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(photonpt , eventweight);
 
 
-        // asdf selections
-        if ( TMath::Abs(recoEta)<1.5 && sieieFull5x5 > 0.015 ) continue;
-        if ( TMath::Abs(recoEta)>1.5 && sieieFull5x5 > 0.045 ) continue;
+        // these selections are in PhotonSelections.cc
+        if ( TMath::Abs(recoSCEta)<1.5 && sieieFull5x5 > 0.012 ) continue;
+        if ( TMath::Abs(recoSCEta)<1.5 && HoverE       > 0.08  ) continue;
+        if ( TMath::Abs(recoSCEta)>1.5 && sieieFull5x5 > 0.027 ) continue;
+        if ( TMath::Abs(recoSCEta)>1.5 && HoverE       > 0.05  ) continue;
 
+        // signal region
+        if ( ( ebee == 0 && chIsoRaw < 2 )||
+             ( ebee == 1 && chIsoRaw <1.5) )
+        {
+            if      ( IsMC() && isMatched==1 )
+            {
+                mySigSignalRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
+                mySigSignalRegionBDTOrig.GetBin({ebee,jetbin,ptbin})->Fill(orig_bdt,eventweight);
+            }
+            else if ( IsMC() && isMatched!=1 )
+                myQCDSignalRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
+            else if (!IsMC() )
+                myExpSignalRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
+        }
+        // sideband region
+        if ( ( ebee == 0 && chIsoRaw > 7 && chIsoRaw < 13 )||
+             ( ebee == 1 && chIsoRaw > 6 && chIsoRaw < 12 ) )
+        {
+            if      ( IsMC() && isMatched==1 )
+                mySigSidebandRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
+            else if ( IsMC() && isMatched!=1 )
+                myQCDSidebandRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
+            else if (!IsMC() )
+                myExpSidebandRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
+        }
         _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
         _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
         _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
@@ -342,6 +387,13 @@ if (useNewSample)
     _h_Ptspec  .Write(_h_Ptspec  .MakeDirectory(fout));
     _h_IsovsBDT.Write(_h_IsovsBDT.MakeDirectory(fout));
     _h_IsovsBDTorig.Write(_h_IsovsBDTorig.MakeDirectory(fout));
+    myExpSignalRegionBDT.Write(myExpSignalRegionBDT.MakeDirectory(fout));
+    mySigSignalRegionBDT.Write(mySigSignalRegionBDT.MakeDirectory(fout));
+    mySigSignalRegionBDTOrig.Write(mySigSignalRegionBDTOrig.MakeDirectory(fout));
+    myQCDSignalRegionBDT.Write(myQCDSignalRegionBDT.MakeDirectory(fout));
+    myExpSidebandRegionBDT.Write(myExpSidebandRegionBDT.MakeDirectory(fout));
+    mySigSidebandRegionBDT.Write(mySigSidebandRegionBDT.MakeDirectory(fout));
+    myQCDSidebandRegionBDT.Write(myQCDSidebandRegionBDT.MakeDirectory(fout));
 if ( useNewSample )
 {
     jc_IsovsBDT.Write(jc_IsovsBDT.MakeDirectory(fout));
@@ -379,7 +431,7 @@ if ( useNewSample )
 
 Int_t MakeHisto::EBEE(Float_t eta)
 {
-    if ( TMath::Abs(eta)<1.4442 ) return 0;
+    if ( TMath::Abs(eta)<1.5 )    return 0;
     else                          return 1;
 }
 Int_t MakeHisto::Ptbin(Float_t pt)
@@ -408,8 +460,8 @@ Int_t MakeHisto::HLTbit(Float_t pt){
     return -1;
 }
 
-Int_t MakeHisto::JetEtaBin(Float_t eta) {  
-    if(jetPt==0) return 2;
+Int_t MakeHisto::JetEtaBin(Float_t pt, Float_t eta) {  
+    if(pt< 1e-3) return 2;
     if(TMath::Abs(eta)<1.5) return 0;
     return 1;
 }
