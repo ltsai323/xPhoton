@@ -174,7 +174,7 @@ public:
         printf(" loop through entries to get 2d weight \n");
         for (Long64_t jentry=0; jentry<nentries;jentry++) {
             //if(jentry%5!=0) continue;
-            Long64_t nb = t->GetEntry(jentry);  
+            t->GetEntry(jentry);  
             //totalEventWeight = mcweight * puwei;
             totalEventWeight = 1.; // Not to use mcweight to increase statistics to high pt fake.
             if (jentry % 1000000 == 0){
@@ -405,7 +405,7 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
 
     for (Long64_t jentry=0; jentry<nentries;jentry++) {
         //if(jentry%5!=0) continue;
-        Long64_t nb = t->GetEntry(jentry);  
+        t->GetEntry(jentry);  
 
         // initialize stored value.
         weight2d_ = 1.;
@@ -455,27 +455,28 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
             if(TMath::Abs(recoEta) > etacut[ii]) etabin = ii+1;
         }
         float p1_rho = 0.831 ; 
-        float p1_chiso[10]; float p1_chisow[10]; float p1_phiso[10]; float p1_nhiso[10]; 
+        float p1_chiso[10]; float p1_chisow[10]; float p1_phiso[10]; // float p1_nhiso[10]; 
         // asdf seems to be modified from wiki
-        p1_chiso[0] = 0.006;  p1_chisow[0] = 0.164;  p1_phiso[0] = 0.093;  p1_nhiso[0] = 0.000; 
-        p1_chiso[1] = 0.006;  p1_chisow[1] = 0.086;  p1_phiso[1] = 0.095;  p1_nhiso[1] = 0.011; 
-        p1_chiso[2] = 0.006;  p1_chisow[2] = 0.053;  p1_phiso[2] = 0.086;  p1_nhiso[2] = 0.020; 
-        p1_chiso[3] = 0.006;  p1_chisow[3] = 0.072;  p1_phiso[3] = 0.038;  p1_nhiso[3] = -0.017; 
-        p1_chiso[4] = 0.010;  p1_chisow[4] = 0.056;  p1_phiso[4] = 0.033;  p1_nhiso[4] = 0.010; 
-        p1_chiso[5] = 0.003;  p1_chisow[5] = 0.077;  p1_phiso[5] = 0.041;  p1_nhiso[5] = -0.033; 
-        p1_chiso[6] = 0.001;  p1_chisow[6] = 0.103;  p1_phiso[6] = 0.059;  p1_nhiso[6] = -0.040; 
-        p1_chiso[7] = -0.000;  p1_chisow[7] = 0.070;  p1_phiso[7] = 0.065;  p1_nhiso[7] = 0.006; 
-        p1_chiso[8] = 0.001;  p1_chisow[8] = 0.040;  p1_phiso[8] = 0.076;  p1_nhiso[8] = 0.020; 
+        p1_chiso[0] = 0.006;  p1_chisow[0] = 0.164;  p1_phiso[0] = 0.093;  // p1_nhiso[0] = 0.000; 
+        p1_chiso[1] = 0.006;  p1_chisow[1] = 0.086;  p1_phiso[1] = 0.095;  // p1_nhiso[1] = 0.011; 
+        p1_chiso[2] = 0.006;  p1_chisow[2] = 0.053;  p1_phiso[2] = 0.086;  // p1_nhiso[2] = 0.020; 
+        p1_chiso[3] = 0.006;  p1_chisow[3] = 0.072;  p1_phiso[3] = 0.038;  // p1_nhiso[3] = -0.017; 
+        p1_chiso[4] = 0.010;  p1_chisow[4] = 0.056;  p1_phiso[4] = 0.033;  // p1_nhiso[4] = 0.010; 
+        p1_chiso[5] = 0.003;  p1_chisow[5] = 0.077;  p1_phiso[5] = 0.041;  // p1_nhiso[5] = -0.033; 
+        p1_chiso[6] = 0.001;  p1_chisow[6] = 0.103;  p1_phiso[6] = 0.059;  // p1_nhiso[6] = -0.040; 
+        p1_chiso[7] = -0.000;  p1_chisow[7] = 0.070;  p1_phiso[7] = 0.065; //  p1_nhiso[7] = 0.006; 
+        p1_chiso[8] = 0.001;  p1_chisow[8] = 0.040;  p1_phiso[8] = 0.076;  // p1_nhiso[8] = 0.020; 
 
         //asdf this chIso does not be stored. Only used for calculate ID
         // this Iso is needed to be further set from TWIKI
 
         float chIso = chIsoRaw  - p1_chiso[etabin]*(rho/p1_rho);
         float phoIso = phoIsoRaw - p1_phiso[etabin]*(rho/p1_rho);
-        float nhIso = nhIsoRaw  - p1_nhiso[etabin]*(rho/p1_rho);
+        //float nhIso = nhIsoRaw  - p1_nhiso[etabin]*(rho/p1_rho);
         float chWorst = chWorstRaw - p1_chisow[etabin]*(rho/p1_rho);
 
 
+        /*
         Int_t i_effArea = 0 ; // effective area for pile up correction for DR04 combine rel. Iso
         if      ( fabs(recoSCEta) < 1.0                                        ) i_effArea = 0 ;
         else if ( fabs(recoSCEta) >= 1.0   && fabs(recoSCEta) < 1.479  ) i_effArea = 1 ;
@@ -484,6 +485,7 @@ void AppendWeightsToFile( const char* ifilename, const ReweightHists& rwHists, c
         else if ( fabs(recoSCEta) >= 2.2   && fabs(recoSCEta) < 2.3    ) i_effArea = 4 ;
         else if ( fabs(recoSCEta) >= 2.3   && fabs(recoSCEta) < 2.4    ) i_effArea = 5 ;
         else if ( fabs(recoSCEta) >= 2.4                                       ) i_effArea = 6 ;
+        */
 
 
         //HEP photon cut ID
