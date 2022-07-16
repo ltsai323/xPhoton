@@ -23,7 +23,6 @@ Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
   if (!passSelection_PhotonKinematicParameters(phoEt[ipho],phoSCEta[ipho]) ) return 0;
   if (eleVeto && phoEleVeto[ipho] == 0) return 0;
 
-  //return phoID; //for X750 analysis
   
   if (TMath::Abs(phoSCEta[ipho]) < 1.5) { //for EB
     if(phoPFChWorstIso[ipho] > 15.)     return 0;
@@ -40,145 +39,10 @@ Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
   return 1;
 }
 
-Int_t PhotonSkimPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
-  Int_t phoID=1;
-
-  // load relevant branches from TTree/TChain
-  //Int_t    nPho                = data.GetInt("nPho");
-  Float_t* phoEt               = data.GetPtrFloat("phoEt");
-  Float_t* phoSCEta            = data.GetPtrFloat("phoSCEta");
-  Int_t*   phoEleVeto          = data.GetPtrInt("phoEleVeto");
-  /* Float_t* phoSigmaIEtaIEta    = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5"); */
-  /* Float_t* phoR9               = data.GetPtrFloat("phoR9"); */
-  /* Float_t* phoHoverE           = data.GetPtrFloat("phoHoverE"); */
-  /* Float_t* phoPFPhoIso         = data.GetPtrFloat("phoPFPhoIso"); */
-  /* Float_t* phoPFChWorstIso   = data.GetPtrFloat("phoPFChWorstIso"); */
-
-  
-  if (phoEt[ipho] < 15.) phoID = 0;
-  //if (phoEt[ipho] > 200.) phoID = 0;
-  if (TMath::Abs(phoSCEta[ipho]) > 1.4442 && TMath::Abs(phoSCEta[ipho]) < 1.566) phoID = 0;
-  if (TMath::Abs(phoSCEta[ipho]) > 2.5) phoID = 0;
-  if (eleVeto && phoEleVeto[ipho] == 0) phoID = 0;  
-
-  //return phoID; //for X750 analysis
-  /* if(phoPFChWorstIso[ipho] > 20.) phoID=0; */
-  /* //if(phoPFPhoIso[ipho] > 20.) phoID=0; */
-  /* if(phoPFPhoIso[ipho] > 50.) phoID=0; */
-  /* if(phoHoverE[ipho] > 0.15) phoID=0;   */
-  /* //for EB */
-  /* if (TMath::Abs(phoSCEta[ipho]) < 1.5) { */
-  /*   if(phoSigmaIEtaIEta[ipho] > 0.015) phoID=0; */
-  /* }else{ //EE */
-  /*   if(phoSigmaIEtaIEta[ipho] > 0.032) phoID=0; */
-  /* }     */
-  return phoID;
-
-}
 
 
-Int_t HggPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto) {
 
-  Int_t phoID=1;
-
-  // load relevant branches from TTree/TChain
-  //Int_t    nPho                = data.GetInt("nPho");
-  Float_t* phoEt               = data.GetPtrFloat("phoEt");
-  Float_t* phoSCEta            = data.GetPtrFloat("phoSCEta");
-  Int_t*   phoEleVeto          = data.GetPtrInt("phoEleVeto");
-  Float_t* phoSigmaIEtaIEta    = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5");
-  Float_t* phoR9               = data.GetPtrFloat("phoR9");
-  Float_t* phoHoverE           = data.GetPtrFloat("phoHoverE");
-  Float_t* phoPFChIso        = data.GetPtrFloat("phoPFChIso");
-  Float_t* phoPFPhoIso         = data.GetPtrFloat("phoPFPhoIso");
-  //vector<float>* phoCiCPF4chgpfIso02 = data.GetPtrVectorFloat("phoCiCPF4chgpfIso02", nPho);
-                              
-  if (phoEt[ipho] < 15.) phoID = 0;
-  //if (phoEt[ipho] > 200.) phoID = 0;
-  if (TMath::Abs(phoSCEta[ipho]) > 1.4442 && TMath::Abs(phoSCEta[ipho]) < 1.566) phoID = 0;
-  if (TMath::Abs(phoSCEta[ipho]) > 2.5) phoID = 0;
-  if (eleVeto && phoEleVeto[ipho] == 0) phoID = 0;  
-
-  // Hgg photon Preselection-------------
-  if (phoHoverE[ipho] >= 0.08) phoID = 0;
-
-  //for EB
-  if (TMath::Abs(phoSCEta[ipho]) < 1.5) {
-    if (phoR9[ipho] <= 0.5) phoID=0;
-    if (phoSigmaIEtaIEta[ipho] >= 0.015) phoID = 0;
-    if (phoR9[ipho] < 0.85) {
-      if(phoPFPhoIso[ipho] > 4.) phoID=0;
-      if(phoPFChIso[ipho] > 6.) phoID=0;
-    }
-  } else { //for EE
-    if (phoR9[ipho] <= 0.8) phoID=0;
-    if (phoSigmaIEtaIEta[ipho] >= 0.035) phoID = 0;
-    if (phoR9[ipho] < 0.9) {
-      if(phoPFPhoIso[ipho] > 4.) phoID=0;
-      if(phoPFChIso[ipho] > 6.) phoID=0;
-    }
-  }
-  //end of Hgg preselection----------
-  
-  return phoID;
-}
-
-void select_photon(Int_t iWP, TreeReader &data, std::vector<int>& accepted) {
-
-  accepted.clear();
-  // load relevant branches from TTree/TChain
-  Int_t    nPho                = data.GetInt("nPho");
-  Float_t* phoEt               = data.GetPtrFloat("phoEt");
-  Float_t* phoSCEta            = data.GetPtrFloat("phoSCEta");
-  Int_t*   phoEleVeto          = data.GetPtrInt("phoEleVeto");
-  Float_t* phoSigmaIEtaIEta    = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5");
-  Float_t* phoHoverE           = data.GetPtrFloat("phoHoverE");
-  Float_t* phoPFChIso          = data.GetPtrFloat("phoPFChIso");
-  Float_t* phoPFNeuIso         = data.GetPtrFloat("phoPFNeuIso");
-  Float_t* phoPFPhoIso         = data.GetPtrFloat("phoPFPhoIso");
-  Float_t  rho                = data.GetFloat("rho");
-
-  for (int iPho = 0; iPho < nPho; ++iPho) {
-
-    if (phoEt[iPho] < 10. ) continue ;
-    
-    Int_t phoEB = 0 ;
-    if (iWP == -1 ) continue ;
-    if ( fabs(phoSCEta[iPho]) >= 1.566 ) phoEB = 1 ;
-    if ( phoEleVeto[iPho] != 0 ) continue ;
-    if ( phoHoverE[iPho] > 0.05 ) continue ;
-    // left : cut for EB. right : cut for EE
-    Float_t sIEIECut[3][2] = { { 0.012 , 0.034 } , { 0.011 , 0.033 } , { 0.011 , 0.031 } } ;
-    if ( phoSigmaIEtaIEta[iPho] >= sIEIECut[iWP][phoEB] ) continue ;
-    Float_t effArea[3][7] = { //[Ch,Nu,Pho][iPhof_eta]
-      { 0.012 , 0.010 , 0.014 , 0.012 , 0.016 , 0.020 , 0.012 } ,
-      { 0.030 , 0.057 , 0.039 , 0.015 , 0.024 , 0.039 , 0.072 } ,
-      { 0.148 , 0.130 , 0.112 , 0.216 , 0.262 , 0.260 , 0.266 } 
-    } ;
-    Int_t i_effArea = 0 ; // effective area for pile up correction for DR04 combine rel. Iso
-    if      ( fabs(phoSCEta[iPho]) < 1.0                                        ) i_effArea = 0 ;
-    else if ( fabs(phoSCEta[iPho]) >= 1.0   && fabs(phoSCEta[iPho]) < 1.479  ) i_effArea = 1 ;
-    else if ( fabs(phoSCEta[iPho]) >= 1.479 && fabs(phoSCEta[iPho]) < 2.0    ) i_effArea = 2 ;
-    else if ( fabs(phoSCEta[iPho]) >= 2.0   && fabs(phoSCEta[iPho]) < 2.2    ) i_effArea = 3 ;
-    else if ( fabs(phoSCEta[iPho]) >= 2.2   && fabs(phoSCEta[iPho]) < 2.3    ) i_effArea = 4 ;
-    else if ( fabs(phoSCEta[iPho]) >= 2.3   && fabs(phoSCEta[iPho]) < 2.4    ) i_effArea = 5 ;
-    else if ( fabs(phoSCEta[iPho]) >= 2.4                                       ) i_effArea = 6 ;
-    Float_t chIsoCut[3][2] = { {2.6,2.3} , {1.5,1.2} , {0.7,0.5} } ; //[Loose,Medium,Tight][EB,EE]
-    float corrIso = (float) TMath::Max( float(0.) , phoPFChIso[iPho] - ( effArea[0][i_effArea] * rho ) ) ;
-    if ( corrIso >= chIsoCut[iWP][phoEB] ) continue ;
-    Float_t neuIsoCut[3][2] = { { 3.5, 2.9 } , { 1.0, 1.5 } , { 0.4, 1.5 } } ; //[Loose,Medium,Tight][EB,EE]
-    for (int i = 0; i < 3; i++) for (int j = 0; j < 2; j++) neuIsoCut[i][j] += ( 0.04 * phoEt[iPho] );
-    corrIso = TMath::Max( float(0.) , phoPFNeuIso[iPho] - ( effArea[1][i_effArea] * rho ) ) ;
-    if ( corrIso >= neuIsoCut[iWP][phoEB] ) continue ;
-    Float_t gammaIsoCut[3][2] = { {1.3,999.} , {0.7,1.0} , {0.5,1.0} } ; //[Loose,Medium,Tight][EB,EE]
-    for (int i = 0; i < 3; i++) for (int j = 0; j < 2; j++) gammaIsoCut[i][j] += ( 0.005 * phoEt[iPho] ) ;
-    corrIso = TMath::Max( float(0.) , phoPFPhoIso[iPho] - ( effArea[2][i_effArea] * rho ) ) ;
-    if ( corrIso >= gammaIsoCut[iWP][phoEB] ) continue ;
-    accepted.push_back(iPho);
-  }
-
-}
-
+/*
 
 float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TGraph *> barrelCorr, std::map<std::string, TGraph *> endcapCorr) {
     TGraph* tttgr[20];
@@ -197,14 +61,12 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TG
 
 float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
     std::string dataera = "UL2018";
-  /* Photon identification with the Zgamma MVA. Returns the MVA evaluated value.
    *
    * Documentation:
    * https://indico.cern.ch/getFile.py/access?contribId=3&resId=0&materialId=slides&confId=298231
    *
    * data = handle providing access to an input event;
    * i = index of a photon candidate to consider.
-   */
   // load necessary tree branches
   Float_t* phoEt             = data.GetPtrFloat("phoEt");
   Float_t* phoEta            = data.GetPtrFloat("phoEta");
@@ -215,9 +77,6 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
   Float_t* phoSCEtaWidth     = data.GetPtrFloat("phoSCEtaWidth");
   Float_t* phoSCPhiWidth     = data.GetPtrFloat("phoSCPhiWidth");
   Float_t  rho               = data.GetFloat("rho");
-  /* Float_t* phoPFPhoIso       = data.GetPtrFloat("phoPFPhoIso"); */
-  /* Float_t* phoPFChIso        = data.GetPtrFloat("phoPFChIso"); */
-  /* Float_t* phoPFChWorstIso   = data.GetPtrFloat("phoPFChWorstIso"); */
   Float_t* phoESEnP1           = data.GetPtrFloat("phoESEnP1");
   Float_t* phoESEnP2           = data.GetPtrFloat("phoESEnP2");
   Float_t* phoESEffSigmaRR   = data.GetPtrFloat("phoESEffSigmaRR");
@@ -271,9 +130,6 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
       tmvaReader[iBE]->AddVariable("esRR", &phoESEffSigmaRR_);
     }
     tmvaReader[iBE]->AddVariable("rho", &rho_);
-    /* tmvaReader[iBE]->AddVariable("phoIsoRaw", &phoPFPhoIso_); */
-    /* tmvaReader[iBE]->AddVariable("chIsoRaw", &phoPFChIso_); */
-    /* tmvaReader[iBE]->AddVariable("chWorstRaw", &phoPFChIsoWorst_); */
 
     //tmvaReader[iBE]->AddVariable("recoPt", &phoEt_);
     // FIXME: why do we need this?
@@ -325,6 +181,7 @@ float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[8]) {
   return tmvaReader[iBE]->EvaluateMVA("BDT");
 
 }
+*/
 
 
 /*
@@ -407,6 +264,7 @@ float select_photon_mva_hgg(TreeReader &data, Int_t i) {
 
 }
 */
+
 bool passSelection_PhotonKinematicParameters( float pt, float eta )
 {
     if ( pt < 10. ) return false;
