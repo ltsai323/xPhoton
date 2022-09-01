@@ -1,1 +1,1 @@
-{"dataera": "2016ReReco", "InputFiles": ["/home/ltsai/ReceivedFile/GJet/old/old.2016ReReco.QCDPythia.root"], "OutputFileName": "binned_2016ReReco_QCD.root"}
+{"dataera": "2016ReReco", "InputFiles": ["/wk_cms/ltsai/CMSSW_11_0_0_pre3/src/xPhoton/macros/2016.QCD.root"], "OutputFileName": "binned_2016ReReco_QCD.root"}

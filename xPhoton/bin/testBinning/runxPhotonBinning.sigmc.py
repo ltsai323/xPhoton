@@ -1,9 +1,6 @@
 #!/usr/bin/env python2
 files=[
-#"/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-#"/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCUETP8M1_13TeV_Pythia8.root",
-#"/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCUETP8M1_13TeV_Pythia8.root",
-'/home/ltsai/ReceivedFile/GJet/old/old.2016ReReco.sigPythia.root'
+'/wk_cms/ltsai/CMSSW_11_0_0_pre3/src/xPhoton/macros/2016.sigMC.root',
 ]
 if __name__ == "__main__":
     import json
@@ -18,3 +15,4 @@ if __name__ == "__main__":
         json.dump(outputcontent,fout)
     import os
     os.system( 'exec_xPhotonBinning running.%s.json'%outputtag )
+    print( 'job "exec_xPhotonBinning running.%s.json" finished'%outputtag )

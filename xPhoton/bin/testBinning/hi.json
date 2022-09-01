@@ -1,0 +1,8 @@
+{
+
+    "file_data":   "binned_2016ReReco_data.root",
+    "file_QCD":    "binned_2016ReReco_data.root",
+    "file_signal": "binned_2016ReReco_data.root",
+
+    "OutputNameTemplate":"binnedHists"
+}
