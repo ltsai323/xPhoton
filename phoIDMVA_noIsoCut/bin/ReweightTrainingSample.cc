@@ -185,7 +185,7 @@ public:
             if(sieipFull5x5>1.) continue;
             if(TMath::Abs(recoSCEta)>1.4442 && TMath::Abs(recoSCEta)<1.566) continue;
             if(TMath::Abs(recoSCEta)>=2.5) continue;
-            //if(eleVeto==0) continue;
+            if(eleVeto==0) continue;
             if(recoPt<15.) continue;
             //preselection
             // if(chIsoRaw>20.) continue;
