@@ -312,8 +312,9 @@ public :
    virtual Int_t    Ptbin(Float_t pt);
    virtual Int_t    HLTbit(Float_t pt);
    virtual Int_t    JetEtaBin(Float_t pt, Float_t eta);
-   virtual Int_t    triggerbit(Int_t ptbin);
+   virtual Int_t    triggerbit(const std::string& dataera, Int_t ptbin);
    virtual Int_t    JetFlavourBin( int jetHadFlvr );
+   void SetDataEra(const std::string& d) { _dataera = d; }
 
    bool IsMC();
 
@@ -321,6 +322,7 @@ public :
    Int_t        HLTOPTION;
    bool fkMC;
    const char* _outputlabel;
+   std::string _dataera;
 
    enum fitVar {
    _deepCSVTags_b,

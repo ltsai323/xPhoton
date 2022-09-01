@@ -1,0 +1,9 @@
+{
+    "phoEtaBin": 0,
+    "phoPtBin": 10,
+    "jetEtaBin": 0,
+    "inputfile": "in.root",
+    "histnameTemplate_BDT": "hi_%d_%d_%d",
+    "histnameTemplate_BDTerr": "hi_%d_%d_%d",
+    "outputname_template": "syst"
+}

@@ -1,0 +1,30 @@
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.14/09                http://root.cern.ch |
+  |                               (c) 1995-2018, The ROOT Team |
+  | Built for linuxx8664gcc                                    |
+  | From tag , 22 November 2018                                |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+Loading FW Lite setup.
+hi
+
+Attaching file makehisto_sig.root as _file0...
+(TFile *) 0x4a10020
+TFile**		makehisto_sig.root	
+ TFile*		makehisto_sig.root	
+  KEY: TH1F	phoptDist;1	overall pho pt distribution
+  KEY: TH1F	jetptDist;1	overall jet pt distribution
+  KEY: TDirectoryFile	BDT;1	BDT
+  KEY: TDirectoryFile	Pt_all;1	Pt_all
+  KEY: TDirectoryFile	Pt;1	Pt
+  KEY: TDirectoryFile	Pt_spec;1	Pt_spec
+  KEY: TDirectoryFile	IsovsBDT;1	IsovsBDT
+  KEY: TDirectoryFile	IsovsBDTorig;1	IsovsBDTorig
+  KEY: TDirectoryFile	testBDTexp_signalRegion;1	testBDTexp_signalRegion
+  KEY: TDirectoryFile	testBDTsig_signalRegion;1	testBDTsig_signalRegion
+  KEY: TDirectoryFile	testBDTsig_signalRegionOrig;1	testBDTsig_signalRegionOrig
+  KEY: TDirectoryFile	testBDTqcd_signalRegion;1	testBDTqcd_signalRegion
+  KEY: TDirectoryFile	testBDTexp_sidebandRegion;1	testBDTexp_sidebandRegion
+  KEY: TDirectoryFile	testBDTsig_sidebandRegion;1	testBDTsig_sidebandRegion
+  KEY: TDirectoryFile	testBDTqcd_sidebandRegion;1	testBDTqcd_sidebandRegion

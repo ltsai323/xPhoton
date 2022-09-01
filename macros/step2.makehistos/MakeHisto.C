@@ -1,5 +1,6 @@
 #define MakeHisto_cxx
 #include "MakeHisto.h"
+//#include "HLTTriggerBitSetting.cc"
 #include <TH1.h>
 #include <TH2.h>
 #include <TStyle.h>
@@ -23,7 +24,8 @@ std::vector<float> ptbin_ranges()
 {
     // for 2016
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
-    std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+    std::vector<float> vec_ptcut{25,34,41,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+    //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15] // old version
     return vec_ptcut;
 }
 void MakeHisto::Loop(Int_t extracut = 0)
@@ -57,6 +59,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
     HistMgr1D _h_HLT_all( "HLT_ebee.%d_bit%d",
             {NUMBIN_PHOETA,NUMBIT_HLT} );
     HistMgr1D _h_HLTpass( "HLT_ebee.%d_bit%d_pass",
+            {NUMBIN_PHOETA,NUMBIT_HLT} );
+    HistMgr1D _h_HLTpass_test( "HLT_ebee.%d_bit%d_pass_test",
             {NUMBIN_PHOETA,NUMBIT_HLT} );
     TH1F* _h_phopt = new TH1F("phoptDist", "overall pho pt distribution", 200, 0., 500.);
     TH1F* _h_jetpt = new TH1F("jetptDist", "overall jet pt distribution", 200, 0., 500.);
@@ -98,13 +102,27 @@ void MakeHisto::Loop(Int_t extracut = 0)
     jc_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
     _h_HLT_all .SetXaxis(2000,0.,2000.);
     _h_HLTpass .SetXaxis(2000,0.,2000.);
+    _h_HLTpass_test.SetXaxis(2000,0.,2000.);
     }
 
-    TH1F *h_EB_HLTall = new TH1F("EB_HLTall","all HLT photon", 1000, 0., 1000.);
-    TH1F *h_EE_HLTall = new TH1F("EE_HLTall","all HLT photon", 1000, 0., 1000.);
+    TH1F *h_EB_HLTpass = new TH1F("EB_HLTpass","passed HLT bin", NUMBIN_PHOPT+1, 0., NUMBIN_PHOPT+1);
+    TH1F *h_EE_HLTpass = new TH1F("EE_HLTpass","passed HLT bin", NUMBIN_PHOPT+1, 0., NUMBIN_PHOPT+1);
+    TH1F *h_EB_HLT_all = new TH1F("EB_HLT_all","all HLT photon", NUMBIN_PHOPT+1, 0., NUMBIN_PHOPT+1);
+    TH1F *h_EE_HLT_all = new TH1F("EE_HLT_all","all HLT photon", NUMBIN_PHOPT+1, 0., NUMBIN_PHOPT+1);
 
     TH1F *h_chiso_sg = new TH1F("chiso_sg","chiso signal region", 150, 0., 30);
     TH1F *h_chworst_sg = new TH1F("chworst_sg","chworst signal region", 150, 0., 30);
+
+    int _NPtBin=20;
+    TH1F *h_HLTstat_EBPtBin[_NPtBin];
+    TH1F *h_HLTstat_EEPtBin[_NPtBin];
+    for ( int ibin = 0; ibin<_NPtBin; ++ibin )
+    {
+        h_HLTstat_EBPtBin[ibin]= new TH1F( Form("HLTStat_EB_pPtBin%d",ibin),"",16,-1,15 );
+        h_HLTstat_EEPtBin[ibin]= new TH1F( Form("HLTStat_EE_pPtBin%d",ibin),"",16,-1,15 );
+    }
+
+
 
 
 
@@ -198,7 +216,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
         //if(recoEta>-1.8 && recoEta<-1.5) printf("ebee bin %d \n", ebee);
         int ptbin = IsMC() ? Ptbin(recoPt) : Ptbin(recoPtCalib); // only pt bin used calibrated pt in data
         //int ptbin = Ptbin(photonpt*0.99); //playing with photon energy scale
-        int hltbit = HLTbit(photonpt);
+        //int hltbit = HLTbit(photonpt);
+        int hltbit = triggerbit(_dataera, ptbin);
         int jetbin = JetEtaBin(jetPt,jetY);
 
         //smearing due to gain switching (G6->G1)    
@@ -213,11 +232,6 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 
         if(ptbin<0) continue;
-        std::string dataera = "2016ReReco";
-        if ( dataera == "2016ReReco" )
-            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
-        if ( dataera == "UL2018" )
-            if(HLTOPTION==1 && (((phoFiredTrgs>>8)&1)==0) ) continue; //asdf need to add ERA!
 
 
         int isfakephoton = 0;
@@ -232,6 +246,40 @@ void MakeHisto::Loop(Int_t extracut = 0)
         if ( TMath::Abs(recoSCEta)<1.5 && HoverE       > 0.08  ) continue;
         if ( TMath::Abs(recoSCEta)>1.5 && sieieFull5x5 > 0.027 ) continue;
         if ( TMath::Abs(recoSCEta)>1.5 && HoverE       > 0.05  ) continue;
+        
+        
+        // checking plot
+        if      ( ebee == 0 )
+        {
+            h_EB_HLT_all->Fill(ptbin);
+            if ( (phoFiredTrgs>>hltbit)&1 )
+                h_EB_HLTpass->Fill(ptbin);
+            
+            
+            if ( ptbin < _NPtBin )
+            {
+                h_HLTstat_EBPtBin[ptbin]->Fill(-1);
+                for ( int ihlt = 0; ihlt < 8; ++ihlt)
+                    if ( (phoFiredTrgs>>ihlt)&1 )
+                        h_HLTstat_EBPtBin[ptbin]->Fill(ihlt);
+            }
+        }
+        else if ( ebee == 1 )
+        {
+            h_EE_HLT_all->Fill(ptbin);
+            if ( (phoFiredTrgs>>hltbit)&1 )
+                h_EE_HLTpass->Fill(ptbin);
+
+
+            if ( ptbin < _NPtBin )
+            {
+                h_HLTstat_EEPtBin[ptbin]->Fill(-1);
+                for ( int ihlt = 0; ihlt < 15; ++ihlt)
+                    if ( (phoFiredTrgs>>ihlt)&1 )
+                        h_HLTstat_EEPtBin[ptbin]->Fill(ihlt);
+            }
+        }
+        if ( HLTOPTION == 1 && !((phoFiredTrgs>>hltbit)&1) ) continue;
 
         // signal region
         if ( ( ebee == 0 && chIsoRaw < 2 )||
@@ -379,6 +427,12 @@ if (useNewSample)
     fout->cd();
     _h_phopt->Write();
     _h_jetpt->Write();
+    h_EB_HLT_all->Write();
+    h_EE_HLT_all->Write();
+    h_EB_HLTpass->Write();
+    h_EE_HLTpass->Write();
+    for ( int ibin = 0; ibin<_NPtBin; ++ibin )
+    { h_HLTstat_EBPtBin[ibin]->Write(); h_HLTstat_EEPtBin[ibin]->Write(); }
 
 
     _h_BDT     .Write(_h_BDT     .MakeDirectory(fout));
@@ -404,8 +458,6 @@ if ( useNewSample )
     _h_HLTpass .Write(HLTdir);
     
     fout->cd();
-    h_EB_HLTall->Write();
-    h_EE_HLTall->Write();
     h_chiso_sg->Write();
     h_chworst_sg->Write();
 
@@ -465,24 +517,65 @@ Int_t MakeHisto::JetEtaBin(Float_t pt, Float_t eta) {
     if(TMath::Abs(eta)<1.5) return 0;
     return 1;
 }
-Int_t MakeHisto::triggerbit(Int_t ptbin){
-    if ( ptbin == 0 ) return 0;  //  25- 34
-    if ( ptbin == 1 ) return 1;  //  34- 40
-    if ( ptbin == 2 ) return 2;  //  40- 55
-    if ( ptbin == 3 ) return 3;  //  55- 70
-    if ( ptbin == 4 ) return 3;  //  70- 85
-    if ( ptbin == 5 ) return 4;  // 85-100
-    if ( ptbin == 6 ) return 5;  // 100-115
-    if ( ptbin == 7 ) return 5;  // 115-136
-    if ( ptbin == 8 ) return 6;  // 135-155
-    if ( ptbin == 9 ) return 6;  // 155-175
-    if ( ptbin ==10 ) return 6;  // 175-190
-    if ( ptbin ==11 ) return 7;  // 190-200
-    if ( ptbin ==12 ) return 7;  // 200-220
-    if ( ptbin ==13 ) return 7;  // 220-250
-    if ( ptbin ==14 ) return 7;  // 250-300
-    if ( ptbin ==15 ) return 7;  // 300-inf
-    return 0;
+Int_t MakeHisto::triggerbit( const std::string& dataera, Int_t ptbin){
+    if ( dataera == "2016ReReco" )
+    {
+        if ( ptbin == 0 ) return 0;  //  25- 34 -> 25-34
+        if ( ptbin == 1 ) return 1;  //  34- 40 -> 34-41
+        if ( ptbin == 2 ) return 2;  //  40- 55 -> 41-56
+        if ( ptbin == 3 ) return 3;  //  55- 70 -> 56-70?
+        if ( ptbin == 4 ) return 3;  //  70- 85
+        if ( ptbin == 5 ) return 4;  // 85-100
+        if ( ptbin == 6 ) return 5;  // 100-115
+        if ( ptbin == 7 ) return 5;  // 115-135
+        if ( ptbin == 8 ) return 6;  // 135-155
+        if ( ptbin == 9 ) return 6;  // 155-175
+        if ( ptbin ==10 ) return 6;  // 175-190
+        if ( ptbin ==11 ) return 7;  // 190-200
+        if ( ptbin ==12 ) return 7;  // 200-300
+        if ( ptbin ==13 ) return 7;  // 300-350
+        if ( ptbin ==14 ) return 7;  // 350-400
+        if ( ptbin ==15 ) return 7;  // 400-500
+        if ( ptbin ==16 ) return 7;  // 500-750
+        if ( ptbin ==17 ) return 7;  // 750-1000
+        if ( ptbin ==18 ) return 7;  //1000-1500
+        if ( ptbin ==19 ) return 7;  //1500-2000
+        if ( ptbin ==20 ) return 7;  //2000-3000
+        if ( ptbin ==21 ) return 7;  //3000-10000
+        if ( ptbin ==22 ) return 7;  // to inf
+    }
+    if ( dataera == "UL2017" )
+    {
+        return 0;
+    }
+    if ( dataera == "UL2018" )
+    {
+        if ( ptbin == 0 ) return 0;  //  25- 34
+        if ( ptbin == 1 ) return 0;  //  34- 40
+        if ( ptbin == 2 ) return 0;  //  40- 55
+        if ( ptbin == 3 ) return 1;  //  55- 70
+        if ( ptbin == 4 ) return 1;  //  70- 85
+        if ( ptbin == 5 ) return 2;  // 85-100
+        if ( ptbin == 6 ) return 3;  // 100-115
+        if ( ptbin == 7 ) return 3;  // 115-135
+        if ( ptbin == 8 ) return 4;  // 135-155
+        if ( ptbin == 9 ) return 5;  // 155-175
+        if ( ptbin ==10 ) return 6;  // 175-190
+        if ( ptbin ==11 ) return 6;  // 190-200
+        if ( ptbin ==12 ) return 7;  // 200-300
+        if ( ptbin ==13 ) return 8;  // 300-350
+        if ( ptbin ==14 ) return 8;  // 350-400
+        if ( ptbin ==15 ) return 8;  // 400-500
+        if ( ptbin ==16 ) return 8;  // 500-750
+        if ( ptbin ==17 ) return 8;  // 750-1000
+        if ( ptbin ==18 ) return 8;  //1000-1500
+        if ( ptbin ==19 ) return 8;  //1500-2000
+        if ( ptbin ==20 ) return 8;  //2000-3000
+        if ( ptbin ==21 ) return 8;  //3000-10000
+        if ( ptbin ==22 ) return 8;  // to inf
+    }
+
+    return -1; // nothing
 }
 Int_t MakeHisto::JetFlavourBin( int jethadflvr )
 {

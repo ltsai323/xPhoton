@@ -1,5 +1,5 @@
 {
-    "luminosity": 35.9,
+    "lumifile": "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step5.CompareYields/effLumi_2016.json",
     "MarkerStyle": 22,
     "MarkerColor": 39,
     "Title": "2016 ReReco in old processed AGAIN",
