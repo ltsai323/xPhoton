@@ -1,4 +1,4 @@
-#include "xPhoton/xPhoton/interface/xPhotonHFJet_subVtxInfo.h"
+#include "xPhoton/xPhoton/interface/xQCDChecker.h"
 #include <vector>
 #include <TH1D.h>
 #include <TLorentzVector.h>
@@ -48,7 +48,7 @@ static bool USEHLT = false;
 
 const float CUT_DELTAR  = 0.2;
 const float CUT_DELTAPT = 0.35;
-namespace _xphotonFunc_{
+namespace _xqcd_{
 std::vector<int> GenPhoIdxs( TreeReader* event );
 std::vector<int> GenMuonIdxs( TreeReader* event );
 std::vector<int> GenEleIdxs( TreeReader* event );
@@ -56,7 +56,7 @@ int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> ph
 int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid );
 void FillStatus(TH1* hist, float val) { hist->Fill(val+0.001); }
 };
-using namespace _xphotonFunc_;
+using namespace _xqcd_;
 
 static TH1F* h_subVtxPt    ;
 static TH1F* h_subVtxMass  ;
@@ -194,7 +194,7 @@ static TH1F *h_Wmn_mt ;
 
 static TH2F *h2_mcPID_mcPt ;
 
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string dataEra){
+void xQCDChecker(vector<string> pathes, Char_t oname[200], const std::string dataEra){
     LOG_INFO("end of loading csv file");
     
 
@@ -1662,11 +1662,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
 }
 
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200] )
-{ xPhotonHFJet(pathes, oname, "2016ReReco"); }
+void xQCDChecker(vector<string> pathes, Char_t oname[200] )
+{ xQCDChecker(pathes, oname, "2016ReReco"); }
 
 
-void xPhotonHFJet(Int_t dataset) {
+void xQCDChecker(Int_t dataset) {
   Char_t fname[200];
   XS=1.;
   vector <string> pathes;
@@ -1683,22 +1683,22 @@ void xPhotonHFJet(Int_t dataset) {
   Char_t oname[200];
   sprintf(oname, "output_job_PhotonHFJet_%d.root", dataset);
 
-  xPhotonHFJet(pathes, oname);
+  xQCDChecker(pathes, oname);
   
 }
 
-void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection, int dowmnoption){
+void xQCDChecker(Char_t fname[200], Char_t oname[200], Double_t crosssection, int dowmnoption){
   //doWmn = dowmnoption;
   //isMC=1;
   vector <string> pathes;
   pathes.push_back(fname);
   XS = crosssection;
-  xPhotonHFJet(pathes, oname);
+  xQCDChecker(pathes, oname);
   
 }
 
-//void xPhotonHFJet(std::string ipath, int outID)
-void xPhotonHFJet(std::string ipath, int outID, const std::string dataEra)
+//void xQCDChecker(std::string ipath, int outID)
+void xQCDChecker(std::string ipath, int outID, const std::string dataEra)
 {
    //Char_t fname[200];
    XS=1.;
@@ -1713,10 +1713,10 @@ void xPhotonHFJet(std::string ipath, int outID, const std::string dataEra)
    Char_t oname[200];
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
-   xPhotonHFJet(pathes, oname, dataEra);
+   xQCDChecker(pathes, oname, dataEra);
 
 }
-std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )
+std::vector<int> _xqcd_::GenPhoIdxs( TreeReader* event )
 {
     Int_t* mcPID = event->GetPtrInt("mcPID");
     Float_t* mcPt = event->GetPtrFloat("mcPt");
@@ -1734,7 +1734,7 @@ std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )
     }
    return phomcid; 
 }
-std::vector<int> _xphotonFunc_::GenMuonIdxs( TreeReader* event )
+std::vector<int> _xqcd_::GenMuonIdxs( TreeReader* event )
 {
     Int_t* mcPID = event->GetPtrInt("mcPID");
     Float_t* mcPt = event->GetPtrFloat("mcPt");
@@ -1748,7 +1748,7 @@ std::vector<int> _xphotonFunc_::GenMuonIdxs( TreeReader* event )
     }
     return muonmcid;
 }
-std::vector<int> _xphotonFunc_::GenEleIdxs( TreeReader* event )
+std::vector<int> _xqcd_::GenEleIdxs( TreeReader* event )
 {
     Int_t* mcPID = event->GetPtrInt("mcPID");
     //Float_t* mcPt = event->GetPtrFloat("mcPt");
@@ -1763,7 +1763,7 @@ std::vector<int> _xphotonFunc_::GenEleIdxs( TreeReader* event )
     return elemcid;
 }
 
-int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> phomcid )
+int _xqcd_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> phomcid )
 {
     Float_t* phoEt  = event->GetPtrFloat("phoEt");
     Float_t* phoEta = event->GetPtrFloat("phoEta");
@@ -1801,7 +1801,7 @@ int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std:
     }
     return -1;
 }
-int _xphotonFunc_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid )
+int _xqcd_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid )
 {
     Float_t* phoEt  = event->GetPtrFloat("phoEt");
     Float_t* phoEta = event->GetPtrFloat("phoEta");
@@ -1828,15 +1828,4 @@ int _xphotonFunc_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx
         }
     }
     return -1;
-}
-void ShowInfo()
-{
-    printf("==================== Information for this run :       ==================\n");
-    printf("== Only keep leading photon : %s                      ==================\n", ONLY_LEADINGPHOTON ? "Yes": "No ");
-    printf("== Keep information to secondary vertex ? %3s         ==================\n", hasSubVtxInfo ? "Yes": "NO");
-    printf("== Additional jet scale factor information ? %3s      ==================\n", testJetSF ? "Yes": "NO");
-    printf("== Use select a specific Single photon HLT ? %3s      ==================\n", USEHLT ? "Yes": "NO");
-    printf("== Veto electron in photon collection ? %3s           ==================\n", ELECTRONVETO ? "Yes": "NO" );
-    printf("== I have told this run use Jet primary dataset ? %3s  =================\n", JETPD_PHOTONHLT? "Yes":"NO");
-    printf("========================================================================\n");
 }
