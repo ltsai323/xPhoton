@@ -18,7 +18,6 @@
 #define NUM_BTAGVAR 4
 #define NUM_PARITY 2
 
-const bool useNewSample = false;
 
 std::vector<float> ptbin_ranges()
 {
@@ -28,6 +27,7 @@ std::vector<float> ptbin_ranges()
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15] // old version
     return vec_ptcut;
 }
+
 void MakeHisto::Loop(Int_t extracut = 0)
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
@@ -38,72 +38,35 @@ void MakeHisto::Loop(Int_t extracut = 0)
     TFile *fout = new TFile( Form("makehisto_%s.root", _outputlabel),"recreate");
     fout->cd();
     cout << "OUTPUT:" << Form("makehisto_%s.root", _outputlabel) << endl;
-    HistMgr1D _h_BDT_all ( "BDT_all.%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
-    HistMgr1D _h_BDT     ( "BDT.%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
-    HistMgr1D _h_Pt_all  ( "Pt_all.%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2});
-    HistMgr1D _h_Pt      ( "Pt.%d_%d",
-            {NUMBIN_PHOETA,2});
-    HistMgr1D _h_Ptspec  ( "Pt_spec.%d_%d",
-            {NUMBIN_PHOETA,2});
-    HistMgr2D _h_IsovsBDT    ( "IsovsBDT.%d_%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
-    HistMgr2D _h_IsovsBDTorig( "IsovsBDTorig.%d_%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
-    HistMgr2D jc_IsovsBDT    ( "jetcut_IsovsBDT.%d_%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
-    HistMgr2D jc_IsovsBDTorig( "jetcut_IsovsBDTorig.%d_%d_%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR});
-    HistMgr1D _h_HLT_all( "HLT_ebee.%d_bit%d",
-            {NUMBIN_PHOETA,NUMBIT_HLT} );
-    HistMgr1D _h_HLTpass( "HLT_ebee.%d_bit%d_pass",
-            {NUMBIN_PHOETA,NUMBIT_HLT} );
-    HistMgr1D _h_HLTpass_test( "HLT_ebee.%d_bit%d_pass_test",
-            {NUMBIN_PHOETA,NUMBIT_HLT} );
-    TH1F* _h_phopt = new TH1F("phoptDist", "overall pho pt distribution", 200, 0., 500.);
-    TH1F* _h_jetpt = new TH1F("jetptDist", "overall jet pt distribution", 200, 0., 500.);
+    BinnedHist* h_BDT_all = new BinnedHist1D_BDT    ( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}, "BDT_all.%d_%d_%d_%d");
+    BinnedHist* h_BDT     = new BinnedHist1D_BDT    ( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}, "BDT.%d_%d_%d_%d"    );
+    BinnedHist* h_Pt_all  = new BinnedHist1D_PtAll  ( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}, "Pt_all.%d_%d_%d_%d" );
+    BinnedHist* h_Pt      = new BinnedHist1D_Pt     ( {NUMBIN_PHOETA,2}, "Pt.%d_%d");
+    BinnedHist* h_Ptspec  = new BinnedHist1D_Pt     ( {NUMBIN_PHOETA,2}, "Pt_spec.%d_%d");
 
-    _h_BDT_all .SetXaxis( 100,-1.,1.);
-    _h_BDT     .SetXaxis( 100,-1.,1.);
-    _h_Pt_all  .SetXaxis( 2000, 0., 2000.);
-    _h_Pt      .SetXaxis( 200, 0., 2000.);
-    _h_Ptspec  .SetXaxis( 200, 0., 2000.);
-    _h_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
-    _h_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
+    BinnedHist* h_IsovsBDT = new BinnedHist2D_ISOvsBDT(
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR},"IsovsBDT.%d_%d_%d_%d_%d");
+    BinnedHist* h_IsovsBDTorig = new BinnedHist2D_ISOvsBDT(
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR},"IsovsBDTorig.%d_%d_%d_%d_%d" );
+    BinnedHist* jc_IsovsBDT = new BinnedHist2D_ISOvsBDT(
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR},"jetcut_IsovsBDT.%d_%d_%d_%d_%d" );
+    BinnedHist* jc_IsovsBDTorig = new BinnedHist2D_ISOvsBDT(
+            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR},"jetcut_IsovsBDTorig.%d_%d_%d_%d_%d" );
 
-    HistMgr1D mySigSignalRegionBDTOrig("testBDTsig_signalRegionOrig.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    mySigSignalRegionBDTOrig.SetXaxis(100,-1.,1);
-    HistMgr1D mySigSignalRegionBDT("testBDTsig_signalRegion.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    mySigSignalRegionBDT.SetXaxis(100,-1.,1);
-    HistMgr1D myQCDSignalRegionBDT("testBDTqcd_signalRegion.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    myQCDSignalRegionBDT.SetXaxis(100,-1.,1);
-    HistMgr1D myExpSignalRegionBDT("testBDTexp_signalRegion.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    myExpSignalRegionBDT.SetXaxis(100,-1.,1);
-    HistMgr1D mySigSidebandRegionBDT("testBDTsig_sidebandRegion.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    mySigSidebandRegionBDT.SetXaxis(100,-1.,1);
-    HistMgr1D myQCDSidebandRegionBDT("testBDTqcd_sidebandRegion.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    myQCDSidebandRegionBDT.SetXaxis(100,-1.,1);
-    HistMgr1D myExpSidebandRegionBDT("testBDTexp_sidebandRegion.%d_%d_%d",
-            {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT});
-    myExpSidebandRegionBDT.SetXaxis(100,-1.,1);
+    BinnedHist* h_HLT_all       = new BinnedHist1D_HLT( {NUMBIN_PHOETA,NUMBIT_HLT} ,"HLT_ebee.%d_bit%d"           );
+    BinnedHist* h_HLTpass       = new BinnedHist1D_HLT( {NUMBIN_PHOETA,NUMBIT_HLT} ,"HLT_ebee.%d_bit%d_pass"      );
+    BinnedHist* h_HLTpass_test  = new BinnedHist1D_HLT( {NUMBIN_PHOETA,NUMBIT_HLT} ,"HLT_ebee.%d_bit%d_pass_test" );
 
-    
-    if (useNewSample )
-    {
-    jc_IsovsBDT.SetXYaxis( 100, -1., 1., 30, 0., 15);
-    jc_IsovsBDTorig.SetXYaxis( 100, -1., 1., 30, 0., 15);
-    _h_HLT_all .SetXaxis(2000,0.,2000.);
-    _h_HLTpass .SetXaxis(2000,0.,2000.);
-    _h_HLTpass_test.SetXaxis(2000,0.,2000.);
-    }
+    TH1F* h_phopt = new TH1F("phoptDist", "overall pho pt distribution", 200, 0., 500.);
+    TH1F* h_jetpt = new TH1F("jetptDist", "overall jet pt distribution", 200, 0., 500.);
+
+    BinnedHist* mySigSignalRegionBDTOrig= new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTsig_signalRegionOrig.%d_%d_%d");
+    BinnedHist* mySigSignalRegionBDT    = new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTsig_signalRegion.%d_%d_%d");
+    BinnedHist* myQCDSignalRegionBDT    = new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTqcd_signalRegion.%d_%d_%d");
+    BinnedHist* myExpSignalRegionBDT    = new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTexp_signalRegion.%d_%d_%d");
+    BinnedHist* mySigSidebandRegionBDT  = new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTsig_sidebandRegion.%d_%d_%d");
+    BinnedHist* myQCDSidebandRegionBDT  = new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTqcd_sidebandRegion.%d_%d_%d");
+    BinnedHist* myExpSidebandRegionBDT  = new BinnedHist1D_BDT( {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT}, "testBDTexp_sidebandRegion.%d_%d_%d");
 
     TH1F *h_EB_HLTpass = new TH1F("EB_HLTpass","passed HLT bin", NUMBIN_PHOPT+1, 0., NUMBIN_PHOPT+1);
     TH1F *h_EE_HLTpass = new TH1F("EE_HLTpass","passed HLT bin", NUMBIN_PHOPT+1, 0., NUMBIN_PHOPT+1);
@@ -122,50 +85,33 @@ void MakeHisto::Loop(Int_t extracut = 0)
         h_HLTstat_EEPtBin[ibin]= new TH1F( Form("HLTStat_EE_pPtBin%d",ibin),"",16,-1,15 );
     }
 
+    BinnedHist* h_btagDeepCSV_BvsAll_central    = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.0_0_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_BvsAll_up         = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.1_0_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_BvsAll_down       = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.2_0_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_CvsL_central      = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.0_1_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_CvsL_up           = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.1_1_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_CvsL_down         = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.2_1_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_CvsB_central      = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.0_2_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_CvsB_up           = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.1_2_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_CvsB_down         = new BinnedHist2D_BTAGvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.2_2_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_secVtxMass_central= new BinnedHist2D_secVTXMASSvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.0_3_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_secVtxMass_up     = new BinnedHist2D_secVTXMASSvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.1_3_%d__%d_%d_%d__%d_%d");
+    BinnedHist* h_btagDeepCSV_secVtxMass_down   = new BinnedHist2D_secVTXMASSvsBDT(
+        {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY}, "btagDeepCSV.2_3_%d__%d_%d_%d__%d_%d");
 
 
 
-
-    HistMgr2D h_btagDeepCSV_BvsAll_central    ( "btagDeepCSV.0_0_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_BvsAll_up         ( "btagDeepCSV.1_0_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_BvsAll_down       ( "btagDeepCSV.2_0_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_CvsL_central      ( "btagDeepCSV.0_1_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_CvsL_up           ( "btagDeepCSV.1_1_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_CvsL_down         ( "btagDeepCSV.2_1_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_CvsB_central      ( "btagDeepCSV.0_2_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_CvsB_up           ( "btagDeepCSV.1_2_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_CvsB_down         ( "btagDeepCSV.2_2_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_secVtxMass_central( "btagDeepCSV.0_3_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_secVtxMass_up     ( "btagDeepCSV.1_3_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-    HistMgr2D h_btagDeepCSV_secVtxMass_down   ( "btagDeepCSV.2_3_%d__%d_%d_%d__%d_%d",
-                {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} );
-
-    if (useNewSample )
-    {
-    h_btagDeepCSV_BvsAll_central    .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_BvsAll_up         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_BvsAll_down       .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsL_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsL_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsL_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsB_central      .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsB_up           .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_CvsB_down         .SetXYaxis( 10, 0., 1., 30, 0., 15.);
-    h_btagDeepCSV_secVtxMass_central.SetXYaxis(100, 0., 5., 30, 0., 15.);
-    h_btagDeepCSV_secVtxMass_up     .SetXYaxis(100, 0., 5., 30, 0., 15.);
-    h_btagDeepCSV_secVtxMass_down   .SetXYaxis(100, 0., 5., 30, 0., 15.);
-    }
 
 
 
@@ -174,7 +120,14 @@ void MakeHisto::Loop(Int_t extracut = 0)
     printf("HLT option %d \n", HLTOPTION);
 
     Long64_t nbytes = 0, nb = 0;
-    for (Long64_t jentry=0; jentry<nentries;jentry++) {
+    for (Long64_t jentry=0; jentry<nentries;jentry++)
+    {
+        bool basicRecording = true;
+        bool fiducialPhoton = true;
+        bool HLTRequirement = false;
+        bool isSignalRegion = false;
+        bool isDataSideband = false;
+        bool jetSelAcquired = false;
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -187,246 +140,175 @@ void MakeHisto::Loop(Int_t extracut = 0)
         // new
         Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
         Float_t photonpt = recoPt;
-        // old
-        //Float_t eventweight = IsMC() ? xsweight * puwei : 1.;
-        if (!IsMC() ) chIsoRaw = calib_chIso; // substitute with calib chIso.
+        Float_t chargedIsolation = IsMC() ? chIsoRaw : calib_chIso;
 
-        if(TMath::Abs(recoSCEta)>1.4442 && TMath::Abs(recoSCEta)<1.566) continue;
-        if(TMath::Abs(recoSCEta)>2.5) continue;
-
-        if(MET/photonpt > 0.7) continue;
 
         //test new mva with isolation smearing
-        //if(isData!=1) 
-        //Float_t bdt_score = mva;// norminall
         Float_t bdt_score = IsMC() ? calib_mva : mva; // for MC, use of weighted bdt score.
         Float_t orig_bdt = IsMC() ? mva : -999; // for MC, get use this to be syst err.
-        // old
-        //Float_t bdt_score = mva; // for MC, use of weighted bdt score.
-        //Float_t orig_bdt = IsMC() ? mva_nocorr : -999.;
-        // bdt_score = mva + trd->Gaus(0.025,0.05); //extra smearing for signal sys
-        // bdt_score = mva - trd->Gaus(0.025,0.05);
-        // float tmp_shift = 0.015; if(TMath::Abs(recoSCEta)>1.5) tmp_shift=0.03;
-        // bdt_score = mva - tmp_shift;// - trd->Gaus(0.025,0.05);
 
-        //jetY =jetEta;
-
-        //printf("photon eta %.2f, bin %d,  pt %.2f, bin %d , hltbit %d\n", recoEta, EBEE(recoEta), photonpt, Ptbin(photonpt) , HLTbit(photonpt));
         int ebee = EBEE(recoEta);
-        //if(recoEta>-1.8 && recoEta<-1.5) printf("ebee bin %d \n", ebee);
         int ptbin = IsMC() ? Ptbin(recoPt) : Ptbin(recoPtCalib); // only pt bin used calibrated pt in data
-        //int ptbin = Ptbin(photonpt*0.99); //playing with photon energy scale
-        //int hltbit = HLTbit(photonpt);
         int hltbit = triggerbit(_dataera, ptbin);
         int jetbin = JetEtaBin(jetPt,jetY);
-
-        //smearing due to gain switching (G6->G1)    
-        TLorentzVector phoP4Orig;
-        TLorentzVector *phop4 = &phoP4Orig;
-        phop4->SetPtEtaPhiM(photonpt, recoEta, recoPhi,0.);
-
-
-
-        if ( eleVeto == 0 ) continue;
-
-
-
-        if(ptbin<0) continue;
-
-
         int isfakephoton = 0;
         if( IsMC() &&  isMatched!=1 && isConverted!=1 && isMatchedEle!=1) isfakephoton=1; //fake
-
-        _h_BDT_all.GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(bdt_score, eventweight);
-        _h_Pt_all .GetBin({ebee,jetbin,ptbin,isfakephoton})->Fill(photonpt , eventweight);
-
-
-        // these selections are in PhotonSelections.cc
-        if ( TMath::Abs(recoSCEta)<1.5 && sieieFull5x5 > 0.012 ) continue;
-        if ( TMath::Abs(recoSCEta)<1.5 && HoverE       > 0.08  ) continue;
-        if ( TMath::Abs(recoSCEta)>1.5 && sieieFull5x5 > 0.027 ) continue;
-        if ( TMath::Abs(recoSCEta)>1.5 && HoverE       > 0.05  ) continue;
-        
-        
-        // checking plot
-        if      ( ebee == 0 )
-        {
-            h_EB_HLT_all->Fill(ptbin);
-            if ( (phoFiredTrgs>>hltbit)&1 )
-                h_EB_HLTpass->Fill(ptbin);
-            
-            
-            if ( ptbin < _NPtBin )
-            {
-                h_HLTstat_EBPtBin[ptbin]->Fill(-1);
-                for ( int ihlt = 0; ihlt < 8; ++ihlt)
-                    if ( (phoFiredTrgs>>ihlt)&1 )
-                        h_HLTstat_EBPtBin[ptbin]->Fill(ihlt);
-            }
-        }
-        else if ( ebee == 1 )
-        {
-            h_EE_HLT_all->Fill(ptbin);
-            if ( (phoFiredTrgs>>hltbit)&1 )
-                h_EE_HLTpass->Fill(ptbin);
-
-
-            if ( ptbin < _NPtBin )
-            {
-                h_HLTstat_EEPtBin[ptbin]->Fill(-1);
-                for ( int ihlt = 0; ihlt < 15; ++ihlt)
-                    if ( (phoFiredTrgs>>ihlt)&1 )
-                        h_HLTstat_EEPtBin[ptbin]->Fill(ihlt);
-            }
-        }
-        if ( HLTOPTION == 1 && !((phoFiredTrgs>>hltbit)&1) ) continue;
-
-        // signal region
-        if ( ( ebee == 0 && chIsoRaw < 2 )||
-             ( ebee == 1 && chIsoRaw <1.5) )
-        {
-            if      ( IsMC() && isMatched==1 )
-            {
-                mySigSignalRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
-                mySigSignalRegionBDTOrig.GetBin({ebee,jetbin,ptbin})->Fill(orig_bdt,eventweight);
-            }
-            else if ( IsMC() && isMatched!=1 )
-                myQCDSignalRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
-            else if (!IsMC() )
-                myExpSignalRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
-        }
-        // sideband region
-        if ( ( ebee == 0 && chIsoRaw > 7 && chIsoRaw < 13 )||
-             ( ebee == 1 && chIsoRaw > 6 && chIsoRaw < 12 ) )
-        {
-            if      ( IsMC() && isMatched==1 )
-                mySigSidebandRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
-            else if ( IsMC() && isMatched!=1 )
-                myQCDSidebandRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
-            else if (!IsMC() )
-                myExpSidebandRegionBDT.GetBin({ebee,jetbin,ptbin})->Fill(bdt_score,eventweight);
-        }
-        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
-        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
-        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
-        _h_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
-        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(orig_bdt, chIsoRaw, eventweight);
-        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(orig_bdt, phoIsoRaw, eventweight);
-        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(orig_bdt, chIsoRaw+phoIsoRaw, eventweight);
-        _h_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(orig_bdt, chWorstRaw, eventweight);
-if (useNewSample)
-{
-        // YiShou's code enabled and checking {{{
-        // jet selections
-        if ( jetPt < 30. ) continue;
-        if ( fabs(jetEta) > 2.5 ) continue;
-        if ( jetDeepCSVTags_c < -0.99 ) continue;
-        if ( IsMC() && jetID != 1 ) continue;
-        if ( IsMC() && jetPUIDbit != 7 ) continue;
-
-        //if ( mcweight>3000. ) continue;
-        if ( extracut == 1 ){
-            if ( jetSubVtxMass == 0 ) continue;
-        }else if ( extracut == 2 ){
-            if ( jetDeepCSVDiscriminatorTags_CvsL < 0.155) continue;
-        }
-        // YiShou's code enabled and checking }}}
-        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(bdt_score, chIsoRaw, eventweight);
-        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(bdt_score, phoIsoRaw, eventweight);
-        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(bdt_score, chIsoRaw+phoIsoRaw, eventweight);
-        jc_IsovsBDT    .GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(bdt_score, chWorstRaw, eventweight);
-        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,0})->Fill(orig_bdt, chIsoRaw, eventweight);
-        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,1})->Fill(orig_bdt, phoIsoRaw, eventweight);
-        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,2})->Fill(orig_bdt, chIsoRaw+phoIsoRaw, eventweight);
-        jc_IsovsBDTorig.GetBin({ebee,jetbin,ptbin,isfakephoton,3})->Fill(orig_bdt, chWorstRaw, eventweight);
-
-
-
-
-        if ( TMath::Abs(recoEta)<1.4442 )
-            if(isfakephoton==1&&photonpt>100.){
-                h_chiso_sg->Fill(chIsoRaw);
-                h_chworst_sg->Fill(chWorstRaw+phoIsoRaw);
-            }
-        //jetflvr
         int jetflvBin = JetFlavourBin(jetHadFlvr);
-        int phoMatchStatIdx = 0;
-	int parityIdx = ( jentry % 2 == 0 ) ? 0 : 1;
-        // need to be modified asdf
-        if ( IsMC() )
-        {
-            if ( isQCD )
-            {
-                if ( isMatched!=1 && chIsoRaw < 2.0 ) phoMatchStatIdx = 2;
-                else if ( isMatched!=1 && chIsoRaw > 5.0 && chIsoRaw < 10.0 ) phoMatchStatIdx = 3;
-                else    phoMatchStatIdx = 4;
-            }
-            else
-            {
-                if ( isMatched==1 && chIsoRaw<2.0   ) phoMatchStatIdx = 0;
-                else    phoMatchStatIdx = 1;
-            }
-        }
-        else //data
-        {
-            if ( chIsoRaw<2.0 ) phoMatchStatIdx = 0;
-            else    phoMatchStatIdx = 1;
-        }
+        int phoMatchStatIdx = PhoMatchedStatus();
+        int parityIdx = EventParity(jentry);
 
 	
 
-        float evtws=0.;
-        float evtws_up=0.;
-        float evtws_down=0.;
+        float btag_evtweight_central     = eventweight * bTagWeight_Central(jetflvBin);
+        float btag_evtweight_up  = eventweight * bTagWeight_Up(jetflvBin);
+        float btag_evtweight_down= eventweight * bTagWeight_Down(jetflvBin);
+              btag_evtweight_up  = 1.;
 
-        if(jetflvBin==0){
-            evtws      =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_central : 1.;
-            evtws_up   =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_up_hf   : 1.;
-            evtws_down =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_down_hf : 1.;
-        }else if(jetflvBin==1){
-            evtws      =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_central     : 1.;
-            evtws_up   =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_up_cferr1   : 1.;
-            evtws_down =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_down_cferr1 : 1.;
-        }else {
-            evtws      =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_central : 1.;
-            evtws_up   =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_up_lf   : 1.;  
-            evtws_down =  IsMC() ? puwei * mcweight* jetSF_DeepCSV_down_lf : 1.;
+
+
+
+
+        if(TMath::Abs(recoSCEta)>1.4442 && TMath::Abs(recoSCEta)<1.566) basicRecording = false;
+        if(TMath::Abs(recoSCEta)>2.5) basicRecording = false;
+        if(MET/photonpt > 0.7) basicRecording = false;
+        if ( eleVeto == 0 ) basicRecording = false;
+        if ( ptbin<0 ) basicRecording = false;
+
+
+        // these selections are in PhotonSelections.cc
+        if ( TMath::Abs(recoSCEta)<1.5 && sieieFull5x5 > 0.012 ) fiducialPhoton = false;
+        if ( TMath::Abs(recoSCEta)<1.5 && HoverE       > 0.08  ) fiducialPhoton = false;
+        if ( TMath::Abs(recoSCEta)>1.5 && sieieFull5x5 > 0.027 ) fiducialPhoton = false;
+        if ( TMath::Abs(recoSCEta)>1.5 && HoverE       > 0.05  ) fiducialPhoton = false;
+
+
+        HLTRequirement = HLTPassed(hltbit);
+        isSignalRegion = PhoSignalRegion(chargedIsolation, recoEta);
+        isDataSideband = PhoDataSideband(chargedIsolation, recoEta);
+        jetSelAcquired = PassJetAdditionalSelection(extracut);
+
+        if ( basicRecording )
+        {
+            h_BDT_all->Fill({ebee,jetbin,ptbin,isfakephoton},bdt_score, eventweight);
+            h_Pt_all ->Fill({ebee,jetbin,ptbin,isfakephoton},photonpt , eventweight);
+            if ( basicRecording && fiducialPhoton && HLTRequirement && jetSelAcquired )
+            {
+                h_phopt->Fill(photonpt, eventweight);
+                h_jetpt->Fill(jetPt, eventweight);
+            }
+        }
+        if ( basicRecording && fiducialPhoton )
+        {
+            // checking plot
+            if      ( ebee == 0 )
+            {
+                h_EB_HLT_all->Fill(ptbin);
+                if ( (phoFiredTrgs>>hltbit)&1 )
+                    h_EB_HLTpass->Fill(ptbin);
+                
+                
+                if ( ptbin < _NPtBin )
+                {
+                    h_HLTstat_EBPtBin[ptbin]->Fill(-1);
+                    for ( int ihlt = 0; ihlt < 8; ++ihlt)
+                        if ( (phoFiredTrgs>>ihlt)&1 )
+                            h_HLTstat_EBPtBin[ptbin]->Fill(ihlt);
+                }
+            }
+            else if ( ebee == 1 )
+            {
+                h_EE_HLT_all->Fill(ptbin);
+                if ( (phoFiredTrgs>>hltbit)&1 )
+                    h_EE_HLTpass->Fill(ptbin);
+
+
+                if ( ptbin < _NPtBin )
+                {
+                    h_HLTstat_EEPtBin[ptbin]->Fill(-1);
+                    for ( int ihlt = 0; ihlt < 15; ++ihlt)
+                        if ( (phoFiredTrgs>>ihlt)&1 )
+                            h_HLTstat_EEPtBin[ptbin]->Fill(ihlt);
+                }
+            }
+        }
+        if ( basicRecording && fiducialPhoton && HLTRequirement )
+        {
+            h_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,0},bdt_score, chargedIsolation, eventweight);
+            h_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,1},bdt_score, phoIsoRaw, eventweight);
+            h_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,2},bdt_score, chargedIsolation+phoIsoRaw, eventweight);
+            h_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,3},bdt_score, chWorstRaw, eventweight);
+            h_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,0},orig_bdt, chargedIsolation, eventweight);
+            h_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,1},orig_bdt, phoIsoRaw, eventweight);
+            h_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,2},orig_bdt, chargedIsolation+phoIsoRaw, eventweight);
+            h_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,3},orig_bdt, chWorstRaw, eventweight);
+            // signal region
+            if ( isSignalRegion )
+            {
+                if      ( IsMC() && isMatched==1 )
+                {
+                    mySigSignalRegionBDT->Fill({ebee,jetbin,ptbin},bdt_score,eventweight);
+                    mySigSignalRegionBDTOrig->Fill({ebee,jetbin,ptbin},orig_bdt,eventweight);
+                }
+                else if ( IsMC() && isMatched!=1 )
+                    myQCDSignalRegionBDT->Fill({ebee,jetbin,ptbin},bdt_score,eventweight);
+                else if (!IsMC() )
+                    myExpSignalRegionBDT->Fill({ebee,jetbin,ptbin},bdt_score,eventweight);
+            }
+            // sideband region
+            if ( isDataSideband )
+            {
+                if      ( IsMC() && isMatched==1 )
+                    mySigSidebandRegionBDT->Fill({ebee,jetbin,ptbin},bdt_score,eventweight);
+                else if ( IsMC() && isMatched!=1 )
+                    myQCDSidebandRegionBDT->Fill({ebee,jetbin,ptbin},bdt_score,eventweight);
+                else if (!IsMC() )
+                    myExpSidebandRegionBDT->Fill({ebee,jetbin,ptbin},bdt_score,eventweight);
+            }
         }
 
+        if ( basicRecording && fiducialPhoton && HLTRequirement && jetSelAcquired )
+        {
+            jc_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,0},bdt_score, chargedIsolation, eventweight);
+            jc_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,1},bdt_score, phoIsoRaw, eventweight);
+            jc_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,2},bdt_score, chargedIsolation+phoIsoRaw, eventweight);
+            jc_IsovsBDT    ->Fill({ebee,jetbin,ptbin,isfakephoton,3},bdt_score, chWorstRaw, eventweight);
+            jc_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,0},orig_bdt, chargedIsolation, eventweight);
+            jc_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,1},orig_bdt, phoIsoRaw, eventweight);
+            jc_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,2},orig_bdt, chargedIsolation+phoIsoRaw, eventweight);
+            jc_IsovsBDTorig->Fill({ebee,jetbin,ptbin,isfakephoton,3},orig_bdt, chWorstRaw, eventweight);
 
 
-        h_btagDeepCSV_BvsAll_central    .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_BvsAll , chIsoRaw,evtws);
-        h_btagDeepCSV_BvsAll_up         .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_BvsAll , chIsoRaw,evtws_up);
-        h_btagDeepCSV_BvsAll_down       .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_BvsAll , chIsoRaw,evtws_down);
-        h_btagDeepCSV_CvsL_central      .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsL   , chIsoRaw,evtws);
-        h_btagDeepCSV_CvsL_up           .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsL   , chIsoRaw,evtws_up);
-        h_btagDeepCSV_CvsL_down         .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsL   , chIsoRaw,evtws_down);
-        h_btagDeepCSV_CvsB_central      .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsB   , chIsoRaw,evtws);
-        h_btagDeepCSV_CvsB_up           .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsB   , chIsoRaw,evtws_up);
-        h_btagDeepCSV_CvsB_down         .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetDeepCSVDiscriminatorTags_CvsB   , chIsoRaw,evtws_down);
-        h_btagDeepCSV_secVtxMass_central.GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetSubVtxMass                      , chIsoRaw,evtws);
-        h_btagDeepCSV_secVtxMass_up     .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetSubVtxMass                      , chIsoRaw,evtws_up);
-        h_btagDeepCSV_secVtxMass_down   .GetBin({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx})->
-            Fill(jetSubVtxMass                      , chIsoRaw,evtws_down);
-        _h_phopt->Fill(photonpt, eventweight);
-        _h_jetpt->Fill(jetPt, eventweight);
-}
+            h_btagDeepCSV_BvsAll_central    ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_BvsAll , chargedIsolation,btag_evtweight_central);
+            h_btagDeepCSV_BvsAll_up         ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_BvsAll , chargedIsolation,btag_evtweight_up);
+            h_btagDeepCSV_BvsAll_down       ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_BvsAll , chargedIsolation,btag_evtweight_down);
+            h_btagDeepCSV_CvsL_central      ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_CvsL   , chargedIsolation,btag_evtweight_central);
+            h_btagDeepCSV_CvsL_up           ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_CvsL   , chargedIsolation,btag_evtweight_up);
+            h_btagDeepCSV_CvsL_down         ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_CvsL   , chargedIsolation,btag_evtweight_down);
+            h_btagDeepCSV_CvsB_central      ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_CvsB   , chargedIsolation,btag_evtweight_central);
+            h_btagDeepCSV_CvsB_up           ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_CvsB   , chargedIsolation,btag_evtweight_up);
+            h_btagDeepCSV_CvsB_down         ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetDeepCSVDiscriminatorTags_CvsB   , chargedIsolation,btag_evtweight_down);
+            h_btagDeepCSV_secVtxMass_central->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetSubVtxMass                      , chargedIsolation,btag_evtweight_central);
+            h_btagDeepCSV_secVtxMass_up     ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetSubVtxMass                      , chargedIsolation,btag_evtweight_up);
+            h_btagDeepCSV_secVtxMass_down   ->Fill({jetflvBin,ebee,jetbin,ptbin,phoMatchStatIdx,parityIdx},
+                jetSubVtxMass                      , chargedIsolation,btag_evtweight_down);
+        }
+
     }
 
     fout->cd();
-    _h_phopt->Write();
-    _h_jetpt->Write();
+    h_phopt->Write();
+    h_jetpt->Write();
     h_EB_HLT_all->Write();
     h_EE_HLT_all->Write();
     h_EB_HLTpass->Write();
@@ -435,46 +317,44 @@ if (useNewSample)
     { h_HLTstat_EBPtBin[ibin]->Write(); h_HLTstat_EEPtBin[ibin]->Write(); }
 
 
-    _h_BDT     .Write(_h_BDT     .MakeDirectory(fout));
-    _h_Pt_all  .Write(_h_Pt_all  .MakeDirectory(fout));
-    _h_Pt      .Write(_h_Pt      .MakeDirectory(fout));
-    _h_Ptspec  .Write(_h_Ptspec  .MakeDirectory(fout));
-    _h_IsovsBDT.Write(_h_IsovsBDT.MakeDirectory(fout));
-    _h_IsovsBDTorig.Write(_h_IsovsBDTorig.MakeDirectory(fout));
-    myExpSignalRegionBDT.Write(myExpSignalRegionBDT.MakeDirectory(fout));
-    mySigSignalRegionBDT.Write(mySigSignalRegionBDT.MakeDirectory(fout));
-    mySigSignalRegionBDTOrig.Write(mySigSignalRegionBDTOrig.MakeDirectory(fout));
-    myQCDSignalRegionBDT.Write(myQCDSignalRegionBDT.MakeDirectory(fout));
-    myExpSidebandRegionBDT.Write(myExpSidebandRegionBDT.MakeDirectory(fout));
-    mySigSidebandRegionBDT.Write(mySigSidebandRegionBDT.MakeDirectory(fout));
-    myQCDSidebandRegionBDT.Write(myQCDSidebandRegionBDT.MakeDirectory(fout));
-if ( useNewSample )
-{
-    jc_IsovsBDT.Write(jc_IsovsBDT.MakeDirectory(fout));
-    jc_IsovsBDTorig.Write(jc_IsovsBDTorig.MakeDirectory(fout));
+    h_BDT     ->Write(h_BDT     ->MakeDirectory(fout));
+    h_Pt_all  ->Write(h_Pt_all  ->MakeDirectory(fout));
+    h_Pt      ->Write(h_Pt      ->MakeDirectory(fout));
+    h_Ptspec  ->Write(h_Ptspec  ->MakeDirectory(fout));
+    h_IsovsBDT->Write(h_IsovsBDT->MakeDirectory(fout));
+    h_IsovsBDTorig->Write(h_IsovsBDTorig->MakeDirectory(fout));
+    myExpSignalRegionBDT->Write(myExpSignalRegionBDT->MakeDirectory(fout));
+    mySigSignalRegionBDT->Write(mySigSignalRegionBDT->MakeDirectory(fout));
+    mySigSignalRegionBDTOrig->Write(mySigSignalRegionBDTOrig->MakeDirectory(fout));
+    myQCDSignalRegionBDT->Write(myQCDSignalRegionBDT->MakeDirectory(fout));
+    myExpSidebandRegionBDT->Write(myExpSidebandRegionBDT->MakeDirectory(fout));
+    mySigSidebandRegionBDT->Write(mySigSidebandRegionBDT->MakeDirectory(fout));
+    myQCDSidebandRegionBDT->Write(myQCDSidebandRegionBDT->MakeDirectory(fout));
+
+    jc_IsovsBDT->Write(jc_IsovsBDT->MakeDirectory(fout));
+    jc_IsovsBDTorig->Write(jc_IsovsBDTorig->MakeDirectory(fout));
     
-    TDirectory* HLTdir =_h_HLT_all .MakeDirectory(fout);
-    _h_HLT_all .Write(HLTdir);
-    _h_HLTpass .Write(HLTdir);
+    TDirectory* HLTdir =h_HLT_all ->MakeDirectory(fout);
+    h_HLT_all ->Write(HLTdir);
+    h_HLTpass ->Write(HLTdir);
     
     fout->cd();
     h_chiso_sg->Write();
     h_chworst_sg->Write();
 
-    TDirectory* btagdir = h_btagDeepCSV_BvsAll_central.MakeDirectory(fout);
-    h_btagDeepCSV_BvsAll_central    .Write( btagdir );
-    h_btagDeepCSV_BvsAll_up         .Write( btagdir );
-    h_btagDeepCSV_BvsAll_down       .Write( btagdir );
-    h_btagDeepCSV_CvsL_central      .Write( btagdir );
-    h_btagDeepCSV_CvsL_up           .Write( btagdir );
-    h_btagDeepCSV_CvsL_down         .Write( btagdir );
-    h_btagDeepCSV_CvsB_central      .Write( btagdir );
-    h_btagDeepCSV_CvsB_up           .Write( btagdir );
-    h_btagDeepCSV_CvsB_down         .Write( btagdir );
-    h_btagDeepCSV_secVtxMass_central.Write( btagdir );
-    h_btagDeepCSV_secVtxMass_up     .Write( btagdir );
-    h_btagDeepCSV_secVtxMass_down   .Write( btagdir );
-}
+    TDirectory* btagdir = h_btagDeepCSV_BvsAll_central->MakeDirectory(fout);
+    h_btagDeepCSV_BvsAll_central    ->Write( btagdir );
+    h_btagDeepCSV_BvsAll_up         ->Write( btagdir );
+    h_btagDeepCSV_BvsAll_down       ->Write( btagdir );
+    h_btagDeepCSV_CvsL_central      ->Write( btagdir );
+    h_btagDeepCSV_CvsL_up           ->Write( btagdir );
+    h_btagDeepCSV_CvsL_down         ->Write( btagdir );
+    h_btagDeepCSV_CvsB_central      ->Write( btagdir );
+    h_btagDeepCSV_CvsB_up           ->Write( btagdir );
+    h_btagDeepCSV_CvsB_down         ->Write( btagdir );
+    h_btagDeepCSV_secVtxMass_central->Write( btagdir );
+    h_btagDeepCSV_secVtxMass_up     ->Write( btagdir );
+    h_btagDeepCSV_secVtxMass_down   ->Write( btagdir );
     
 
     fout->Close();
@@ -579,7 +459,41 @@ Int_t MakeHisto::triggerbit( const std::string& dataera, Int_t ptbin){
 }
 Int_t MakeHisto::JetFlavourBin( int jethadflvr )
 {
+    // 2 : b // 1 : c // 0 : light
     if     (fabs(jethadflvr)==5) return 2;
     else if(fabs(jethadflvr)==4) return 1;
     return 0;
+}
+Int_t MakeHisto::PhoMatchedStatus()
+{
+    Float_t chargedIsolation = IsMC() ? chIsoRaw : calib_chIso;
+    bool inSignalRegion = PhoSignalRegion(chargedIsolation, recoEta);
+    bool inDataSideband = PhoDataSideband(chargedIsolation, recoEta);
+
+    if (!IsMC() && inSignalRegion ) return 0;
+    if (!IsMC()                   ) return 1;
+
+    if ( IsMC() &&!isQCD && isMatched==1 && inSignalRegion ) return 0;
+    if ( IsMC() &&!isQCD                                   ) return 1;
+
+    if ( IsMC() && isQCD && isMatched!=1 && inSignalRegion ) return 2;
+    if ( IsMC() && isQCD && isMatched!=1 && inDataSideband ) return 3;
+    if ( IsMC() && isQCD                                   ) return 4;
+    return 0;
+}
+Int_t MakeHisto::EventParity(Long64_t evtidx)
+{ return evtidx%2!=0; }
+bool MakeHisto::PassJetAdditionalSelection(int cutIndicator)
+{
+    if ( jetPt < 30. ) return false;
+    if ( fabs(jetEta) > 2.5 ) return false;
+    if ( jetDeepCSVTags_c < -0.99 ) return false;
+    if ( IsMC() && jetID != 1 ) return false;
+    if ( IsMC() && jetPUIDbit != 7 ) return false;
+
+    //if ( mcweight>3000. ) return false;
+    if ( cutIndicator == 1 && jetSubVtxMass == 0 ) return false;
+    if ( cutIndicator == 2 && jetDeepCSVDiscriminatorTags_CvsL < 0.155) return false;
+
+    return true;
 }
