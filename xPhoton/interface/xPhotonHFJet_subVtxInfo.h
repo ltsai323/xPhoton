@@ -39,7 +39,7 @@ void xPhotonHFJet(
         int dowmnoption=0);
 
 void xPhotonHFJet(
-        std::string ipath,
+        std::vector<std::string> ipath,
         int outID,
         const std::string dataEra);
 
