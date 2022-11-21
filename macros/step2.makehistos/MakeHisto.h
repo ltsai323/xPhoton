@@ -14,6 +14,8 @@
 #include <TH1F.h>
 #include <TH2F.h>
 
+#define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+
 // Header file for the classes stored in the TTree if any.
 
 class MakeHisto {
@@ -159,6 +161,8 @@ public :
    // Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
    // Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
    Int_t           isQCD = 0;
+   Int_t           passMaxPUcut = 0;
+   Float_t         weight_passMaxPUcut = 0;
 
    // List of branches
    TBranch        *b_jetSubVtxPt;   //!
@@ -296,6 +300,8 @@ public :
    //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
    //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
    TBranch        *b_isQCD;   //!
+   TBranch        *b_weight_passMaxPUcut;   //!
+   TBranch        *b_passMaxPUcut;   //!
 
    MakeHisto(Int_t option=0);
    MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int HLTOPTION_ = 0);
@@ -314,6 +320,7 @@ public :
    virtual Int_t    JetEtaBin(Float_t pt, Float_t eta);
    virtual Int_t    triggerbit(const std::string& dataera, Int_t ptbin);
    virtual Int_t    JetFlavourBin( int jetHadFlvr );
+
    bool PhoSignalRegion(Float_t isovar, Float_t eta);
    bool PhoDataSideband(Float_t isovar, Float_t eta);
    bool HLTPassed(int hltbit);
@@ -637,6 +644,13 @@ void MakeHisto::Init(TTree *tree)
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
+   if ( IsMC() && fChain->GetListOfBranches()->FindObject("passMaxPUcut") )
+   {
+   fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
+   fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
+   }
+   else
+   { LOG("PUmax Pt hat selection is disabled."); passMaxPUcut = 1; weight_passMaxPUcut = 1.; }
    }
    Notify();
 }

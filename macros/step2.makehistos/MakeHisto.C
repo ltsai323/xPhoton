@@ -138,7 +138,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 
         // new
-        Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
+        //Float_t eventweight = IsMC() ? mcweight * puwei : 1.;
+        Float_t eventweight = IsMC() ? mcweight * puwei * weight_passMaxPUcut: 1.;
         Float_t photonpt = recoPt;
         Float_t chargedIsolation = IsMC() ? chIsoRaw : calib_chIso;
 
@@ -494,6 +495,8 @@ bool MakeHisto::PassJetAdditionalSelection(int cutIndicator)
     //if ( mcweight>3000. ) return false;
     if ( cutIndicator == 1 && jetSubVtxMass == 0 ) return false;
     if ( cutIndicator == 2 && jetDeepCSVDiscriminatorTags_CvsL < 0.155) return false;
+
+    if (!passMaxPUcut ) return false;
 
     return true;
 }
