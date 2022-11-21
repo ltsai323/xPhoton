@@ -43,6 +43,7 @@ static Int_t ONLY_LEADINGPHOTON=0;
 
 static bool hasSubVtxInfo = true;
 static bool testJetSF = true;
+static bool PUmaxInfo = true;
 static bool ELECTRONVETO = false;
 static bool USEHLT = false;
 
@@ -469,6 +470,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t mcTrkIso, mcCalIso, matchDR, matchDPT;
 
     Float_t SeedTime_, SeedEnergy_, MIPTotEnergy_;
+    Float_t leadingPUPtHat;
+    Float_t leadingLHEPt;
+    Float_t genHT_pthatDef;
 
     Int_t phoFillIdx = 0;
     if ( hasSubVtxInfo )
@@ -636,6 +640,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("SeedTime", &SeedTime_, "SeedTime/F");
     outtree_->Branch("SeedEnergy", &SeedEnergy_, "SeedEnergy/F");
     outtree_->Branch("MIPTotEnergy", &MIPTotEnergy_, "MIPTotEnergy/F");
+    }
+    if ( data.HasMC() && PUmaxInfo )
+    {
+    outtree_->Branch("leadingLHEPt", &leadingLHEPt);
+    outtree_->Branch("genHT_pthatDef", &genHT_pthatDef, "genHT_pthatDef/F");
+    outtree_->Branch("leadingPUPtHat" ,&leadingPUPtHat);
     }
 
 
@@ -1315,6 +1325,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             phoIDbit_ =0.;           //ch
             photonIDmva = -999.; //ch
             s4Full5x5=0.;
+            leadingPUPtHat = 0;
+            leadingLHEPt = 0;
+            genHT_pthatDef = 0;
             calib_s4Full5x5=calib_r9Full5x5=calib_scPhiWidth=calib_scEtaWidth=calib_sieieFull5x5=calib_sieipFull5x5=calib_esEnergyOverSCRawEnergy = 0.;
             mygenweight = 0;
             for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
@@ -1420,6 +1433,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 genHT_ = genHT;
                 mcMomPID_ = mcmompid[ipho];
                 
+
                 nLHE   = data.GetInt("nLHE");
                 for ( int i=0; i<nLHE; ++i )
                 {
@@ -1429,6 +1443,28 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     lhePy[i]  = data.GetPtrFloat("lhePy")[i];
                     lhePz[i]  = data.GetPtrFloat("lhePz")[i];
                     histMap["lheEnergy"]->Fill(lheE[i]);
+                }
+                if ( PUmaxInfo && data.HasMC() )
+                {
+                    Float_t* pupthat_max = data.GetPtrFloat("pupthat_max");
+                    Int_t    nPU = data.GetInt("nPUInfo");
+                    Float_t maxpupthat = -1;
+                    for ( int iPU = 0; iPU < nPU; ++iPU )
+                        if ( maxpupthat < pupthat_max[iPU] )
+                            maxpupthat = pupthat_max[iPU];
+                    leadingPUPtHat = maxpupthat;
+
+                    Float_t maxLHEPt = -1;
+                    Float_t LHEPtSUM = 0.;
+                    for ( int i = 0; i < nLHE; ++i )
+                    {
+                        float lhePt = sqrt( lhePx[i]*lhePx[i]+lhePy[i]*lhePy[i] );
+                        LHEPtSUM += lhePt;
+                        if ( maxLHEPt < lhePt )
+                            maxLHEPt = lhePt;
+                    }
+                    leadingLHEPt = maxLHEPt;
+                    genHT_pthatDef = LHEPtSUM / nLHE;
                 }
 
                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
@@ -1457,7 +1493,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
-            calib_chIso = CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
+            calib_chIso = data.HasMC() ? -1 : CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
 
 
             rawE       = phoSCRawE[ipho];
@@ -1698,13 +1734,13 @@ void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection, i
 }
 
 //void xPhotonHFJet(std::string ipath, int outID)
-void xPhotonHFJet(std::string ipath, int outID, const std::string dataEra)
+void xPhotonHFJet(std::vector<std::string> ipath, int outID, const std::string dataEra)
 {
    //Char_t fname[200];
    XS=1.;
-   vector <string> pathes;
+   //vector <string> pathes;
 
-   pathes.push_back(ipath);
+   //pathes.push_back(ipath);
    XS = 1.;
    //isMC=1;
    //gjetSignal=1;
@@ -1713,7 +1749,7 @@ void xPhotonHFJet(std::string ipath, int outID, const std::string dataEra)
    Char_t oname[200];
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
-   xPhotonHFJet(pathes, oname, dataEra);
+   xPhotonHFJet(ipath, oname, dataEra);
 
 }
 std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )

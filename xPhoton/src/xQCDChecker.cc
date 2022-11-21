@@ -77,6 +77,7 @@ struct xQCDTreeContent
         leadingJetGenPartonID = INITVAL;
         leadingJetPartonID = INITVAL;
         GenHT = INITVAL;
+        genHT_pthatDef = INITVAL;
         MET = INITVAL;
 
         pthat_PU.clear();
@@ -109,6 +110,7 @@ struct xQCDTreeContent
         t->Branch("leadingJetPartonID",&leadingJetPartonID, "leadingJetPartonID/I");
         t->Branch("leadingJetGenPartonID",&leadingJetGenPartonID, "leadingJetGenPartonID/I");
         t->Branch("GenHT",            &GenHT,             "GenHT/F");
+        t->Branch("genHT_pthatDef", &genHT_pthatDef, "genHT_pthatDef/F");
         t->Branch("MET",              &MET,               "MET/F");
         t->Branch("pthat_PU" ,&pthat_PU);
     }
@@ -123,6 +125,7 @@ struct xQCDTreeContent
     vector<Float_t> lheDeltaR;
     vector<Float_t> pthat_PU;
     Float_t GenHT;
+    Float_t genHT_pthatDef;
     Float_t MET;
     
     Float_t leadingJetRawE;
@@ -174,9 +177,11 @@ void FillEvent(TreeReader* data, xQCDTreeContent* evt)
     Float_t* pupthat_max = data->GetPtrFloat("pupthat_max");
     Int_t    nPU = data->GetInt("nPUInfo");
 
+    float ptsum = 0;
     for( int lheIdx : evt->GenIdxs() )
     {
         TLorentzVector lheP4;
+        ptsum += lheP4.Pt();
         lheP4.SetPxPyPzE( lhePx[lheIdx], lhePy[lheIdx], lhePz[lheIdx], lheE[lheIdx] );
         evt->lhePt         .push_back(lheP4.Pt());
         evt->lheEta        .push_back(lheP4.Eta());
@@ -195,6 +200,7 @@ void FillEvent(TreeReader* data, xQCDTreeContent* evt)
     }
     evt->lheNum = evt->GenIdxs().size();
     evt->GenHT               = genHT;
+    evt->genHT_pthatDef      = ptsum / evt->GenIdxs().size();
     evt->MET                 = MET;
     if ( nJet > 0 )
     {
