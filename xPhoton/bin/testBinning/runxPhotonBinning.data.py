@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 files=[
-'/home/ltsai/ReceivedFile/GJet/old/old.2016ReReco.data.root'
+'/wk_cms/ltsai/CMSSW_11_0_0_pre3/src/xPhoton/macros/2016.data.root',
 ]
 if __name__ == "__main__":
     import json
@@ -15,3 +15,4 @@ if __name__ == "__main__":
         json.dump(outputcontent,fout)
     import os
     os.system( 'exec_xPhotonBinning running.%s.json'%outputtag )
+    print( 'job "exec_xPhotonBinning running.%s.json" finished'%outputtag )

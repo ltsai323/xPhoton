@@ -12,7 +12,7 @@ testDict={
         },
 }
 import os
-from xPhoton.xPhoton.AppendEventInfo import FindXSInfo, nodir, ShowPD, ShowDetail
+from xPhoton.xPhoton.AppendEventInfo import FindXSInfo, nodir, ShowPD, ShowDetail, FindWeightFile
 from xPhoton.xPhoton.Managers.LogMgr import InitLogger, GetLogger
 mylog=GetLogger(__name__)
 
@@ -46,13 +46,15 @@ def MergeOutputs( primarydataset, inputlist ):
         else:
             mylog.warning('nothing found in category %s' % primarydataset)
 
+
 def executeCommandToTmp( xsweight_,
         integratedGenWeight_,
         dataera_,
         isQCD_,
-        inputfile_ ):
-    execfile='./exe.AppendEventInfo'
-    execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} %s' % (execfile,ARG_tmpdir, 'true' if isQCD_ else 'false' )
+        inputfile_,
+        weightfile_=''):
+    execfile='exec_AppendEventInfo'
+    execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} %s {weightfile}' % (execfile,ARG_tmpdir, 'true' if isQCD_ else 'false' )
 
     if not dataera_ in ARG_datalumi:
         raise KeyError('input key "%d" not foun. Available options are [%s]' %
@@ -65,7 +67,8 @@ def executeCommandToTmp( xsweight_,
             integratedGenWeight=integratedGenWeight_,
             integratedLuminosity=ARG_datalumi[dataera_],
             inputfile=inputfile_,
-            outputfile=nodir(inputfile_)
+            outputfile=nodir(inputfile_),
+            weightfile=weightfile_
         ) )
     else:
         os.system( execcommand.format(
@@ -73,7 +76,8 @@ def executeCommandToTmp( xsweight_,
             integratedGenWeight=integratedGenWeight_,
             integratedLuminosity=ARG_datalumi[dataera_],
             inputfile=inputfile_,
-            outputfile=nodir(inputfile_)
+            outputfile=nodir(inputfile_),
+            weightfile=weightfile_
         ) )
 
 def CheckWorkingDir():
@@ -88,6 +92,10 @@ def GetXS(pd_, ver_, summaryfile_):
     else :             mylog.error( 'recorded Xsection in "%s" unit in file %s. Which is not "pb" or "fb". Need to convert it manually!' % (xsunit, summaryfile_) )
     return xs
 if __name__ == '__main__':
+    arg_summaryfile='../data/summaryJson/summary_bkgMC_madgraph.json'
+    arg_dataera=2016
+    arg_isQCD=True
+
     InitLogger(level='info')
     mylog=GetLogger(__name__)
     CheckWorkingDir()
@@ -104,6 +112,6 @@ if __name__ == '__main__':
             if   xsunit=='pb': xs *= 1000.
             elif xsunit=='fb': pass
             else :             mylog.error( 'recorded Xsection in "%s" unit in file %s. Which is not "pb" or "fb". Need to convert it manually!' % (xsunit, summaryfile) )
-            executeCommandToTmp( xs, integratedgenweights[pd], rootfile )
+            executeCommandToTmp( xs, integratedgenweights[pd], arg_dataera, arg_isQCD, rootfile, weight_file )
         MergeOutputs(pd, info)
 

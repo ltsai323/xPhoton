@@ -1,0 +1,8 @@
+{
+    "lumifile":"effLumi_2015.json",
+    "MarkerStyle": 8,
+    "MarkerColor": 3,
+    "Label": "2015",
+    "DATfile": "15yield_newformat.dat",
+    "histnaming": "checking_%d_%d"
+}

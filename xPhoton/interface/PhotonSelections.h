@@ -22,9 +22,9 @@ Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto=kTRUE);
 //float select_photon_mva(TreeReader &data, Int_t i, TGraph *tgr[20]);
 
 // only for RS trained xml file!!!!!
-float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]);
-float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TGraph *> barrelCorr, std::map<std::string, TGraph *> endcapCorr);
-float select_photon_mvanoIso(TreeReader &data, Int_t i, ShowerShapeCorrectionAdapter& SScorr);
+//float select_photon_mvanoIso(TreeReader &data, Int_t i, TGraph *tgr[20]);
+//float select_photon_mvanoIso(TreeReader &data, Int_t i, std::map<std::string, TGraph *> barrelCorr, std::map<std::string, TGraph *> endcapCorr);
+//float select_photon_mvanoIso(TreeReader &data, Int_t i, ShowerShapeCorrectionAdapter& SScorr);
 
 
 //float select_photon_mva_hgg(TreeReader &data, Int_t i);

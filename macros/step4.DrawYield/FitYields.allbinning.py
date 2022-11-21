@@ -3,7 +3,8 @@ import xPhoton.xPhoton.Managers.LogMgr as LogMgr
 mylog=LogMgr.GetLogger()
 import ROOT
 
-PHOPT_RANGE=[25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000]
+#PHOPT_RANGE=[25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000] # old
+PHOPT_RANGE=[25,34,41,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000]
 
 
 class PDFComponent(object):
@@ -193,8 +194,8 @@ if __name__ == '__main__':
             for phopt in range(21):
                 mylog.debug('indexes are pEta:%d jEta:%d pPt:%d' % (phoeta,jeteta,phopt) )
                 sigbin=MyBin(phopt, phoeta, jeteta)
-                #bkgpt = phopt if phopt < 17 else 17
-                bkgpt = phopt if phopt < 19 else 19
+                bkgpt = phopt if phopt < 17 else 17
+                #bkgpt = phopt if phopt < 19 else 19
                 bkgbin=MyBin(bkgpt, phoeta, jeteta)
 
                 mylog.debug( 'status 01: Loading hists from file.' )

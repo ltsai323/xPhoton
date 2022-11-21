@@ -25,6 +25,8 @@ void PrintHelp()
     printf("------ 3. input integrated luminosity     --------\n");
     printf("------ 4. input root file                 --------\n");
     printf("------ 5. output root file                --------\n");
+    printf("------ 6. isQCD                           --------\n");
+    printf("------ 7. input root file with genweight  --------\n");
     printf("--------------------------------------------------\n");
     printf("------ Feature : 1. Add Xsec info         --------\n");
     printf("------           2. xsweight = xs         --------\n");
@@ -36,6 +38,8 @@ void PrintHelp()
     printf("------              * gen weight each evt --------\n");
     printf("------              / integrated gen W    --------\n");
     printf("------           6. isQCD = true or false --------\n");
+    printf("------           7. rootfile containing   --------\n");
+    printf("------              genHT reweight        --------\n");
     printf("--------------------------------------------------\n");
 }
 float GetWeight(const char* argv[])
@@ -56,6 +60,11 @@ bool IsQCDSample(const char* argv[])
     char mesg[200];
     sprintf(mesg, "input argument 6 is invalid! [%s]\n", argv[6]);
     throw std::invalid_argument(mesg);
+}
+const char* GetReweightFile(const char* argv[])
+{
+    if (!IsQCDSample(argv) ) return nullptr;
+    return argv[7];
 }
     
 void CheckArgs(int argc, const char* argv[])
@@ -89,16 +98,23 @@ void DisableBranch(TTree* t)
 }
 
 
+//#define BUG(format, args...)     fprintf(stderr, "---------------------debug-    %s  \n  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+#define BUG(format, args...)
+bool JetPtSel_RemoveLowStatSample(TH1* h, float pt);
+float ReweightedHT(TH1* h, float gen_ht);
 int main(int argc, const char* argv[])
 {
+    BUG("01");
     CheckArgs(argc,argv);
     const char* iFile               = GetInputFile(argv);
     const char* oFile               = GetOutputFile(argv);
     const float new_xs              = GetWeight(argv);
     const float integratedGenWeight = GetIntegratedGenWeight(argv);
     const float integratedLumi      = GetIntegratedLuminosity(argv);
-    const int   isQCDsample         = int(IsQCDSample(argv));
+    const bool  isQCDsample         = IsQCDSample(argv);
+    const char* ifile_QCD_genHTcut  = GetReweightFile(argv);
 
+    BUG("02");
     std::cout << "in file : " << iFile << std::endl;
     std::cout << "out file : " << oFile << std::endl;
     std::cout << "in x-sec : " << new_xs << " fb inv" << std::endl;
@@ -106,54 +122,123 @@ int main(int argc, const char* argv[])
     std::cout << "input integrated luminosity : " << integratedLumi << std::endl;
     if ( isQCDsample ) std::cout << "is QCD sample \n";
     
+    BUG("03");
 
     TFile* iF = TFile::Open(iFile);
     TTree* iT = (TTree*) iF->Get("t");
     DisableBranch(iT);
 
+    BUG("04");
     
     TFile* oF = new TFile(oFile,"recreate");
     oF->cd();
     TTree* oT = (TTree*) iT->CloneTree(0);
 
+    BUG("05");
     Float_t xsweight;
     Float_t lumi;
     Float_t xs;
     Float_t mcweight;
     Float_t sumGenWeight;
     Int_t isQCD;
+    Int_t passMaxPUcut;
+    Float_t weight_passMaxPUcut;
     oT->Branch("xsweight", &xsweight, "xsweight/F"); // xsweight is the variable serve for original RS code.
     oT->Branch("crossSection", &xs, "crossSection/F");
     oT->Branch("integratedLuminosity", &lumi, "integratedLuminosity/F");
     oT->Branch("integratedGenWeight", &sumGenWeight, "integratedGenWeight/F");
     oT->Branch("mcweight", &mcweight, "mcweight/F");
+
     oT->Branch("isQCD", &isQCD, "isQCD/I");
 
+    oT->Branch("weight_passMaxPUcut", &weight_passMaxPUcut,"weight_passMaxPUcut/F");
+    oT->Branch("passMaxPUcut", &passMaxPUcut,"passMaxPUcut/I");
+    BUG("06");
+
+
     Float_t genweight;
+    Float_t jetPt;
+    Float_t genHT;
+    Int_t   nLHE;
+    std::vector<Float_t>* pthat_PU = nullptr;
+    Float_t leadingPUPtHat;
 
     iT->SetBranchAddress("genWeight", &genweight);
+    iT->SetBranchAddress("jetPt", &jetPt);
+    iT->SetBranchAddress("nLHE", &nLHE);
+    iT->SetBranchAddress("genHT", &genHT);
+    iT->SetBranchAddress("leadingPUPtHat", &leadingPUPtHat);
+    BUG("07");
 
     xs = new_xs;
     lumi = integratedLumi;
     sumGenWeight = integratedGenWeight;
-    isQCD = isQCDsample;
+    isQCD = int(isQCDsample);
+    weight_passMaxPUcut = 1.;
+    passMaxPUcut = 1;
     
+    TFile* mcinfo_file = nullptr;
+    TH1*   mcinfo_ptThreshold = nullptr;
+    TH1*   mcinfo_genHTreweig = nullptr;
+    BUG("08: %s", ifile_QCD_genHTcut);
+    if ( isQCDsample )
+    {
+        mcinfo_file = TFile::Open(ifile_QCD_genHTcut);
+        mcinfo_ptThreshold = (TH1*) mcinfo_file->Get("jetpt_threshold");
+        mcinfo_genHTreweig = (TH1*) mcinfo_file->Get("genHT_reweight");
+    }
+    BUG("09");
     
     unsigned int nevt = iT->GetEntries();
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
+    BUG("09.1");
         iT->GetEntry(ievt);
 
         xsweight = genweight > 0 ? new_xs : -1.*new_xs;
         mcweight = new_xs * lumi * genweight / integratedGenWeight;
 
+    BUG("09.2");
+        if ( isQCDsample )
+        {
+            if (       leadingPUPtHat>0
+                    && leadingPUPtHat<genHT/nLHE
+                    && JetPtSel_RemoveLowStatSample(mcinfo_ptThreshold,jetPt)
+                    && jetPt>0 )
+                passMaxPUcut = 1;
+            else
+                passMaxPUcut = 0;
+
+            weight_passMaxPUcut = ReweightedHT(mcinfo_genHTreweig, genHT);
+        }
+    BUG("09.3");
+
         oT->Fill();
+    BUG("09.4");
     }
 
+    BUG("10");
+    oF->cd();
+    BUG("11");
     oT->Write();
     CloneOtherObjects(iF);
+
+    if ( isQCDsample ) mcinfo_file->Close();
     oF->Close();
     iF->Close();
 
     return 0;
+}
+bool JetPtSel_RemoveLowStatSample(TH1* h, float pt)
+{
+    for ( auto ibin = h->GetNbinsX(); ibin != 0 ; --ibin )
+        // 1 or 0. If 1 found, check pt is lower than edge.
+        if ( h->GetBinContent(ibin) != 0 ) return pt < h->GetBinLowEdge(ibin+1);
+    return false; // nothing found
+}
+float ReweightedHT(TH1* h, float gen_ht)
+{
+    for ( auto ibin = h->GetNbinsX(); ibin != 0 ; --ibin )
+        if ( h->GetBinLowEdge(ibin) < gen_ht ) return h->GetBinContent(ibin);
+    return 1.; // nothing found
 }

@@ -198,8 +198,9 @@ if __name__ == '__main__':
                 bkgbin=MyBin(bkgpt, phoeta, jeteta)
 
                 mylog.debug( 'status 01: Loading hists from file.' )
+                print sigbin.naming('photonFit_%d_%d_%d/data_signalRegion')
                 h_exp=infile.Get( sigbin.naming('photonFit_%d_%d_%d/data_signalRegion') )
-                h_sig=infile.Get( sigbin.naming('photonFit_%d_%d_%d/gjet_signalRegion') )
+                h_sig=infile.Get( sigbin.naming('photonFit_%d_%d_%d/sign_signalRegion') )
                 h_bkg=infile.Get( bkgbin.naming('photonFit_%d_%d_%d/data_sidebandRegion') )
 
                 if h_exp.GetNbinsX() > 10 : h_exp.Rebin(10)

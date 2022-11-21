@@ -19,5 +19,11 @@
     <bin name="exec_AppendBTagCalibration"   file="AppendBTagCalibration.cc"/>
     <bin name="exec_xPhotonInfoUpdate"       file="xPhotonInfoUpdate.cc"/>
     <bin name="exec_xPhotonBinning"          file="xPhotonBinning.cc"/>
+    <bin name="exec_xQCDRunner2016"          file="xQCDRunner_2016ReReco.cc"/>
+
+    <bin name="xQCD2nd_ReweightChecking_Madgraph"
+        file="xQCD2nd_ReweightChecking_Madgraph.cc"/>
+    <bin name="xQCD3rd_ScaleFactorCalculationAndJetPtThreshold"
+        file="xQCD3rd_ScaleFactorCalculationAndJetPtThreshold.cc"/>
 </export>
 <flags SKIP_FILES="*.root"/>

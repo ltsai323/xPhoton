@@ -40,3 +40,12 @@ def ShowDetail(SummaryFile):
 if __name__ == '__main__':
     for fileinfo in fileList:
         print GetXS(fileinfo['pd'])
+
+def ValidFile(filepath):
+    if ( os.path.exists(filepath) ): return filepath
+    raise IOError("Input file not found : %s" % filepath)
+
+def FindWeightFile( primarydataset_, jsonFILE_ ):
+    with open(jsonFILE_,'r') as ifile:
+        aaaa=json.load(ifile)
+        return ValidFile(aaaa[primarydataset_])

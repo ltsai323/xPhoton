@@ -41,4 +41,5 @@ if __name__ == '__main__':
     os.chdir(workpath)
     #for fIdx, inputpath in enumerate(inpaths):
     for fIdx, inputpath in Enumerate_reversedIdx(inpaths):
-        os.system( 'xrdcp -f {file} running_{idx}.root ; {exe} running_{idx}.root {idx} > logging_{idx} 2>&1; /bin/rm running_{idx}.root'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
+        os.system( 'echo "xrdcp -f --nopbar {file} running_{idx}.root ; {exe} running_{idx}.root {idx} > logging_{idx} 2>&1; /bin/rm running_{idx}.root" > logging_{idx}'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
+        os.system( 'xrdcp -f --nopbar {file} running_{idx}.root ; {exe} running_{idx}.root {idx} >> logging_{idx} 2>&1; /bin/rm running_{idx}.root'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )

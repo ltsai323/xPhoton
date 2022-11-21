@@ -25,8 +25,6 @@ def InFile_QCDMadgraph():
     return '/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root'
 def InFile_Data():
     return ''
-#/home/ltsai/ReceivedFile/GJet/noMCIsoCut/sigMC_pythia.root
-#/home/ltsai/ReceivedFile/GJet/noMCIsoCut/sigMC_madgraph.root
 
 class GetTreeObj(object):
     def __init__(self, ifile):
@@ -73,8 +71,8 @@ class SigBkgHists(object):
 class MyCanv(ROOT.TCanvas):
     def __init__(self, *args):
         super(MyCanv, self).__init__(*args)
-        #self.SetFillColor(4000)
-        #self.SetFillStyle(4000)
+        self.SetFillColor(4000)
+        self.SetFillStyle(4000)
 
 
 # Integral x-bin : from 1 to N

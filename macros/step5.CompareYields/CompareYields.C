@@ -28,12 +28,18 @@ struct JsonInfo
         if ( tester.Contains(".") ) throw " -> Label contains '.', which is a preserved word.";
         title   = root.get<std::string>("Title", "");
         datfile     = root.get<std::string>("DATfile", "");
-        histnaming  = root.get<std::string>("histnaming", "");
     }
-    //JsonInfo(const JsonInfo& input) {}
-    JsonInfo() {} 
+    JsonInfo()
+    {
+        luminosity  = 2.26;
+        markerstyle = 8;
+        markercolor = 38;
+
+        label   = "2015";
+        title   = "2015 ReReco from RS result";
+        datfile = "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/15yield_noInclusivePho_newformat.dat";
+    }
     std::string datfile;
-    std::string histnaming;
     std::string label;
     std::string title;
     float luminosity;
@@ -205,10 +211,8 @@ void DrawCmpPlot( NewHistInSquareMatrix1D const * hist_ref, NewHistInSquareMatri
     printf("DrawCmpPlots function ended...\n");
 }
 
-void CompareYields( const char* arg_ref, const char* arg_new )
+void CompareYields( const JsonInfo& info_ref, const JsonInfo& info_new )
 {
-    JsonInfo info_ref(arg_ref);
-    JsonInfo info_new(arg_new);
     NewHistInSquareMatrix1D* binnedHists_ref = FilledHists( info_ref );
     NewHistInSquareMatrix1D* binnedHists_new = FilledHists( info_new );
     HistSetup( binnedHists_ref, info_ref );
@@ -219,3 +223,22 @@ void CompareYields( const char* arg_ref, const char* arg_new )
     delete binnedHists_new;
 }
 
+void CompareYields( const char* arg_ref, const char* arg_new )
+{
+    JsonInfo info_ref(arg_ref);
+    JsonInfo info_new(arg_new);
+    CompareYields(info_ref, info_new);
+}
+void CompareYields( const char* newDATfile )
+{
+    JsonInfo info_ref;
+    JsonInfo info_new;
+    info_new.markerstyle = 22;
+    info_new.markercolor = 39;
+    info_new.title = "testing 2016";
+    info_new.label = "New";
+    info_new.luminosity = 35.9;
+    info_new.datfile = newDATfile;
+
+    CompareYields(info_ref, info_new);
+}

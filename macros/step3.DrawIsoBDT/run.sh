@@ -1,18 +1,30 @@
 #!/usr/bin/env sh
-
-
-for phoPtBin in {0..24}; do
+tmpjson="hi.json"
 for phoEtaIdx in {0..1}; do
+    echo processing to photon eta $phoEtaIdx
 for jetEtaIdx in {0..2}; do
-#root -b > logs/log_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin} 2> /dev/null <<EOF
-root -b <<EOF
-.L Draw_IsovsBDT.C+
-Draw_IsovsBDT(${phoEtaIdx},${jetEtaIdx},${phoPtBin},1, 14, 20)
-EOF
-mv isovsbdt.root iso_${phoEtaIdx}_${jetEtaIdx}_${phoPtBin}.root
-done
-done
-done
+for phoPtBin in {0..20}; do
 
+
+cat > $tmpjson <<EOF
+{
+    "phoEtaBin": $phoEtaIdx,
+    "jetEtaBin": $jetEtaIdx,
+    "phoPtBin":  $phoPtBin,
+    "rebinOption":1,
+    "data":"../makehisto_data.root",
+    "bkg": "../makehisto_QCD.root",
+    "sig": "../makehisto_sig.root",
+    "out_template": "disabled"
+}
+EOF
+
+root -b > logs/job_phoEta${phoEtaIdx}_jetEta${jetEtaIdx}_phoPt${phoPtBin}  <<EOF
+.L Draw_IsovsBDT.C+
+Draw_IsovsBDT("$tmpjson")
+EOF
+done; done; done
+
+/bin/rm $tmpjson
 hadd -f isovsbdt_template.root iso_*.root
 /bin/rm  iso_*.root

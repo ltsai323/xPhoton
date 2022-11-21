@@ -1,8 +1,8 @@
 {
-    "luminosity": 35.9,
-    "MarkerStyle": 22,
-    "MarkerColor": 46,
-    "Title": "2016 ReReco in old processed",
-    "Label": "Old16",
-    "DATfile": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/16yield_newformat.dat"
+    "lumifile": "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/step5.CompareYields/effLumi_2015.json",
+    "MarkerStyle": 8,
+    "MarkerColor": 38,
+    "Title": "2015 ReReco from RS result",
+    "Label": "2015",
+    "DATfile": "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/15yield_noInclusivePho_newformat.dat"
 }
