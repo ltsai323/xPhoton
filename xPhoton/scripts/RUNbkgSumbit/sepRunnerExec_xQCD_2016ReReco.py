@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
-exeCMD='exec_xPhotonRunner2016ReReco'
-nThread=4
+exeCMD='exec_xQCDRunner2016'
+nThread=2
 
 
 def GetArg_PrintHelp():

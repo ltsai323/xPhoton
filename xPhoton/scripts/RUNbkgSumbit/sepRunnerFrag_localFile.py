@@ -43,4 +43,5 @@ if __name__ == '__main__':
     os.chdir(workpath)
     #for fIdx, inputpath in enumerate(inpaths):
     for fIdx, inputpath in Enumerate_reversedIdx(inpaths):
-        os.system( 'ln -sf {file} running_{idx}.root ; {exe} running_{idx}.root {idx} > logging_{idx} 2>&1; unlink running_{idx}.root'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
+        os.system( 'echo "ln -sf {file} running_{idx}.root ; {exe} running_{idx}.root {idx} > logging_{idx} 2>&1; unlink running_{idx}.root" > logging_{idx}'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
+        os.system( 'ln -sf {file} running_{idx}.root ; {exe} running_{idx}.root {idx} >> logging_{idx} 2>&1; unlink running_{idx}.root'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )

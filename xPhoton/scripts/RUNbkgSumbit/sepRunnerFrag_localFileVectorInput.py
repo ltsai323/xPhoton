@@ -18,10 +18,26 @@ def GetOpt_ThreadIdx(argv):
 
 def ReIndexing(threadNum_,idx_):
     return 100000*(threadNum_)+idx_
+def Grouping(mylist_, groupingNumber):
+    return [ ','.join(mylist_[n:n+groupingNumber]) for n in range(0, len(mylist_), groupingNumber) ]
 
 def Enumerate_reversedIdx(mylist_):
-    tot=len(mylist_)-1
-    return [ (tot-idx, val) for idx,val in enumerate(mylist_) ]
+    mylist=Grouping(mylist_, 10)
+    tot=len(mylist)-1
+    return [ (tot-idx, val) for idx,val in enumerate( mylist ) ]
+
+def main(jsonfile, execfile, generalidx):
+    fin=open(jsonfile,'r')
+    inputdic=json.load(fin)
+
+    workpath=inputdic['directory']
+    inpaths=inputdic['paths']
+
+    os.chdir(workpath)
+    for fIdx, inputpath in Enumerate_reversedIdx(inpaths):
+        #print( '{exe} {files} {idx} >> logging_{idx} 2>&1'.format(files=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
+        os.system( '{exe} {files} {idx} >> logging_{idx} 2>&1'.format(files=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
+
 
 if __name__ == '__main__':
     import sys
@@ -32,14 +48,5 @@ if __name__ == '__main__':
     execfile=GetArg_Executable(sys.argv)
     generalidx=GetOpt_ThreadIdx(sys.argv)
 
-    fin=open(jsonfile,'r')
-    inputdic=json.load(fin)
+    main(jsonfile,execfile,generalidx)
 
-    workpath=inputdic['directory']
-    inpaths=inputdic['paths']
-
-    os.chdir(workpath)
-    #for fIdx, inputpath in enumerate(inpaths):
-    for fIdx, inputpath in Enumerate_reversedIdx(inpaths):
-        os.system( 'echo "xrdcp -f --nopbar {file} running_{idx}.root ; {exe} running_{idx}.root {idx} > logging_{idx} 2>&1; /bin/rm running_{idx}.root" > logging_{idx}'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
-        os.system( 'xrdcp -f --nopbar {file} running_{idx}.root ; {exe} running_{idx}.root {idx} >> logging_{idx} 2>&1; /bin/rm running_{idx}.root'.format(file=inputpath, idx=ReIndexing(generalidx,fIdx),exe=execfile ) )
