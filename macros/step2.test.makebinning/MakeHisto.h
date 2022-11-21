@@ -5,8 +5,8 @@
 // found on file: /home/ltsai/ReceivedFile/GJet/latestsample/sigMC_madgraph.root
 //////////////////////////////////////////////////////////
 
-#ifndef MakeBinning_h
-#define MakeBinning_h
+#ifndef MakeHisto_h
+#define MakeHisto_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -14,9 +14,11 @@
 #include <TH1F.h>
 #include <TH2F.h>
 
+#define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+
 // Header file for the classes stored in the TTree if any.
 
-class MakeBinning {
+class MakeHisto {
 public :
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -58,6 +60,7 @@ public :
    Int_t           eleVeto;
    Float_t         HoverE;
    Float_t         chIsoRaw;
+   Float_t         calib_chIso;
    Float_t         chWorstRaw;
    Float_t         phoIsoRaw;
    Float_t         nhIsoRaw;
@@ -68,7 +71,8 @@ public :
    Float_t         esRR;
    Float_t         esEn;
    Float_t         mva;
-   Float_t         mva_nocorr;
+   Float_t         calib_mva;
+   //Float_t         mva_nocorr;
    Float_t         photonIDmva;
    Int_t           phoIDbit;
    Float_t         MET;
@@ -157,6 +161,8 @@ public :
    // Float_t         jetSF_DeepFlavour_JESReduced_up_hf;
    // Float_t         jetSF_DeepFlavour_JESReduced_up_lf;
    Int_t           isQCD = 0;
+   Int_t           passMaxPUcut = 0;
+   Float_t         weight_passMaxPUcut = 0;
 
    // List of branches
    TBranch        *b_jetSubVtxPt;   //!
@@ -193,6 +199,7 @@ public :
    TBranch        *b_eleVeto;   //!
    TBranch        *b_HoverE;   //!
    TBranch        *b_chIsoRaw;   //!
+   TBranch        *b_calib_chIso;   //!
    TBranch        *b_chWorstIso;   //!
    TBranch        *b_phoIsoRaw;   //!
    TBranch        *b_nhIsoRaw;   //!
@@ -203,7 +210,8 @@ public :
    TBranch        *b_esRR;   //!
    TBranch        *b_esEn;   //!
    TBranch        *b_mva;   //!
-   TBranch        *b_mva_nocorr;   //!
+   //TBranch        *b_mva_nocorr;   //!
+   TBranch        *b_calib_mva;   //!
    TBranch        *b_photonIDmva;   //!
    TBranch        *b_phoIDbit;   //!
    TBranch        *b_MET;   //!
@@ -292,11 +300,13 @@ public :
    //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_hf;   //!
    //TBranch        *b_jetSF_DeepFlavour_JESReduced_up_lf;   //!
    TBranch        *b_isQCD;   //!
+   TBranch        *b_weight_passMaxPUcut;   //!
+   TBranch        *b_passMaxPUcut;   //!
 
-   MakeBinning(Int_t option=0);
-   MakeBinning(const char* fname, const char* outputlabel_, bool isMC);
+   MakeHisto(Int_t option=0);
+   MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int HLTOPTION_ = 0);
    void fitVarsInit();
-   virtual ~MakeBinning();
+   virtual ~MakeHisto();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
@@ -307,9 +317,24 @@ public :
    virtual Int_t    EBEE(Float_t eta);
    virtual Int_t    Ptbin(Float_t pt);
    virtual Int_t    HLTbit(Float_t pt);
-   virtual Int_t    JetEtaBin(Float_t eta);
-   virtual Int_t    triggerbit(Int_t ptbin);
+   virtual Int_t    JetEtaBin(Float_t pt, Float_t eta);
+   virtual Int_t    triggerbit(const std::string& dataera, Int_t ptbin);
    virtual Int_t    JetFlavourBin( int jetHadFlvr );
+
+   bool PhoSignalRegion(Float_t isovar, Float_t eta);
+   bool PhoDataSideband(Float_t isovar, Float_t eta);
+   bool HLTPassed(int hltbit);
+   Int_t PhoMatchedStatus();
+   Int_t EventParity(Long64_t evtidx);
+   bool PassJetAdditionalSelection(int cutIndicator);
+
+
+   Float_t bTagWeight_Up(Int_t jetFLAVOURbin);
+   Float_t bTagWeight_Central(Int_t jetFLAVOURbin);
+   Float_t bTagWeight_Down(Int_t jetFLAVOURbin);
+
+
+   void SetDataEra(const std::string& d) { _dataera = d; }
 
    bool IsMC();
 
@@ -317,6 +342,7 @@ public :
    Int_t        HLTOPTION;
    bool fkMC;
    const char* _outputlabel;
+   std::string _dataera;
 
    enum fitVar {
    _deepCSVTags_b,
@@ -339,8 +365,8 @@ public :
 
 #endif
 
-#ifdef MakeBinning_cxx
-MakeBinning::MakeBinning(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0)
+#ifdef MakeHisto_cxx
+MakeHisto::MakeHisto(Int_t option) : fChain(0) , fkMC(true), OPTION(option), HLTOPTION(0)
 {
   printf("option %d \n", option);
   TChain *tc = new TChain("t");
@@ -400,8 +426,8 @@ MakeBinning::MakeBinning(Int_t option) : fChain(0) , fkMC(true), OPTION(option),
   _outputlabel="hi";
   Init(tc);
 }
-MakeBinning::MakeBinning(const char* fname, const char* outputlabel_, bool isMC) :
-    fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(0), _outputlabel(outputlabel_)
+MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int HLTOPTION_) :
+    fChain(0) , fkMC(isMC), OPTION(0), HLTOPTION(HLTOPTION_), _outputlabel(outputlabel_)
 {
   printf("Input file name is : %s", fname);
   TChain *tc = new TChain("t");
@@ -410,19 +436,19 @@ MakeBinning::MakeBinning(const char* fname, const char* outputlabel_, bool isMC)
   Init(tc);
 }
 
-MakeBinning::~MakeBinning()
+MakeHisto::~MakeHisto()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
 }
 
-Int_t MakeBinning::GetEntry(Long64_t entry)
+Int_t MakeHisto::GetEntry(Long64_t entry)
 {
 // Read contents of entry.
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
-Long64_t MakeBinning::LoadTree(Long64_t entry)
+Long64_t MakeHisto::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
    if (!fChain) return -5;
@@ -435,7 +461,7 @@ Long64_t MakeBinning::LoadTree(Long64_t entry)
    return centry;
 }
 
-void MakeBinning::Init(TTree *tree)
+void MakeHisto::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -497,6 +523,10 @@ void MakeBinning::Init(TTree *tree)
    fChain->SetBranchAddress("eleVeto", &eleVeto, &b_eleVeto);
    fChain->SetBranchAddress("HoverE", &HoverE, &b_HoverE);
    fChain->SetBranchAddress("chIsoRaw", &chIsoRaw, &b_chIsoRaw);
+   if (!IsMC() )
+   {
+   fChain->SetBranchAddress("calib_chIso", &calib_chIso, &b_calib_chIso);
+   }
    fChain->SetBranchAddress("chWorstRaw", &chWorstRaw, &b_chWorstIso);
    fChain->SetBranchAddress("phoIsoRaw", &phoIsoRaw, &b_phoIsoRaw);
    fChain->SetBranchAddress("nhIsoRaw", &nhIsoRaw, &b_nhIsoRaw);
@@ -509,12 +539,13 @@ void MakeBinning::Init(TTree *tree)
    fChain->SetBranchAddress("mva", &mva, &b_mva);
    if ( IsMC() )
    {
-   fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   //fChain->SetBranchAddress("mva_nocorr", &mva_nocorr, &b_mva_nocorr);
+   fChain->SetBranchAddress("calib_mva", &calib_mva, &b_calib_mva);
    }
    fChain->SetBranchAddress("photonIDmva", &photonIDmva, &b_photonIDmva);
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
-   if ( IsMC() )
+   if (!IsMC() )
    {
    fChain->SetBranchAddress("metFilters", &metFilters, &b_metFilters);
    }
@@ -613,11 +644,18 @@ void MakeBinning::Init(TTree *tree)
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
+   if ( IsMC() && fChain->GetListOfBranches()->FindObject("passMaxPUcut") )
+   {
+   fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
+   fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
+   }
+   else
+   { LOG("PUmax Pt hat selection is disabled."); passMaxPUcut = 1; weight_passMaxPUcut = 1.; }
    }
    Notify();
 }
 
-Bool_t MakeBinning::Notify()
+Bool_t MakeHisto::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -628,81 +666,68 @@ Bool_t MakeBinning::Notify()
    return kTRUE;
 }
 
-void MakeBinning::Show(Long64_t entry)
+void MakeHisto::Show(Long64_t entry)
 {
 // Print contents of entry.
 // If entry is not specified, print current entry
    if (!fChain) return;
    fChain->Show(entry);
 }
-Int_t MakeBinning::Cut(Long64_t entry)
+Int_t MakeHisto::Cut(Long64_t entry)
 {
-// This function may be called from Loop.
-// returns  1 if entry is accepted.
-// returns -1 otherwise.
    return 1;
 }
 
-bool MakeBinning::IsMC()
+bool MakeHisto::IsMC()
 { return fkMC; }
-struct HistMgr
+bool MakeHisto::PhoSignalRegion(Float_t isovar, Float_t eta)
 {
-    HistMgr( const char* nameTemplate, std::vector<int> maxIdxs ) :
-        _nTemplate(nameTemplate), _MIdxs(maxIdxs) {}
-    std::vector<int> DecodeIdx(int idx)
-    {
-        std::vector<int> outputidxs;
-        for ( unsigned int i = 0; i < _MIdxs.size(); ++i )
-        {
-            int lPosition = IdxMultiplier(i);
-            int rPosition = IdxMultiplier(i+1);
-            outputidxs.emplace_back( (idx%lPosition) / rPosition );
-        }
-        /*
-        std::cout << " input digit : " << idx << ". And outputs are ";
-        for  ( auto k : outputidxs ) std::cout << k << ", ";
-        std::cout << std::endl;
-        */
-        return outputidxs;
-    }
-    const char* GetTitle( const std::vector<int>& iI )
-    {
-        switch ( _MIdxs.size() ) {
-        case 0: throw "histogram failed to interpret\n"; return "";
-        case 1: return Form(_nTemplate, iI[0]);
-        case 2: return Form(_nTemplate, iI[0], iI[1]);
-        case 3: return Form(_nTemplate, iI[0], iI[1], iI[2]);
-        case 4: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3]);
-        case 5: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4]);
-        case 6: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5]);
-        case 7: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5], iI[6]);
-        }
-        throw "_MIdxs size exceeds the size provided from GetTitle(), please extend this function\n";
-                return "";
-    }
-    int indexing( const std::vector<int>& inIdxs )
-    {
-        int idx = 0;
-        for ( unsigned int i = 0; i < _MIdxs.size(); ++i )
-        { idx += inIdxs[i] * IdxMultiplier(i+1); }
+    int ebee = EBEE(eta);
+    if ( ebee == 0 && fabs(isovar) < 2  ) return true;
+    if ( ebee == 1 && fabs(isovar) < 1.5) return true;
+    return false;
+}
+bool MakeHisto::PhoDataSideband(Float_t isovar, Float_t eta)
+{
+    int ebee = EBEE(eta);
+    if ( ebee == 0 && fabs(isovar)>7 && fabs(isovar)<13 ) return true;
+    if ( ebee == 1 && fabs(isovar)>6 && fabs(isovar)<12 ) return true;
+    return false;
+}
+bool MakeHisto::HLTPassed(int hltbit)
+{
+    if ( HLTOPTION == 1 && !((phoFiredTrgs>>hltbit)&1) ) return false;
+    return true;
+}
 
-        /*
-        std::cout << "input idxs : ";
-        for ( auto a : inIdxs ) std::cout << a << ", ";
-        std::cout << " and final index is : " << idx << std::endl;
-        */
-        return idx;
-    }
-    int IdxMultiplier( int fromIdx )
-    {
-        int idxMultiplier = 1;
-        for ( unsigned int jdx = fromIdx; jdx < _MIdxs.size(); ++jdx )
-            idxMultiplier *= _MIdxs.at(jdx);
-        return idxMultiplier;
-    }
-    int TotalSize()
-    { return IdxMultiplier(0); }
+Float_t MakeHisto::bTagWeight_Up(Int_t jetFLAVOURbin)
+{
+    if (!IsMC() ) return 1.;
+    if ( jetFLAVOURbin == 2 ) return jetSF_DeepCSV_up_hf;
+    if ( jetFLAVOURbin == 1 ) return jetSF_DeepCSV_up_cferr1;
+    return jetSF_DeepCSV_up_lf;
+}
+Float_t MakeHisto::bTagWeight_Central(Int_t jetFLAVOURbin)
+{
+    if (!IsMC() ) return 1.;
+    return jetSF_DeepCSV_central;
+}
+Float_t MakeHisto::bTagWeight_Down(Int_t jetFLAVOURbin)
+{
+    if (!IsMC() ) return 1.;
+    if ( jetFLAVOURbin == 2 ) return jetSF_DeepCSV_down_hf;
+    if ( jetFLAVOURbin == 1 ) return jetSF_DeepCSV_down_cferr1;
+    return jetSF_DeepCSV_down_lf;
+}
 
+struct BinnedHist
+{
+    BinnedHist( const std::vector<int>& MIdxs, const char* nameTemplate ) :
+        _nTemplate(nameTemplate), _MIdxs(MIdxs)
+    {
+        hists.reserve( total_size() );
+        for ( int i=0; i< total_size(); ++i ) hists.emplace_back(nullptr);
+    }
     TDirectory* MakeDirectory( TDirectory* origdir )
     {
         char kk[200];
@@ -717,60 +742,140 @@ struct HistMgr
         }
         return origdir->mkdir( kk );
     }
+    //virtual void Fill(const std::vector<int>& idxs, float val, float val2=1, float val3=1 ) = 0;
+    virtual void Fill(const std::vector<int>& idxs, float val, float val2=1, float val3=1) {};
+    void Write( TDirectory* dir = nullptr )
+    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
+        
+protected:
+    std::vector<int> decode_idx(int idx)
+    {
+        std::vector<int> outputidxs;
+        for ( unsigned int i = 0; i < _MIdxs.size(); ++i )
+        {
+            int lPosition = idx_multiplier(i);
+            int rPosition = idx_multiplier(i+1);
+            outputidxs.emplace_back( (idx%lPosition) / rPosition );
+        }
+        return outputidxs;
+    }
+    const char* get_title( const std::vector<int>& iI )
+    {
+        switch ( _MIdxs.size() ) {
+        case 0: throw "histogram failed to interpret\n"; return "";
+        case 1: return Form(_nTemplate, iI[0]);
+        case 2: return Form(_nTemplate, iI[0], iI[1]);
+        case 3: return Form(_nTemplate, iI[0], iI[1], iI[2]);
+        case 4: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3]);
+        case 5: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4]);
+        case 6: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5]);
+        case 7: return Form(_nTemplate, iI[0], iI[1], iI[2], iI[3], iI[4], iI[5], iI[6]);
+        }
+        throw "_MIdxs size exceeds the size provided from get_title(), please extend this function\n";
+                return "";
+    }
+    int indexing( const std::vector<int>& inIdxs )
+    {
+        int idx = 0;
+        for ( unsigned int i = 0; i < _MIdxs.size(); ++i )
+        { idx += inIdxs[i] * idx_multiplier(i+1); }
+
+        return idx;
+    }
+    int idx_multiplier( int fromIdx )
+    {
+        int idxMultiplier = 1;
+        for ( unsigned int jdx = fromIdx; jdx < _MIdxs.size(); ++jdx )
+            idxMultiplier *= _MIdxs.at(jdx);
+        return idxMultiplier;
+    }
+    int total_size()
+    { return idx_multiplier(0); }
+
+    int num_idx() const { return _MIdxs.size(); }
 
 
     std::vector<int> _MIdxs;
     const char* _nTemplate;
     char tmpnaming[200];
+    std::vector<TObject*> hists;
 };
-struct HistMgr1D : public HistMgr
+
+struct BinnedHist1D : public BinnedHist
 {
-    HistMgr1D( const char* nameTemplate, std::vector<int> maxIdxs ) : HistMgr(nameTemplate,maxIdxs)
-    {
-        hists.reserve( TotalSize() );
-        for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
-    }
-    //~HistMgr1D() { for ( auto h : hists ) delete h; }
+    BinnedHist1D( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist(MIdxs,nameTemplate)
+    { }
     void SetXaxis( int nbin, float xmin, float xmax )
     {
-        for ( int idx = 0; idx < TotalSize(); ++idx )
+        for ( int idx = 0; idx < total_size(); ++idx )
         {
-            //std::cout << "setxaxis00 input idx : " << idx << "\n";
-            hists[idx] = new TH1F( GetTitle( DecodeIdx(idx) ), "", nbin, xmin, xmax );
-            //std::cout << "setxaxis01 decoded name : " << GetTitle(DecodeIdx(idx)) << "\n";
-            //std::cout << "setxaxis011decoded indexes : ";
-            //for ( auto v : DecodeIdx(idx) ) std::cout << v << ", ";
-            //std::cout << std::endl;
-            hists[idx]->Sumw2();
+            TH1F* h = new TH1F( get_title( decode_idx(idx) ), "", nbin, xmin, xmax );
+            h->Sumw2();
+            hists[idx] = h;
         }
     }
+    virtual void Fill( const std::vector<int>& idxs, float val, float weight=1, float nonvalue=1 ) override
+    { ( (TH1F*)hists[indexing(idxs)] )->Fill(val, weight); }
     TH1F* GetBin( const std::vector<int>& idxs )
-    { return hists[ indexing(idxs) ]; }
-    void Write( TDirectory* dir = nullptr )
-    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
-
-    std::vector<TH1F*> hists;
+    { return (TH1F*) hists[ indexing(idxs) ]; }
 };
-struct HistMgr2D : public HistMgr
+struct BinnedHist1D_BDT : public BinnedHist1D
 {
-    HistMgr2D( const char* nameTemplate, std::vector<int> maxIdxs ) : HistMgr(nameTemplate,maxIdxs)
-    {
-        hists.reserve( TotalSize() );
-        for ( int i=0; i< TotalSize(); ++i ) hists.emplace_back(nullptr);
-    };
-    //~HistMgr2D() { for ( auto h : hists ) delete h; }
+    BinnedHist1D_BDT( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist1D(MIdxs,nameTemplate)
+    { SetXaxis(100,-1.,1.); }
+};
+struct BinnedHist1D_Pt : public BinnedHist1D
+{
+    BinnedHist1D_Pt( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist1D(MIdxs,nameTemplate)
+    { SetXaxis(200,0.,2000.); }
+};
+struct BinnedHist1D_PtAll : public BinnedHist1D
+{
+    BinnedHist1D_PtAll( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist1D(MIdxs,nameTemplate)
+    { SetXaxis(2000,0.,2000.); }
+};
+struct BinnedHist1D_HLT : public BinnedHist1D
+{
+    BinnedHist1D_HLT( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist1D(MIdxs,nameTemplate)
+    { SetXaxis(2000,0.,2000.); }
+};
+
+
+struct BinnedHist2D : public BinnedHist
+{
+    BinnedHist2D( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist(MIdxs,nameTemplate)
+    { }
     void SetXYaxis( int nbinx, float xmin, float xmax, int nbiny, float ymin, float ymax )
     {
-        for ( int idx = 0; idx < TotalSize(); ++idx )
+        for ( int idx = 0; idx < total_size(); ++idx )
         {
-            hists[idx] = new TH2F( GetTitle( DecodeIdx(idx) ), "", nbinx, xmin, xmax, nbiny, ymin, ymax );
-            hists[idx]->Sumw2();
+            TH2F* h;
+            h = new TH2F( get_title( decode_idx(idx) ), "", nbinx, xmin, xmax, nbiny, ymin, ymax );
+            h->Sumw2();
+            hists[idx] = h;
         }
     }
     TH2F* GetBin( const std::vector<int>& idxs )
-    { return hists[ indexing(idxs) ]; }
-    void Write( TDirectory* dir = nullptr )
-    { if ( dir != nullptr ) dir->cd(); for ( auto h : hists ) h->Write(); }
-    std::vector<TH2F*> hists;
+    { return (TH2F*) hists[ indexing(idxs) ]; }
+    virtual void Fill( const std::vector<int>& idxs, float val, float val2, float weight=1 ) override
+    { ( (TH2F*)hists[indexing(idxs)] )->Fill(val,val2,weight); }
 };
-#endif // #ifdef MakeBinning_cxx
+
+struct BinnedHist2D_ISOvsBDT : public BinnedHist2D
+{
+    BinnedHist2D_ISOvsBDT( const std::vector<int>&MIdxs, const char* nameTemplate) : BinnedHist2D(MIdxs,nameTemplate)
+    { SetXYaxis(100,-1.,1., 30,0.,15.); }
+};
+struct BinnedHist2D_BTAGvsBDT : public BinnedHist2D
+{
+    BinnedHist2D_BTAGvsBDT( const std::vector<int>&MIdxs, const char* nameTemplate) : BinnedHist2D(MIdxs,nameTemplate)
+    { SetXYaxis(10,0.,1., 30,0.,15.); }
+}; 
+struct BinnedHist2D_secVTXMASSvsBDT : public BinnedHist2D
+{
+    BinnedHist2D_secVTXMASSvsBDT( const std::vector<int>& MIdxs, const char* nameTemplate) : BinnedHist2D(MIdxs,nameTemplate)
+    { SetXYaxis(100,0.,5., 30,0.,15.); }
+}; 
+
+
+#endif // #ifdef MakeHisto_cxx

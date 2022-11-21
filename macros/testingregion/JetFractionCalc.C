@@ -19,7 +19,7 @@ struct MCCutStrMgr
     MCCutStrMgr() : cut("1"),
     tag_fiducialRegion(0), tag_controlRegion(0)
     {BasicCuts();}
-    void BasicCuts() { cut+= TString(" && ") + TString("isMatched!=1&&jetPt>30.&&jetDeepCSVTags_c>-0.99&&jetID==1&&jetPUIDbit==7&&jetSubVtxMass!=0"); }
+    void BasicCuts() { cut+= TString(" && ") + TString("isMatched!=1&&recoPtCalib>30.&&jetDeepCSVTags_c>-0.99&&jetID==1&&jetPUIDbit==7&&jetSubVtxMass!=0"); }
     void AddCut(const char* c) { cut += TString(" && ") + TString(c); }
     void BarrelPhoton()
     { tag_fiducialRegion = BARREL; cut += TString(" && fabs(recoEta)<1.5&&sieieFull5x5<0.012&&HoverE<0.08"); }
@@ -164,7 +164,8 @@ struct FlavourHistMgr
 
 void JetFractionCalc()
 {
-    TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root");
+    //TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph.root");
+    TFile* fin = TFile::Open("/home/ltsai/ReceivedFile/GJet/latestsample/QCD_madgraph_loosedPhoSelection.root");
     TTree* tin = (TTree*) fin->Get("t");
 
     
@@ -175,12 +176,12 @@ void JetFractionCalc()
     allBarrel_SR.BarrelPhoton();
     allBarrel_SR.SignalRegion();
     FlavourHistMgr hAllEB_SR("all", allBarrel_SR, nArr, xArr);
-    tin->Draw( Form("jetPt >> %s",hAllEB_SR.bName()), allBarrel_SR.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEB_SR.cName()), allBarrel_SR.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEB_SR.lName()), allBarrel_SR.lFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEB_SR.bName()), allBarrel_SR.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEB_SR.cName()), allBarrel_SR.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEB_SR.lName()), allBarrel_SR.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEB_SR.bName()), allBarrel_SR.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEB_SR.cName()), allBarrel_SR.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEB_SR.lName()), allBarrel_SR.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEB_SR.bName()), allBarrel_SR.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEB_SR.cName()), allBarrel_SR.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEB_SR.lName()), allBarrel_SR.lFrac() );
     hAllEB_SR.FractionHistsCalc();
     //hAllEB_SR.SetLineColorWidthAll(39,4);
 
@@ -188,12 +189,12 @@ void JetFractionCalc()
     allBarrel_SB.BarrelPhoton();
     allBarrel_SB.DataSideband();
     FlavourHistMgr hAllEB_SB("all", allBarrel_SB, nArr, xArr);
-    tin->Draw( Form("jetPt >> %s",hAllEB_SB.bName()), allBarrel_SB.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEB_SB.cName()), allBarrel_SB.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEB_SB.lName()), allBarrel_SB.lFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEB_SB.bName()), allBarrel_SB.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEB_SB.cName()), allBarrel_SB.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEB_SB.lName()), allBarrel_SB.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEB_SB.bName()), allBarrel_SB.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEB_SB.cName()), allBarrel_SB.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEB_SB.lName()), allBarrel_SB.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEB_SB.bName()), allBarrel_SB.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEB_SB.cName()), allBarrel_SB.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEB_SB.lName()), allBarrel_SB.lFrac() );
     hAllEB_SB.FractionHistsCalc();
     //hAllEB_SB.SetLineColorWidthAll(49,4);
 
@@ -202,12 +203,12 @@ void JetFractionCalc()
     cutBarrel_SR.BarrelPhoton();
     cutBarrel_SR.SignalRegion();
     FlavourHistMgr hCutEB_SR("cut", cutBarrel_SR, nArr, xArr);
-    tin->Draw( Form("jetPt >> %s",hCutEB_SR.bName()), cutBarrel_SR.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEB_SR.cName()), cutBarrel_SR.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEB_SR.lName()), cutBarrel_SR.lFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEB_SR.bName()), cutBarrel_SR.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEB_SR.cName()), cutBarrel_SR.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEB_SR.lName()), cutBarrel_SR.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEB_SR.bName()), cutBarrel_SR.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEB_SR.cName()), cutBarrel_SR.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEB_SR.lName()), cutBarrel_SR.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEB_SR.bName()), cutBarrel_SR.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEB_SR.cName()), cutBarrel_SR.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEB_SR.lName()), cutBarrel_SR.lFrac() );
     hCutEB_SR.FractionHistsCalc();
     //hCutEB_SR.SetLineColorWidthAll( 4,2);
 
@@ -216,12 +217,12 @@ void JetFractionCalc()
     cutBarrel_SB.BarrelPhoton();
     cutBarrel_SB.DataSideband();
     FlavourHistMgr hCutEB_SB("cut", cutBarrel_SB, nArr, xArr);
-    tin->Draw( Form("jetPt >> %s",hCutEB_SB.bName()), cutBarrel_SB.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEB_SB.cName()), cutBarrel_SB.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEB_SB.lName()), cutBarrel_SB.lFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEB_SB.bName()), cutBarrel_SB.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEB_SB.cName()), cutBarrel_SB.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEB_SB.lName()), cutBarrel_SB.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEB_SB.bName()), cutBarrel_SB.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEB_SB.cName()), cutBarrel_SB.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEB_SB.lName()), cutBarrel_SB.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEB_SB.bName()), cutBarrel_SB.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEB_SB.cName()), cutBarrel_SB.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEB_SB.lName()), cutBarrel_SB.lFrac() );
     hCutEB_SB.FractionHistsCalc();
     //hCutEB_SB.SetLineColorWidthAll( 2,2);
 
@@ -229,12 +230,12 @@ void JetFractionCalc()
     allEndcap_SR.EndcapPhoton();
     allEndcap_SR.SignalRegion();
     FlavourHistMgr hAllEE_SR("all", allEndcap_SR, nArr, xArr);
-    //DrawingCheck( Form("jetPt >> %s",hAllEE_SR.bName()), allEndcap_SR.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEE_SR.cName()), allEndcap_SR.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEE_SR.lName()), allEndcap_SR.lFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEE_SR.bName()), allEndcap_SR.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEE_SR.cName()), allEndcap_SR.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEE_SR.lName()), allEndcap_SR.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEE_SR.bName()), allEndcap_SR.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEE_SR.cName()), allEndcap_SR.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEE_SR.lName()), allEndcap_SR.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEE_SR.bName()), allEndcap_SR.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEE_SR.cName()), allEndcap_SR.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEE_SR.lName()), allEndcap_SR.lFrac() );
     hAllEE_SR.FractionHistsCalc();
     //hAllEE_SR.SetLineColorWidthAll(39,4);
 
@@ -242,12 +243,12 @@ void JetFractionCalc()
     allEndcap_SB.EndcapPhoton();
     allEndcap_SB.DataSideband();
     FlavourHistMgr hAllEE_SB("all", allEndcap_SB, nArr, xArr);
-    //DrawingCheck( Form("jetPt >> %s",hAllEE_SB.bName()), allEndcap_SB.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEE_SB.cName()), allEndcap_SB.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hAllEE_SB.lName()), allEndcap_SB.lFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEE_SB.bName()), allEndcap_SB.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEE_SB.cName()), allEndcap_SB.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hAllEE_SB.lName()), allEndcap_SB.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEE_SB.bName()), allEndcap_SB.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEE_SB.cName()), allEndcap_SB.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hAllEE_SB.lName()), allEndcap_SB.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEE_SB.bName()), allEndcap_SB.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEE_SB.cName()), allEndcap_SB.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hAllEE_SB.lName()), allEndcap_SB.lFrac() );
     hAllEE_SB.FractionHistsCalc();
     //hAllEE_SB.SetLineColorWidthAll(49,4);
 
@@ -256,12 +257,12 @@ void JetFractionCalc()
     cutEndcap_SR.EndcapPhoton();
     cutEndcap_SR.SignalRegion();
     FlavourHistMgr hCutEE_SR("cut", cutEndcap_SR, nArr, xArr);
-    //DrawingCheck( Form("jetPt >> %s",hCutEE_SR.bName()), cutEndcap_SR.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEE_SR.cName()), cutEndcap_SR.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEE_SR.lName()), cutEndcap_SR.lFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEE_SR.bName()), cutEndcap_SR.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEE_SR.cName()), cutEndcap_SR.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEE_SR.lName()), cutEndcap_SR.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEE_SR.bName()), cutEndcap_SR.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEE_SR.cName()), cutEndcap_SR.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEE_SR.lName()), cutEndcap_SR.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEE_SR.bName()), cutEndcap_SR.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEE_SR.cName()), cutEndcap_SR.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEE_SR.lName()), cutEndcap_SR.lFrac() );
     hCutEE_SR.FractionHistsCalc();
     //hCutEE_SR.SetLineColorWidthAll( 4,2);
 
@@ -270,12 +271,12 @@ void JetFractionCalc()
     cutEndcap_SB.EndcapPhoton();
     cutEndcap_SB.DataSideband();
     FlavourHistMgr hCutEE_SB("cut", cutEndcap_SB, nArr, xArr);
-    //DrawingCheck( Form("jetPt >> %s",hCutEE_SB.bName()), cutEndcap_SB.bFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEE_SB.cName()), cutEndcap_SB.cFrac() );
-    //DrawingCheck( Form("jetPt >> %s",hCutEE_SB.lName()), cutEndcap_SB.lFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEE_SB.bName()), cutEndcap_SB.bFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEE_SB.cName()), cutEndcap_SB.cFrac() );
-    tin->Draw( Form("jetPt >> %s",hCutEE_SB.lName()), cutEndcap_SB.lFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEE_SB.bName()), cutEndcap_SB.bFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEE_SB.cName()), cutEndcap_SB.cFrac() );
+    //DrawingCheck( Form("recoPtCalib >> %s",hCutEE_SB.lName()), cutEndcap_SB.lFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEE_SB.bName()), cutEndcap_SB.bFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEE_SB.cName()), cutEndcap_SB.cFrac() );
+    tin->Draw( Form("recoPtCalib >> %s",hCutEE_SB.lName()), cutEndcap_SB.lFrac() );
     hCutEE_SB.FractionHistsCalc();
     //hCutEE_SB.SetLineColorWidthAll( 2,2);
 

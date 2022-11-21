@@ -168,11 +168,14 @@ def GetArg_phoeta(argv):
     return int(argv[1])
 def GetArg_jeteta(argv):
     return int(argv[2])
-
+def GetArg_isFake(argv):
+    if len(argv) < 4: return False
+    if argv[3].lower() == 'false': return False
+    if int(argv[3]) == 0: return False
+    return True
 if __name__ == '__main__':
     import sys
-    isFake=False
-    if isFake:
+    if GetArg_isFake(sys.argv): # fake feature is no implemented
         sigFragFile=ROOT.TFile('isovsbdt_fragments.sig.root')
         bkgFragFile=ROOT.TFile('isovsbdt_fragments.bkg.root')
 
@@ -180,7 +183,7 @@ if __name__ == '__main__':
     mylog=LogMgr.GetLogger(__name__)
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     infile=ROOT.TFile.Open('isovsbdt_template.root')
-    #space=MyWorkspace()
+
     space=FittingWorkspace()
 
     space.factory('BDTscore[-1.,1.]')

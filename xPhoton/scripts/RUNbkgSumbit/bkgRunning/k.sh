@@ -1,0 +1,9 @@
+hadd bkgMC_QCD_HT1000to1500*.root  crab_crab_bkgMC_QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT100to200*.root    crab_crab_bkgMC_QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT1500to2000*.root  crab_crab_bkgMC_QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT2000toInf*.root   crab_crab_bkgMC_QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT200to300*.root    crab_crab_bkgMC_QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT300to500*.root    crab_crab_bkgMC_QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT500to700*.root    crab_crab_bkgMC_QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT50to100*.root     crab_crab_bkgMC_QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root
+hadd bkgMC_QCD_HT700to1000*.root   crab_crab_bkgMC_QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM*/output*.root

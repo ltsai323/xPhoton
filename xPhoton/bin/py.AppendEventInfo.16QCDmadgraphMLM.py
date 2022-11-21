@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 arg_summaryfile='../data/summaryJson/summary_bkgMC_madgraph.json'
-arg_Reweig_file='../data/Reweighing/GenHT_QCDMadgraphMLM/AppendEventInfo.json'
+arg_Reweig_file='../data/Reweighing/GenHT_QCDMadgraphMLM/AppendEventInfoPythonHelper.json'
 arg_dataera=2016
 arg_isQCD=True
 # modified at 221116. PtHat signal > PtHat PU cut selected.

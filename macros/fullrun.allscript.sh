@@ -15,7 +15,7 @@ EOF
 /bin/rm *.tar
 
 
-sh fullrun.step2.sh $PWD/fullrun.inputfiles.conf
+#sh fullrun.step2.sh $PWD/fullrun.inputfiles.conf
 #sh testrun.step2.oldDATA.sh $PWD/fullrun.inputfiles.conf
 sh fullrun.step3.sh
 

@@ -15,7 +15,7 @@ namespace pt = boost::property_tree;
 //    input data / sigMC / bkgMC and return binning histogram with all and sideband BDT distribution.
 //    which all distribution is 2D histogram. But sideband is 1D.
 
-const bool useNewSample = false;
+const bool useNewSample = true;
 
 
 struct JsonInfo
