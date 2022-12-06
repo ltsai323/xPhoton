@@ -160,10 +160,9 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 	
 
-        float btag_evtweight_central     = eventweight * bTagWeight_Central(jetflvBin);
-        float btag_evtweight_up  = eventweight * bTagWeight_Up(jetflvBin);
-        float btag_evtweight_down= eventweight * bTagWeight_Down(jetflvBin);
-              btag_evtweight_up  = 1.;
+        float btag_evtweight_central    = eventweight * bTagWeight_Central(jetflvBin);
+        float btag_evtweight_up         = eventweight * bTagWeight_Up(jetflvBin);
+        float btag_evtweight_down       = eventweight * bTagWeight_Down(jetflvBin);
 
 
 
@@ -460,6 +459,7 @@ Int_t MakeHisto::triggerbit( const std::string& dataera, Int_t ptbin){
 }
 Int_t MakeHisto::JetFlavourBin( int jethadflvr )
 {
+    if (!IsMC() ) return 0;
     // 2 : b // 1 : c // 0 : light
     if     (fabs(jethadflvr)==5) return 2;
     else if(fabs(jethadflvr)==4) return 1;
