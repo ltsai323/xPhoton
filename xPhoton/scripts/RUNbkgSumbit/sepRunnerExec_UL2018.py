@@ -20,5 +20,5 @@ if __name__ == '__main__':
     useRemote='True' if 'root://' in f.read() else 'False' # read first line
     f.close()
 
-    print( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+    print(     'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
     os.system( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )

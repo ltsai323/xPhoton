@@ -10,7 +10,7 @@
 #include "xPhoton/xPhoton/interface/untuplizer.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 
-        
+#define MVA_INVALID -999
 // pre-selection of photon.
 Int_t PhotonPreselection(TreeReader &data, Int_t ipho, Bool_t eleVeto=kTRUE);
 
@@ -82,6 +82,7 @@ class PhotonMVACalculator
         // s13, s25 is disabled
         // PFPhoIso, PFChIso and PFChIsoWorst are disabled
         bool isEE;
+        bool _isValid;
 };
 //class PhotonMVACalculator_fromxPhoton : public PhotonMVACalculator
 

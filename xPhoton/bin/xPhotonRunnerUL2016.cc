@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
     xPhotonHFJet(
             GetFileName(argc,argv),
             GetOption  (argc,argv),
-            "UL2016"
+            "UL2016PostVFP"
+            //"UL2016PreVFP"
             );
 }

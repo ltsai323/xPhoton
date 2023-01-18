@@ -23,9 +23,11 @@ std::vector<const char*> validEra = {
     "2016ReReco",
     "2017ReReco",
     "2018ReReco",
-    "UL2016"    ,
-    "UL2017"    ,
-    "UL2018"    ,
+    // UL2016 is invalid
+    "UL2016PostVFP",
+    "UL2016PreVFP",
+    "UL2017",
+    "UL2018"
 };
 
 void PrintHelp()

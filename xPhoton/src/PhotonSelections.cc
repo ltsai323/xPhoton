@@ -53,12 +53,11 @@ bool passSelection_PhotonKinematicParameters( float pt, float eta )
 }
 
 PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra_ ) :
-        _data(data_), _dataEra(dataEra_)
+        _data(data_), _dataEra(dataEra_), _isValid(true)
 {
     // 0 : EB, 1 : EE
     for ( int iBE = 0; iBE < 2; ++iBE )
     {
-        //if (!tmvaReader[iBE]) {
         tmvaReader[iBE] = new TMVA::Reader("!Color:Silent");
 
 
@@ -83,7 +82,7 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
 
         }
         else
-        if ( dataEra_ == "UL2018" )
+        // if ( dataEra_ == "UL2018" )
         {
             tmvaReader[iBE]->AddVariable("r9Full5x5", &phoR9Full5x5);
             tmvaReader[iBE]->AddVariable( "sieieFull5x5", &sieieFull5x5 );
@@ -106,8 +105,11 @@ PhotonMVACalculator::PhotonMVACalculator( TreeReader* data_, std::string dataEra
 
 
 
-        std::cout << "PhotonMVAcalculator : using " << ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) << std::endl;
-        tmvaReader[iBE]->BookMVA("BDT", ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra) );
+        const char* inputfile = ExternalFilesMgr::xmlFile_MVAweight(iBE, _dataEra);
+        if ( inputfile == nullptr )
+        { std::cout << "PhotonMVAcalculator : no mva file input! Disable mva\n"; _isValid = false; return; }
+        std::cout << "PhotonMVAcalculator : using " << inputfile << std::endl;
+        tmvaReader[iBE]->BookMVA("BDT", inputfile );
     }
 }
 PhotonMVACalculator::~PhotonMVACalculator()
@@ -119,6 +121,7 @@ PhotonMVACalculator::~PhotonMVACalculator()
 
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapter* SScorr_ )
 {
+    if ( _isValid == false ) return MVA_INVALID;
     LoadingVars( iPho_);
     ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr_, _data, iPho_);
     SScorr_->CalculateCorrections();
@@ -134,6 +137,7 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, ShowerShapeCorrectionAdapt
 }
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, TGraph* tgr[8] )
 {
+    if ( _isValid == false ) return MVA_INVALID;
     LoadingVars( iPho_);
     ShowerShapeCorrection( tgr );
 
@@ -141,6 +145,7 @@ float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_, TGraph* tgr[8] )
 }
 float PhotonMVACalculator::GetMVA_noIso( Int_t iPho_ )
 {
+    if ( _isValid == false ) return MVA_INVALID;
     LoadingVars( iPho_);
     return tmvaReader[isEE]->EvaluateMVA("BDT");
 }

@@ -5,21 +5,25 @@
 <use name="ShowerShapeCorrection/CQR_framework"/>
 
 <export>
-    <bin name="exec_ZtoMuMuGRunner"          file="ZtoMuMuGRunner.cc"/>
-    <bin name="exec_xElectronRunner"         file="xElectronsRunner.cc"/>
-    <bin name="exec_xPhotonRunner"           file="xPhotonRunner.cc"/>
-    <bin name="exec_xPhotonRunnerGeneral"    file="xPhotonRunnerGeneral.cc"/>
-    <bin name="exec_xPhotonRunner2016ReReco" file="xPhotonRunner2016ReReco.cc"/>
-    <bin name="exec_xPhotonRunner2017ReReco" file="xPhotonRunner2017ReReco.cc"/>
-    <bin name="exec_xPhotonRunner2018ReReco" file="xPhotonRunner2018ReReco.cc"/>
-    <bin name="exec_xPhotonRunnerUL2016"     file="xPhotonRunnerUL2016.cc"/>
-    <bin name="exec_xPhotonRunnerUL2017"     file="xPhotonRunnerUL2017.cc"/>
-    <bin name="exec_xPhotonRunnerUL2018"     file="xPhotonRunnerUL2018.cc"/>
-    <bin name="exec_AppendEventInfo"         file="AppendEventInfo.cc"/>
-    <bin name="exec_AppendBTagCalibration"   file="AppendBTagCalibration.cc"/>
-    <bin name="exec_xPhotonInfoUpdate"       file="xPhotonInfoUpdate.cc"/>
-    <bin name="exec_xPhotonBinning"          file="xPhotonBinning.cc"/>
-    <bin name="exec_xQCDRunner2016"          file="xQCDRunner_2016ReReco.cc"/>
+    <bin name="exec_ZtoMuMuGRunner"             file="ZtoMuMuGRunner.cc"/>
+    <bin name="exec_xElectronRunner"            file="xElectronsRunner.cc"/>
+    <bin name="exec_xPhotonRunner"              file="xPhotonRunner.cc"/>
+    <bin name="exec_xPhotonRunnerGeneral"       file="xPhotonRunnerGeneral.cc"/>
+    <bin name="exec_xPhotonRunner2016ReReco"    file="xPhotonRunner2016ReReco.cc"/>
+    <bin name="exec_xPhotonRunner2017ReReco"    file="xPhotonRunner2017ReReco.cc"/>
+    <bin name="exec_xPhotonRunner2018ReReco"    file="xPhotonRunner2018ReReco.cc"/>
+    <bin name="exec_xPhotonRunnerUL2016PreVFP"  file="xPhotonRunnerUL2016PreVFP.cc"/>
+    <bin name="exec_xPhotonRunnerUL2016PostVFP" file="xPhotonRunnerUL2016PostVFP.cc"/>
+    <bin name="exec_xPhotonRunnerUL2017"        file="xPhotonRunnerUL2017.cc"/>
+    <bin name="exec_xPhotonRunnerUL2018"        file="xPhotonRunnerUL2018.cc"/>
+    <bin name="exec_AppendEventInfo"            file="AppendEventInfo.cc"/>
+    <bin name="exec_AppendBTagCalibration"      file="AppendBTagCalibration.cc"/>
+    <bin name="exec_xPhotonInfoUpdate"          file="xPhotonInfoUpdate.cc"/>
+    <bin name="exec_xPhotonBinning"             file="xPhotonBinning.cc"/>
+    <bin name="exec_xQCDRunner2016"             file="xQCDRunner_2016ReReco.cc"/>
+    <bin name="exec_xQCDRunnerUL2018"           file="xQCDRunner_UL2018.cc"/>
+
+
 
     <bin name="xQCD2nd_ReweightChecking_Madgraph"
         file="xQCD2nd_ReweightChecking_Madgraph.cc"/>
