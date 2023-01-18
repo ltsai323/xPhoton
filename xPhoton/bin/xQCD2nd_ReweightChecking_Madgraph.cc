@@ -88,6 +88,7 @@ struct MyTreeAccess
         leadingJetPartonID (0),
         leadingJetGenPartonID (0),
         genHT(0),
+        genHT_pthatDef(0),
         nLHE(0),
         puweight(0.),
         MET(0),
@@ -106,6 +107,7 @@ struct MyTreeAccess
         tin->SetBranchAddress("leadingJetPartonID", &leadingJetPartonID);
         tin->SetBranchAddress("leadingJetGenPartonID", &leadingJetGenPartonID);
         tin->SetBranchAddress("GenHT", &genHT);
+        tin->SetBranchAddress("genHT_pthatDef", &genHT_pthatDef);
         tin->SetBranchAddress("lheNum", &nLHE);
         //tin->SetBranchAddress("puwei", &puweight); // asdf temporarlly disabled.
         tin->SetBranchAddress("pthat_PU", &pthat_PU);
@@ -131,6 +133,7 @@ public:
     int leadingJetPartonID;
     int leadingJetGenPartonID;
     float genHT;
+    float genHT_pthatDef;
     int nLHE;
     float puweight;
     float MET;
@@ -145,6 +148,7 @@ struct TreeContent
         t->Branch("jetPt", &jetPt, "jetPt/F");
         t->Branch("lhePt", &lhePt, "lhePt/F");
         t->Branch("genHT", &genHT, "genHT/F");
+        t->Branch("genHT_pthatDef", &genHT_pthatDef, "genHT_pthatDef/F");
         t->Branch("mcweight", &mcweight, "mcweight/F");
         t->Branch("puweight", &puweight, "puweight/F");
         t->Branch("MET", &MET, "MET/F");
@@ -160,7 +164,7 @@ struct TreeContent
         t->Branch("jetPtBin", &jetPtBin, "jetPtBin/I");
         t->Branch("lhePtBin", &lhePtBin, "lhePtBin/I");
     }
-    float jetRawE, jetPt, lhePt, genHT, mcweight, puweight, maxPUhat, MET;
+    float jetRawE, jetPt, lhePt, genHT, genHT_pthatDef, mcweight, puweight, maxPUhat, MET;
     int nLHE, hadFlvr, partonID, genpartonID, lhePID, lheIdx, lheIdxInv, jetPtBin, lhePtBin;
 };
 void AnalyzeFile( const char* outtag, const char* ifilename, float assignedmcweight )
@@ -175,6 +179,7 @@ void AnalyzeFile( const char* outtag, const char* ifilename, float assignedmcwei
     TreeContent o;
     o.Register(tout);
     
+    printf("total entries : %10lld\n", data.GetEntries());
     for ( auto ievtInv = data.GetEntries(); ievtInv != 0; --ievtInv )
     {
         data.GetEntry(ievtInv-1);
@@ -211,6 +216,7 @@ void AnalyzeFile( const char* outtag, const char* ifilename, float assignedmcwei
         o.jetPt = data.leadingJetPt;
         o.lhePt = lhePt;
         o.genHT = data.genHT;
+        o.genHT_pthatDef = data.genHT_pthatDef;
         o.mcweight = assignedmcweight;
         o.puweight = data.puweight;
         o.MET = data.MET;
@@ -234,9 +240,44 @@ void AnalyzeFile( const char* outtag, const char* ifilename, float assignedmcwei
     return;
 }
 
-int main()
+void PrintHelp()
 {
+    fprintf(stderr, "======================================================\n");
+    fprintf(stderr, "== Input tree and store some specific branches. And ==\n");
+    fprintf(stderr, "== make a new branch by looping event. For this     ==\n");
+    fprintf(stderr, "== code, select maximum value of PU pt hat in event ==\n");
+    fprintf(stderr, "==   arg1: output tag.                              ==\n");
+    fprintf(stderr, "==   arg2: input filename.                          ==\n");
+    fprintf(stderr, "==   arg3: integrated luminosity weight. (mcweight) ==\n");
+    fprintf(stderr, "==         (=xs weight * event pu weight...)        ==\n");
+    fprintf(stderr, "======================================================\n");
+    throw;
+}
+const char* GetArg_OutTag(int argc, const char* argv[])
+{
+    if ( argc < 1+1 ) PrintHelp();
+    return argv[1];
+}
+const char* GetArg_InFile(int argc, const char* argv[])
+{
+    if ( argc < 2+1 ) PrintHelp();
+    return argv[2];
+}
+double GetArg_IntegratedLuminosityWeight(int argc, const char* argv[])
+{
+    if ( argc < 3+1 ) PrintHelp();
+    return std::stod(argv[3]);
+}
 
+int main(int argc, const char* argv[])
+{
+    const char* ifile = GetArg_InFile(argc,argv);
+    const char* tag = GetArg_OutTag(argc,argv);
+    double filled_mcweight = GetArg_IntegratedLuminosityWeight(argc,argv);
+
+    AnalyzeFile(tag, ifile, filled_mcweight);
+    return 0;
+    /*
     // tag, input_file, xs weight
     AnalyzeFile("QCD_HT50to100",    "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"              , 2.1248e+6);
     AnalyzeFile("QCD_HT100to200",   "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"             , 12126.6);
@@ -247,4 +288,5 @@ int main()
     AnalyzeFile("QCD_HT1000to1500", "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"           , 2.86964);
     AnalyzeFile("QCD_HT1500to2000", "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"           , 0.365085);
     AnalyzeFile("QCD_HT2000toInf",  "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"            , 0.155885);
+    */
 }

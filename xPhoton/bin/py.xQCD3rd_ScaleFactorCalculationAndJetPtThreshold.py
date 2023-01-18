@@ -40,7 +40,7 @@ class InputConnector(object):
             LOG('InputConnector::Failed to find HT %d in HTranges. Terminate the program' % leftHT)
             exit()
         self._lHT = leftHT
-        self._if = fileNAME
+        self._if = os.getcwd()+'/'+fileNAME # translate to absolute path
         self._PD = PD_DICT[leftHT]
         idx=InputConnector.HTranges.index(leftHT)+1
         tagL='%04d'%leftHT
@@ -80,8 +80,8 @@ if __name__ == "__main__":
     LOG('executing path : %s'%destFolder)
     os.chdir(destFolder)
     for input_info in inputs:
-        LOG('%s %s %d'%( executable, input_info.FileName, input_info.HT))
-        #os.system('%s %s %d'%( executable, input_info.FileName, input_info.HT))
+        #LOG('%s %s %d'%( executable, input_info.FileName, input_info.HT))
+        os.system('%s %s %d'%( executable, input_info.FileName, input_info.HT))
 
     oDict={}
     for input_info in inputs:
