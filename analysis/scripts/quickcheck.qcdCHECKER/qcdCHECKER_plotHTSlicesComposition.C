@@ -75,15 +75,16 @@ const char* slicename[NMCSEP] = { "50To100", "100To200", "200To300", "300To500",
 
 void qcdCHECKER_plotHTSlicesComposition()
 {
-    //TFile* ifile = TFile::Open("qcdCHECKER_interestingHIST_C.root");
-    TFile* ifile = TFile::Open("qcdCHECKER_histTOcheckCUTs_C.root");
+    TFile* ifile = TFile::Open("qcdCHECKER_interestingHIST_C.root");
+    //TFile* ifile = TFile::Open("qcdCHECKER_histTOcheckCUTs_C.root");
     TCanvas* canv = new TCanvas("canv", "", 1000,1000);
 
     std::list<TH1*> mcslices_hists;
     for ( int iMC = 0; iMC < NMCSEP; ++iMC )
     {
         //const char* histnameTEMPLATE = Form("%s_%s","allSample/weight_ptbin%d", Form("file%d",iMC));
-        const char* histnameTEMPLATE = Form("%s_%s","noLargePU/weight_ptbin%d", Form("file%d",iMC));
+        const char* histnameTEMPLATE = Form("%s_%s","allsample/weight_ptbin%d", Form("file%d",iMC));
+        //const char* histnameTEMPLATE = Form("%s_%s","noLargePU/weight_ptbin%d", Form("file%d",iMC));
         mcslices_hists.push_back( histFactory_MergePtBinning(ifile,histnameTEMPLATE) );
         SetHistProperty(mcslices_hists.back(), colors[iMC], Form("slice_%d",iMC), slicename[iMC]);
 

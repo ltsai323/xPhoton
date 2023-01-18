@@ -79,13 +79,16 @@ void qcdCHECKER_plotQuarkComposition()
 
     std::list<TH1*> quark_hists;
     // load b
-    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/b_yield_file%d") );
+    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "allsample/b_yield_file%d") );
+    //quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/b_yield_file%d") );
     SetHistProperty(quark_hists.back(), colors[0], "bYield", "b quark");
     // load c
-    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/c_yield_file%d") );
+    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "allsample/c_yield_file%d") );
+    //quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/c_yield_file%d") );
     SetHistProperty(quark_hists.back(), colors[1], "cYield", "c quark");
     // load L
-    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/L_yield_file%d") );
+    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "allsample/L_yield_file%d") );
+    //quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/L_yield_file%d") );
     SetHistProperty(quark_hists.back(), colors[2], "LYield", "light quark");
 
     normalization_eachBinBackToOne(quark_hists);

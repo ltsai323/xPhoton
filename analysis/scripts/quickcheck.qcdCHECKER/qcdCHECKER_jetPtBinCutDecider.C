@@ -113,7 +113,7 @@ TH1* FileStorage::gethistfrom(const char* ifilename, const char* tag)
 
 void qcdCHECKER_jetPtBinCutDecider()
 {
-    EventSelectionGenerater puVeto("jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0");
+    EventSelectionGenerater puVeto("jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0");
 
     FileStorage newfile("_qcdCHECKER_jetPtBinCutDecider_C.root");
     newfile.UsedCut(&puVeto);

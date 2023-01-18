@@ -74,7 +74,7 @@ void normalization_eachBinBackToOne(std::vector<TH1*>& hists)
 
 
 enum quarks { b,c,L, totNum };
-std::vector<TH1*> GetQuarkCompositions(TDirectoryFile* ifile)
+std::vector<TH1*> GetQuarkCompositions(TDirectoryFile* ifile, bool normalizedHists = false)
 {
     std::vector<TH1*> quark_hists(quarks::totNum,nullptr);
     // load b
@@ -87,7 +87,7 @@ std::vector<TH1*> GetQuarkCompositions(TDirectoryFile* ifile)
     quark_hists[quarks::L] = histFactory_MergeMCSlices(ifile, "L_yield_file%d");
     SetHistProperty(quark_hists[quarks::L], colors[2], "LYield", "light quark");
 
-    normalization_eachBinBackToOne(quark_hists);
+    if ( normalizedHists ) normalization_eachBinBackToOne(quark_hists);
 
     return quark_hists;
 }
@@ -116,33 +116,37 @@ class MyCanvas : public TCanvas
 };
 void qcdCHECKER_plotQuarkCompositionSep_differentSelection()
 {
-    TFile* ifile = TFile::Open("qcdCHECKER_histTOcheckCUTs_C.root");
+    //TFile* ifile = TFile::Open("qcdCHECKER_histTOcheckCUTs_C.root");
+    TFile* ifile = TFile::Open("qcdCHECKER_interestingHIST_C.root");
     TCanvas* canv = new TCanvas("canv", "", 1000,1000);
 
     std::list< std::pair<const char*, std::vector<TH1*>> > recordedHists;
     
     TDirectoryFile* dir = nullptr;
     const char* dirname = nullptr;
+    bool normalizedHists = true;
 
     dirname = Form("allSample");
     dir = (TDirectoryFile*) ifile->Get(dirname);
-    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir)) );
+    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir, normalizedHists) ));
 
     dirname = Form("noLargePU");
     dir = (TDirectoryFile*) ifile->Get(dirname);
-    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir)) );
+    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir, normalizedHists) ));
 
+    /*
     dirname = Form("PUvetoAndPtBintenTOminusFIVE");
     dir = (TDirectoryFile*) ifile->Get(dirname);
-    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir)) );
+    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir, normalizedHists) ));
 
     dirname = Form("PUvetoAndPtBin100");
     dir = (TDirectoryFile*) ifile->Get(dirname);
-    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir)) );
+    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir, normalizedHists)) );
 
     dirname = Form("PUvetoAndPtBin10");
     dir = (TDirectoryFile*) ifile->Get(dirname);
-    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir)) );
+    recordedHists.push_back( std::make_pair(dirname,GetQuarkCompositions(dir, normalizedHists)) );
+    */
 
     delete canv;
 
@@ -167,7 +171,7 @@ void qcdCHECKER_plotQuarkCompositionSep_differentSelection()
 
             hist->GetXaxis()->SetTitleSize( hist->GetYaxis()->GetTitleSize() );
             hist->GetXaxis()->SetTitleOffset(1.1);
-            std::cout << hist->GetXaxis()->GetTitleOffset() << std::endl;
+            //std::cout << hist->GetXaxis()->GetTitleOffset() << std::endl;
         }
         idx++;
 
@@ -193,16 +197,19 @@ void qcdCHECKER_plotQuarkCompositionSep_differentSelection()
 
     c1->cd(); leg1->Draw();
     c1->SetLogx();
+    //c1->SetLogy();
     c1->RedrawAxis();
     c1->SaveAs("qcdCHECKER_plotQuarkCompositionSep_differentSelection_C_b.pdf");
 
     c2->cd(); leg2->Draw();
     c2->SetLogx();
+    //c2->SetLogy();
     c2->RedrawAxis();
     c2->SaveAs("qcdCHECKER_plotQuarkCompositionSep_differentSelection_C_c.pdf");
 
     c3->cd(); leg3->Draw();
     c3->SetLogx();
+    //c3->SetLogy();
     c3->RedrawAxis();
     c3->SaveAs("qcdCHECKER_plotQuarkCompositionSep_differentSelection_C_L.pdf");
 
