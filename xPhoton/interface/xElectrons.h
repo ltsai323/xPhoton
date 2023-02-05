@@ -42,7 +42,6 @@ struct rec_Electron
         esRR,
         esEn,
         mva,
-        mva_nocorr,
         officalIDmva,
         r9Full5x5,
         sieieFull5x5,
@@ -51,6 +50,7 @@ struct rec_Electron
         s4Full5x5,
         esEnergyOverSCRawEnergy;
     Float_t
+        mva_corrected            ,
         scEtaWidth_corrected     ,
         scPhiWidth_corrected     ,
         r9Full5x5_corrected      ,
@@ -127,8 +127,8 @@ void ClearStruct(T* obj) { memset( obj, 0x00, sizeof(T) ); }
 
 
 void xElectrons(
-        std::vector<std::string> pathes,
-        char oname[200]);
+        const std::vector<std::string>& pathes,
+        const std::string& dataEra );
 
-void xElectrons(std::string ipath, int outID);
+void xElectrons(const std::vector<std::string>& ipath, int outID, const std::string& dataEra);
 #endif

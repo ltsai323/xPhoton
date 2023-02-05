@@ -210,8 +210,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
     LOG_DEBUG("hi01 input dataera : %s and it is NOT equal to UL2016 ? %d", dataEra.c_str(), dataEra != "UL2016");
     TTree *outtree_;
-    ShowerShapeCorrectionAdapter* SScorr = ( (dataEra != "UL2016PreVFP") && (dataEra != "UL2016PostVFP") ) ?
-        new ShowerShapeCorrectionAdapter( dataEra, data.HasMC() ) : nullptr;
+    ShowerShapeCorrectionAdapter* SScorr = new ShowerShapeCorrectionAdapter( dataEra, data.HasMC() );
     LOG_DEBUG("hi02");
 
 

@@ -14,8 +14,9 @@
 
 static histMgr hists;
 void xElectrons(
-        std::vector<std::string> pathes,
-        char oname[200] )
+        const std::vector<std::string>& pathes,
+        char oname[200],
+        const std::string& dataEra )
 {
     TreeReader data(pathes);
 
@@ -82,8 +83,12 @@ void xElectrons(
     // 2 : number of gen Zee, with all electrons are reco matched.
     hists.Create("numGenZee", 4, 0., 4.);
 
-    std::string dataEra = "UL2018";
-    ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
+
+    //std::string dataEra = "UL2018";
+    //ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
+    LOG_DEBUG("inptu dataera = %s",dataEra.c_str());
+    ShowerShapeCorrectionAdapter* SScorr = ( (dataEra != "UL2016PreVFP") && (dataEra != "UL2016PostVFP") ) ?
+        new ShowerShapeCorrectionAdapter( dataEra, data.HasMC() ) : nullptr;
     PhotonMVACalculator mvaloader( &data, dataEra );
     //TFile* f_showershapecorrection;
     //TGraph *tgr[8];
@@ -203,6 +208,7 @@ void xElectrons(
         ClearStruct(&record_Z);
         ClearStruct(&record_evt);
 
+        LOG_DEBUG("evt fill status 01");
         { // fillin tag electron information
             int recoIdx = tag_electron.idx();
             rec_Electron& eleRecording = record_electrons[0];
@@ -224,7 +230,6 @@ void xElectrons(
             eleRecording.esEn         = data.GetPtrFloat("eleESEnP1")[recoIdx]+
                                         data.GetPtrFloat("eleESEnP2")[recoIdx];
             eleRecording.mva          = 0; //data.GetPtrFloat("")[recoIdx];
-            eleRecording.mva_nocorr   = 0; //data.GetPtrFloat("")[recoIdx];
             eleRecording.officalIDmva = data.GetPtrFloat("eleIDMVAIso")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("eleR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("eleSigmaIEtaIEtaFull5x5")[recoIdx];
@@ -235,10 +240,22 @@ void xElectrons(
 
             eleRecording.isMatched    = tag_electron.genidx() >= 0;
 
+            eleRecording.mva_corrected= 0; //data.GetPtrFloat("")[recoIdx];
+            eleRecording.r9Full5x5_corrected               = 0;
+            eleRecording.s4Full5x5_corrected               = 0;
+            eleRecording.sieieFull5x5_corrected            = 0;
+            eleRecording.sieipFull5x5_corrected            = 0;
+            eleRecording.scEtaWidth_corrected              = 0;
+            eleRecording.scPhiWidth_corrected              = 0;
+            eleRecording.esEnergyOverSCRawEnergy_corrected = 0;
         }
+        LOG_DEBUG("evt fill status 02");
         { // fill in probe electron information
+        LOG_DEBUG("evt fill status 02.1");
             int recoIdx = probe_electron.idx();
+        LOG_DEBUG("evt fill status 02.2");
             rec_Electron& eleRecording = record_electrons[1];
+        LOG_DEBUG("evt fill status 02.3");
                     
             eleRecording.recoPt       = data.GetPtrFloat("phoEt")[recoIdx];
             eleRecording.recoEta      = data.GetPtrFloat("phoEta")[recoIdx];
@@ -256,10 +273,9 @@ void xElectrons(
             eleRecording.esRR         = data.GetPtrFloat("phoESEffSigmaRR")[recoIdx];
             eleRecording.esEn         = data.GetPtrFloat("phoESEnP1")[recoIdx]+
                                         data.GetPtrFloat("phoESEnP2")[recoIdx];
-            //eleRecording.mva          = select_photon_mvanoIso(data, recoIdx, tgr);
-            //eleRecording.mva_nocorr   = select_photon_mvanoIso(data, recoIdx, nullptr);
-            eleRecording.mva = mvaloader.GetMVA_noIso(recoIdx, &SScorr);
-            eleRecording.mva_nocorr = mvaloader.GetMVA_noIso(recoIdx);
+        LOG_DEBUG("evt fill status 02.4");
+            eleRecording.mva = mvaloader.GetMVA_noIso(recoIdx);
+        LOG_DEBUG("evt fill status 02.5");
             eleRecording.officalIDmva = data.GetPtrFloat("phoIDMVA")[recoIdx];
             eleRecording.r9Full5x5    = data.GetPtrFloat("phoR9Full5x5")[recoIdx];
             eleRecording.sieieFull5x5 = data.GetPtrFloat("phoSigmaIEtaIEtaFull5x5")[recoIdx];
@@ -273,7 +289,9 @@ void xElectrons(
             eleRecording.firedTrgsL   = data.GetPtrLong64("phoFiredSingleTrgs")[recoIdx];
             eleRecording.idbit        = ((UShort_t*)data.GetPtrShort("phoIDbit"))[recoIdx];
 
-            if ( data.HasMC() )
+        LOG_DEBUG("evt fill status 02.6");
+            LOG_DEBUG("ss corr is null? %d", SScorr == nullptr);
+            if ( data.HasMC() && SScorr != nullptr )
             {
                 int genIdx = probe_electron.genidx();
             eleRecording.mcE          = genIdx < 0 ? 0 : data.GetPtrFloat("mcE")[genIdx];
@@ -282,20 +300,22 @@ void xElectrons(
             eleRecording.mcPhi        = genIdx < 0 ? 0 : data.GetPtrFloat("mcPhi")[genIdx];
             
             
-                if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(&SScorr, &data, recoIdx) )
+                if (!ShowerShapeCorrectionParameters_ggNtuple::isSameEvent(SScorr, &data, recoIdx) )
                 {
-                    ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, recoIdx);
-                    SScorr.CalculateCorrections();
+                    ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr, &data, recoIdx);
+                    SScorr->CalculateCorrections();
                 }
-            eleRecording.r9Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
-            eleRecording.s4Full5x5_corrected               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
-            eleRecording.sieieFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
-            eleRecording.sieipFull5x5_corrected            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
-            eleRecording.scEtaWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
-            eleRecording.scPhiWidth_corrected              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
-            eleRecording.esEnergyOverSCRawEnergy_corrected = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+            eleRecording.mva_corrected = mvaloader.GetMVA_noIso(recoIdx, SScorr);
+            eleRecording.r9Full5x5_corrected               = SScorr->Corrected(ShowerShapeCorrectionAdapter::r9                     );
+            eleRecording.s4Full5x5_corrected               = SScorr->Corrected(ShowerShapeCorrectionAdapter::s4                     );
+            eleRecording.sieieFull5x5_corrected            = SScorr->Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+            eleRecording.sieipFull5x5_corrected            = SScorr->Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+            eleRecording.scEtaWidth_corrected              = SScorr->Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+            eleRecording.scPhiWidth_corrected              = SScorr->Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+            eleRecording.esEnergyOverSCRawEnergy_corrected = SScorr->Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
             }
         }
+        LOG_DEBUG("evt fill status 03");
 
         if ( data.HasMC() )
         {
@@ -305,6 +325,7 @@ void xElectrons(
         record_Z.mcEta     = 0;
         record_Z.mcPhi     = 0;
         }
+        LOG_DEBUG("evt fill status 04");
         record_Z.recoMass  = ZcandP4.M();
         record_Z.recoE     = ZcandP4.Energy();
         record_Z.recoPt    = ZcandP4.Pt();
@@ -313,6 +334,7 @@ void xElectrons(
         record_Z.isMatched = ZcandP4.daughters().at(0).genidx() >= 0 && ZcandP4.daughters().at(1).genidx() >= 0;
 
         record_evt.run               = data.GetInt("run"); 
+        LOG_DEBUG("evt fill status 05");
         if ( data.HasMC() )
         {
             Float_t* puTrue = data.GetPtrFloat("puTrue");
@@ -326,6 +348,7 @@ void xElectrons(
         record_evt.pthat             = data.GetFloat("pthat");
         record_evt.nPU               = _purec;
         }
+        LOG_DEBUG("evt fill status 06");
 
         record_evt.MET               = data.GetFloat("pfMET");
         record_evt.METPhi            = data.GetFloat("pfMETPhi");
@@ -338,6 +361,7 @@ void xElectrons(
         record_evt.event             = data.GetLong64("event"); 
 
 
+        LOG_DEBUG("evt fill status 07");
         outtree_->Fill();
         LOG_DEBUG("one event ended");
     }
@@ -365,17 +389,17 @@ void xElectrons(
 	    f_showershapecorrection->Close();
     */
 }
-void xElectrons(std::string ipath, int outID)
+void xElectrons(const std::vector<std::string>& ipath, int outID, const std::string& dataEra )
 {
    char fname[200];
-   std::vector<std::string> pathes;
+   //std::vector<std::string> pathes;
 
-   pathes.push_back(ipath);
+   //pathes.push_back(ipath);
 
    char oname[200];
-   sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
+   sprintf(oname, "output_job_Zee_%d.root", outID);
 
-   xElectrons(pathes, oname);
+   xElectrons(ipath, oname, dataEra);
 }
 std::vector<TLorentzCand> RecoElectrons(TreeReader* dataptr)
 {
@@ -477,7 +501,6 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"esRR").c_str()               ,&var->esRR         , (name+"esRR/F").c_str()             );
     t->Branch( (name+"esEn").c_str()               ,&var->esEn         , (name+"esEn/F").c_str()             );
     t->Branch( (name+"mva").c_str()                ,&var->mva          , (name+"mva/F").c_str()              );
-    t->Branch( (name+"mva_nocorr").c_str()         ,&var->mva_nocorr   , (name+"mva_nocorr/F").c_str()       );
     t->Branch( (name+"officalIDmva").c_str()       ,&var->officalIDmva , (name+"officalIDmva/F").c_str()     );
     t->Branch( (name+"r9Full5x5").c_str()          ,&var->r9Full5x5    , (name+"r9Full5x5/F").c_str()        );
     t->Branch( (name+"sieieFull5x5").c_str()       ,&var->sieieFull5x5 , (name+"sieieFull5x5/F").c_str()     );
@@ -494,6 +517,7 @@ void RegBranch( TTree* t, const std::string& name, rec_Electron* var )
     t->Branch( (name+"calib_sieieFull5x5").c_str(), &var->sieieFull5x5_corrected   , (name+"calib_sieieFull5x5/F").c_str()      );
     */
 
+    t->Branch( (name+"calib_mva"         ).c_str(), &var->mva_corrected            , (name+"calib_mva/F").c_str()        );
     t->Branch( (name+"calib_scEtaWidth"  ).c_str(), &var->scEtaWidth_corrected     , (name+"calib_scEtaWidth/F"       ).c_str() );
     t->Branch( (name+"calib_scPhiWidth"  ).c_str(), &var->scPhiWidth_corrected     , (name+"calib_scPhiWidth/F"       ).c_str() );
     t->Branch( (name+"calib_r9Full5x5"   ).c_str(), &var->r9Full5x5_corrected      , (name+"calib_r9Full5x5/F"        ).c_str() );

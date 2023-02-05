@@ -9,13 +9,14 @@ ShowerShapeCorrectionAdapter::ShowerShapeCorrectionAdapter(std::string era, bool
     tmppt(-999.),tmpeta(-999.),tmpphi(-999.)
 {
     // note: the campaign naming follows ShowerShapeCorrector
-    if ( era == "2016ReReco" ) campaign = "2016";
-    if ( era == "2017ReReco" ) campaign = "2017";
-    if ( era == "2018ReReco" ) campaign = "2018";
-    if ( era == "UL2016"     ) campaign = "2016_Legacy";
-    if ( era == "UL2017"     ) campaign = "2017_Legacy";
-    if ( era == "UL2018"     ) campaign = "2018_Legacy";
-    if ( campaign == "" ) throw "ShowerShapeCorrectionAdapter : input data era is not valid!\n";
+    if ( era == "2016ReReco"   ) campaign = "2016";
+    if ( era == "2017ReReco"   ) campaign = "2017";
+    if ( era == "2018ReReco"   ) campaign = "2018";
+    if ( era == "UL2016PreVFP" ) campaign = "2016_Legacy_preVFP";
+    if ( era == "UL2016PostVFP") campaign = "2016_Legacy_postVFP";
+    if ( era == "UL2017"       ) campaign = "2017_Legacy";
+    if ( era == "UL2018"       ) campaign = "2018_Legacy";
+    if ( campaign == "" ) throw Form("ShowerShapeCorrectionAdapter : input data era '%s' is not valid!\n",era.c_str());
 
 
     corr = new ShowerShapeCorrector(campaign, isMC);
