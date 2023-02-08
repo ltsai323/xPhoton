@@ -93,11 +93,8 @@ int main(int argc, const char* argv[])
     const char* era   = Arg_DataEra(argv);
     //bool CleanUpNeeded = Arg_CleanUpBranch(argc,argv);
 
-    std::cout << "data era : " << era << std::endl;
-    std::cout << "in file : " << iFile << std::endl;
-    std::cout << "out file : " << oFile << std::endl;
-    std::cout << "updating CTagging scale factors" << std::endl;
     
+    LOG_INFO("data era %s.\n--> input file %s\n--> ouput file %s\n=====updating CTagging reshape weights", era,iFile,oFile);
 
     TFile* iF = TFile::Open(iFile);
     TTree* iT = (TTree*) iF->Get("t");
@@ -111,12 +108,10 @@ int main(int argc, const char* argv[])
     if ( useDeepCSV )
     {
         ctagCalibs["deepcsv"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepCSV    (era));
-        //if ( CleanUpNeeded ) { printf("old branch cleaned\n"); ctagCalibs["deepcsv"]->DisableBranch(iT); }
     }
     if ( useDeepJet )
     {
         ctagCalibs["deepjet"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepFlavour(era));
-        //if ( CleanUpNeeded ) { printf("old branch cleaned\n"); ctagCalibs["deepjet"]->DisableBranch(iT); }
     }
 
 
@@ -133,9 +128,6 @@ int main(int argc, const char* argv[])
 
     
     unsigned int nevt = iT->GetEntries();
-    float totevtnum = 0.;
-    float totweig_DeepCSV = 0.;
-    float totweig_DeepJet = 0.;
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
         iT->GetEntry(ievt);
@@ -143,33 +135,19 @@ int main(int argc, const char* argv[])
         if ( jetPt > 10 )
         {
             if ( useDeepCSV )
-            { ctagCalibs["deepcsv"]->FillBranch(); totweig_DeepCSV += ctagCalibs["deepcsv"]->GetWeight(); }
+            { ctagCalibs["deepcsv"]->FillBranch(); }
             if ( useDeepJet )
-            { ctagCalibs["deepjet"]->FillBranch(); totweig_DeepJet += ctagCalibs["deepcsv"]->GetWeight(); }
-            totevtnum++;
+            { ctagCalibs["deepjet"]->FillBranch(); }
         }
-
-    }
-
-    double overallweight_DeepCSV = double(totevtnum) / double(totweig_DeepCSV);
-    double overallweight_DeepJet = double(totevtnum) / double(totweig_DeepJet);
-    for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
-    {
-        iT->GetEntry(ievt);
-
-        if ( jetPt > 10 )
-        {
-            if ( useDeepCSV ) ctagCalibs["deepcsv"]->FillBranch(overallweight_DeepCSV);
-            if ( useDeepJet ) ctagCalibs["deepjet"]->FillBranch(overallweight_DeepJet);
-        }
-
         oT->Fill();
     }
-    std::cout << "end of evt loop\n";
+    
 
-    std::cout << "       tree writing\n";
+    LOG_INFO("end of evt loop");
+
+    LOG_DEBUG("       tree writing");
     oT->Write();
-    std::cout << "end of tree writing\n";
+    LOG_DEBUG("end of tree writing");
     TIter keyList(iF->GetListOfKeys());
     TKey *key;
     while ((key = (TKey*)keyList())) {

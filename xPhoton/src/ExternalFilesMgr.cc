@@ -69,7 +69,8 @@ const char* ExternalFilesMgr::csvFile_BTagCalibs(std::string name)
 
 const char* ExternalFilesMgr::RooFile_CTagCalib_DeepFlavour(std::string era)
 {
-    if ( era == "2016ReReco" ) return nullptr;
+    if ( era == "2016ReReco" )
+return "/home/ltsai/ReceivedFile/GJet/CTagCalibrations/2016ReReco/DeepJet_ctagSF_MiniAOD94X_2016_pTincl_01Nov20.root";
     if ( era == "2017ReReco" ) return nullptr;
     if ( era == "2018ReReco" ) return nullptr;
     if ( era == "UL2016PostVFP" )
@@ -85,7 +86,8 @@ return "/home/ltsai/ReceivedFile/GJet/CTagCalibrations/UL2018/DeepJet_ctagSF_Sum
 }
 const char* ExternalFilesMgr::RooFile_CTagCalib_DeepCSV(std::string era)
 {
-    if ( era == "2016ReReco" ) return nullptr;
+    if ( era == "2016ReReco" )
+return "/home/ltsai/ReceivedFile/GJet/CTagCalibrations/2016ReReco/DeepCSV_ctagSF_MiniAOD94X_2016_pTincl_01Nov20.root";
     if ( era == "2017ReReco" ) return nullptr;
     if ( era == "2018ReReco" ) return nullptr;
 

@@ -19,103 +19,80 @@
 #define NOTHING -99
 
 
+struct FlavourTH2
+{
+    TH2F* b;
+    TH2F* c;
+    TH2F* l;
+
+    
+    TH2F* GetFlavourHist(int flav)
+    {
+        if (flav == 4) return c;
+        if (flav == 5) return b;
+        return l;
+    }
+};
 
 struct CTagWeightHelper
 {
-    CTagWeightHelper( const char* ifile ); // : wtFile(nullptr)
-    //{
-    //    if ( ifile == nullptr ) return;
-    //    wtFile = TFile::Open(ifile);
-    //    cWtHist = (TH2F*)wtFile->Get("SFc_hist");   //For systematic variations, one can concatenate a string after "SFc_hist"
-    //    bWtHist = (TH2F*)wtFile->Get("SFb_hist");
-    //    lWtHist = (TH2F*)wtFile->Get("SFl_hist");
-    //}
-    ~CTagWeightHelper(); // { wtFile->Close(); wtFile = nullptr; }
-    TH2F* GetFlavourHist(int flav);
-    // {
-    //     if (flav == 4) return cWtHist;
-    //     if (flav == 5) return bWtHist;
-    //     return lWtHist;
-    // }
-    float GetWeight(int flav,
-            float CvsBval,
-            float CvsLval
-            );
-    //{
-    //    if ( wtFile == nullptr ) return -404;
-    //    TH2* wtHist = GetFlavourHist(flav);
-    //    int xbin = wtHist->GetXaxis()->FindBin(CvsLval);
-    //    int ybin = wtHist->GetYaxis()->FindBin(CvsBval);
-    //    //ctagWt *= wtHist->GetBinContent(xbin,ybin); // asdf If 2 jets are selected in one event, do I need to multiplied them?
-    //    return wtHist->GetBinContent(xbin,ybin);
-    //}
+    CTagWeightHelper( const char* ifile );
+    ~CTagWeightHelper();
+    //TH2F* GetFlavourHist(int flav);
+
+    double gethistcontent( FlavourTH2& hists, int flav, float CvsBval, float CvsLval )
+    {
+        TH2* wtHist = hists.GetFlavourHist(flav);
+        int xbin = wtHist->GetXaxis()->FindBin(CvsLval);
+        int ybin = wtHist->GetYaxis()->FindBin(CvsBval);
+        return wtHist->GetBinContent(xbin,ybin);
+    }
+
+    double GetWeight(int flav, float CvsBval, float CvsLval)
+    { return gethistcontent(h_central , flav, CvsBval, CvsLval); }
+    double GetWeightErrUp(int flav, float CvsBval, float CvsLval)
+    { return gethistcontent(h_TotUncUp, flav, CvsBval, CvsLval); }
+    double GetWeightErrDown(int flav, float CvsBval, float CvsLval)
+    { return gethistcontent(h_TotUncDn, flav, CvsBval, CvsLval); }
 
 
 
     TFile* wtFile;
-    TH2F *cWtHist;
-    TH2F *bWtHist;
-    TH2F *lWtHist;
+    FlavourTH2 h_central;
+    FlavourTH2 h_TotUncUp;
+    FlavourTH2 h_TotUncDn;
+
+    
 };
 
 class CTaggingMgr
 {
 public:
     CTaggingMgr(const char* dataera, const char* algoType); // : _algoType(algoType)
-    //{ helper = new CTagWeightHelper( ExternalFilesMgr::RooFile_CTagCalibs(dataera,algoType) ); }
 
     virtual void RegBranch(TTree* t) final;
-    //{
-    //    char bname[200], bnameF[200];
-
-    //    t->Branch( Form("%s.CvsB",_algoType.c_str()), cvsb, Form("%s.CvsB/F",_algoType.c_str()) );
-    //    t->Branch( Form("%s.CvsL",_algoType.c_str()), cvsl, Form("%s.CvsL/F",_algoType.c_str()) );
-    //    t->Branch( Form("%s.ctagWeight.central",_algoType.c_str()), weight_central, Form("%s.ctagWeight.central/F",_algoType.c_str()) );
-    //}
-    virtual void FillBranch(double normalization = NOTHING) = 0;
+    virtual void FillBranch() = 0;
     virtual void SetBranchAddress(TTree* t) = 0;
     virtual float GetWeight() { return weight_central; }
-    //void DisableBranch(TTree* t); // if the input file is btagging calculated, you can use this function to clear previous result.
 
-    virtual void calculation(int flav, float bval, float cval, float lval, double normalization) final;
-    //{
-    //    InitVars();
-
-    //    // algorithm according to https://twiki.cern.ch/twiki/bin/viewauth/CMS/CTaggerShapeCalibration?fbclid=IwAR1_BlK2OeoMwvU_w7niCAZrC2swm8OT23bOGXK_mq-ngF_C_7JAEot6EL0
-    //    if ( (cval < 0) || ((cval+lval) == 0) || ((cval+bval) == 0 ) ) return;
-    //    cvsb = cval/(cval+bval);
-    //    cvsl = cval/(cval+lval);
-    //    weight_central = helper->GetWeight(flav, cvsb, cvsl);
-    //}
+    virtual void calculation(int flav, float bval, float cval, float lval) final;
     
+    virtual ~CTaggingMgr() {}
 private:
     CTagWeightHelper* helper;
     const char* _algoType;
-    float cvsb, cvsl, weight_central;
+    float cvsb, cvsl, bscore;
+    float weight_central,weight_totUp, weight_totDn;
 
     void InitVars();
-    //{
-    //    cvsb = -1;
-    //    cvsl = -1;
-    //    weight_central = -404;
-    //}
 };
 class CTaggingMgr_DeepFlavour : public CTaggingMgr
 {
     public:
     CTaggingMgr_DeepFlavour(const char* dataera); // : CTaggingMgr(dataera, "DeepFlavour") {}
     virtual void SetBranchAddress(TTree* t) override;
-    //{
-    //    t->SetBranchAddress("jetDeepFlavourTags_b"  , &_bval);
-    //    t->SetBranchAddress("jetDeepFlavourTags_c"  , &_cval);
-    //    t->SetBranchAddress("jetDeepFlavourTags_uds", &_qval);
-    //    t->SetBranchAddress("jetDeepFlavourTags_g"  , &_gval);
-    //    t->SetBranchAddress("jetHadFlvr", &_hadflvr);
-    //}
-    virtual void FillBranch(double normalization = NOTHING) override;
-    //{
-    //    this->calculation(_hadflvr, _bval, _cval, _qval+gval);
-    //}
+    virtual void FillBranch() override;
+    virtual ~CTaggingMgr_DeepFlavour() {}
     private:
     float _bval, _cval, _qval, _gval;
     int _hadflvr;
@@ -125,16 +102,8 @@ class CTaggingMgr_DeepCSV : public CTaggingMgr
     public:
     CTaggingMgr_DeepCSV(const char* dataera); // : CTaggingMgr(dataera, "DeepCSV") {}
     virtual void SetBranchAddress(TTree* t) override;
-    //{
-    //    t->SetBranchAddress("jetDeepCSVTags_b", &_bval);
-    //    t->SetBranchAddress("jetDeepCSVTags_c", &_cval);
-    //    t->SetBranchAddress("jetDeepCSVTags_udsg", &_lval);
-    //    t->SetBranchAddress("jetHadFlvr", &_hadflvr);
-    //}
-    virtual void FillBranch(double normalization = NOTHING) override;
-    //{
-    //    this->calculation(_hadflvr, _bval, _cval, _lval);
-    //}
+    virtual void FillBranch() override;
+    virtual ~CTaggingMgr_DeepCSV() {}
     private:
     float _bval, _cval, _lval;
     int _hadflvr;
