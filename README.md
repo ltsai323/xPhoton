@@ -24,3 +24,8 @@ To extract MC informations in primary dataset.
 ### exec_xElectronsRunner in.root 3
 Building...
 For Zee.
+
+
+# Special Note
+* macro/step2.test.makehisto/step2_makehisto.C requires ROOT version > 6.14. So Only CMSSW12_0_0 or above version are able to run this code.
+* However, lots of xPhoton code are written in python2, which is not compatible for python3.
