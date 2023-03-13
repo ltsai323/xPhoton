@@ -1,49 +1,18 @@
-#!/usr/bin/env sh
-datafile=$1
-signfile=$2
-fakefile=$3
-USEHLT=1
+$datafile=$1
+$signfile=$2
+$fakefile=$3
 
-echo "used data file: $datafile"
-echo "used sign file: $signfile"
-echo "used fake file: $fakefile"
-echo "Data and MC use HLT ? $USEHLT"
 
-sleep 5
 
-label=data
-ifile=$datafile
-isMC=false
-if [ "$datafile" != "" ]; then
+cutIdx=1 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
+inputcode=makehistoDeepFlavour.C
+#inputcode=makehistoDeepCSV.C
+outputfolder=myoutput
+mkdir -p $outputfolder
 root -b <<EOF
-.L MakeHisto.C+
-MakeHisto t("$ifile","$label",$isMC, $USEHLT)
-t.SetDataEra("2016ReReco")
-t.Loop(1)
+.L $inputcode
+Loop($cutIdx, "2016ReReco", "data", "$datafile");
+Loop($cutIdx, "2016ReReco", "sig" , "$signfile");
+Loop($cutIdx, "2016ReReco", "QCD" , "$fakefile");
 EOF
-fi
-
-label=sig
-ifile=$signfile
-isMC=true
-if [ "$signfile" != "" ]; then
-root -b <<EOF
-.L MakeHisto.C+
-MakeHisto t("$ifile","$label",$isMC,0)
-t.Loop(1)
-EOF
-fi
-
-
-label=QCD
-ifile=$fakefile
-isMC=true
-
-if [ "$fakefile" != "" ]; then
-root -b <<EOF
-.L MakeHisto.C+
-MakeHisto t("$ifile","$label",$isMC,$USEHLT)
-t.SetDataEra("2016ReReco")
-t.Loop(1)
-EOF
-fi
+mv makehisto_*.root $outputfolder/

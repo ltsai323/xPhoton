@@ -1,63 +1,23 @@
-run.sh : Basic run this code. The output will not be sent into storeroot/
-tmprun.sh : If you want to execute run.sh parallelly, you can execute this manually.
+Every histogram has been put into binned folder.
+bin_%d_%d_%d : photon eta bin 0~1, jet eta bin 0~2, photon pt bin 0~24
 
-fakerun.sh : Process fake sample as data.
-fullrun.sh : Process run.sh and send the output into storeroot/ to be used.
+histogram naming : 
+BDT score : bin_%d_%d_%d/BDT_{source}_{control region}
+binning : photon Eta bin = 0~1, jet Eta bin = 0~2, photon Pt bin = 0~24
 
-created histogram naming :
-* "BDT_all/BDT_all.%d_%d_%d_%d",
-    * {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}
-* "BDT/BDT.%d_%d_%d_%d",
-    * {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}
-* "Pt_all/Pt_all.%d_%d_%d_%d",
-    * {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2}
-* "Pt/Pt.%d_%d",
-    * {NUMBIN_PHOETA,2}
-* "Pt_spec/Pt_spec.%d_%d",
-    * {NUMBIN_PHOETA,2}
-* "IsovsBDT/IsovsBDT.%d_%d_%d_%d_%d",
-    * {NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,2,NUMBIN_ISOVAR}
-* "HLT_ebee/HLT_ebee.%d_bit%d",
-    * {NUMBIN_PHOETA,NUMBIT_HLT}
-* "HLT_ebee/HLT_ebee.%d_bit%d_pass",
-    * {NUMBIN_PHOETA,NUMBIT_HLT}
+BDT score : bin_%d_%d_%d/BDT_data_signalRegion
+          : bin_%d_%d_%d/BDT_data_dataSideband
+     gjet : bin_%d_%d_%d/BDT_gjet_signalRegion
+          : bin_%d_%d_%d/BDT_gjet_dataSideband
+     QCD  : bin_%d_%d_%d/BDT_QCD_signalRegion
+          : bin_%d_%d_%d/BDT_QCD_dataSideband
+And each BDT score has shape uncertainty for Higgs Combine
+BDT score : bin_%d_%d_%d/BDT_data_signalRegion_shapeUncUp/Down
+          : bin_%d_%d_%d/BDT_data_dataSideband_shapeUncUp/Down
+     gjet : bin_%d_%d_%d/BDT_gjet_signalRegion_shapeUncUp/Down
+          : bin_%d_%d_%d/BDT_gjet_dataSideband_shapeUncUp/Down
+     QCD  : bin_%d_%d_%d/BDT_QCD_signalRegion_shapeUncUp/Down
+          : bin_%d_%d_%d/BDT_QCD_dataSideband_shapeUncUp/Down
 
-
-
-
-*   HistMgr2D h_btagDeepCSV_BvsAll_central    
-    * "btagDeepCSV.0_0_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_BvsAll_up         
-    * "btagDeepCSV.1_0_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_BvsAll_down       
-    * "btagDeepCSV.2_0_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_CvsL_central      
-    * "btagDeepCSV.0_1_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_CvsL_up           
-    * "btagDeepCSV.1_1_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_CvsL_down         
-    * "btagDeepCSV.2_1_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_CvsB_central      
-    * "btagDeepCSV.0_2_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_CvsB_up           
-    * "btagDeepCSV.1_2_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_CvsB_down         
-    * "btagDeepCSV.2_2_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_secVtxMass_central
-    * "btagDeepCSV.0_3_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_secVtxMass_up     
-    * "btagDeepCSV.1_3_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
-*   HistMgr2D h_btagDeepCSV_secVtxMass_down   
-    * "btagDeepCSV.2_3_%d__%d_%d_%d__%d_%d",
-    * {NUMBIN_JETFLVR,NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT,NUMBIN_MATCHEDPHOTONSTATUS,NUM_PARITY} 
+jetTag          
+TBD

@@ -115,7 +115,8 @@ void MakeHisto::Loop(Int_t extracut = 0)
 
 
 
-    Long64_t nentries = fChain->GetEntries();
+    //Long64_t nentries = fChain->GetEntries();
+    Long64_t nentries = 200000;
     printf("nentries %lli \n", nentries);
     printf("HLT option %d \n", HLTOPTION);
 
