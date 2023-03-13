@@ -14,13 +14,7 @@ EOF
 mv makehisto_*.root $outputfolder/
 }
 
-touch makehisto_aaaa.root; /bin/rm makehisto_*.root # clean up
 
-exec_code 0 makehistoDeepFlavour.C deepflavour_CUT_NOCUT 0
-exec_code 1 makehistoDeepFlavour.C deepflavour_CUT_subJetVtxMass 1
-exec_code 2 makehistoDeepFlavour.C deepflavour_CUT_CvsL 2
-
-exec_code 0 makehistoDeepCSV.C deepcsv_CUT_NOCUT 0
-exec_code 1 makehistoDeepCSV.C deepcsv_CUT_subJetVtxMass 1
-exec_code 2 makehistoDeepCSV.C deepcsv_CUT_CvsL 2
+#exec_code 0 makehistoDeepFlavour.C deepflavour_CUT_NOCUT 0
+exec_code 0 makehistoDeepCSV.C deepflavour_CUT_NOCUT 0
 

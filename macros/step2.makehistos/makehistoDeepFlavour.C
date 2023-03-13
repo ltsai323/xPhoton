@@ -1,7 +1,7 @@
 #define MakeHistoData_cxx
 #define MakeHistoSIG_cxx
 #define MakeHistoQCD_cxx
-#include "makehistoDeepFlavour.h"
+#include "makehisto.h"
 //#include "HLTTriggerBitSetting.cc"
 #include <TH1.h>
 #include <TH2.h>
@@ -13,6 +13,22 @@
 #include <TLorentzVector.h>
 
 
+#include "MakeHistoData.h"
+#include "MakeHistoSIG.h"
+#include "MakeHistoQCD.h"
+
+
+
+
+
+
+
+// QCD section {{{
+EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar);
+void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars);
+void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoQCD& loadvars );
+void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 );
+EventBinning BinningFactory(const MakeHistoQCD & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
 
 
 EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
@@ -46,73 +62,27 @@ EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
     output.phoFiredTrgs  = loadvar.phoFiredTrgs;
     return output;
 }
-EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
+void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars)
 {
-    bool isMC          = true;
-    bool isQCD         = false;
-    bool HLTOPTION     = false;
-    EvtSelMgr output(isMC,isQCD,HLTOPTION);
-
-    output.jethadflvr    = loadvar.jetHadFlvr;
-    output.chIso         = loadvar.chIsoRaw;
-    output.phoEta        = loadvar.recoEta;
-    output.isMatched     = loadvar.isMatched;
-
-    output.jetPt         = loadvar.jetPt;
-    output.jetEta        = loadvar.jetEta;
-    output.cScore        = loadvar.jetDeepFlavourTags_c;
-    output.jetID         = loadvar.jetID;
-    output.jetPUIDbit    = loadvar.jetPUIDbit;
-    output.jetSubVtxMass = loadvar.jetSubVtxMass;
-    output.CvsL          = loadvar.DeepFlavour_CvsL;
-    output.passMaxPUcut  = 0;
-
-    output.recoSCEta     = loadvar.recoSCEta;
-    output.sieieFull5x5  = loadvar.sieieFull5x5;
-    output.HoverE        = loadvar.HoverE;
-    output.MET           = loadvar.MET;
-    output.phoPt         = loadvar.recoPt;
-    output.eleVeto       = loadvar.eleVeto;
-
-    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
-    return output;
+    Fill_allctagreshaped_general(bin,h,val, evt_weight,
+            loadvars.DeepFlavour_ctagWeight_central,
+            loadvars.DeepFlavour_ctagWeight_PUWeightUp,
+            loadvars.DeepFlavour_ctagWeight_PUWeightDown,
+            loadvars.DeepFlavour_ctagWeight_StatUp,
+            loadvars.DeepFlavour_ctagWeight_StatDown
+            );
 }
-EvtSelMgr EvtSelFactory(const MakeHistoData& loadvar)
+void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoQCD& loadvars )
 {
-    bool isMC          = false;
-    bool isQCD         = false;
-    bool HLTOPTION     = true;
-    EvtSelMgr output(isMC,isQCD,HLTOPTION);
-
-    output.jethadflvr    = 0;
-    output.chIso         = loadvar.calib_chIso;
-    output.phoEta        = loadvar.recoEta;
-    output.isMatched     = 0;
-
-    output.jetPt         = loadvar.jetPt;
-    output.jetEta        = loadvar.jetEta;
-    output.cScore        = loadvar.jetDeepFlavourTags_c;
-    output.jetID         = 0;
-    output.jetPUIDbit    = 0;
-    output.jetSubVtxMass = loadvar.jetSubVtxMass;
-    output.CvsL          = loadvar.DeepFlavour_CvsL;
-    output.passMaxPUcut  = 0;   
-
-    output.recoSCEta     = loadvar.recoSCEta;
-    output.sieieFull5x5  = loadvar.sieieFull5x5;
-    output.HoverE        = loadvar.HoverE;
-    output.MET           = loadvar.MET;
-    output.phoPt         = loadvar.recoPtCalib;
-    output.eleVeto       = loadvar.eleVeto;
-
-    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
-    return output;
+    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
+    n.Add(
+            loadvars.DeepFlavour_ctagWeight_central,
+            loadvars.DeepFlavour_ctagWeight_PUWeightUp,
+            loadvars.DeepFlavour_ctagWeight_PUWeightDown,
+            loadvars.DeepFlavour_ctagWeight_StatUp,
+            loadvars.DeepFlavour_ctagWeight_StatDown
+            );
 }
-
-
-
-
-
 
 void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 )
 {
@@ -426,6 +396,68 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     
     fout->Close();
 }
+// QCD section end }}}
+
+// sig section {{{
+EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar);
+void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars);
+void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars );
+void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 );
+EventBinning BinningFactory(const MakeHistoSIG & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
+
+
+EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
+{
+    bool isMC          = true;
+    bool isQCD         = false;
+    bool HLTOPTION     = false;
+    EvtSelMgr output(isMC,isQCD,HLTOPTION);
+
+    output.jethadflvr    = loadvar.jetHadFlvr;
+    output.chIso         = loadvar.chIsoRaw;
+    output.phoEta        = loadvar.recoEta;
+    output.isMatched     = loadvar.isMatched;
+
+    output.jetPt         = loadvar.jetPt;
+    output.jetEta        = loadvar.jetEta;
+    output.cScore        = loadvar.jetDeepFlavourTags_c;
+    output.jetID         = loadvar.jetID;
+    output.jetPUIDbit    = loadvar.jetPUIDbit;
+    output.jetSubVtxMass = loadvar.jetSubVtxMass;
+    output.CvsL          = loadvar.DeepFlavour_CvsL;
+    output.passMaxPUcut  = 0;
+
+    output.recoSCEta     = loadvar.recoSCEta;
+    output.sieieFull5x5  = loadvar.sieieFull5x5;
+    output.HoverE        = loadvar.HoverE;
+    output.MET           = loadvar.MET;
+    output.phoPt         = loadvar.recoPt;
+    output.eleVeto       = loadvar.eleVeto;
+
+    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    return output;
+}
+void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
+{
+    Fill_allctagreshaped_general(bin,h,val, evt_weight,
+            loadvars.DeepFlavour_ctagWeight_central,
+            loadvars.DeepFlavour_ctagWeight_PUWeightUp,
+            loadvars.DeepFlavour_ctagWeight_PUWeightDown,
+            loadvars.DeepFlavour_ctagWeight_StatUp,
+            loadvars.DeepFlavour_ctagWeight_StatDown
+            );
+}
+void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars )
+{
+    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
+    n.Add(
+            loadvars.DeepFlavour_ctagWeight_central,
+            loadvars.DeepFlavour_ctagWeight_PUWeightUp,
+            loadvars.DeepFlavour_ctagWeight_PUWeightDown,
+            loadvars.DeepFlavour_ctagWeight_StatUp,
+            loadvars.DeepFlavour_ctagWeight_StatDown
+            );
+}
 void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 )
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
@@ -737,7 +769,45 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     
     fout->Close();
 }
+// sig section end }}}
 
+// data section {{{
+EvtSelMgr EvtSelFactory(const MakeHistoData& loadvar);
+void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 );
+EventBinning BinningFactory(const MakeHistoData& v) { return  EventBinning(v.recoPtCalib,v.recoEta,v.jetPt,v.jetY,v.calib_chIso); }
+
+
+EvtSelMgr EvtSelFactory(const MakeHistoData& loadvar)
+{
+    bool isMC          = false;
+    bool isQCD         = false;
+    bool HLTOPTION     = true;
+    EvtSelMgr output(isMC,isQCD,HLTOPTION);
+
+    output.jethadflvr    = 0;
+    output.chIso         = loadvar.calib_chIso;
+    output.phoEta        = loadvar.recoEta;
+    output.isMatched     = 0;
+
+    output.jetPt         = loadvar.jetPt;
+    output.jetEta        = loadvar.jetEta;
+    output.cScore        = loadvar.jetDeepFlavourTags_c;
+    output.jetID         = 0;
+    output.jetPUIDbit    = 0;
+    output.jetSubVtxMass = loadvar.jetSubVtxMass;
+    output.CvsL          = loadvar.DeepFlavour_CvsL;
+    output.passMaxPUcut  = 0;   
+
+    output.recoSCEta     = loadvar.recoSCEta;
+    output.sieieFull5x5  = loadvar.sieieFull5x5;
+    output.HoverE        = loadvar.HoverE;
+    output.MET           = loadvar.MET;
+    output.phoPt         = loadvar.recoPtCalib;
+    output.eleVeto       = loadvar.eleVeto;
+
+    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    return output;
+}
 void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 )
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
@@ -852,12 +922,14 @@ void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const 
     
     fout->Close();
 }
+// data section end }}}
+
 void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename )
 {
     const std::string dataType(dataTYPE);
 
-    //int NEVENT = 10; // testing event
-    int NEVENT = -1; // all event
+    int NEVENT = 10; // testing event
+    //int NEVENT = -1; // all event
 
     int processTag = 0;
     if ( dataType == "data" )

@@ -8,8 +8,8 @@
 #define EventBinning_cxx
 #define usefulfunctions_cxx
 
-#ifndef makehistoDeepCSV_h
-#define makehistoDeepCSV_h
+#ifndef makehisto_h
+#define makehisto_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -17,9 +17,6 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <iostream>
-#include "MakeHistoData.h"
-#include "MakeHistoSIG.h"
-#include "MakeHistoQCD.h"
 
 #define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
 #define BUG(format, args...)     fprintf(stderr, "[BUG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
@@ -189,11 +186,6 @@ Int_t TriggerBit( const std::string& dataera, Int_t ptbin );
 
 
 
-EventBinning BinningFactory(const MakeHistoData& v) { return  EventBinning(v.recoPtCalib,v.recoEta,v.jetPt,v.jetY,v.calib_chIso); }
-EventBinning BinningFactory(const MakeHistoSIG & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
-EventBinning BinningFactory(const MakeHistoQCD & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoQCD& loadvars );
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars );
 
 
 inline void Fill( const EventBinning& bin,Hists* h, float val, float weight = NOTHING )
@@ -203,8 +195,6 @@ inline void Fill( const EventBinning& bin,Hists* h, float val, float weight = NO
 }
 void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight,
         float w_central, float w_puweightup, float w_puweightdown, float w_statup, float w_statdown );
-void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars);
-void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars);
 
 
 inline void Write(const EventBinning& bin, Hists* h, double normalization = NOTHING)
@@ -240,7 +230,7 @@ bool EvtSelMgr::PassJetAdditionalSelection(int cutIndicator) const
     
 
 
-    if ( isMC && isQCD ) if (!passMaxPUcut ) return false;
+    if ( isMC && isQCD ) if (!passMaxPUcut ) return false; // temporally disabled
 
     return true;
 }
@@ -366,28 +356,6 @@ Int_t TriggerBit( const std::string& dataera, Int_t ptbin){
 }
 
 
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoQCD& loadvars )
-{
-    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    n.Add(
-            loadvars.DeepCSV_ctagWeight_central,
-            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-            loadvars.DeepCSV_ctagWeight_StatUp,
-            loadvars.DeepCSV_ctagWeight_StatDown
-            );
-}
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars )
-{
-    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    n.Add(
-            loadvars.DeepCSV_ctagWeight_central,
-            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-            loadvars.DeepCSV_ctagWeight_StatUp,
-            loadvars.DeepCSV_ctagWeight_StatDown
-            );
-}
 
 
 
@@ -404,26 +372,6 @@ void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h
     Fill(bin,h->PUweightDown, val, evt_weight * w_puweightdown);
     Fill(bin,h->StatUp      , val, evt_weight * w_statup      );
     Fill(bin,h->StatDown    , val, evt_weight * w_statdown    );
-}
-void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars)
-{
-    Fill_allctagreshaped_general(bin,h,val, evt_weight,
-            loadvars.DeepCSV_ctagWeight_central,
-            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-            loadvars.DeepCSV_ctagWeight_StatUp,
-            loadvars.DeepCSV_ctagWeight_StatDown
-            );
-}
-void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
-{
-    Fill_allctagreshaped_general(bin,h,val, evt_weight,
-            loadvars.DeepCSV_ctagWeight_central,
-            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-            loadvars.DeepCSV_ctagWeight_StatUp,
-            loadvars.DeepCSV_ctagWeight_StatDown
-            );
 }
 
 

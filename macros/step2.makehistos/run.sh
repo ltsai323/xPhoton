@@ -1,6 +1,6 @@
-$datafile=$1
-$signfile=$2
-$fakefile=$3
+datafile=$1
+signfile=$2
+fakefile=$3
 
 
 
