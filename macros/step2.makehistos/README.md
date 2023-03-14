@@ -1,23 +1,71 @@
-Every histogram has been put into binned folder.
-bin_%d_%d_%d : photon eta bin 0~1, jet eta bin 0~2, photon pt bin 0~24
+### histogram naming 
+| description | histogram name |
+|--|--|
+| BDT score | bin\_%d\_%d\_%d/BDT\_{sample}\_{CR} |
+| normalized BDT score | bin\_%d\_%d\_%d/BDT\_{sample}\_{CR}\_norm |
+| BDT shape uncertainty | bin\_%d\_%d\_%d/BDT\_{sample}\_{CR}\_shapeUncUp |
+| normalized BDT shape uncertainty Up | bin\_%d\_%d\_%d/BDT\_{sample}\_{CR}\_shapeUncUp\_norm |
+| normalized BDT shape uncertainty Down | bin\_%d\_%d\_%d/BDT\_{sample}\_{CR}\_shapeUncDown\_norm |
+|-|-|
+| jet tagging variable | {varname}\_{sample}\_{genPho}{QF}\_{CR}\_{unc} |
+|-|-|
+| b score              | jettag0\_{sample}\_{genPho}{QF}\_{CR}\_{unc} |
+| CvsL                 | jettag1\_{sample}\_{genPho}{QF}\_{CR}\_{unc} |
+| CvsB                 | jettag2\_{sample}\_{genPho}{QF}\_{CR}\_{unc} |
+| sub jet vertex mass  | jettag3\_{sample}\_{genPho}{QF}\_{CR}\_{unc} |
+|-|-|
+| normalized b score              | jettag0\_{sample}\_{genPho}{QF}\_{CR}\_{unc}\_norm |
+| normalized CvsL                 | jettag1\_{sample}\_{genPho}{QF}\_{CR}\_{unc}\_norm |
+| normalized CvsB                 | jettag2\_{sample}\_{genPho}{QF}\_{CR}\_{unc}\_norm |
+| normalized sub jet vertex mass  | jettag3\_{sample}\_{genPho}{QF}\_{CR}\_{unc}\_norm |
 
-histogram naming : 
-BDT score : bin_%d_%d_%d/BDT_{source}_{control region}
-binning : photon Eta bin = 0~1, jet Eta bin = 0~2, photon Pt bin = 0~24
 
-BDT score : bin_%d_%d_%d/BDT_data_signalRegion
-          : bin_%d_%d_%d/BDT_data_dataSideband
-     gjet : bin_%d_%d_%d/BDT_gjet_signalRegion
-          : bin_%d_%d_%d/BDT_gjet_dataSideband
-     QCD  : bin_%d_%d_%d/BDT_QCD_signalRegion
-          : bin_%d_%d_%d/BDT_QCD_dataSideband
-And each BDT score has shape uncertainty for Higgs Combine
-BDT score : bin_%d_%d_%d/BDT_data_signalRegion_shapeUncUp/Down
-          : bin_%d_%d_%d/BDT_data_dataSideband_shapeUncUp/Down
-     gjet : bin_%d_%d_%d/BDT_gjet_signalRegion_shapeUncUp/Down
-          : bin_%d_%d_%d/BDT_gjet_dataSideband_shapeUncUp/Down
-     QCD  : bin_%d_%d_%d/BDT_QCD_signalRegion_shapeUncUp/Down
-          : bin_%d_%d_%d/BDT_QCD_dataSideband_shapeUncUp/Down
+### binning descriptions
+* bin\_%d\_%d\_%d is photon eta bin \- jet eta bin \- photon pt bin.
+    - photon eta bin 0 \: photon in barrel region.
+    - photon eta bin 1 \: photon in endcap region.
+    - jet eta bin 0 \: jet in barrel region.
+    - jet eta bin 1 \: jet in endcap region.
+    - jet eta bin 2 \: no jet in this category. Single photon only.
+    - photon pt bin 0~24 (Maximum value is forgot.)
+* sample \: "data", "gjet" and "QCD".
+* genPho (is generated photon) \: "GJets" and "DiJet". This comes from MC gen matching.
+    - GJets \: Not a fake photon.
+    - DiJet \: is fake photon.
+* QF (Quark Flavour) \: "L", "C" and "B". This comes from jetHadFlvr code in MC sample.
+    - L \: jetHadFlvr \= 0
+    - C \: jetHadFlvr \= 4
+    - B \: jetHadFlvr \= 5
+* CR (Control Region) \: "signalRegion" and "dataSideband".
+    - signal region \: barrel \= chIso\<2. endcap \= chIso\<1.5.
+    - data sideband \: blah.
+* unc \: uncertainties, every uncertainty has Up and Down.
+    * "shapeUnc" \: Only in BDT score. Which is derived form Difference "calib_mva" and "mva".
+    * "central" \: Only in jettags. Mean value. No Up and Down.
+    * "PUweight" \: Only in jettags. Pile-up weight.
+    * "Stat" \: Only in jettags. statistical uncertaintes.
+    * Note that no any uncertainties in jetSecVtxMass.
 
-jetTag          
-TBD
+
+### Samples of histogram names.
+* lists
+    * bin\_0\_1\_13/BDT\_data\_signalRegion
+    * bin\_1\_0\_18/BDT\_gjet\_signalRegion\_norm
+    * bin\_1\_0\_18/BDT\_gjet\_signalRegion\_shapeUncUp
+    * bin\_1\_0\_18/BDT\_gjet\_signalRegion\_shapeUncUp\_norm
+    * bin\_1\_2\_18/BDT\_QCD\_dataSideband\_shapeUncDown
+    * bin\_1\_2\_18/BDT\_QCD\_dataSideband\_shapeUncDown\_norm
+
+
+    * bin\_1\_0\_3/jettag0_data_dataSideband
+    * bin\_1\_0\_3/jettag0_gjet_GJetsL_signalRegion_central
+    * bin\_1\_0\_3/jettag0_gjet_DiJetL_dataSideband_PUweightUp
+    * bin\_1\_0\_3/jettag0_gjet_GJetsL_signalRegion_PUweightUp_norm
+    * bin\_1\_0\_3/jettag1_gjet_DiJetC_dataSideband_PUweightDown
+    * bin\_1\_0\_3/jettag1_gjet_GJetsC_signalRegion_PUweightDown_norm
+    * bin\_1\_0\_3/jettag1_QCD_GJetsC_dataSideband_StatUp
+    * bin\_1\_0\_3/jettag2_QCD_DiJetB_signalRegion_StatUp_norm
+    * bin\_1\_0\_3/jettag2_QCD_GJetsB_dataSideband_StatDown
+    * bin\_1\_0\_3/jettag2_QCD_DiJetB_signalRegion_StatDown_norm
+    * bin\_1\_0\_3/jettag3_gjet_DiJetB_signalRegion > \(No any uncertainty at jettag3\)
+
