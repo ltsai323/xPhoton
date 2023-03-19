@@ -16,7 +16,6 @@ class TextIOMgr(object):
         if self._exportable:
             with open(filename,'w') as F:
                 logger.debug('exporting')
-                print 'aksdflj'
                 self._contentprovider.WriteTo(F)
 
 
@@ -59,6 +58,5 @@ if __name__ == '__main__':
 
     textio=TextIOMgr()
     textio.SetContent(outputcontent)
-    print 'hi'
     textio.Export('myrecord.md')
 

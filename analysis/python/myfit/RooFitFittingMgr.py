@@ -1,3 +1,4 @@
+from __future__ import print_function
 import ROOT
 from xPhoton.xPhoton.Managers.AdditionalFunctionMgr import ImportAddFunc
 from xPhoton.xPhoton.Managers.LogMgr import GetLogger
@@ -87,7 +88,7 @@ class RooFitFittingMgr(object):
         openedfile=ROOT.TFile.Open(filepath)
         label=loadinfo[0]
         name=loadinfo[1]
-        print name
+        print(name)
         loadedobj=openedfile.Get(name)
         #loadedobj=( label, openedfile.Get(name) )
         #self.loadinfos.append( (openedfile, loadedobj) )

@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 import ROOT
 
 class histMgr(object):
@@ -6,11 +7,11 @@ class histMgr(object):
         self._prefixs=[ str(prefix) for prefix in prefixs ]
         self.hDict={}
         if hasattr(self, '_prefixs'):
-            print 'my prefix is {}'.format(self._prefixs)
+            print('my prefix is {}'.format(self._prefixs))
         else:
-            print ' input prefixes are {}'.format(prefixs)
-            print 'type : {}'.format( type(prefixs) )
-            print 'leng : {}'.format( len(prefixs) )
+            print(' input prefixes are {}'.format(prefixs))
+            print('type : {}'.format( type(prefixs) ))
+            print('leng : {}'.format( len(prefixs) ))
     def Create1D(self, name, nbin, xmin, xmax):
         self.hDict[name]=ROOT.TH1F(self.FullName(name),name,nbin,xmin,xmax)
         self.hDict[name].Sumw2()
