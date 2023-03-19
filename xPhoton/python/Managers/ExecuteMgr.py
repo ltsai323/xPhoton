@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+from __future__ import print_function
 import os
 import commands
 from xPhoton.xPhoton.Managers import LogMgr
@@ -24,10 +26,10 @@ class ExecMgr(object):
     @staticmethod
     def CleanWorkspace(target='output_job_PhotonHFJet_1.root', allfiles='output_job_PhotonHFJet*.root'):
         if os.path.isfile(target):
-            print 'cleaning temporary files'
+            print('cleaning temporary files')
             os.system('/bin/rm %s' % allfiles)
         else:
-            print 'You have a clean workspace'
+            print('You have a clean workspace')
 
 class FileNameConverter(object):
     def __init__(self, prefix=''):
@@ -81,7 +83,7 @@ if __name__ == '__main__':
 
 
     b=FileNameConverter('hi')
-    print b.GetPath('---QQ')
+    print(b.GetPath('---QQ'))
     ExecMgr.CleanWorkspace(
             target='hi.root',
             allfiles='hi*.root'

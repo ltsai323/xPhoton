@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 
 import ROOT
 from xPhoton.xPhoton.Managers.LogMgr import GetLogger
@@ -12,9 +13,7 @@ class ColorMgr(dict):
     __colorcode_dict__ = {}
     def __init__(self):
         self.__dict__=ColorMgr.__colorcode_dict__
-        print 'alksdjfalkdsjf 000'
         ColorMgr.DefineColorSpace()
-        print 'alksdjfalkdsjf 001'
 
 
 
@@ -30,7 +29,7 @@ class ColorMgr(dict):
         ColorMgr._CURRENTNUM+=1
     @staticmethod
     def DefineColorSpace():
-        print 'defining self color'
+        print('defining self color')
         ColorMgr.DefineColor('lightred',      255,158,157)
         ColorMgr.DefineColor('heavyred',      218, 70, 60)
         ColorMgr.DefineColor('lightblue',     255,158,157)

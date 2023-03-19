@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 
 import sys
 import ROOT
@@ -63,7 +64,7 @@ if __name__ == '__main__':
    elif zMultiplier1000 == 'false': zMultiplier1000=False
    else: raise ValueError('You have a wrong input to 2nd argument. The valid argument is true or false')
 
-   print 'z is{0} multiplied by 1000'.format('' if zMultiplier1000 else ' not')
+   print( 'z is{0} multiplied by 1000'.format('' if zMultiplier1000 else ' not') )
 
 
    readObj=readTxt(fname)

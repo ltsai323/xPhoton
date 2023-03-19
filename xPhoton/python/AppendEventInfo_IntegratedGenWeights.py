@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 
 import ROOT
 
@@ -23,4 +24,4 @@ if __name__ == '__main__':
     inputfiles=sys.argv[2:]
 
     for rootfile in inputfiles:
-        print '%s, %d' % ( rootfile, IntegratedGenWeights(rootfile) )
+        print(rootfile, IntegratedGenWeights(rootfile))

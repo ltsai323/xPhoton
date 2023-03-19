@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 
 import ROOT
 from types import MethodType
@@ -17,10 +18,10 @@ SMALL_WindowH=500
 def ClearWorkspace(NeedToClean, directory='storefig'):
     if NeedToClean:
         if os.listdir(directory):
-            print 'cleaning temporary files'
+            print('cleaning temporary files')
             os.system('/bin/rm %s/*'%(directory))
         else:
-            print 'You have a clean workspace'
+            print('You have a clean workspace')
 
 class MyCanvas(object):
     def __init__(self,batchmode=True, smallsize=False):
@@ -50,7 +51,7 @@ class MyCanvas(object):
             for otype in self._outputformats:
                 self.savesinglefile(name, otype)
         else:
-            print 'WARNING : NOTHING SAVED! Use "SetOutputFormats" to assert output format'
+            print('WARNING : NOTHING SAVED! Use "SetOutputFormats" to assert output format')
 
     def savesinglefile(self, name, filetype):
         folder=self._savingFolder+'/'

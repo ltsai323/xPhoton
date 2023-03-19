@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 import ROOT
 import xPhoton.xPhoton.Managers.LogMgr as LogMgr
 mylog=LogMgr.GetLogger(__name__)
@@ -39,10 +40,10 @@ class HistMgr1D(object):
     def WriteTo(self, tfile):
         tfile.mkdir(self._prefix).cd()
         for key, val in self._hists.iteritems():
-            print 'start writing'
-            print val
+            print('start writing')
+            print(val)
             val.Write()
-            print 'end of writing'
+            print('end of writing')
 
     def __setitem__(self, key, item):
         if key in self._hists:
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     hists=HistMgr1D('myprefix')
     hists.CreateHist('hiii', 'hi',100, 0., 100.)
     hists['newhist'] = ROOT.TH1F('newhist', '', 10, 0., 1.)
-    print hists.FullName('hiii')
+    print(hists.FullName('hiii'))
     canv=ROOT.TCanvas('c1','',500,500)
     hists['hiii'].Fill(3)
     hists['hiii'].Draw()
