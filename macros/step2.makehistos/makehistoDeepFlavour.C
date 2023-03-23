@@ -928,8 +928,8 @@ void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const char*
 {
     const std::string dataType(dataTYPE);
 
-    int NEVENT = 10; // testing event
-    //int NEVENT = -1; // all event
+    //int NEVENT = 10; // testing event
+    int NEVENT = -1; // all event
 
     int processTag = 0;
     if ( dataType == "data" )

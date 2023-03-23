@@ -121,7 +121,7 @@ struct EvtSelMgr
 
     Long64_t phoFiredTrgs;
     bool PassHLT(int hltbit) const { if ( HLTOPTION==1 && !((phoFiredTrgs>>hltbit)&1) ) return false; return true; }
-    /* pass all HLT
+    /* only for checking
     bool PassHLT(int hltbit) const
     {
         if ( HLTOPTION == 1 ) return true;
@@ -199,11 +199,20 @@ void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h
 
 inline void Write(const EventBinning& bin, Hists* h, double normalization = NOTHING)
 {
+    TH1* hh = h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
     if ( normalization != NOTHING ) 
-        h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Scale(1./normalization);
+        hh->Scale(1./normalization);
 
-    h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->SetName(h->GetName());
-    h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Write();
+    hh->SetName(h->GetName());
+    hh->Write();
+
+    // Write PDF
+    TH1* hhh = (TH1*) hh->Clone( Form("%s_norm",h->GetName()) );
+
+    double normVal = hhh->GetEntries() > 0 ? 1. / hhh->Integral() : 0.; // check 0
+    hhh->Scale( normVal );
+    hhh->Write();
+
 }
 void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
         float norm_central, float norm_puweightup, float norm_puweightdown, float norm_statup, float norm_statdown );
@@ -230,7 +239,7 @@ bool EvtSelMgr::PassJetAdditionalSelection(int cutIndicator) const
     
 
 
-    if ( isMC && isQCD ) if (!passMaxPUcut ) return false; // temporally disabled
+    if ( isMC && isQCD ) if (!passMaxPUcut ) return false;
 
     return true;
 }
@@ -288,7 +297,8 @@ std::vector<float> ptbin_ranges()
 {
     // for 2016
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
-    std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+    //std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
+    std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000}; // only bin 0~20. size of vector = 21
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15] // old version
     return vec_ptcut;
 }
@@ -309,17 +319,19 @@ Int_t TriggerBit( const std::string& dataera, Int_t ptbin){
         if ( ptbin == 9 ) return 6;  // 155-175
         if ( ptbin ==10 ) return 6;  // 175-190
         if ( ptbin ==11 ) return 7;  // 190-200
-        if ( ptbin ==12 ) return 7;  // 200-300
-        if ( ptbin ==13 ) return 7;  // 300-350
-        if ( ptbin ==14 ) return 7;  // 350-400
-        if ( ptbin ==15 ) return 7;  // 400-500
-        if ( ptbin ==16 ) return 7;  // 500-750
-        if ( ptbin ==17 ) return 8;  // 750-1000 // start to use SinglePho300 
-        if ( ptbin ==18 ) return 8;  //1000-1500
-        if ( ptbin ==19 ) return 8;  //1500-2000
-        if ( ptbin ==20 ) return 8;  //2000-3000
-        if ( ptbin ==21 ) return 8;  //3000-10000
-        if ( ptbin ==22 ) return 8;  // to inf
+        if ( ptbin ==12 ) return 7;  // 200-220
+        if ( ptbin ==13 ) return 7;  // 220-250
+        if ( ptbin ==14 ) return 7;  // 250-300
+        if ( ptbin ==15 ) return 7;  // 300-350
+        if ( ptbin ==16 ) return 7;  // 350-400
+        if ( ptbin ==17 ) return 8;  // 400-500 // start to use SinglePho300 
+        if ( ptbin ==18 ) return 8;  // 500-750
+        if ( ptbin ==19 ) return 8;  // 750-1000
+        if ( ptbin ==20 ) return 8;  //1000-1500 -> 1000-inf
+        //if ( ptbin ==21 ) return 8;  //1500-2000
+        //if ( ptbin ==22 ) return 8;  //2000-3000
+        //if ( ptbin ==23 ) return 8;  //3000-10000
+        //if ( ptbin ==24 ) return 8;  //10000-inf
     }
     if ( dataera == "UL2017" )
     {
@@ -416,5 +428,12 @@ void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEun
         h_shapeUncDown->SetBinContent(ibin,bincontent_uncDown);
     }
     h_shapeUncDown->Write();
+
+    // Write PDF
+    TH1* hhh = (TH1*) h_shapeUncDown->Clone( Form("%s_norm",h_shapeUncDown->GetName()) );
+
+    double normVal = hhh->GetEntries() > 0 ? 1. / hhh->Integral() : 0.;
+    hhh->Scale(normVal);
+    hhh->Write();
 }
 #endif // usefulfunctions_cxx end }}}

@@ -1,4 +1,3 @@
-
 function exec_code()
 {
 num=$1
@@ -17,6 +16,8 @@ Loop($num, "2016ReReco", "data", "$datafile");
 Loop($num, "2016ReReco", "sig" , "$signfile");
 Loop($num, "2016ReReco", "QCD" , "$fakefile");
 EOF
+
+hadd ${outputfolder}.root makehisto_*.root
 mv makehisto_*.root $outputfolder/
 }
 
