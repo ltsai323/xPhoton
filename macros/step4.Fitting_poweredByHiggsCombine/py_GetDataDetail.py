@@ -3,11 +3,8 @@
 def PrintHelp(mesg):
     print('''
             --------------- input arguments ----------------
-            1. pEtaBin: 0,1
-            2. jEtaBin: 0,1,2
-            3. pPtbin: 0~20
-            4. input data era: 2016ReReco,UL2017,UL2018, UL2016
-            5. input step2.root file name
+            1. input data era: 2016ReReco,UL2017,UL2018, UL2016
+            2. input step2.root file name
 
             mesg:
               {}
@@ -17,11 +14,13 @@ def PrintHelp(mesg):
 def ptbin_ranges(dataERA):
     # comes from step2.makehisto ptbin_ranges()
     if dataERA == '2016ReReco' or dataERA == 'UL2016':
-        return (25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000) # size = 16. ptbin = [0,15]
+        return (25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000)
     raise ValueError('data era %s has not been supported yet.'%dataERA)
 def GetPtRange(ptBIN,dataERA):
     pt_bin = int(ptBIN)
     pt_def = list(ptbin_ranges(dataERA))
+    if pt_bin+1 == len(pt_def):
+        return '%d<P_{T#gamma}<Inf'%(pt_def[pt_bin])
     return '%d<P_{T#gamma}<%d'%(pt_def[pt_bin],pt_def[pt_bin+1])
 def GetEtaRange(etaBIN,iNAME):
     etaBin = int(etaBIN)
@@ -30,8 +29,6 @@ def GetEtaRange(etaBIN,iNAME):
     return ''
 
 def GetDataEntries(ifilename,pETAbin,jETAbin,pPTbin):
-    import ROOT
-    ifile=ROOT.TFile.Open(ifilename)
     hdata=ifile.Get('bin_%s_%s_%s/BDT_data_signalRegion'%(pETAbin,jETAbin,pPTbin))
     hgjet=ifile.Get('bin_%s_%s_%s/BDT_gjet_signalRegion'%(pETAbin,jETAbin,pPTbin))
 
@@ -42,33 +39,37 @@ def GetDataEntries(ifilename,pETAbin,jETAbin,pPTbin):
 
 
 def joIN(*argv):
-    return ':'.join( [str(val) for val in argv] )
+    return ':'.join( [str(val) for val in argv] ) + '\n'
 
 if __name__ == "__main__":
     import os
     try:
         # all input as string
-        pEtaBin, jEtaBin, pPtBin, dataEra, ifilename = os.sys.argv[1:]
-        if abs(int(pEtaBin))>1: raise ValueError("pEtaBin is out of range -- "+pEtaBin)
-        if abs(int(jEtaBin))>2: raise ValueError("jEtaBin is out of range -- "+jEtaBin)
-        if abs(int(pPtBin))>25: raise ValueError("pPtBin  is out of range -- "+pPtBin)
+        dataEra, ifilename = os.sys.argv[1:]
         if 'root' not in ifilename: raise ValueError("input filename is not a root file -- "+ifilename)
     except ValueError as vErr:
         PrintHelp(vErr)
 
-    dataEntries = GetDataEntries(ifilename, pEtaBin,jEtaBin,pPtBin)
-    sigEntries = int( float(dataEntries)*0.7 )+1
-    bkgEntries = int( float(dataEntries)*0.3 )+1
-
-    pptRange = GetPtRange(pPtBin,dataEra)
-    petaRange = GetEtaRange(pEtaBin,'#gamma')
-    jetaRange = GetEtaRange(jEtaBin,'jet')
-
-
-
+    import ROOT
+    ifile = ROOT.TFile.Open(ifilename)
 
     with open('getdatadetail.txt','w') as ofile:
-        ofile.write('dataEntries:sigInit:bkgInit:pEtaRange:jEtaRange:pPtRange\n')
-        ofile.write(joIN(dataEntries,sigEntries,bkgEntries,petaRange,jetaRange,pptRange))
+        ofile.write('pEtaBin:jEtaBin:pPtBin:dataEntries:sigInit:bkgInit:pEtaRange:jEtaRange:pPtRange\n')
+        for pEtaBin in range(2):
+            for jEtaBin in range(2):
+                for pPtBin in range(21):
+                    try:
+                        dataEntries = GetDataEntries(ifile, pEtaBin,jEtaBin,pPtBin)
+                        sigEntries = int( float(dataEntries)*0.7 )+1
+                        bkgEntries = int( float(dataEntries)*0.3 )+1
+
+                        pptRange = GetPtRange(pPtBin,dataEra)
+                        petaRange = GetEtaRange(pEtaBin,'#gamma')
+                        jetaRange = GetEtaRange(jEtaBin,'jet')
+
+                        ofile.write(joIN(pEtaBin,jEtaBin,pPtBin,dataEntries,sigEntries,bkgEntries,petaRange,jetaRange,pptRange))
+                    except ValueError as msg:
+                        print(msg)
+                        print('--- skip this entry ---')
         print("Here is your output: getdatadetail.txt")
 
