@@ -3,12 +3,19 @@ Also, the shell scripts stored in subrepository/bin folder inform you how to use
 
 # Installation
 ```bash
-cmsrel CMSSW_11_0_0_pre3
-cd CMSSW_11_0_0_pre3/src
+# note that this code is no more support CMSSW9 now.
+# if you want to use ROOT 6.22 (for RDataFrame and RDF::Node). it is recommended to use CMSSW12
 
-git clone https://github.com/ltsai323/xPhoton
-git clone https://github.com/youyingli/ShowerShapeCorrection.git
-scram b -j8
+# CMSSW version follows Higgs Combine releases.
+export USER_CXXFLAGS="-Wno-error=unused-variable -Wno-error=unused-but-set-variable -DEDM_ML_DEBUG -g"
+cmsrel CMSSW_11_3_4
+cd CMSSW_11_3_4/src
+
+git clone https://github.com/ltsai323/xPhoton.git -b main || exit
+git clone https://github.com/youyingli/ShowerShapeCorrection.git || exit
+scram b -j8 || (echo -e '\n\n compile failed in xPhoton\n\n '; exit)
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit -b v9.0.0 || exit
+scram b -j8 || (echo -e '\n\n compile failed in Higgs Combine \n\n'; exit)
 ```
 
 ### exec_xPhotonRunner in.root 3
