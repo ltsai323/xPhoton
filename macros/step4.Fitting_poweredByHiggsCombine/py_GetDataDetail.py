@@ -11,11 +11,12 @@ def PrintHelp(mesg):
             ------------------------------------------------
             '''.format(mesg))
     exit(1)
-def ptbin_ranges(dataERA):
-    # comes from step2.makehisto ptbin_ranges()
-    if dataERA == '2016ReReco' or dataERA == 'UL2016':
-        return (25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000)
-    raise ValueError('data era %s has not been supported yet.'%dataERA)
+from py_pt_ranges_definition import pt_ranges_test_for_merge_bin as ptbin_ranges
+#def ptbin_ranges(dataERA):
+#    # comes from step2.makehisto ptbin_ranges()
+#    if dataERA == '2016ReReco' or dataERA == 'UL2016':
+#        return (25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000)
+#    raise ValueError('data era %s has not been supported yet.'%dataERA)
 def GetPtRange(ptBIN,dataERA):
     pt_bin = int(ptBIN)
     pt_def = list(ptbin_ranges(dataERA))
@@ -53,11 +54,13 @@ if __name__ == "__main__":
     import ROOT
     ifile = ROOT.TFile.Open(ifilename)
 
+
     with open('getdatadetail.txt','w') as ofile:
         ofile.write('pEtaBin:jEtaBin:pPtBin:dataEntries:sigInit:bkgInit:pEtaRange:jEtaRange:pPtRange\n')
         for pEtaBin in range(2):
             for jEtaBin in range(2):
-                for pPtBin in range(21):
+                #for pPtBin in range(21): # for old 2016 binning
+                for pPtBin in range(16): # for merge bin test
                     try:
                         dataEntries = GetDataEntries(ifile, pEtaBin,jEtaBin,pPtBin)
                         sigEntries = int( float(dataEntries)*0.7 )+1

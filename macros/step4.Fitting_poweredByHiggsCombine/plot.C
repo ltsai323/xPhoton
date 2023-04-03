@@ -94,22 +94,14 @@ void plot(
   SetCompomentHist(hsig_shapeError, 46, 3002);
 
   TCanvas* canv = ARTKIT::signalCanvas();
-  canv->SetFillColor(4000);
-  canv->SetFillStyle(4000);
-
   TPad* upperpad = ARTKIT::TopPad();
   upperpad->Draw();
-  upperpad->SetFillColor(4000);
-  upperpad->SetFillStyle(4000);
   TPad* lowerpad = ARTKIT::BottomPad();
   lowerpad->Draw();
-  lowerpad->SetFillColor(4000);
-  lowerpad->SetFillStyle(4000);
 
   upperpad->cd();
   hdata->Draw("AXIS");
-  //hsig->Draw("HIST E0 SAME");
-  hsig_shapeError->Draw("HIST SAME");
+  hsig->Draw("HIST SAME");
   hbkg->Draw("HIST SAME");
   hfit->Draw("HIST E0 SAME");
   hdata->Draw("P E0 X0 SAME");
@@ -131,8 +123,9 @@ void plot(
 
 
   TH1D* ratioplot = ARTKIT::ratioPlot(hdata,hfit,"BDT Score", "Data/MC");
-  //TH1* shapeUncRatio = GetSystErrHist( hsig_shapeError, hfit);
-  TH1* shapeUncRatio = GetSystErrHist( hfit, hfit); // check original error
+  TH1* shapeUncRatio = GetSystErrHist( hsig_shapeError, hfit);
+
+  //TH1* shapeUncRatio = GetSystErrHist( hfit, hfit); // check original error
   lowerpad->cd();
   ratioplot->SetTitle("");
   ratioplot->Draw("E0 X0");
