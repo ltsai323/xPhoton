@@ -13,6 +13,7 @@
 #include <TFile.h>
 #include <TH1F.h>
 #include <TH2F.h>
+#include <iostream>
 
 #define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
 
@@ -434,6 +435,7 @@ MakeHisto::MakeHisto(const char* fname, const char* outputlabel_, bool isMC, int
   tc->Add(fname);
 
   Init(tc);
+  std::cerr << "is MC ? " << fkMC << std::endl;
 }
 
 MakeHisto::~MakeHisto()
@@ -644,14 +646,17 @@ void MakeHisto::Init(TTree *tree)
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_hf", &jetSF_DeepFlavour_JESReduced_up_hf, &b_jetSF_DeepFlavour_JESReduced_up_hf);
    //fChain->SetBranchAddress("jetSF.DeepFlavour_JESReduced.up_lf", &jetSF_DeepFlavour_JESReduced_up_lf, &b_jetSF_DeepFlavour_JESReduced_up_lf);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
+
+   }
    if ( IsMC() && fChain->GetListOfBranches()->FindObject("passMaxPUcut") )
    {
-   fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
-   fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
+       std::cout << "shitttttttt\n";
+       fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
+       fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
    }
    else
+   //{ printf("FQQQQQQQQ!!!!! function works !!!!\n"); }
    { LOG("PUmax Pt hat selection is disabled."); passMaxPUcut = 1; weight_passMaxPUcut = 1.; }
-   }
    Notify();
 }
 
@@ -703,7 +708,13 @@ bool MakeHisto::HLTPassed(int hltbit)
 Float_t MakeHisto::bTagWeight_Up(Int_t jetFLAVOURbin)
 {
     if (!IsMC() ) return 1.;
-    if ( jetFLAVOURbin == 2 ) return jetSF_DeepCSV_up_hf;
+    // good code
+    //if ( jetFLAVOURbin == 2 ) return jetSF_DeepCSV_up_hf;
+    //if ( jetFLAVOURbin == 1 ) return jetSF_DeepCSV_up_cferr1;
+    //return jetSF_DeepCSV_up_lf;
+
+    // problematic code to check whether fitting failed due to wrong error assignment
+    if ( jetFLAVOURbin == 0 ) return jetSF_DeepCSV_up_hf;
     if ( jetFLAVOURbin == 1 ) return jetSF_DeepCSV_up_cferr1;
     return jetSF_DeepCSV_up_lf;
 }
@@ -715,7 +726,13 @@ Float_t MakeHisto::bTagWeight_Central(Int_t jetFLAVOURbin)
 Float_t MakeHisto::bTagWeight_Down(Int_t jetFLAVOURbin)
 {
     if (!IsMC() ) return 1.;
-    if ( jetFLAVOURbin == 2 ) return jetSF_DeepCSV_down_hf;
+    // good code
+    //if ( jetFLAVOURbin == 2 ) return jetSF_DeepCSV_down_hf;
+    //if ( jetFLAVOURbin == 1 ) return jetSF_DeepCSV_down_cferr1;
+    //return jetSF_DeepCSV_down_lf;
+
+    // problematic code to check whether fitting failed due to wrong error assignment
+    if ( jetFLAVOURbin == 0 ) return jetSF_DeepCSV_down_hf;
     if ( jetFLAVOURbin == 1 ) return jetSF_DeepCSV_down_cferr1;
     return jetSF_DeepCSV_down_lf;
 }

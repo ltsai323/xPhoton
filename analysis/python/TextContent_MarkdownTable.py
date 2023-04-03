@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 from xPhoton.xPhoton.Managers.LogMgr import GetLogger
 logger=GetLogger(__name__)
 FLOAT_DIGIT=6
@@ -22,7 +23,7 @@ class TextContent_MarkdownTable(object):
             else:
                 recContent_=self._evtcontent[index]
             logger.debug('generator got : {0}'.format(recContent_))
-            print recContent_
+            print(recContent_)
             yield self.formattedoutput(recContent_)
             index+=1
     #  def __next__(self):
@@ -56,7 +57,7 @@ class TextContent_MarkdownTable(object):
     ##    pass #asdf
     def WriteTo(self, newfile):
         for line in iter(self):
-            print line
+            print(line)
             newfile.write(line+'\n')
 
     def checkevtstructure(self, extcontent):
@@ -79,8 +80,8 @@ class TextContent_MarkdownTable(object):
 
     def formattedoutput(self,content,SEPARATOR='|'):
         logger.debug('output format is {0}'.format(self._outformat))
-        print self._outformat
-        print content
+        print(self._outformat)
+        print(content)
         newcontent=[ self._outformat[idx] % (cont) if self._outformat else str(cont) for idx,cont in enumerate(content) ]
         return SEPARATOR + SEPARATOR.join(newcontent) + SEPARATOR
 

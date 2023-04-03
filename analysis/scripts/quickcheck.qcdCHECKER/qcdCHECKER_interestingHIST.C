@@ -156,8 +156,8 @@ void OutputManager::GetHistFrom(const char* ifilename)
 
 
     EventSelectionGenerater allEvt("jetPt>0", "mcweight");
-    EventSelectionGenerater puVeto("jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0", "mcweight");
-    EventSelectionGenerater noweig("jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0");
+    EventSelectionGenerater puVeto("jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0", "mcweight");
+    EventSelectionGenerater noweig("jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0");
 
     Drawing(&data_loader, &hists_allsample, &allEvt);
     Drawing(&data_loader, &hists_noLargePU, &puVeto);

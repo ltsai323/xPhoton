@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 
 import ROOT
 from types import MethodType
@@ -17,10 +18,10 @@ SMALL_WindowH=500
 def ClearWorkspace(NeedToClean, directory='storefig'):
     if NeedToClean:
         if os.listdir(directory):
-            print 'cleaning temporary files'
+            print('cleaning temporary files')
             os.system('/bin/rm %s/*'%(directory))
         else:
-            print 'You have a clean workspace'
+            print('You have a clean workspace')
 
 class MyCanvas(ROOT.TCanvas):
     def __init__(self, name, title, width, height):

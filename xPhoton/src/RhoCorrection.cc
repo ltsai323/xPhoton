@@ -8,6 +8,8 @@ float CorrectedRho( float iso, float rho, float effectivearea )
 float EffectiveArea_ChIso(float eta, std::string era)
 {
     if ( era == "2016ReReco" ) return EffectiveArea_ChIso_Spring2016(eta);
+    if ( era == "UL2016PreVFP"  ) return EffectiveArea_ChIso_Spring2016(eta);
+    if ( era == "UL2016PostVFP" ) return EffectiveArea_ChIso_Spring2016(eta);
     if ( era == "UL2017"     ) return EffectiveArea_ChIso_2017v2(eta);
     if ( era == "UL2018"     ) return EffectiveArea_ChIso_2017v2(eta);
     throw "error, input era is not defined";

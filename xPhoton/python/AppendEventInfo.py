@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 fileList=[
 {'pd':'GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'path':'hi.root'}
 ]
@@ -32,14 +33,14 @@ def nodir(path):
 def ShowPD(SummaryFile):
     with open(SummaryFile,'r') as f:
         #for db in json.load(f): print db['pd']
-        for pd, info in json.load(f).iteritems(): print pd
+        for pd, info in json.load(f).iteritems(): print(pd)
 def ShowDetail(SummaryFile):
     with open(SummaryFile,'r') as f:
-        for db in json.load(f): print db
+        for db in json.load(f): print(db)
 
 if __name__ == '__main__':
     for fileinfo in fileList:
-        print GetXS(fileinfo['pd'])
+        print( GetXS(fileinfo['pd']) )
 
 def ValidFile(filepath):
     if ( os.path.exists(filepath) ): return filepath

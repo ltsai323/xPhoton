@@ -1,0 +1,56 @@
+{
+  "GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8": {
+    "v17-v6": {
+      "xs": [
+        232.6, 
+        2.308, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        4.3, 
+        0.04289, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8": {
+    "v13-v3": {
+      "xs": [
+        871.3, 
+        8.42, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        1.148, 
+        0.01115, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8": {
+    "v17-v4": {
+      "xs": [
+        3163.0, 
+        31.19, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.3161, 
+        0.003133, 
+        "1/fb"
+      ]
+    }
+  }
+}

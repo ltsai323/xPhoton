@@ -181,13 +181,13 @@ void FillEvent(TreeReader* data, xQCDTreeContent* evt)
     for( int lheIdx : evt->GenIdxs() )
     {
         TLorentzVector lheP4;
-        ptsum += lheP4.Pt();
         lheP4.SetPxPyPzE( lhePx[lheIdx], lhePy[lheIdx], lhePz[lheIdx], lheE[lheIdx] );
         evt->lhePt         .push_back(lheP4.Pt());
         evt->lheEta        .push_back(lheP4.Eta());
         evt->lhePhi        .push_back(lheP4.Phi());
         evt->lheE          .push_back(lheP4.E());
         evt->lhePID        .push_back(lhePID[lheIdx]);
+        ptsum += lheP4.Pt();
 
         if ( nJet > 0 )
         {

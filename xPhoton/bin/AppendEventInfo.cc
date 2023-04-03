@@ -120,6 +120,8 @@ int main(int argc, const char* argv[])
     std::cout << "in x-sec : " << new_xs << " fb inv" << std::endl;
     std::cout << "input integrated genweights : " << integratedGenWeight << std::endl;
     std::cout << "input integrated luminosity : " << integratedLumi << std::endl;
+    std::cout << "input QCD genHT file : " << (ifile_QCD_genHTcut != nullptr) << std::endl;
+    std::cout << "is QCD sample ? " << isQCDsample << std::endl;
     if ( isQCDsample ) std::cout << "is QCD sample \n";
     
     BUG("03");
@@ -160,7 +162,7 @@ int main(int argc, const char* argv[])
     Float_t jetPt;
     Float_t genHT;
     Int_t   nLHE;
-    std::vector<Float_t>* pthat_PU = nullptr;
+    //std::vector<Float_t>* pthat_PU = nullptr;
     Float_t leadingPUPtHat;
 
     iT->SetBranchAddress("genWeight", &genweight);
@@ -181,7 +183,8 @@ int main(int argc, const char* argv[])
     TH1*   mcinfo_ptThreshold = nullptr;
     TH1*   mcinfo_genHTreweig = nullptr;
     BUG("08: %s", ifile_QCD_genHTcut);
-    if ( isQCDsample )
+    bool hasGenHT = ifile_QCD_genHTcut != nullptr;
+    if ( isQCDsample && hasGenHT )
     {
         mcinfo_file = TFile::Open(ifile_QCD_genHTcut);
         mcinfo_ptThreshold = (TH1*) mcinfo_file->Get("jetpt_threshold");
@@ -199,7 +202,7 @@ int main(int argc, const char* argv[])
         mcweight = new_xs * lumi * genweight / integratedGenWeight;
 
     BUG("09.2");
-        if ( isQCDsample )
+        if ( isQCDsample && hasGenHT )
         {
             if (       leadingPUPtHat>0
                     && leadingPUPtHat<genHT/nLHE
@@ -223,7 +226,7 @@ int main(int argc, const char* argv[])
     oT->Write();
     CloneOtherObjects(iF);
 
-    if ( isQCDsample ) mcinfo_file->Close();
+    if ( isQCDsample && hasGenHT ) mcinfo_file->Close();
     oF->Close();
     iF->Close();
 

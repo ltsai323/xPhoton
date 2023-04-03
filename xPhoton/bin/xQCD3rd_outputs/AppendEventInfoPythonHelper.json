@@ -1,0 +1,11 @@
+{
+  "QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_0200To0300.root", 
+  "QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_2000ToInf.root", 
+  "QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_0500To0700.root", 
+  "QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_0100To0200.root", 
+  "QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_0300To0500.root", 
+  "QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_0050To0100.root", 
+  "QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_1000To1500.root", 
+  "QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_0700To1000.root", 
+  "QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8": "/wk_cms/ltsai/github/xPhoton/xPhoton/bin/xQCD3rd_outputs/xQCD3rd_ScaleFactorCalculationAndJetPtThreshold_cc_1500To2000.root"
+}

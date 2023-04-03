@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 import ROOT
 import xPhoton.analysis.PlotObjectMgr as PlotObject
 import xPhoton.analysis.SelectionsMgr as Selections
@@ -108,7 +109,7 @@ def var_ratioplot(ndata,nsimu,var, display):
 
     fdata=ROOT.TFile.Open(ndata)
     fsimu=ROOT.TFile.Open(nsimu)
-    print ndata
+    print(ndata)
 
     tdata=fdata.Get('t')
     tsimu=fsimu.Get('t')
@@ -164,7 +165,7 @@ def mva_ratioplot(ndata,nsimu, display):
     var='mva'
     fdata=ROOT.TFile.Open(ndata)
     fsimu=ROOT.TFile.Open(nsimu)
-    print ndata
+    print(ndata)
 
     tdata=fdata.Get('t')
     tsimu=fsimu.Get('t')

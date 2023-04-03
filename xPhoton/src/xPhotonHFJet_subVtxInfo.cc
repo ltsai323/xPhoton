@@ -30,7 +30,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/recoInfo.h"
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/BTagCalibrationStandalone.h"
-#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
+//#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 #include "xPhoton/xPhoton/interface/RhoCorrection.h"
@@ -196,18 +196,22 @@ static TH1F *h_Wmn_mt ;
 static TH2F *h2_mcPID_mcPt ;
 
 void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string dataEra){
-    LOG_INFO("end of loading csv file");
-    
 
     TreeReader data(pathes);
+    std::string totfile="";
+    if ( pathes.size() > 1 ) for ( auto pathe : pathes ) totfile=totfile+","+pathe;
+    else totfile = pathes[0];
+    LOG_INFO("Loading files : %s", totfile.c_str());
 
     TFile *fout_;
     LOG_DEBUG("output name is %s" ,oname);
     fout_ = new TFile(oname,"recreate");
     LOG_DEBUG("output tfile is opened");
 
+    LOG_DEBUG("hi01 input dataera : %s and it is NOT equal to UL2016 ? %d", dataEra.c_str(), dataEra != "UL2016");
     TTree *outtree_;
-    ShowerShapeCorrectionAdapter SScorr( dataEra, data.HasMC() );
+    ShowerShapeCorrectionAdapter* SScorr = new ShowerShapeCorrectionAdapter( dataEra, data.HasMC() );
+    LOG_DEBUG("hi02");
 
 
     float ptcut[] = {
@@ -659,8 +663,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
     }
-    //PhotonMVACalculator mvaloader( new MVAParameters_ggAnalysis(&data), dataEra ); // asdf
+    std::cerr << "hi00\n";
     PhotonMVACalculator mvaloader( &data, dataEra );
+    std::cerr << "hi01\n";
 
 
 
@@ -670,9 +675,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
         if ( ev %10000 == 0 ) 
             LOG_INFO(" processing entries %lld in %lld \n", ev, data.GetEntriesFast());
+    LOG_DEBUG("hi00");
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
+    LOG_DEBUG("hi01");
         if ( data.HasMC() )
         {
             overallGenweight += data.GetFloat("genWeight");
@@ -681,6 +688,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     hasNon1Val = 1;
         }
 
+    LOG_DEBUG("hi01");
         Int_t run_     = data.GetInt("run");
         Long64_t event_   = data.GetLong64("event");
         Int_t nVtx_    = data.GetInt("nVtx");
@@ -690,6 +698,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         h_nrecojet->Fill(nJet);	  
         if(nJet <1 ) continue;
 
+    LOG_DEBUG("hi02");
         if(!data.HasMC())
         {
             Int_t hasGoodVtx = data.GetInt("nGoodVtx");
@@ -699,6 +708,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             int metFilters_ = data.GetInt("metFilters");
             if(metFilters_ != 0 ) continue;
         }
+    LOG_DEBUG("hi03");
 
 
 
@@ -1380,6 +1390,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     jetPUIDbit += 1<<1;
                 if ( JetIDMgr::PUIDPassed(&data, jet_index, JetIDMgr::PUJetIDCuts_ULRun2016_CHS_Tight ) )
                     jetPUIDbit += 1<<2;
+                LOG_DEBUG("JetIDMgr passed");
 
 
                 if( data.HasMC() ) {
@@ -1394,9 +1405,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
-
-
                 }
+                LOG_DEBUG("Starting sec vtx info");
 
                 if (hasSubVtxInfo) {
                     jetSubVtxPt_    = jetSubVtxPt   [jet_index];
@@ -1410,6 +1420,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     h_subVtx3DErr->Fill(jetSubVtx3DErr_);
                     h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 }
+                LOG_DEBUG("End of sec vtx info");
 
                 //btagCalibs.FillWeightToEvt(jetPt_,jetEta_);
 
@@ -1469,17 +1480,25 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
                 h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
             }
+            LOG_DEBUG("start to find seed time");
             if (!data.HasMC() ) {
                 SeedTime_ = phoSeedTime[ipho];
+    LOG_DEBUG("hi04.1");
                 SeedEnergy_ = phoSeedEnergy[ipho];
+    LOG_DEBUG("hi04.2");
                 MIPTotEnergy_ = phoMIPTotEnergy[ipho];
+    LOG_DEBUG("hi04.3");
                 HLT = data.GetLong64("HLTPho");
+    LOG_DEBUG("hi04.4");
                 HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
+    LOG_DEBUG("hi04.5");
                 metFilters = data.GetInt("metFilters");
+    LOG_DEBUG("hi04.6");
             }
 
 
 
+    LOG_DEBUG("hi05");
             recoPt    = phoEt[ipho];
             recoPtCalib    = phoEtCalib[ipho];
             recoEta   = phoEta[ipho];
@@ -1489,11 +1508,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             eleVeto   = phoEleVeto[ipho];
             HoverE    = phoHoverE[ipho];
 
+    LOG_DEBUG("hi06");
             phohasPixelSeed_ = phohasPixelSeed[ipho];
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
+    LOG_DEBUG("hi07");
             calib_chIso = data.HasMC() ? -1 : CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
+            LOG_DEBUG("end of Rho Correction");
 
 
             rawE       = phoSCRawE[ipho];
@@ -1513,28 +1535,32 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             esEnergyOverSCRawEnergy = esEn / rawE;
 
             phoIDbit_ = phoIDbit[ipho];
-            if ( data.HasMC() )
+            LOG_DEBUG("start SScorr");
+            if ( data.HasMC() && SScorr != nullptr )
             {
 
-                    //SScorr.CalculateCorrections(&data, ipho);
-                ShowerShapeCorrectionParameters_ggNtuple::loadVars(&SScorr, &data, ipho);
-                SScorr.CalculateCorrections();
-                calib_r9Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::r9                     );
-                calib_s4Full5x5               = SScorr.Corrected(ShowerShapeCorrectionAdapter::s4                     );
-                calib_sieieFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieie                  );
-                calib_sieipFull5x5            = SScorr.Corrected(ShowerShapeCorrectionAdapter::sieip                  );
-                calib_scEtaWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
-                calib_scPhiWidth              = SScorr.Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
-                calib_esEnergyOverSCRawEnergy = SScorr.Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+                    //SScorr->CalculateCorrections(&data, ipho);
+                ShowerShapeCorrectionParameters_ggNtuple::loadVars(SScorr, &data, ipho);
+                SScorr->CalculateCorrections();
+                calib_r9Full5x5               = SScorr->Corrected(ShowerShapeCorrectionAdapter::r9                     );
+                calib_s4Full5x5               = SScorr->Corrected(ShowerShapeCorrectionAdapter::s4                     );
+                calib_sieieFull5x5            = SScorr->Corrected(ShowerShapeCorrectionAdapter::sieie                  );
+                calib_sieipFull5x5            = SScorr->Corrected(ShowerShapeCorrectionAdapter::sieip                  );
+                calib_scEtaWidth              = SScorr->Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
+                calib_scPhiWidth              = SScorr->Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
+                calib_esEnergyOverSCRawEnergy = SScorr->Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+
+                calib_mva = mvaloader.GetMVA_noIso(ipho,SScorr);
             }
 
 
-            //mva = mvaloader.GetMVA_noIso(ipho, &SScorr);
+            LOG_DEBUG("start load SScorr in mva");
+            //mva = mvaloader.GetMVA_noIso(ipho, SScorr);
             //mva_nocorr = mvaloader.GetMVA_noIso(ipho);
             mva = mvaloader.GetMVA_noIso(ipho);
-            //mva_nocorr = mvaloader.GetMVA_noIso(ipho,&&SScorr);
-            if ( data.HasMC() )
-                calib_mva = mvaloader.GetMVA_noIso(ipho,&SScorr);
+            //mva_nocorr = mvaloader.GetMVA_noIso(ipho,SScorr);
+            LOG_DEBUG("start load SScorr in mva 1");
+            LOG_DEBUG("end mva evaluation");
             
             photonIDmva = phoIDMVA[ipho];
 

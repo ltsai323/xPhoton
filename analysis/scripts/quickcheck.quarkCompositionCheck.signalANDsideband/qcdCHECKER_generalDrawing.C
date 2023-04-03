@@ -27,7 +27,8 @@ class MyCanvas : public TCanvas
 const int comp_color[] = { 46, 38, 2,4};
 //const int comp_markcolor[] = { comp_color[0],comp_color[1], 1,1 };
 const int comp_markcolor[] = { comp_color[0],comp_color[1], comp_color[2],comp_color[3]};
-const int comp_markstyle[] = {27,28, 33,34};
+//const int comp_markstyle[] = {27,28, 33,34};
+const int comp_markstyle[] = {33,34, 27,28};
 const int comp_marksize[] = { 2,2,2,2 };
 void VisualizationSetup(const vector<TH1*>& hists)
 {
@@ -65,9 +66,9 @@ TGraph* TranslateToTGraph(TH1* h)
     return newgraph;
 }
     
-void qcdCHECKER_generalDrawing()
+void qcdCHECKER_compositionDrawing(const char* ifilename)
 {
-    TFile* ifile = TFile::Open("qcdCHECKER_plotQuarkCompositionSep_differentSelection_C.root");
+    TFile* ifile = TFile::Open(ifilename);
 
     auto canv = new MyCanvas("canv", "", 1200,1200);
     std::vector<TH1*> bHists;
@@ -112,7 +113,7 @@ void qcdCHECKER_generalDrawing()
         leg->AddEntry(hists->at(idx), titles[idx], "lp");
     }
     leg->Draw();
-    canv->SaveAs("qcdCHECKER_generalDrawing_C_b.pdf");
+    canv->SaveAs("qcdCHECKER_compositionDrawing_C_b.pdf");
     for ( auto ptr : gr ) delete ptr; gr.clear();
     delete leg;
 
@@ -127,7 +128,7 @@ void qcdCHECKER_generalDrawing()
         leg->AddEntry(hists->at(idx), titles[idx], "lp");
     }
     leg->Draw();
-    canv->SaveAs("qcdCHECKER_generalDrawing_C_c.pdf");
+    canv->SaveAs("qcdCHECKER_compositionDrawing_C_c.pdf");
     for ( auto ptr : gr ) delete ptr; gr.clear();
     delete leg;
 
@@ -142,7 +143,100 @@ void qcdCHECKER_generalDrawing()
         leg->AddEntry(hists->at(idx), titles[idx], "lp");
     }
     leg->Draw();
-    canv->SaveAs("qcdCHECKER_generalDrawing_C_L.pdf");
+    canv->SaveAs("qcdCHECKER_compositionDrawing_C_L.pdf");
     for ( auto ptr : gr ) delete ptr; gr.clear();
     delete leg;
+}
+void qcdCHECKER_yieldDrawing(const char* ifilename)
+{
+    TFile* ifile = TFile::Open(ifilename);
+
+    auto canv = new MyCanvas("canv", "", 1200,1200);
+    std::vector<TH1*> bHists;
+    bHists.push_back( (TH1*) ifile->Get("rawSign_bYield") );
+    bHists.push_back( (TH1*) ifile->Get("rawFake_bYield") );
+    bHists.push_back( (TH1*) ifile->Get("cutSign_bYield") );
+    bHists.push_back( (TH1*) ifile->Get("cutFake_bYield") );
+    VisualizationSetup(bHists);
+    bHists[2]->SetMarkerSize(3);
+    bHists[3]->SetMarkerSize(3);
+
+    std::vector<TH1*> cHists;
+    cHists.push_back( (TH1*) ifile->Get("rawSign_cYield") );
+    cHists.push_back( (TH1*) ifile->Get("rawFake_cYield") );
+    cHists.push_back( (TH1*) ifile->Get("cutSign_cYield") );
+    cHists.push_back( (TH1*) ifile->Get("cutFake_cYield") );
+    VisualizationSetup(cHists);
+    cHists[2]->SetMarkerSize(3);
+    cHists[3]->SetMarkerSize(3);
+
+    std::vector<TH1*> LHists;
+    LHists.push_back( (TH1*) ifile->Get("rawSign_LYield") );
+    LHists.push_back( (TH1*) ifile->Get("rawFake_LYield") );
+    LHists.push_back( (TH1*) ifile->Get("cutSign_LYield") );
+    LHists.push_back( (TH1*) ifile->Get("cutFake_LYield") );
+    VisualizationSetup(LHists);
+    LHists[2]->SetMarkerSize(3);
+    LHists[3]->SetMarkerSize(3);
+
+    const char* titles[] = {
+        "original signal region", "original sideband region",
+        "selected signal region", "selected sideband region"
+    };
+
+    std::vector<TH1*>* hists = nullptr;
+    MyLegend* leg = nullptr;
+    canv->SetLogx();
+    canv->SetLogy();
+    std::vector<TGraph*> gr;
+    
+
+    hists = &bHists;
+    leg = new MyLegend(0.5,0.70,0.85,0.80);
+    hists->at(1)->Draw("axis");
+    for ( int idx = 0; idx < hists->size(); ++idx )
+    {
+        gr.push_back( TranslateToTGraph(hists->at(idx)) );
+        gr.back()->Draw("lp");
+        leg->AddEntry(hists->at(idx), titles[idx], "lp");
+    }
+    leg->Draw();
+    canv->SaveAs("qcdCHECKER_yieldDrawing_C_b.pdf");
+    for ( auto ptr : gr ) delete ptr; gr.clear();
+    delete leg;
+
+
+    hists = &cHists;
+    leg = new MyLegend(0.5,0.70,0.85,0.80);
+    hists->at(1)->Draw("axis");
+    for ( int idx = 0; idx < hists->size(); ++idx )
+    {
+        gr.push_back( TranslateToTGraph(hists->at(idx)) );
+        gr.back()->Draw("lp");
+        leg->AddEntry(hists->at(idx), titles[idx], "lp");
+    }
+    leg->Draw();
+    canv->SaveAs("qcdCHECKER_yieldDrawing_C_c.pdf");
+    for ( auto ptr : gr ) delete ptr; gr.clear();
+    delete leg;
+
+
+    hists = &LHists;
+    leg = new MyLegend(0.5,0.70,0.85,0.80);
+    hists->at(1)->Draw("axis");
+    for ( int idx = 0; idx < hists->size(); ++idx )
+    {
+        gr.push_back( TranslateToTGraph(hists->at(idx)) );
+        gr.back()->Draw("lp");
+        leg->AddEntry(hists->at(idx), titles[idx], "lp");
+    }
+    leg->Draw();
+    canv->SaveAs("qcdCHECKER_yieldDrawing_C_L.pdf");
+    for ( auto ptr : gr ) delete ptr; gr.clear();
+    delete leg;
+}
+void qcdCHECKER_generalDrawing()
+{
+    qcdCHECKER_compositionDrawing("qcdCHECKER_plotQuarkCompositionSep_differentSelection_C.root");
+    qcdCHECKER_yieldDrawing("qcdCHECKER_plotQuarkCompositionSep_differentSelection_C.root");
 }

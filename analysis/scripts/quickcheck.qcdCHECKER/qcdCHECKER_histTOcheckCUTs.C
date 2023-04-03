@@ -193,12 +193,13 @@ const int NMCSEP=9;
 int jetptBin_100CUT[NMCSEP] = {7,16,16,18,20,21,22,23,24};
 int jetptBin_10CUT[NMCSEP] = {11,20,20,21,22,23,24,24,24};
 int jetptBin_tenToMinusFiveCut[NMCSEP] = {10,10,15,17,20,20,22,23,24};
+int jetptBin_tenToMinusFiveCut_UL18[NMCSEP] = {10,11,15,17,20,20,22,22,24};
 void NoBin_100Entries(TH1* h, int iMC)
 { DisableBin(h,iMC, jetptBin_100CUT); }
 void NoBin_10Entries(TH1* h, int iMC)
 { DisableBin(h,iMC, jetptBin_10CUT); }
 void NoBin_tenToMinusFive(TH1* h, int iMC)
-{ DisableBin(h,iMC, jetptBin_tenToMinusFiveCut); }
+{ DisableBin(h,iMC, jetptBin_tenToMinusFiveCut_UL18); }
 
 
 
@@ -217,11 +218,12 @@ void qcdCHECKER_histTOcheckCUTs()
     newfile.Add("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT2000toInf.root");
 
     newfile.MakeHistWithSelection("allSample", "jetPt>0", "mcweight");
-    newfile.MakeHistWithSelection("noLargePU", "jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0", "mcweight");
-    newfile.MakeHistWithSelection("noGenWeig", "jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0");
+    //newfile.MakeHistWithSelection("noLargePUold", "jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0", "mcweight");
+    newfile.MakeHistWithSelection("noLargePU", "jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0", "mcweight");
+    //newfile.MakeHistWithSelection("noGenWeig", "jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0");
     
     //// result from qcdCHECKER_jetPtBinCutDecider.C
-    newfile.MakeHistWithSelection("PUvetoAndPtBin10", "jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0", "mcweight", NoBin_10Entries);
-    newfile.MakeHistWithSelection("PUvetoAndPtBin100", "jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0", "mcweight", NoBin_100Entries);
-    newfile.MakeHistWithSelection("PUvetoAndPtBintenTOminusFIVE", "jetPt>0&& genHT/nLHE > maxPUhat && maxPUhat>0", "mcweight", NoBin_tenToMinusFive);
+    //newfile.MakeHistWithSelection("PUvetoAndPtBin10", "jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0", "mcweight", NoBin_10Entries);
+    //newfile.MakeHistWithSelection("PUvetoAndPtBin100", "jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0", "mcweight", NoBin_100Entries);
+    newfile.MakeHistWithSelection("PUvetoAndPtBintenTOminusFIVE", "jetPt>0&& genHT_pthatDef > maxPUhat && maxPUhat>0", "mcweight", NoBin_tenToMinusFive);
 }
