@@ -1,6 +1,7 @@
 BDT score fitting bin by bin.
+
 | Fitting component | description | example |
-| - | - |
+| - | - | - |
 | Fit target | data in signal region | bin_0_0_0/BDT_data_signalRegion |
 | signal | signal MC in signal region | bin_0_0_0/BDT_gjet_signalRegion_norm |
 | signal shape uncertainties | shape uncertainty comes from shower shape correction. Corrected value is central value and original value goes to 1 sigma uncertainty. | bin_0_0_0/BDT_gjet_signalRegion_shapeUncUp_norm |
