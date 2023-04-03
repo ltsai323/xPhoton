@@ -67,7 +67,7 @@ struct CTagWeightHelper
 class CTaggingMgr
 {
 public:
-    CTaggingMgr(const char* dataera, const char* algoType); // : _algoType(algoType)
+    CTaggingMgr(const char* dataera, const char* algoType, bool isMC = true); // : _algoType(algoType)
 
     virtual void RegBranch(TTree* t) final;
     virtual void FillBranch() = 0;
@@ -77,6 +77,8 @@ public:
     virtual void calculation(int flav, float bval, float cval, float lval) final;
     
     virtual ~CTaggingMgr() {}
+
+    bool IsMC() const { return _isMC; }
 private:
     CTagWeightHelper* helper;
     const char* _algoType;
@@ -114,27 +116,28 @@ private:
     //float weight_jesTotalDown           ;
 
     void InitVars();
+    bool _isMC;
 };
 class CTaggingMgr_DeepFlavour : public CTaggingMgr
 {
     public:
-    CTaggingMgr_DeepFlavour(const char* dataera); // : CTaggingMgr(dataera, "DeepFlavour") {}
+    CTaggingMgr_DeepFlavour(const char* dataera, bool isMC); // : CTaggingMgr(dataera, "DeepFlavour") {}
     virtual void SetBranchAddress(TTree* t) override;
     virtual void FillBranch() override;
     virtual ~CTaggingMgr_DeepFlavour() {}
     private:
-    float _bval, _cval, _qval, _gval;
+    float _bval, _bbval, _cval, _qval, _gval;
     int _hadflvr;
 };
 class CTaggingMgr_DeepCSV : public CTaggingMgr
 {
     public:
-    CTaggingMgr_DeepCSV(const char* dataera); // : CTaggingMgr(dataera, "DeepCSV") {}
+    CTaggingMgr_DeepCSV(const char* dataera, bool isMC); // : CTaggingMgr(dataera, "DeepCSV") {}
     virtual void SetBranchAddress(TTree* t) override;
     virtual void FillBranch() override;
     virtual ~CTaggingMgr_DeepCSV() {}
     private:
-    float _bval, _cval, _lval;
+    float _bval, _bbval, _cval, _lval;
     int _hadflvr;
 };
 

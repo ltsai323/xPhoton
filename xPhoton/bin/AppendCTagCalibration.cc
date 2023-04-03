@@ -99,6 +99,8 @@ int main(int argc, const char* argv[])
     TFile* iF = TFile::Open(iFile);
     TTree* iT = (TTree*) iF->Get("t");
 
+    bool ismc = iT->FindBranch("jetHadFlvr") != nullptr;
+
     Float_t jetPt = 0;
     iT->SetBranchAddress("jetPt", &jetPt);
     
@@ -107,11 +109,11 @@ int main(int argc, const char* argv[])
     std::map<const char*, std::shared_ptr<CTaggingMgr>> ctagCalibs;
     if ( useDeepCSV )
     {
-        ctagCalibs["deepcsv"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepCSV    (era));
+        ctagCalibs["deepcsv"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepCSV    (era, ismc));
     }
     if ( useDeepJet )
     {
-        ctagCalibs["deepjet"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepFlavour(era));
+        ctagCalibs["deepjet"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepFlavour(era, ismc));
     }
 
 

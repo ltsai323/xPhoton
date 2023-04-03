@@ -146,7 +146,7 @@ CTagWeightHelper::~CTagWeightHelper() { wtFile->Close(); wtFile = nullptr; }
 
 
 
-CTaggingMgr::CTaggingMgr(const char* dataera, const char* algoType) : _algoType(algoType)
+CTaggingMgr::CTaggingMgr(const char* dataera, const char* algoType, bool isMC) : _algoType(algoType), _isMC(isMC)
 { helper = new CTagWeightHelper( ExternalFilesMgr::RooFile_CTagCalibs( std::string(algoType), std::string(dataera)) ); }
 
 void CTaggingMgr::RegBranch(TTree* t)
@@ -154,6 +154,8 @@ void CTaggingMgr::RegBranch(TTree* t)
     t->Branch( Form("%s.CvsB",_algoType), &cvsb, Form("%s.CvsB/F",_algoType) );
     t->Branch( Form("%s.CvsL",_algoType), &cvsl, Form("%s.CvsL/F",_algoType) );
     t->Branch( Form("%s.bScore",_algoType), &bscore, Form("%s.bScore/F",_algoType) );
+
+    if (!IsMC() ) return;
     t->Branch( Form("%s.ctagWeight.central",_algoType), &weight_central, Form("%s.ctagWeight.central/F",_algoType) );
     //t->Branch( Form("%s.ctagWeight.TotalUncUp",_algoType), &weight_totUp, Form("%s.ctagWeight.TotalUncUp/F",_algoType) );
     //t->Branch( Form("%s.ctagWeight.TotalUncDown",_algoType), &weight_totDn, Form("%s.ctagWeight.TotalUncDown/F",_algoType) );
@@ -200,7 +202,9 @@ void CTaggingMgr::calculation(int flav, float bval, float cval, float lval)
     if ( (cval < 0) || ((cval+lval) == 0) || ((cval+bval) == 0 ) ) return;
     cvsb = cval/(cval+bval);
     cvsl = cval/(cval+lval);
-    bscore = (cvsl*(1.-cvsb)) / (cvsl+cvsb - cvsl*cvsb);
+    //bscore = (cvsl*(1.-cvsb)) / (cvsl+cvsb - cvsl*cvsb);
+    bscore = bval;
+    if (!IsMC() ) return;
     
 
     weight_central = helper->GetWeight(flav, cvsb, cvsl);
@@ -283,33 +287,39 @@ void CTaggingMgr::InitVars()
 
 
 
-CTaggingMgr_DeepFlavour::CTaggingMgr_DeepFlavour(const char* dataera) : CTaggingMgr(dataera, "DeepFlavour") {}
+CTaggingMgr_DeepFlavour::CTaggingMgr_DeepFlavour(const char* dataera, bool isMC) : CTaggingMgr(dataera, "DeepFlavour", isMC) {}
 void CTaggingMgr_DeepFlavour::SetBranchAddress(TTree* t)
 {
+    t->SetBranchAddress("jetDeepFlavourTags_bb" ,&_bbval);
     t->SetBranchAddress("jetDeepFlavourTags_b"  , &_bval);
     t->SetBranchAddress("jetDeepFlavourTags_c"  , &_cval);
     t->SetBranchAddress("jetDeepFlavourTags_uds", &_qval);
     t->SetBranchAddress("jetDeepFlavourTags_g"  , &_gval);
+
+    if (!IsMC()) return;
     t->SetBranchAddress("jetHadFlvr", &_hadflvr);
 }
 void CTaggingMgr_DeepFlavour::FillBranch()
 {
-    this->calculation(_hadflvr, _bval, _cval, _qval+_gval);
+    this->calculation(_hadflvr, _bval+_bbval, _cval, _qval+_gval);
 }
 
 
 
 
 
-CTaggingMgr_DeepCSV::CTaggingMgr_DeepCSV(const char* dataera) : CTaggingMgr(dataera, "DeepCSV") {}
+CTaggingMgr_DeepCSV::CTaggingMgr_DeepCSV(const char* dataera, bool isMC) : CTaggingMgr(dataera, "DeepCSV", isMC) {}
 void CTaggingMgr_DeepCSV::SetBranchAddress(TTree* t)
 {
-    t->SetBranchAddress("jetDeepCSVTags_b", &_bval);
-    t->SetBranchAddress("jetDeepCSVTags_c", &_cval);
+    t->SetBranchAddress("jetDeepCSVTags_bb"  ,&_bbval);
+    t->SetBranchAddress("jetDeepCSVTags_b"   , &_bval);
+    t->SetBranchAddress("jetDeepCSVTags_c"   , &_cval);
     t->SetBranchAddress("jetDeepCSVTags_udsg", &_lval);
+
+    if (!IsMC()) return;
     t->SetBranchAddress("jetHadFlvr", &_hadflvr);
 }
 void CTaggingMgr_DeepCSV::FillBranch()
 {
-    this->calculation(_hadflvr, _bval, _cval, _lval);
+    this->calculation(_hadflvr, _bval+_bbval, _cval, _lval);
 }

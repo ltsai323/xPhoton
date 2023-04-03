@@ -675,9 +675,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
         if ( ev %10000 == 0 ) 
             LOG_INFO(" processing entries %lld in %lld \n", ev, data.GetEntriesFast());
+    LOG_DEBUG("hi00");
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
+    LOG_DEBUG("hi01");
         if ( data.HasMC() )
         {
             overallGenweight += data.GetFloat("genWeight");
@@ -686,6 +688,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     hasNon1Val = 1;
         }
 
+    LOG_DEBUG("hi01");
         Int_t run_     = data.GetInt("run");
         Long64_t event_   = data.GetLong64("event");
         Int_t nVtx_    = data.GetInt("nVtx");
@@ -695,6 +698,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         h_nrecojet->Fill(nJet);	  
         if(nJet <1 ) continue;
 
+    LOG_DEBUG("hi02");
         if(!data.HasMC())
         {
             Int_t hasGoodVtx = data.GetInt("nGoodVtx");
@@ -704,6 +708,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             int metFilters_ = data.GetInt("metFilters");
             if(metFilters_ != 0 ) continue;
         }
+    LOG_DEBUG("hi03");
 
 
 
@@ -1478,15 +1483,22 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             LOG_DEBUG("start to find seed time");
             if (!data.HasMC() ) {
                 SeedTime_ = phoSeedTime[ipho];
+    LOG_DEBUG("hi04.1");
                 SeedEnergy_ = phoSeedEnergy[ipho];
+    LOG_DEBUG("hi04.2");
                 MIPTotEnergy_ = phoMIPTotEnergy[ipho];
+    LOG_DEBUG("hi04.3");
                 HLT = data.GetLong64("HLTPho");
+    LOG_DEBUG("hi04.4");
                 HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
+    LOG_DEBUG("hi04.5");
                 metFilters = data.GetInt("metFilters");
+    LOG_DEBUG("hi04.6");
             }
 
 
 
+    LOG_DEBUG("hi05");
             recoPt    = phoEt[ipho];
             recoPtCalib    = phoEtCalib[ipho];
             recoEta   = phoEta[ipho];
@@ -1496,10 +1508,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             eleVeto   = phoEleVeto[ipho];
             HoverE    = phoHoverE[ipho];
 
+    LOG_DEBUG("hi06");
             phohasPixelSeed_ = phohasPixelSeed[ipho];
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
+    LOG_DEBUG("hi07");
             calib_chIso = data.HasMC() ? -1 : CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
             LOG_DEBUG("end of Rho Correction");
 
@@ -1535,6 +1549,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 calib_scEtaWidth              = SScorr->Corrected(ShowerShapeCorrectionAdapter::etaWidth               );
                 calib_scPhiWidth              = SScorr->Corrected(ShowerShapeCorrectionAdapter::phiWidth               );
                 calib_esEnergyOverSCRawEnergy = SScorr->Corrected(ShowerShapeCorrectionAdapter::esEnergyOverSCRawEnergy);
+
+                calib_mva = mvaloader.GetMVA_noIso(ipho,SScorr);
             }
 
 
@@ -1544,8 +1560,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             mva = mvaloader.GetMVA_noIso(ipho);
             //mva_nocorr = mvaloader.GetMVA_noIso(ipho,SScorr);
             LOG_DEBUG("start load SScorr in mva 1");
-            if ( data.HasMC() && (SScorr != nullptr) )
-                calib_mva = mvaloader.GetMVA_noIso(ipho,SScorr);
             LOG_DEBUG("end mva evaluation");
             
             photonIDmva = phoIDMVA[ipho];
