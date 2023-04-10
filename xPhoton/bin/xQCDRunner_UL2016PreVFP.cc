@@ -47,6 +47,6 @@ int main(int argc, char* argv[])
     xQCDChecker(
             GetFileName(argc,argv),
             GetOption  (argc,argv),
-            "2016ReReco"
+            "UL2016PreVFP"
             );
 }
