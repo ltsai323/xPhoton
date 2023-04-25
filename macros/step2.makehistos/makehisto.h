@@ -298,7 +298,7 @@ std::vector<float> ptbin_ranges()
     // for 2016
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
     //std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
-    std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000}; // only bin 0~20. size of vector = 21
+    std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000}; // new binning for statistics
     //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15] // old version
     return vec_ptcut;
 }
@@ -309,7 +309,7 @@ Int_t TriggerBit( const std::string& dataera, Int_t ptbin){
     {
         if ( ptbin == 0 ) return 0;  //  25- 34 -> 25-34
         if ( ptbin == 1 ) return 1;  //  34- 40
-        if ( ptbin == 2 ) return 2;  //  40- 55 -> 41-56
+        if ( ptbin == 2 ) return 2;  //  40- 55 -> 40-56
         if ( ptbin == 3 ) return 3;  //  55- 70 -> 56-70?
         if ( ptbin == 4 ) return 3;  //  70- 85
         if ( ptbin == 5 ) return 4;  // 85-100
