@@ -17,6 +17,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <iostream>
+#include "ptbin_definitions.h"
 
 #define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
 #define BUG(format, args...)     fprintf(stderr, "[BUG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
@@ -85,10 +86,12 @@ struct Normalization_CTagReshaped
 };
 struct EvtSelMgr
 {
-    EvtSelMgr(bool ismc, bool isqcd, bool hltoption) : isMC(ismc), isQCD(isqcd), HLTOPTION(hltoption) {}
+    EvtSelMgr(bool ismc, bool isqcd, bool hltoption) : isMC(ismc), isQCD(isqcd), HLTOPTION(hltoption)
+    {}
     const bool isMC, isQCD;
     const bool HLTOPTION;
     int jethadflvr;
+    void SetUsedVar_4(int jetHADflvr ) { jethadflvr = jetHADflvr; }
     bool isBJet() const { return jethadflvr == JetFlavour::B; }
     bool isCJet() const { return jethadflvr == JetFlavour::C; }
     bool isLJet() const { return jethadflvr == JetFlavour::L; }
@@ -97,6 +100,8 @@ struct EvtSelMgr
     float chIso;
     float phoEta;
     float isMatched;
+    void SetUsedVar_3( float chISO, float phoETA, float isMATCHED )
+    { chIso = chISO; phoEta = phoETA; isMatched = isMATCHED; }
     int PhoMatchedStatus() const { return 1; } // asdf implement needed
 
     float jetPt;
@@ -107,31 +112,28 @@ struct EvtSelMgr
     float jetSubVtxMass;
     float CvsL;
     int passMaxPUcut;
+    void SetUsedVar_2( float jetPT, float jetETA, float cSCORE, int jetID_, int jetPUidBIT, float jetSUBvtxMASS, float CvsL_, int passMAXpuCUT )
+    { jetPt = jetPT; jetEta = jetETA; cScore = cSCORE; jetID = jetID_; jetPUIDbit = jetPUidBIT; jetSubVtxMass = jetSUBvtxMASS; CvsL = CvsL_; passMaxPUcut = passMAXpuCUT; }
     bool PassJetAdditionalSelection(int cutIndicator) const;
 
     float recoSCEta;
     float sieieFull5x5;
     float HoverE;
+    void SetUsedVar_1( float recoSCeta, float sieieFULL5x5, float hOVERe )
+    { recoSCEta = recoSCeta; sieieFull5x5 = sieieFULL5x5; HoverE = hOVERe; }
     bool InFiducialRegion() const;
 
     float MET;
     float phoPt;
     int eleVeto;
+    int phoFilledIdx;
+    void SetUsedVar_0( float mET, float phoPT, int eleVETO, int phoFILLEDidx )
+    { MET = mET; phoPt = phoPT; eleVeto = eleVETO; phoFilledIdx = phoFILLEDidx; }
     bool PassPhotonPreSelection(int ptbin) const;
 
     Long64_t phoFiredTrgs;
+    void SetUsedVar__( Long64_t phoFIREDtrgs ) { phoFiredTrgs = phoFIREDtrgs; }
     bool PassHLT(int hltbit) const { if ( HLTOPTION==1 && !((phoFiredTrgs>>hltbit)&1) ) return false; return true; }
-    /* only for checking
-    bool PassHLT(int hltbit) const
-    {
-        if ( HLTOPTION == 1 ) return true;
-
-        bool passed = false;
-        for ( int ibin = 0; ibin <= 8; ++ibin )
-            if ( ((phoFiredTrgs>>ibin)&1) == 1 ) return true;
-        return false;
-    }
-    */
 
     private:
     EvtSelMgr() : isMC(false),isQCD(false),HLTOPTION(false) {}
@@ -181,8 +183,6 @@ struct Hists_CTagReshaped
 
 
 
-std::vector<float> ptbin_ranges();
-Int_t TriggerBit( const std::string& dataera, Int_t ptbin );
 
 
 
@@ -258,6 +258,8 @@ bool EvtSelMgr::PassPhotonPreSelection(int ptbin) const
     //if(MET/phoPt > 0.7) return false; // disabled for 2016. This effect not longer seen. And this cut cut out of lot events
     if ( eleVeto == 0 ) return false;
     if ( ptbin<0 ) return false;
+
+    if ( phoFilledIdx != 0 ) return false; // only keep leading photon
     return true;
 }
 #endif // end of  EvtSelMgr_cxx }}}
@@ -293,79 +295,7 @@ int EventBinning::phodatasideband(float isovar) const
 }
 #endif // end of define EventBinning_cxx }}}
 #ifdef usefulfunctions_cxx // {{{
-std::vector<float> ptbin_ranges()
-{
-    // for 2016
-    //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
-    //std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
-    std::vector<float> vec_ptcut{25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000}; // new binning for statistics
-    //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15] // old version
-    return vec_ptcut;
-}
-Int_t TriggerBit( const std::string& dataera, Int_t ptbin){
-    if ( dataera == "2016ReReco" ||
-         dataera == "UL16PreVFP" ||
-         dataera == "UL16PostVFP" )
-    {
-        if ( ptbin == 0 ) return 0;  //  25- 34 -> 25-34
-        if ( ptbin == 1 ) return 1;  //  34- 40
-        if ( ptbin == 2 ) return 2;  //  40- 55 -> 40-56
-        if ( ptbin == 3 ) return 3;  //  55- 70 -> 56-70?
-        if ( ptbin == 4 ) return 3;  //  70- 85
-        if ( ptbin == 5 ) return 4;  // 85-100
-        if ( ptbin == 6 ) return 5;  // 100-115
-        if ( ptbin == 7 ) return 5;  // 115-135
-        if ( ptbin == 8 ) return 6;  // 135-155
-        if ( ptbin == 9 ) return 6;  // 155-175
-        if ( ptbin ==10 ) return 6;  // 175-190
-        if ( ptbin ==11 ) return 7;  // 190-200
-        if ( ptbin ==12 ) return 7;  // 200-220
-        if ( ptbin ==13 ) return 7;  // 220-250
-        if ( ptbin ==14 ) return 7;  // 250-300
-        if ( ptbin ==15 ) return 7;  // 300-350
-        if ( ptbin ==16 ) return 7;  // 350-400
-        if ( ptbin ==17 ) return 8;  // 400-500 // start to use SinglePho300 
-        if ( ptbin ==18 ) return 8;  // 500-750
-        if ( ptbin ==19 ) return 8;  // 750-1000
-        if ( ptbin ==20 ) return 8;  //1000-1500 -> 1000-inf
-        //if ( ptbin ==21 ) return 8;  //1500-2000
-        //if ( ptbin ==22 ) return 8;  //2000-3000
-        //if ( ptbin ==23 ) return 8;  //3000-10000
-        //if ( ptbin ==24 ) return 8;  //10000-inf
-    }
-    if ( dataera == "UL2017" )
-    {
-        return 0;
-    }
-    if ( dataera == "UL2018" )
-    {
-        if ( ptbin == 0 ) return 0;  //  25- 34
-        if ( ptbin == 1 ) return 0;  //  34- 40
-        if ( ptbin == 2 ) return 0;  //  40- 55
-        if ( ptbin == 3 ) return 1;  //  55- 70
-        if ( ptbin == 4 ) return 1;  //  70- 85
-        if ( ptbin == 5 ) return 2;  // 85-100
-        if ( ptbin == 6 ) return 3;  // 100-115
-        if ( ptbin == 7 ) return 3;  // 115-135
-        if ( ptbin == 8 ) return 4;  // 135-155
-        if ( ptbin == 9 ) return 5;  // 155-175
-        if ( ptbin ==10 ) return 6;  // 175-190
-        if ( ptbin ==11 ) return 6;  // 190-200
-        if ( ptbin ==12 ) return 7;  // 200-300
-        if ( ptbin ==13 ) return 8;  // 300-350
-        if ( ptbin ==14 ) return 8;  // 350-400
-        if ( ptbin ==15 ) return 8;  // 400-500
-        if ( ptbin ==16 ) return 8;  // 500-750
-        if ( ptbin ==17 ) return 8;  // 750-1000
-        if ( ptbin ==18 ) return 8;  //1000-1500
-        if ( ptbin ==19 ) return 8;  //1500-2000
-        if ( ptbin ==20 ) return 8;  //2000-3000
-        if ( ptbin ==21 ) return 8;  //3000-10000
-        if ( ptbin ==22 ) return 8;  // to inf
-    }
 
-    return -1; // nothing
-}
 
 
 

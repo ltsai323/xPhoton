@@ -11,7 +11,8 @@ def PrintHelp(mesg):
             ------------------------------------------------
             '''.format(mesg))
     exit(1)
-from py_pt_ranges_definition import pt_ranges_test_for_merge_bin as ptbin_ranges
+#from py_pt_ranges_definition import pt_ranges_test_for_merge_bin as ptbin_ranges
+from py_pt_ranges_definition import ptbin_ranges
 #def ptbin_ranges(dataERA):
 #    # comes from step2.makehisto ptbin_ranges()
 #    if dataERA == '2016ReReco' or dataERA == 'UL2016':
