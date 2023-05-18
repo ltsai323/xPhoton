@@ -7,6 +7,10 @@ if [ "$2" == "" ]; then
     exit
 fi
 
+function raiseError() { echo 'Please load higgs combine environment!';  exit 1 }
+sh ~/goToWorkSession/higgsCombine.sh check && echo 'passed higgs combine env checking' || raiseError
+
+
 touch out_fit_result; /bin/rm -r out_fit_result # clean up
 echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > 2016ReReco.data.yield.dat
 echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > 2016ReReco.data.bkg.dat
