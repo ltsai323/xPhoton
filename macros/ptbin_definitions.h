@@ -47,7 +47,7 @@ Int_t TriggerBit_2016_mergedBin_test1(Int_t ptbin)
     if ( ptbin == 7 ) return 7;  // 175-220
     if ( ptbin == 8 ) return 7;  // 220-250
     if ( ptbin == 9 ) return 7;  // 250-300
-    if ( ptbin ==11 ) return 7;  // 300-350
+    if ( ptbin ==10 ) return 7;  // 300-350
     if ( ptbin ==11 ) return 7;  // 350-400
     if ( ptbin ==12 ) return 8;  // 400-500
     if ( ptbin ==13 ) return 8;  // 500-700

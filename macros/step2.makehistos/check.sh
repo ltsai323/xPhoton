@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 
 function exec_code()
 {
@@ -18,6 +19,6 @@ mv makehisto_*.root $outputfolder/
 }
 
 
-exec_code 0 makehistoDeepFlavour.C DeepFlavour_cutIdx0
-#exec_code 0 makehistoDeepCSV.C deepflavour_CUT_NOCUT
+exec_code 0 makehistoDeepFlavour.C DeepFlavour_cutIdx0_mergeBin_test1
+exec_code 0 makehistoDeepCSV.C DeepCSV_cutIdx0_mergeBin_test1
 

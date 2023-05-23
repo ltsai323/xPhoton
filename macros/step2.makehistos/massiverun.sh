@@ -1,6 +1,6 @@
 function exec_code()
 {
-num=$1
+jetCutIdx=$1
 inputcode=$2
 outputfolder=$3
 
@@ -12,9 +12,9 @@ fakefile=/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/QCD_
 mkdir -p $outputfolder
 root -b <<EOF
 .L $inputcode
-Loop($num, "2016ReReco", "data", "$datafile");
-Loop($num, "2016ReReco", "sig" , "$signfile");
-Loop($num, "2016ReReco", "QCD" , "$fakefile");
+Loop($jetCutIdx, "2016ReReco", "data", "$datafile");
+Loop($jetCutIdx, "2016ReReco", "gjet", "$signfile");
+Loop($jetCutIdx, "2016ReReco", "QCD" , "$fakefile");
 EOF
 
 hadd ${outputfolder}.root makehisto_*.root
@@ -23,11 +23,11 @@ mv makehisto_*.root $outputfolder/
 
 touch makehisto_aaaa.root; /bin/rm makehisto_*.root # clean up
 
-exec_code 0 makehistoDeepFlavour.C deepflavour_CUT_NOCUT 0
-exec_code 1 makehistoDeepFlavour.C deepflavour_CUT_subJetVtxMass 1
-exec_code 2 makehistoDeepFlavour.C deepflavour_CUT_CvsL 2
+exec_code 0 makehistoDeepFlavour.C newBin_deepflavour_CUT_NOCUT
+exec_code 1 makehistoDeepFlavour.C newBin_deepflavour_CUT_subJetVtxMass
+exec_code 2 makehistoDeepFlavour.C newBin_deepflavour_CUT_CvsL
 
-exec_code 0 makehistoDeepCSV.C deepcsv_CUT_NOCUT 0
-exec_code 1 makehistoDeepCSV.C deepcsv_CUT_subJetVtxMass 1
-exec_code 2 makehistoDeepCSV.C deepcsv_CUT_CvsL 2
+exec_code 0 makehistoDeepCSV.C newBin_deepcsv_CUT_NOCUT
+exec_code 1 makehistoDeepCSV.C newBin_deepcsv_CUT_subJetVtxMass
+exec_code 2 makehistoDeepCSV.C newBin_deepcsv_CUT_CvsL
 

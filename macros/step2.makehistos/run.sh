@@ -1,19 +1,38 @@
+#!/usr/bin/env sh
 datafile=$1
 signfile=$2
-fakefile=$3
+qcdfile=$3
 
+function exec_code()
+{
+jetCutIdx=$1
+inputcode=$2
+outputfolder=$3
 
-cutIdx=1 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
-inputcode=makehistoDeepFlavour.C
-#inputcode=makehistoDeepCSV.C
-outputfolder=makehist_`echo $inputcode | cut -d'.' -f1`
+f_data=$4
+f_sign=$5
+f_qcd=$6
 mkdir -p $outputfolder
 root -b <<EOF
 .L $inputcode
-Loop($cutIdx, "2016ReReco", "data", "$datafile");
-Loop($cutIdx, "2016ReReco", "sig" , "$signfile");
-Loop($cutIdx, "2016ReReco", "QCD" , "$fakefile");
+Loop($jetCutIdx, "2016ReReco", "data", "$f_data");
+Loop($jetCutIdx, "2016ReReco", "gjet", "$f_sign");
+Loop($jetCutIdx, "2016ReReco", "QCD" , "$f_qcd" );
 EOF
-hadd ${outputfolder}.root makehisto_*.root
+hadd makehisto.root makehisto_*.root
+
+mv makehisto.root $outputfolder/
 mv makehisto_*.root $outputfolder/
-echo "Here is your output : ${outputfolder}.root and ${outputfolder}/"
+}
+
+
+cutIdx=0 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
+mainFunc=makehistoDeepFlavour.C
+outDir=DeepFlavour_cutIdx0_mergeBin_test1
+exec_code $cutIdx $mainFunc $outDir $datafile $signfile $qcdfile
+
+cutIdx=0 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
+mainFunc=makehistoDeepCSV.C
+outDir=DeepCSV_cutIdx0_mergeBin_test1
+exec_code $cutIdx $mainFunc $outDir $datafile $signfile $qcdfile
+
