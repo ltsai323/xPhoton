@@ -7,7 +7,7 @@ if [ "$2" == "" ]; then
     exit
 fi
 
-function raiseError() { echo 'Please load higgs combine environment!';  exit 1 }
+function raiseError() { echo 'Please load higgs combine environment!';  exit 1; }
 sh ~/goToWorkSession/higgsCombine.sh check && echo 'passed higgs combine env checking' || raiseError
 
 
