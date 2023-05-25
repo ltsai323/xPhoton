@@ -1,0 +1,73 @@
+09-Aug-2021 05:05:49 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/mc/RunIISummer16MiniAODv3/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/110000/4C171EC9-12EA-E811-B437-C0BFC0E56816.root
+%MSG-w XrdAdaptorInternal:  file_open 09-Aug-2021 05:05:50 CEST pre-events
+Failed to open file at URL root://eoscms.cern.ch:1094//eos/cms/store/mc/RunIISummer16MiniAODv3/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/110000/4C171EC9-12EA-E811-B437-C0BFC0E56816.root.
+%MSG
+%MSG-w XrdAdaptorInternal:  file_open 09-Aug-2021 05:05:50 CEST pre-events
+Failed to open file at URL root://eoscms.cern.ch:1094//eos/cms/store/mc/RunIISummer16MiniAODv3/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/110000/4C171EC9-12EA-E811-B437-C0BFC0E56816.root?tried=.
+%MSG
+09-Aug-2021 05:05:50 CEST  Fallback request to file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/110000/4C171EC9-12EA-E811-B437-C0BFC0E56816.root
+[2021-08-09 05:05:52.099478 +0200][Error  ][AsyncSock         ] [se3.itep.ru:1094 #0.0] Socket error while handshaking: [FATAL] Auth failed
+[2021-08-09 05:05:52.099639 +0200][Error  ][PostMaster        ] [se3.itep.ru:1094 #0] elapsed = 1, pConnectionWindow = 31 seconds.
+%MSG-w XrdAdaptor:  file_open 09-Aug-2021 05:05:53 CEST pre-events
+Data is served from itep.ru instead of original site T2_IT_Pisa
+%MSG
+09-Aug-2021 05:05:55 CEST  Successfully opened file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/110000/4C171EC9-12EA-E811-B437-C0BFC0E56816.root
+Begin processing the 1st record. Run 1, Event 425426, LumiSection 144 on stream 0 at 09-Aug-2021 05:06:00.193 CEST
+   3184.124130      0.550403      2.802817             0
+  21495.452611      3.715498      2.802817             1
+  74892.622982     12.945151      2.802817             2
+ 
+09-Aug-2021 05:06:01 CEST  Closed file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v2/110000/4C171EC9-12EA-E811-B437-C0BFC0E56816.root
+
+------------------------------------
+GenXsecAnalyzer:
+------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+Overall cross-section summary 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Process		xsec_before [pb]		passed	nposw	nnegw	tried	nposw	nnegw 	xsec_match [pb]			accepted [%]	 event_eff [%]
+0		3.183e+03 +/- 8.614e-01		63	63	0	4697	4697	0	4.270e+01 +/- 5.343e+00		1.3 +/- 0.2	1.3 +/- 0.2
+1		2.152e+04 +/- 5.822e+00		314	314	0	31971	31971	0	2.113e+02 +/- 1.187e+01		1.0 +/- 0.1	1.0 +/- 0.1
+2		7.490e+04 +/- 2.027e+01		9686	9686	0	111242	111242	0	6.522e+03 +/- 6.334e+01		8.7 +/- 0.1	8.7 +/- 0.1
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+Total		9.960e+04 +/- 2.110e+01		10063	10063	0	147910	147910	0	6.776e+03 +/- 6.523e+01		6.8 +/- 0.1	6.8 +/- 0.1
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Before matching: total cross section = 9.960e+04 +- 2.110e+01 pb
+After matching: total cross section = 6.776e+03 +- 6.523e+01 pb
+Matching efficiency = 0.1 +/- 0.0   [TO BE USED IN MCM]
+Filter efficiency (taking into account weights)= (10063) / (10063) = 1.000e+00 +- 0.000e+00
+Filter efficiency (event-level)= (10063) / (10063) = 1.000e+00 +- 0.000e+00    [TO BE USED IN MCM]
+
+After filter: final cross section = 6.776e+03 +- 6.523e+01 pb
+After filter: final fraction of events with negative weights = 0.000e+00 +- 0.000e+00
+After filter: final equivalent lumi for 1M events (1/fb) = 1.476e-01 +- 1.428e-03
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 GenXSecAnalyzer      -w GenXSecAnalyzer:                      17       17
+    2 XrdAdaptor           -w file_open                              1        1
+    3 XrdAdaptorInternal   -w file_open                              2        2
+    4 fileAction           -s file_close                             1        1
+    5 fileAction           -s file_open                              3        3
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 GenXSecAnalyzer      PostGlobalEndRun PostGlobalEndRun PostGlobalEndRun
+    2 XrdAdaptor           pre-events                        
+    3 XrdAdaptorInternal   pre-events       pre-events       
+    4 fileAction           PostGlobalEndRun                  
+    5 fileAction           pre-events       pre-events       pre-events
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+Warning                20                  20
+System                  4                   4
+
+dropped waiting message count 0
+[2021-08-09 05:06:01.235777 +0200][Error  ][AsyncSock         ] [red-gridftp12.unl.edu:1094 #0.0] Socket error encountered: [ERROR] Invalid operation
+[2021-08-09 05:06:01.236016 +0200][Error  ][XRootD            ] [red-gridftp12.unl.edu:1094] Impossible to send message kXR_close (handle: 0x00000000). Trying to recover.
+[2021-08-09 05:06:01.236035 +0200][Error  ][XRootD            ] [red-gridftp12.unl.edu:1094] Unable to get the response to request kXR_close (handle: 0x00000000)
