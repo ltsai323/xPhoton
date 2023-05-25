@@ -92,6 +92,7 @@ struct MyTreeAccess
         nLHE(0),
         puweight(0.),
         MET(0),
+        mcweig(0),
         pthat_PU(nullptr)
     { SetBranchAddress(t);}
     ~MyTreeAccess() { f->Close(); }
@@ -112,6 +113,7 @@ struct MyTreeAccess
         //tin->SetBranchAddress("puwei", &puweight); // asdf temporarlly disabled.
         tin->SetBranchAddress("pthat_PU", &pthat_PU);
         tin->SetBranchAddress("MET", &MET);
+        tin->SetBranchAddress("mcweight",&mcweig);
     }
     Long64_t GetEntries() const { return t->GetEntries(); }
     void GetEntry(Long64_t ievt) { t->GetEntry(ievt); }
@@ -137,6 +139,8 @@ public:
     int nLHE;
     float puweight;
     float MET;
+    float mcweig;
+
     vector<Float_t>* pthat_PU;
     
 };
@@ -167,7 +171,7 @@ struct TreeContent
     float jetRawE, jetPt, lhePt, genHT, genHT_pthatDef, mcweight, puweight, maxPUhat, MET;
     int nLHE, hadFlvr, partonID, genpartonID, lhePID, lheIdx, lheIdxInv, jetPtBin, lhePtBin;
 };
-void AnalyzeFile( const char* outtag, const char* ifilename, float assignedmcweight )
+void AnalyzeFile( const char* outtag, const char* ifilename )
 {
     printf("loading file %s\n",ifilename);
     MyTreeAccess data(ifilename);
@@ -217,7 +221,7 @@ void AnalyzeFile( const char* outtag, const char* ifilename, float assignedmcwei
         o.lhePt = lhePt;
         o.genHT = data.genHT;
         o.genHT_pthatDef = data.genHT_pthatDef;
-        o.mcweight = assignedmcweight;
+        o.mcweight = data.mcweig;
         o.puweight = data.puweight;
         o.MET = data.MET;
 
@@ -263,30 +267,12 @@ const char* GetArg_InFile(int argc, const char* argv[])
     if ( argc < 2+1 ) PrintHelp();
     return argv[2];
 }
-double GetArg_IntegratedLuminosityWeight(int argc, const char* argv[])
-{
-    if ( argc < 3+1 ) PrintHelp();
-    return std::stod(argv[3]);
-}
 
 int main(int argc, const char* argv[])
 {
     const char* ifile = GetArg_InFile(argc,argv);
     const char* tag = GetArg_OutTag(argc,argv);
-    double filled_mcweight = GetArg_IntegratedLuminosityWeight(argc,argv);
 
-    AnalyzeFile(tag, ifile, filled_mcweight);
+    AnalyzeFile(tag, ifile);
     return 0;
-    /*
-    // tag, input_file, xs weight
-    AnalyzeFile("QCD_HT50to100",    "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"              , 2.1248e+6);
-    AnalyzeFile("QCD_HT100to200",   "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"             , 12126.6);
-    AnalyzeFile("QCD_HT200to300",   "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"             , 1053.94);
-    AnalyzeFile("QCD_HT300to500",   "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"             , 228.55);
-    AnalyzeFile("QCD_HT500to700",   "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"             , 18.5005);
-    AnalyzeFile("QCD_HT700to1000",  "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"            , 6.49481);
-    AnalyzeFile("QCD_HT1000to1500", "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"           , 2.86964);
-    AnalyzeFile("QCD_HT1500to2000", "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"           , 0.365085);
-    AnalyzeFile("QCD_HT2000toInf",  "/home/ltsai/Work/github/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/xQCDver3.hasJetE/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"            , 0.155885);
-    */
 }

@@ -1177,7 +1177,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
             //int pho_presel = 1;
             int pho_presel = PhotonPreselection(data, i, kFALSE);
-            // only for check CSEV eff vs pt {{{
+            // Histogram filling section for checking  CSEV eff vs pt {{{
             if( data.HasMC()) { 
                 if(i==0 && match[i]==1){
 
@@ -1261,6 +1261,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         if ( data.HasMC() && nPho>0 )
         {
             // if no any photon selected, use leading photon
+            // Check matching status : selRes->Draw("matchDeltaR", "GenPhoNumbering>0")
+            // Check efficiency : calculate the number of selRes->Draw("mcPt", "GenPhoNumbering==0 && passed==1")
+            //                                divided by  selRes->Draw("mcPt", "GenPhoNumbering==0").
+            // Check Single photon HLT passing status
             int recoidx = photon_list.size()>0 ? photon_list[0] : 0;
 
             vector<int> phomcid = GenPhoIdxs(&data);

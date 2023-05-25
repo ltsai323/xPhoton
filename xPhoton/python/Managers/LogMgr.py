@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # need to do : add path management
 
 import time
@@ -32,12 +32,36 @@ def translatelevel(LEvEL):
     if level == 'error'    : return logging.ERROR
     if level == 'critical' : return logging.CRITICAL
 
+'''
 def InitLogger(file=None, level='info'):
     logging.basicConfig(
             level=translatelevel(level),
             format='[%(levelname)-8s] - %(name)s: %(message)s',
             handlers=logging.FileHandler(file,'w') if file else logging.StreamHandler()
             )
+'''
+def InitLogger(file=None, level='info'):
+    logger = logging.getLogger()
+    logger.setLevel(translatelevel(level))
+    formatter = logging.Formatter(
+        #'[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d] %(message)s',
+        '%(levelname).5s #%(name)s @L%(lineno)d -> %(message)s',
+        datefmt='%Y%m%d %H:%M:%S')
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    ch.setFormatter(formatter)
+
+    logger.addHandler(ch)
+
+    if file:
+        log_filename = datetime.datetime.now().strftime(file+"%Y-%m-%d_%H_%M_%S.log")
+        fh = logging.FileHandler(log_filename)
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(formatter)
+
+        logger.addHandler(fh)
+
 def InitFileLogger(file='log', level='debug'):
     InitLogger(file,level)
 

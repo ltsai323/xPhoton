@@ -12,15 +12,15 @@ arg_isQCD=False
 fDict={
   "GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8": {
     "v11-v4":
-'/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/UL16Pre_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
+'/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step0.xphoton/UL16Pre_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
   },
   "GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8": {
     "v8-v3":
-'/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/UL16Pre_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
+'/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step0.xphoton/UL16Pre_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
   },
   "GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8": {
     "v11-v6":
-'/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/UL16Pre_GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8.root',
+'/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step0.xphoton/UL16Pre_GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8.root',
   }
 }
 

@@ -44,8 +44,14 @@ void PrintHelp()
     printf("------ 5. need to clean up branch    --------\n");
     printf("---------------------------------------------\n");
     printf("------ Feature :    Scale Factor of  --------\n");
-    printf("------              jet to calibrate --------\n");
-    printf("------              CTagging.        --------\n");
+    printf("------ * Recalculate b+bb, CvsL and  --------\n");
+    printf("------   CvsB in DeepCSV and DeepJet --------\n");
+    printf("------   algorithm.                  --------\n");
+    printf("------ * Data and MC are auto detec- --------\n");
+    printf("------   ted.                        --------\n");
+    printf("------ * C-tagging scale factor is   --------\n");
+    printf("------   calculated in MC sample.    --------\n");
+    printf("------                               --------\n");
     printf("---------------------------------------------\n");
 }
 const char* Arg_DataEra(const char* argv[])
