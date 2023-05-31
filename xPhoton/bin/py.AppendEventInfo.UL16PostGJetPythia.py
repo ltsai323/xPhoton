@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #arg_summaryfile='../data/summaryJson/summary_UL18MadgraphMLM.json'
 #arg_summaryfile='../data/summaryJson/summary_UL18Pythia.json'
 #arg_summaryfile='../data/summaryJson/summary_UL18QCDMadgraphMLM.json'
@@ -12,15 +12,15 @@ arg_isQCD=False
 fDict={
   "GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8": {
     "v17-v6":
-'/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/step0.xphoton/UL16Post_GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
+'/wk_cms/ltsai/CMSSW/Run3Winter22/CMSSW_12_2_4/src/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/UL16PostVFP_CheckEff_GJet/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
   },
   "GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8": {
     "v13-v3":
-'/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/step0.xphoton/UL16Post_GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
+'/wk_cms/ltsai/CMSSW/Run3Winter22/CMSSW_12_2_4/src/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/UL16PostVFP_CheckEff_GJet/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root',
   },
   "GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8": {
     "v17-v4":
-'/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/step0.xphoton/UL16Post_GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8.root',
+'/wk_cms/ltsai/CMSSW/Run3Winter22/CMSSW_12_2_4/src/xPhoton/xPhoton/scripts/RUNbkgSumbit/bkgRunning/UL16PostVFP_CheckEff_GJet/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8.root',
   }
 }
 
@@ -39,7 +39,6 @@ if __name__ == '__main__':
 
     for pd, info in targetDict.items():
         for ver, rootfile in info.items():
-            #print rootfile
             xs=GetXS(pd, ver, arg_summaryfile)
             executeCommandToTmp( xs, integratedgenweights[pd], arg_dataera, arg_isQCD, rootfile )
         MergeOutputs(pd, info)

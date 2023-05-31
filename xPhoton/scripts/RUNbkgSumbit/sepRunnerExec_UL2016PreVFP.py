@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 exeCMD='exec_xPhotonRunnerUL2016PreVFP'
-nThread=8
+nThread=12
 
 
 def GetArg_PrintHelp():

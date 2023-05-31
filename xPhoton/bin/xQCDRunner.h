@@ -7,6 +7,8 @@
 
 // this file execute in QCD MC only
 // Photon pre-selection is abandoned to preserve jet behaviour.
+// execute :
+// exec_
 
 std::vector<std::string> GetFileName(int argc, char* argv[]);
 int         GetOption  (int argc, char* argv[]);

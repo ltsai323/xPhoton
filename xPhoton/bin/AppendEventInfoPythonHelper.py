@@ -16,6 +16,11 @@ from xPhoton.xPhoton.AppendEventInfo import FindXSInfo, nodir, ShowPD, ShowDetai
 from xPhoton.xPhoton.Managers.LogMgr import InitLogger, GetLogger
 mylog=GetLogger(__name__)
 
+def MYLOG(func, mesg):
+    n_file = os.path.basename(__file__)
+    n_func = func.__name__
+    print(f'{n_file} {n_func}(): {mesg}')
+
 import ROOT
 def IntegratedGenWeights(filename: str ) -> float:
     '''
@@ -73,7 +78,7 @@ def executeCommand( xsweight_,
     isQCD = 'true' if isQCD_ else 'false'
 
     ## no GenHT reweight version
-    bashCommand = f'exec_appendeventinfo {xs:.8e} {genW} {lumi:.8e} {iFile} {oFile} {isQCD}'
+    bashCommand = f'exec_AppendEventInfo_noGenHTcut {xs:.8e} {genW} {lumi:.8e} {iFile} {oFile}'
 
     if not dataera_ in ARG_datalumi:
         raise KeyError('input key "%d" not foun. Available options are [%s]' %
@@ -91,12 +96,32 @@ def executeCommandToTmp( xsweight_,
         inputfile_,
         weightfile_=''):
     execfile='exec_AppendEventInfo'
-    execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} %s {weightfile}' % (execfile,ARG_tmpdir, 'true' if isQCD_ else 'false' )
+    #execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} %s {weightfile}' % (execfile,ARG_tmpdir, 'true' if isQCD_ else 'false' )
 
     if not dataera_ in ARG_datalumi:
         raise KeyError('input key "%d" not foun. Available options are [%s]' %
                 ( dataera_, ', '.join(['%d'%_s for _s in ARG_datalumi.keys()]) )
                 )
+
+
+    xs=xsweight_
+    integratedGenWeight=integratedGenWeight_
+    integratedLuminosity=ARG_datalumi[dataera_]
+    inputfile=inputfile_
+    #outdir = ARG_tmpdir
+    outputfile=ARG_tmpdir+'/'+nodir(inputfile_)
+    isqcd = 'true' if isQCD_ else 'false'
+    weightfile=weightfile_
+
+    if 'root' in weightfile_ and os.path.exist(weightfile_):
+        MYLOG(executeCommandToTmp, '--- execute with GenHT cut and reweighted PU weight ---')
+        execcommand = f'exec_AppendEventInfo {xs:.2e} {integratedGenWeight:.8e} {integratedLuminosity:.8e} {inputfile:s} {outputfile:s} {isqcd:s} {weightfile:s}'
+    else:
+        MYLOG(executeCommandToTmp, '--- NO GenHT related information ---')
+        execcommand = f'exec_AppendEventInfo_noGenHTcut {xs:.8e} {integratedGenWeight:.8e} {integratedLuminosity:.8e} {inputfile:s} {outputfile:s}'
+    print(execcommand)
+    return
+
 
     if TESTmode:
         mylog.debug( execcommand.format(
@@ -150,6 +175,7 @@ if __name__ == '__main__':
             if   xsunit=='pb': xs *= 1000.
             elif xsunit=='fb': pass
             else :             mylog.error( 'recorded Xsection in "%s" unit in file %s. Which is not "pb" or "fb". Need to convert it manually!' % (xsunit, summaryfile) )
+            print( type(xs))
             executeCommandToTmp( xs, integratedgenweights[pd], arg_dataera, arg_isQCD, rootfile, weight_file )
         MergeOutputs(pd, info)
 
