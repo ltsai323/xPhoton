@@ -59,5 +59,5 @@ if __name__ == "__main__":
             "DATfile": "nothing.dat"
             }
     json_obj = json.dumps(outputcontent, indent=2)
-    with open('effLumi_signalMC.json','w') as outputfile:
+    with open('../data/effLumi_signalMC.json','w') as outputfile:
         outputfile.write(json_obj)

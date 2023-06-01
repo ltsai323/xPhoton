@@ -6,13 +6,17 @@ namespace pt = boost::property_tree;
 bool InclusivePhoton(int jetbin) { return jetbin == 2; }
 bool IsPhoEndCap    (int phobin) { return phobin == 1; }
 bool IsJetEndCap    (int jetbin) { return (!InclusivePhoton(jetbin)) && jetbin == 1; }
+
+#define BINWIDTH_BARREL 2.8884
+#define BINWIDTH_ENDCAP 1.868
+
+std::vector<float> ptbin_range_2016ReReco()
+{ return std::vector<float>({25,34,41,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}); }
+std::vector<float> ptbin_range_2016_newbin()
+{ return std::vector<float>({25,34,56,70,100,115,135,175,190,220,250,300,350,400,500,700}); }  // only 0~15 bins
 std::vector<float> ptbin_ranges()
 {
-  // for 2016
-  //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,100000}; // size = 16. ptbin = [0,15]
-  //std::vector<float> vec_ptcut{25,34,40,55,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15] // old
-    std::vector<float> vec_ptcut{25,34,41,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000,1500,2000,3000,10000}; // size = 16. ptbin = [0,15]
-  return vec_ptcut;
+    return ptbin_range_2016ReReco();
 }
 struct LumiRecorder
 {
@@ -70,16 +74,6 @@ struct JsonInfo
         datfile = root.get<std::string>("DATfile", "");
         lumifile= LumiRecorder(jsonfile);
     }
-    JsonInfo()
-    {
-        markerstyle = 8;
-        markercolor = 38;
-
-        label   = "2015";
-        title   = "2015 ReReco from RS result";
-        datfile = "/wk_cms/ltsai/CMSSW/CMSSW_9_4_14/src/xPhoton/macros/step5.CompareYields/15yield_noInclusivePho_newformat.dat";
-        lumifile= LumiRecorder("effLumi_2016.json");
-    }
     float GetLumiForPtBin(int ptbin) const
     { return lumifile.GetLumiSafe(ptbin); }
     std::string datfile;
@@ -107,12 +101,15 @@ NewHistInSquareMatrix1D* FilledHists( const JsonInfo& args )
         data_base->GetEntry(ievt);
         TH1* hist = binnedHists->get({data_base->etabin, data_base->jetbin});
         int ibin = data_base->ptbin + 1;
-        float denuminator = args.GetLumiForPtBin(data_base->ptbin) * hist->GetBinWidth(ibin);
+
+        double petaWidth = data_base->etabin == 0 ? BINWIDTH_BARREL : BINWIDTH_ENDCAP;
+        double jetaWidth = data_base->jetbin == 0 ? BINWIDTH_BARREL : BINWIDTH_ENDCAP;
+        double denuminator = args.GetLumiForPtBin(data_base->ptbin) * hist->GetBinWidth(ibin) * petaWidth * jetaWidth;
         hist->SetBinContent( ibin, data_base->fityield / denuminator );
 
-        float staterr = sqrt(data_base->fityield) / denuminator;
+        double staterr = sqrt(data_base->fityield) / denuminator;
         hist->SetBinError( ibin, staterr );
-        printf("-- checking -- ptbin %2d got luminosity : %10.4f\n", data_base->ptbin, args.GetLumiForPtBin(data_base->ptbin) );
+        //printf("-- checking -- ptbin %2d got luminosity : %10.4f\n", data_base->ptbin, args.GetLumiForPtBin(data_base->ptbin) );
     }
     delete data_base;
     return binnedHists;
@@ -135,7 +132,7 @@ void HistSetup(NewHistInSquareMatrix1D* hists, const JsonInfo& args)
         hist->SetMaximum( hist->GetMaximum() * 1e2 );
         hist->SetNdivisions(505,"XY");
         hist->SetXTitle("p_{T} (GeV)");
-        hist->SetYTitle("Entries / Lumi / GeV");
+        hist->SetYTitle("#frac{d^{3}#sigma}{d#eta_{jet}d#eta_{#gamma}dp_{T}}");
         hist->GetXaxis()->SetRangeUser(0,1000);
         hist->SetMarkerColor(args.markercolor);
         hist->SetMarkerStyle(args.markerstyle);
@@ -273,21 +270,58 @@ void CompareYields( const char* arg_ref, const char* arg_new )
     JsonInfo info_new(arg_new);
     CompareYields(info_ref, info_new);
 }
-void CompareYields( const char* newDATfile )
+void DrawHist(const JsonInfo& inputjson)
 {
-    JsonInfo info_ref;
-    JsonInfo info_new;
-    info_new.markerstyle = 22;
-    info_new.markercolor = 39;
-    info_new.title = "testing 2016";
-    info_new.label = "New";
-    info_new.datfile = newDATfile;
+    NewHistInSquareMatrix1D* binnedHists = FilledHists(inputjson);
+    HistSetup(binnedHists, inputjson);
 
-    CompareYields(info_ref, info_new);
+    auto canv = new TCanvas("c1", "", 1000,1200);
+    canv->SetFillColor(4000);
+    canv->SetFillStyle(4000);
+
+
+    auto pad = new TPad("pad", "", 0.0,0.0,1.0,0.98);
+    pad->SetTicks(1.,1.);
+    pad->SetTopMargin(0.05);
+    pad->SetBottomMargin(0.12);
+    pad->SetLeftMargin(0.135);
+    pad->SetRightMargin(0.06);
+    pad->Draw();
+    pad->cd();
+    pad->SetLogy();
+
+    auto leg = new TLegend(0.4, 0.5, 0.85, 0.85);
+    leg->SetBorderSize(0);
+    binnedHists->Get({0,1})->Draw("AXIS");
+
+    int colors[] = { 2, 46, 8, 30 };
+    int markers[] = { 33, 34 };
+    for ( int pEtaBin = 0; pEtaBin < 2; ++pEtaBin )
+        for ( int jEtaBin = 0; jEtaBin < 2; ++jEtaBin )
+        {
+            TH1F* h = binnedHists->Get({pEtaBin,jEtaBin});
+            h->SetMarkerColor(colors[pEtaBin+jEtaBin*2]);
+            h->SetMarkerStyle(markers[pEtaBin]);
+            h->SetMarkerSize(2);
+            
+            h->Draw("P SAME");
+
+            const char* petaname = pEtaBin == 0 ? "barrel photon" : "endcap photon";
+            const char* jetaname = jEtaBin == 0 ? "barrel jet"    : "endcap jet"   ;
+            leg->AddEntry(h, Form("%s -- %s",petaname,jetaname), "lp");
+        }
+
+    leg->Draw();
+    canv->SaveAs( "yieldComp.pdf");
 }
-void tester()
+
+
+void compareYield()
 {
-    JsonInfo a;
-    for ( int i=0; i<10; ++i )
-        std::cout << "lumi : " << a.lumifile.GetLumiSafe(i) <<std::endl;
+    DrawHist( "data/effLumi_UL2016.json");
+    return;
+    CompareYields(
+        "data/effLumi_2015.json",
+        "effLumi_2016.json"
+            );
 }

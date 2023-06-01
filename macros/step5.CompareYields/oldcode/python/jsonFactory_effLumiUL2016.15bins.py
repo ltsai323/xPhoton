@@ -1,4 +1,7 @@
 #!/usr/bin/env python2
+'''
+creating new json file for mapping used HLT and effective luminosity
+'''
 
 import json
 class HLTInfo(object):
@@ -27,27 +30,20 @@ if __name__ == "__main__":
     ptbins=[None]*23
     ptbins[ 0]=hltbins[0]
     ptbins[ 1]=hltbins[1]
-    ptbins[ 2]=hltbins[2]
+    ptbins[ 2]=hltbins[3]
     ptbins[ 3]=hltbins[3]
-    ptbins[ 4]=hltbins[3]
-    ptbins[ 5]=hltbins[4]
-    ptbins[ 6]=hltbins[5]
-    ptbins[ 7]=hltbins[5]
-    ptbins[ 8]=hltbins[6]
-    ptbins[ 9]=hltbins[6]
-    ptbins[10]=hltbins[6]
+    ptbins[ 4]=hltbins[5]
+    ptbins[ 5]=hltbins[5]
+    ptbins[ 6]=hltbins[6]
+    ptbins[ 7]=hltbins[6]
+    ptbins[ 8]=hltbins[7]
+    ptbins[ 9]=hltbins[7]
+    ptbins[10]=hltbins[7]
     ptbins[11]=hltbins[7]
     ptbins[12]=hltbins[7]
-    ptbins[13]=hltbins[7]
-    ptbins[14]=hltbins[7]
-    ptbins[15]=hltbins[7]
-    ptbins[16]=hltbins[7]
-    ptbins[17]=hltbins[7]
-    ptbins[18]=hltbins[7]
-    ptbins[19]=hltbins[7]
-    ptbins[20]=hltbins[7]
-    ptbins[21]=hltbins[7]
-    ptbins[22]=hltbins[7]
+    ptbins[13]=hltbins[8]
+    ptbins[14]=hltbins[8]
+    ptbins[15]=hltbins[8]
 
     lumi=[]
     name=[]
@@ -62,10 +58,10 @@ if __name__ == "__main__":
             'effectiveLuminosity':lumi,
             "MarkerStyle": 22,
             "MarkerColor": 38,
-            "Title": "2016 ReReco",
+            "Title": "UL2016",
             "Label": "2016",
             "DATfile": "nothing.dat"
             }
     json_obj = json.dumps(outputcontent, indent=2)
-    with open('effLumi_2016.json','w') as outputfile:
+    with open('../data/effLumi_UL2016.15bins.json','w') as outputfile:
         outputfile.write(json_obj)
