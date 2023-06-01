@@ -48,5 +48,7 @@ def ValidFile(filepath):
 
 def FindWeightFile( primarydataset_, jsonFILE_ ):
     with open(jsonFILE_,'r') as ifile:
+        print('FindWeightFile : input file ' + jsonFILE_)
+        print('FindWweightFile: DP : ' + primarydataset_)
         aaaa=json.load(ifile)
         return ValidFile(aaaa[primarydataset_])

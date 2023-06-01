@@ -1,4 +1,4 @@
-#include "xPhoton/xPhoton/bin/xQCDRunner_2016ReReco.h"
+#include "xPhoton/xPhoton/bin/xQCDRunner.h"
 #include "xPhoton/xPhoton/interface/xQCDChecker.h"
 #include <iostream>
 #include <sstream>

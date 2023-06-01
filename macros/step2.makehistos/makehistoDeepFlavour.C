@@ -38,28 +38,56 @@ EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
     bool HLTOPTION     = true;
     EvtSelMgr output(isMC,isQCD,HLTOPTION);
 
-    output.jethadflvr    = loadvar.jetHadFlvr;
-    output.chIso         = loadvar.chIsoRaw;
-    output.phoEta        = loadvar.recoEta;
-    output.isMatched     = loadvar.isMatched;
+    //output.jethadflvr    = loadvar.jetHadFlvr;
+    //output.chIso         = loadvar.chIsoRaw;
+    //output.phoEta        = loadvar.recoEta;
+    //output.isMatched     = loadvar.isMatched;
 
-    output.jetPt         = loadvar.jetPt;
-    output.jetEta        = loadvar.jetEta;
-    output.cScore        = loadvar.jetDeepFlavourTags_c;
-    output.jetID         = loadvar.jetID;
-    output.jetPUIDbit    = loadvar.jetPUIDbit;
-    output.jetSubVtxMass = loadvar.jetSubVtxMass;
-    output.CvsL          = loadvar.DeepFlavour_CvsL;
-    output.passMaxPUcut  = loadvar.passMaxPUcut;
+    //output.jetPt         = loadvar.jetPt;
+    //output.jetEta        = loadvar.jetEta;
+    //output.cScore        = loadvar.jetDeepCSVTags_c;
+    //output.jetID         = loadvar.jetID;
+    //output.jetPUIDbit    = loadvar.jetPUIDbit;
+    //output.jetSubVtxMass = loadvar.jetSubVtxMass;
+    //output.CvsL          = loadvar.DeepCSV_CvsL;
+    //output.passMaxPUcut  = loadvar.passMaxPUcut;
 
-    output.recoSCEta     = loadvar.recoSCEta;
-    output.sieieFull5x5  = loadvar.sieieFull5x5;
-    output.HoverE        = loadvar.HoverE;
-    output.MET           = loadvar.MET;
-    output.phoPt         = loadvar.recoPt;
-    output.eleVeto       = loadvar.eleVeto;
+    //output.recoSCEta     = loadvar.recoSCEta;
+    //output.sieieFull5x5  = loadvar.sieieFull5x5;
+    //output.HoverE        = loadvar.HoverE;
+    //output.MET           = loadvar.MET;
+    //output.phoPt         = loadvar.recoPt;
+    //output.eleVeto       = loadvar.eleVeto;
 
-    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    //output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    output.SetUsedVar_4(loadvar.jetHadFlvr);
+    output.SetUsedVar_3(
+        loadvar.chIsoRaw,
+        loadvar.recoEta,
+        loadvar.isMatched);
+
+    output.SetUsedVar_2(
+        loadvar.jetPt,
+        loadvar.jetEta,
+        loadvar.jetDeepCSVTags_c,
+        loadvar.jetID,
+        loadvar.jetPUIDbit,
+        loadvar.jetSubVtxMass,
+        loadvar.DeepCSV_CvsL,
+        loadvar.passMaxPUcut);
+
+    output.SetUsedVar_1(
+        loadvar.recoSCEta,
+        loadvar.sieieFull5x5,
+        loadvar.HoverE);
+    output.SetUsedVar_0(
+        loadvar.MET,
+        loadvar.recoPt,
+        loadvar.eleVeto,
+        0);
+        //loadvar.phoFillIdx);
+
+    output.SetUsedVar__(loadvar.phoFiredTrgs);
     return output;
 }
 void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars)
@@ -413,28 +441,56 @@ EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
     bool HLTOPTION     = false;
     EvtSelMgr output(isMC,isQCD,HLTOPTION);
 
-    output.jethadflvr    = loadvar.jetHadFlvr;
-    output.chIso         = loadvar.chIsoRaw;
-    output.phoEta        = loadvar.recoEta;
-    output.isMatched     = loadvar.isMatched;
+    //output.jethadflvr    = loadvar.jetHadFlvr;
+    //output.chIso         = loadvar.chIsoRaw;
+    //output.phoEta        = loadvar.recoEta;
+    //output.isMatched     = loadvar.isMatched;
 
-    output.jetPt         = loadvar.jetPt;
-    output.jetEta        = loadvar.jetEta;
-    output.cScore        = loadvar.jetDeepFlavourTags_c;
-    output.jetID         = loadvar.jetID;
-    output.jetPUIDbit    = loadvar.jetPUIDbit;
-    output.jetSubVtxMass = loadvar.jetSubVtxMass;
-    output.CvsL          = loadvar.DeepFlavour_CvsL;
-    output.passMaxPUcut  = 0;
+    //output.jetPt         = loadvar.jetPt;
+    //output.jetEta        = loadvar.jetEta;
+    //output.cScore        = loadvar.jetDeepCSVTags_c;
+    //output.jetID         = loadvar.jetID;
+    //output.jetPUIDbit    = loadvar.jetPUIDbit;
+    //output.jetSubVtxMass = loadvar.jetSubVtxMass;
+    //output.CvsL          = loadvar.DeepCSV_CvsL;
+    //output.passMaxPUcut  = 0;
 
-    output.recoSCEta     = loadvar.recoSCEta;
-    output.sieieFull5x5  = loadvar.sieieFull5x5;
-    output.HoverE        = loadvar.HoverE;
-    output.MET           = loadvar.MET;
-    output.phoPt         = loadvar.recoPt;
-    output.eleVeto       = loadvar.eleVeto;
+    //output.recoSCEta     = loadvar.recoSCEta;
+    //output.sieieFull5x5  = loadvar.sieieFull5x5;
+    //output.HoverE        = loadvar.HoverE;
+    //output.MET           = loadvar.MET;
+    //output.phoPt         = loadvar.recoPt;
+    //output.eleVeto       = loadvar.eleVeto;
 
-    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    //output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    output.SetUsedVar_4(loadvar.jetHadFlvr);
+    output.SetUsedVar_3(
+        loadvar.chIsoRaw,
+        loadvar.recoEta,
+        loadvar.isMatched);
+
+    output.SetUsedVar_2(
+        loadvar.jetPt,
+        loadvar.jetEta,
+        loadvar.jetDeepCSVTags_c,
+        loadvar.jetID,
+        loadvar.jetPUIDbit,
+        loadvar.jetSubVtxMass,
+        loadvar.DeepCSV_CvsL,
+        0); // passMaxPUcut
+
+    output.SetUsedVar_1(
+        loadvar.recoSCEta,
+        loadvar.sieieFull5x5,
+        loadvar.HoverE);
+    output.SetUsedVar_0(
+        loadvar.MET,
+        loadvar.recoPt,
+        loadvar.eleVeto,
+        0);
+        //loadvar.phoFillIdx);
+
+    output.SetUsedVar__(loadvar.phoFiredTrgs);
     return output;
 }
 void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
@@ -784,28 +840,57 @@ EvtSelMgr EvtSelFactory(const MakeHistoData& loadvar)
     bool HLTOPTION     = true;
     EvtSelMgr output(isMC,isQCD,HLTOPTION);
 
-    output.jethadflvr    = 0;
-    output.chIso         = loadvar.calib_chIso;
-    output.phoEta        = loadvar.recoEta;
-    output.isMatched     = 0;
+    //// not finished
+    //output.jethadflvr    = 0;
+    //output.chIso         = loadvar.calib_chIso;
+    //output.phoEta        = loadvar.recoEta;
+    //output.isMatched     = 0;
 
-    output.jetPt         = loadvar.jetPt;
-    output.jetEta        = loadvar.jetEta;
-    output.cScore        = loadvar.jetDeepFlavourTags_c;
-    output.jetID         = 0;
-    output.jetPUIDbit    = 0;
-    output.jetSubVtxMass = loadvar.jetSubVtxMass;
-    output.CvsL          = loadvar.DeepFlavour_CvsL;
-    output.passMaxPUcut  = 0;   
+    //output.jetPt         = loadvar.jetPt;
+    //output.jetEta        = loadvar.jetEta;
+    //output.cScore        = loadvar.jetDeepCSVTags_c;
+    //output.jetID         = 0;
+    //output.jetPUIDbit    = 0;
+    //output.jetSubVtxMass = loadvar.jetSubVtxMass;
+    //output.CvsL          = loadvar.DeepCSV_CvsL;
+    //output.passMaxPUcut  = 0;   
 
-    output.recoSCEta     = loadvar.recoSCEta;
-    output.sieieFull5x5  = loadvar.sieieFull5x5;
-    output.HoverE        = loadvar.HoverE;
-    output.MET           = loadvar.MET;
-    output.phoPt         = loadvar.recoPtCalib;
-    output.eleVeto       = loadvar.eleVeto;
+    //output.recoSCEta     = loadvar.recoSCEta;
+    //output.sieieFull5x5  = loadvar.sieieFull5x5;
+    //output.HoverE        = loadvar.HoverE;
+    //output.MET           = loadvar.MET;
+    //output.phoPt         = loadvar.recoPtCalib;
+    //output.eleVeto       = loadvar.eleVeto;
 
-    output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    //output.phoFiredTrgs  = loadvar.phoFiredTrgs;
+    output.SetUsedVar_4(0);
+    output.SetUsedVar_3(
+        loadvar.calib_chIso,
+        loadvar.recoEta,
+        0);
+
+    output.SetUsedVar_2(
+        loadvar.jetPt,
+        loadvar.jetEta,
+        loadvar.jetDeepFlavourTags_c,
+        0,
+        0,
+        loadvar.jetSubVtxMass,
+        loadvar.DeepCSV_CvsL,
+        0); // passMaxPUcut
+
+    output.SetUsedVar_1(
+        loadvar.recoSCEta,
+        loadvar.sieieFull5x5,
+        loadvar.HoverE);
+    output.SetUsedVar_0(
+        loadvar.MET,
+        loadvar.recoPt,
+        loadvar.eleVeto,
+        0);
+        //loadvar.phoFillIdx);
+
+    output.SetUsedVar__(loadvar.phoFiredTrgs);
     return output;
 }
 void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 )
@@ -934,7 +1019,7 @@ void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const char*
     int processTag = 0;
     if ( dataType == "data" )
     { LoopData(extracut, dataERA, dataTYPE, inputfilename, NEVENT); processTag += 1; }
-    if ( dataType == "sig" )
+    if ( dataType == "gjet" )
     { LoopSIG(extracut, dataERA, dataTYPE, inputfilename, NEVENT); processTag += 1; }
     if ( dataType == "QCD"  )
     { LoopQCD(extracut, dataERA, dataTYPE, inputfilename, NEVENT); processTag += 1; }

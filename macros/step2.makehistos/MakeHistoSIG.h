@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Mon Mar 13 02:43:30 2023 by ROOT version 6.14/09
+// Fri May 12 02:32:10 2023 by ROOT version 6.22/09
 // from TTree t/mini tree
-// found on file: /home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/sigMC_madgraph_ctagReshaped.root
+// found on file: /home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step3.btagSFappended/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root
 //////////////////////////////////////////////////////////
 
 #ifndef MakeHistoSIG_h
@@ -27,6 +27,7 @@ public :
    Float_t         jetSubVtx3DVal;
    Float_t         jetSubVtx3DErr;
    Int_t           jetSubVtxNtrks;
+   Int_t           phoFillIdx;
    Int_t           run;
    Long64_t        event;
    Bool_t          isData;
@@ -64,7 +65,6 @@ public :
    Float_t         phoIsoRaw;
    Float_t         nhIsoRaw;
    Float_t         rho;
-   Float_t         calib_chIso;
    Float_t         rawE;
    Float_t         scEtaWidth;
    Float_t         scPhiWidth;
@@ -126,30 +126,17 @@ public :
    Float_t         genWeight;
    Int_t           jetID;
    Int_t           jetPUIDbit;
+   Float_t         leadingLHEPt;
+   Float_t         genHT_pthatDef;
+   Float_t         leadingPUPtHat;
    Float_t         xsweight;
    Float_t         crossSection;
    Float_t         integratedLuminosity;
    Float_t         integratedGenWeight;
    Float_t         mcweight;
    Int_t           isQCD;
-   Float_t         jetSF_DeepCSV_central;
-   Float_t         jetSF_DeepCSV_down_cferr1;
-   Float_t         jetSF_DeepCSV_down_cferr2;
-   Float_t         jetSF_DeepCSV_down_hf;
-   Float_t         jetSF_DeepCSV_down_lf;
-   Float_t         jetSF_DeepCSV_up_cferr1;
-   Float_t         jetSF_DeepCSV_up_cferr2;
-   Float_t         jetSF_DeepCSV_up_hf;
-   Float_t         jetSF_DeepCSV_up_lf;
-   Float_t         jetSF_DeepFlavour_central;
-   Float_t         jetSF_DeepFlavour_down_cferr1;
-   Float_t         jetSF_DeepFlavour_down_cferr2;
-   Float_t         jetSF_DeepFlavour_down_hf;
-   Float_t         jetSF_DeepFlavour_down_lf;
-   Float_t         jetSF_DeepFlavour_up_cferr1;
-   Float_t         jetSF_DeepFlavour_up_cferr2;
-   Float_t         jetSF_DeepFlavour_up_hf;
-   Float_t         jetSF_DeepFlavour_up_lf;
+   Float_t         weight_passMaxPUcut;
+   Int_t           passMaxPUcut;
    Float_t         DeepCSV_CvsB;
    Float_t         DeepCSV_CvsL;
    Float_t         DeepCSV_bScore;
@@ -177,6 +164,7 @@ public :
    TBranch        *b_jetSubVtx3DVal;   //!
    TBranch        *b_jetSubVtx3DErr;   //!
    TBranch        *b_jetSubVtxNtrks;   //!
+   TBranch        *b_phoFillIdx;   //!
    TBranch        *b_run;   //!
    TBranch        *b_event;   //!
    TBranch        *b_isData;   //!
@@ -214,7 +202,6 @@ public :
    TBranch        *b_phoIsoRaw;   //!
    TBranch        *b_nhIsoRaw;   //!
    TBranch        *b_rho;   //!
-   TBranch        *b_calib_chIso;   //!
    TBranch        *b_rawE;   //!
    TBranch        *b_scEtaWidth;   //!
    TBranch        *b_scPhiWidth;   //!
@@ -276,30 +263,17 @@ public :
    TBranch        *b_genWeight;   //!
    TBranch        *b_jetID;   //!
    TBranch        *b_jetPUIDbit;   //!
+   TBranch        *b_leadingLHEPt;   //!
+   TBranch        *b_genHT_pthatDef;   //!
+   TBranch        *b_leadingPUPtHat;   //!
    TBranch        *b_xsweight;   //!
    TBranch        *b_crossSection;   //!
    TBranch        *b_integratedLuminosity;   //!
    TBranch        *b_integratedGenWeight;   //!
    TBranch        *b_mcweight;   //!
    TBranch        *b_isQCD;   //!
-   TBranch        *b_jetSF_DeepCSV_central;   //!
-   TBranch        *b_jetSF_DeepCSV_down_cferr1;   //!
-   TBranch        *b_jetSF_DeepCSV_down_cferr2;   //!
-   TBranch        *b_jetSF_DeepCSV_down_hf;   //!
-   TBranch        *b_jetSF_DeepCSV_down_lf;   //!
-   TBranch        *b_jetSF_DeepCSV_up_cferr1;   //!
-   TBranch        *b_jetSF_DeepCSV_up_cferr2;   //!
-   TBranch        *b_jetSF_DeepCSV_up_hf;   //!
-   TBranch        *b_jetSF_DeepCSV_up_lf;   //!
-   TBranch        *b_jetSF_DeepFlavour_central;   //!
-   TBranch        *b_jetSF_DeepFlavour_down_cferr1;   //!
-   TBranch        *b_jetSF_DeepFlavour_down_cferr2;   //!
-   TBranch        *b_jetSF_DeepFlavour_down_hf;   //!
-   TBranch        *b_jetSF_DeepFlavour_down_lf;   //!
-   TBranch        *b_jetSF_DeepFlavour_up_cferr1;   //!
-   TBranch        *b_jetSF_DeepFlavour_up_cferr2;   //!
-   TBranch        *b_jetSF_DeepFlavour_up_hf;   //!
-   TBranch        *b_jetSF_DeepFlavour_up_lf;   //!
+   TBranch        *b_weight_passMaxPUcut;   //!
+   TBranch        *b_passMaxPUcut;   //!
    TBranch        *b_DeepCSV_CvsB;   //!
    TBranch        *b_DeepCSV_CvsL;   //!
    TBranch        *b_DeepCSV_bScore;   //!
@@ -340,9 +314,9 @@ MakeHistoSIG::MakeHistoSIG(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/sigMC_madgraph_ctagReshaped.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step3.btagSFappended/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/sigMC_madgraph_ctagReshaped.root");
+         f = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step3.btagSFappended/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root");
       }
       f->GetObject("t",tree);
 
@@ -396,6 +370,7 @@ void MakeHistoSIG::Init(TTree *tree)
    fChain->SetBranchAddress("jetSubVtx3DVal", &jetSubVtx3DVal, &b_jetSubVtx3DVal);
    fChain->SetBranchAddress("jetSubVtx3DErr", &jetSubVtx3DErr, &b_jetSubVtx3DErr);
    fChain->SetBranchAddress("jetSubVtxNtrks", &jetSubVtxNtrks, &b_jetSubVtxNtrks);
+   fChain->SetBranchAddress("phoFillIdx", &phoFillIdx, &b_phoFillIdx);
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);
@@ -433,7 +408,6 @@ void MakeHistoSIG::Init(TTree *tree)
    fChain->SetBranchAddress("phoIsoRaw", &phoIsoRaw, &b_phoIsoRaw);
    fChain->SetBranchAddress("nhIsoRaw", &nhIsoRaw, &b_nhIsoRaw);
    fChain->SetBranchAddress("rho", &rho, &b_rho);
-   fChain->SetBranchAddress("calib_chIso", &calib_chIso, &b_calib_chIso);
    fChain->SetBranchAddress("rawE", &rawE, &b_rawE);
    fChain->SetBranchAddress("scEtaWidth", &scEtaWidth, &b_scEtaWidth);
    fChain->SetBranchAddress("scPhiWidth", &scPhiWidth, &b_scPhiWidth);
@@ -495,30 +469,17 @@ void MakeHistoSIG::Init(TTree *tree)
    fChain->SetBranchAddress("genWeight", &genWeight, &b_genWeight);
    fChain->SetBranchAddress("jetID", &jetID, &b_jetID);
    fChain->SetBranchAddress("jetPUIDbit", &jetPUIDbit, &b_jetPUIDbit);
+   fChain->SetBranchAddress("leadingLHEPt", &leadingLHEPt, &b_leadingLHEPt);
+   fChain->SetBranchAddress("genHT_pthatDef", &genHT_pthatDef, &b_genHT_pthatDef);
+   fChain->SetBranchAddress("leadingPUPtHat", &leadingPUPtHat, &b_leadingPUPtHat);
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
    fChain->SetBranchAddress("crossSection", &crossSection, &b_crossSection);
    fChain->SetBranchAddress("integratedLuminosity", &integratedLuminosity, &b_integratedLuminosity);
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
-   fChain->SetBranchAddress("jetSF.DeepCSV.central", &jetSF_DeepCSV_central, &b_jetSF_DeepCSV_central);
-   fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr1", &jetSF_DeepCSV_down_cferr1, &b_jetSF_DeepCSV_down_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepCSV.down_cferr2", &jetSF_DeepCSV_down_cferr2, &b_jetSF_DeepCSV_down_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepCSV.down_hf", &jetSF_DeepCSV_down_hf, &b_jetSF_DeepCSV_down_hf);
-   fChain->SetBranchAddress("jetSF.DeepCSV.down_lf", &jetSF_DeepCSV_down_lf, &b_jetSF_DeepCSV_down_lf);
-   fChain->SetBranchAddress("jetSF.DeepCSV.up_cferr1", &jetSF_DeepCSV_up_cferr1, &b_jetSF_DeepCSV_up_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepCSV.up_cferr2", &jetSF_DeepCSV_up_cferr2, &b_jetSF_DeepCSV_up_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepCSV.up_hf", &jetSF_DeepCSV_up_hf, &b_jetSF_DeepCSV_up_hf);
-   fChain->SetBranchAddress("jetSF.DeepCSV.up_lf", &jetSF_DeepCSV_up_lf, &b_jetSF_DeepCSV_up_lf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.central", &jetSF_DeepFlavour_central, &b_jetSF_DeepFlavour_central);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.down_cferr1", &jetSF_DeepFlavour_down_cferr1, &b_jetSF_DeepFlavour_down_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.down_cferr2", &jetSF_DeepFlavour_down_cferr2, &b_jetSF_DeepFlavour_down_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.down_hf", &jetSF_DeepFlavour_down_hf, &b_jetSF_DeepFlavour_down_hf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.down_lf", &jetSF_DeepFlavour_down_lf, &b_jetSF_DeepFlavour_down_lf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.up_cferr1", &jetSF_DeepFlavour_up_cferr1, &b_jetSF_DeepFlavour_up_cferr1);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.up_cferr2", &jetSF_DeepFlavour_up_cferr2, &b_jetSF_DeepFlavour_up_cferr2);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.up_hf", &jetSF_DeepFlavour_up_hf, &b_jetSF_DeepFlavour_up_hf);
-   fChain->SetBranchAddress("jetSF.DeepFlavour.up_lf", &jetSF_DeepFlavour_up_lf, &b_jetSF_DeepFlavour_up_lf);
+   fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
+   fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
    fChain->SetBranchAddress("DeepCSV.CvsB", &DeepCSV_CvsB, &b_DeepCSV_CvsB);
    fChain->SetBranchAddress("DeepCSV.CvsL", &DeepCSV_CvsL, &b_DeepCSV_CvsL);
    fChain->SetBranchAddress("DeepCSV.bScore", &DeepCSV_bScore, &b_DeepCSV_bScore);

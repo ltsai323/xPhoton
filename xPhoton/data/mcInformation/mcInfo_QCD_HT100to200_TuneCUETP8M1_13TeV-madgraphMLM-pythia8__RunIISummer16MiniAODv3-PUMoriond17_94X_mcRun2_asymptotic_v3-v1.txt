@@ -1,0 +1,68 @@
+09-Aug-2021 05:00:17 CEST  Initiating request to open file root://eoscms.cern.ch//eos/cms/store/mc/RunIISummer16MiniAODv3/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/F03A10A4-851E-E911-A349-0CC47A713996.root
+%MSG-w XrdAdaptorInternal:  file_open 09-Aug-2021 05:00:18 CEST pre-events
+Failed to open file at URL root://eoscms.cern.ch:1094//eos/cms/store/mc/RunIISummer16MiniAODv3/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/F03A10A4-851E-E911-A349-0CC47A713996.root.
+%MSG
+%MSG-w XrdAdaptorInternal:  file_open 09-Aug-2021 05:00:18 CEST pre-events
+Failed to open file at URL root://eoscms.cern.ch:1094//eos/cms/store/mc/RunIISummer16MiniAODv3/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/F03A10A4-851E-E911-A349-0CC47A713996.root?tried=.
+%MSG
+09-Aug-2021 05:00:18 CEST  Fallback request to file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/F03A10A4-851E-E911-A349-0CC47A713996.root
+%MSG-w XrdAdaptor:  file_open 09-Aug-2021 05:00:21 CEST pre-events
+Data is served from T2_UA_KIPT instead of original site T2_FR_GRIF_LLR
+%MSG
+09-Aug-2021 05:00:24 CEST  Successfully opened file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/F03A10A4-851E-E911-A349-0CC47A713996.root
+Begin processing the 1st record. Run 1, Event 256574206, LumiSection 171096 on stream 0 at 09-Aug-2021 05:00:26.923 CEST
+22102583.947714   2072.651653  14139.770605             0
+77947007.806748   7309.210389  14139.770605             1
+110625651.004444  10373.546854  14139.770605             2
+ 
+09-Aug-2021 05:00:27 CEST  Closed file root://xrootd-cms.infn.it//store/mc/RunIISummer16MiniAODv3/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3-v1/40000/F03A10A4-851E-E911-A349-0CC47A713996.root
+
+------------------------------------
+GenXsecAnalyzer:
+------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+Overall cross-section summary 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Process		xsec_before [pb]		passed	nposw	nnegw	tried	nposw	nnegw 	xsec_match [pb]			accepted [%]	 event_eff [%]
+0		2.208e+07 +/- 5.255e+03		1327	1327	0	8059	8059	0	3.636e+06 +/- 9.122e+04		16.5 +/- 0.4	16.5 +/- 0.4
+1		7.803e+07 +/- 1.857e+04		3418	3418	0	28263	28263	0	9.436e+06 +/- 1.513e+05		12.1 +/- 0.2	12.1 +/- 0.2
+2		1.107e+08 +/- 2.634e+04		5310	5310	0	39920	39920	0	1.472e+07 +/- 1.881e+05		13.3 +/- 0.2	13.3 +/- 0.2
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
+Total		2.108e+08 +/- 3.266e+04		10055	10055	0	76242	76242	0	2.780e+07 +/- 2.583e+05		13.2 +/- 0.1	13.2 +/- 0.1
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Before matching: total cross section = 2.108e+08 +- 3.266e+04 pb
+After matching: total cross section = 2.780e+07 +- 2.583e+05 pb
+Matching efficiency = 0.1 +/- 0.0   [TO BE USED IN MCM]
+Filter efficiency (taking into account weights)= (10055) / (10055) = 1.000e+00 +- 0.000e+00
+Filter efficiency (event-level)= (10055) / (10055) = 1.000e+00 +- 0.000e+00    [TO BE USED IN MCM]
+
+After filter: final cross section = 2.780e+07 +- 2.583e+05 pb
+After filter: final fraction of events with negative weights = 0.000e+00 +- 0.000e+00
+After filter: final equivalent lumi for 1M events (1/fb) = 3.597e-05 +- 3.362e-07
+
+=============================================
+
+MessageLogger Summary
+
+ type     category        sev    module        subroutine        count    total
+ ---- -------------------- -- ---------------- ----------------  -----    -----
+    1 GenXSecAnalyzer      -w GenXSecAnalyzer:                      17       17
+    2 XrdAdaptor           -w file_open                              1        1
+    3 XrdAdaptorInternal   -w file_open                              2        2
+    4 fileAction           -s file_close                             1        1
+    5 fileAction           -s file_open                              3        3
+
+ type    category    Examples: run/evt        run/evt          run/evt
+ ---- -------------------- ---------------- ---------------- ----------------
+    1 GenXSecAnalyzer      PostGlobalEndRun PostGlobalEndRun PostGlobalEndRun
+    2 XrdAdaptor           pre-events                        
+    3 XrdAdaptorInternal   pre-events       pre-events       
+    4 fileAction           PostGlobalEndRun                  
+    5 fileAction           pre-events       pre-events       pre-events
+
+Severity    # Occurrences   Total Occurrences
+--------    -------------   -----------------
+Warning                20                  20
+System                  4                   4
+
+dropped waiting message count 0

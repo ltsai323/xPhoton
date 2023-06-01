@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Mon Mar 13 02:43:09 2023 by ROOT version 6.14/09
+// Thu Apr 20 15:12:18 2023 by ROOT version 6.22/09
 // from TTree t/mini tree
-// found on file: /home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/Run2016_Legacy_ctagReshape.root
+// found on file: /home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/UL16PreVFP_data.root
 //////////////////////////////////////////////////////////
 
 #ifndef MakeHistoData_h
@@ -27,6 +27,7 @@ public :
    Float_t         jetSubVtx3DVal;
    Float_t         jetSubVtx3DErr;
    Int_t           jetSubVtxNtrks;
+   Int_t           phoFillIdx;
    Int_t           run;
    Long64_t        event;
    Bool_t          isData;
@@ -105,6 +106,7 @@ public :
    TBranch        *b_jetSubVtx3DVal;   //!
    TBranch        *b_jetSubVtx3DErr;   //!
    TBranch        *b_jetSubVtxNtrks;   //!
+   TBranch        *b_phoFillIdx;   //!
    TBranch        *b_run;   //!
    TBranch        *b_event;   //!
    TBranch        *b_isData;   //!
@@ -196,9 +198,9 @@ MakeHistoData::MakeHistoData(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/Run2016_Legacy_ctagReshape.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/UL16PreVFP_data.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/Run2016_Legacy_ctagReshape.root");
+         f = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/UL16PreVFP_data.root");
       }
       f->GetObject("t",tree);
 
@@ -252,6 +254,7 @@ void MakeHistoData::Init(TTree *tree)
    fChain->SetBranchAddress("jetSubVtx3DVal", &jetSubVtx3DVal, &b_jetSubVtx3DVal);
    fChain->SetBranchAddress("jetSubVtx3DErr", &jetSubVtx3DErr, &b_jetSubVtx3DErr);
    fChain->SetBranchAddress("jetSubVtxNtrks", &jetSubVtxNtrks, &b_jetSubVtxNtrks);
+   fChain->SetBranchAddress("phoFillIdx", &phoFillIdx, &b_phoFillIdx); // if no this branch, manually put the variable to 0
    fChain->SetBranchAddress("run", &run, &b_run);
    fChain->SetBranchAddress("event", &event, &b_event);
    fChain->SetBranchAddress("isData", &isData, &b_isData);

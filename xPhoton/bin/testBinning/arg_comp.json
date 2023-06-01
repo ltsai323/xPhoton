@@ -1,9 +1,0 @@
-{
-    "luminosity": 35.9,
-    "MarkerStyle": 22,
-    "MarkerColor": 39,
-    "Title": "2016 ReReco in new code",
-    "Label": "New",
-    "DATfile": "data.yield.dat",
-    "histnaming": "newcmp2016ReReco_chIsoRaw_%d_%d"
-}

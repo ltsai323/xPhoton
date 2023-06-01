@@ -115,4 +115,15 @@ void qcdCHECKER_plotQuarkComposition()
     canv->SetFillColor(4000);
     canv->SaveAs("h_compositionPlot_quarkcomposition.pdf");
 
+    stackplot->Draw("AXIS");
+    for ( TH1* h : quark_hists )
+    {
+        h->SetLineWidth(2);
+        h->SetLineColor( h->GetFillColor() );
+        h->SetFillStyle(0);
+        h->Draw("L same");
+    }
+    legend->Draw();
+    canv->SaveAs("h_compositionPlot_quarkcomposition_nonstack.pdf");
+
 }

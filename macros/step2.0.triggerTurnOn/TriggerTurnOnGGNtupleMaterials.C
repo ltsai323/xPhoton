@@ -37,7 +37,11 @@ PtRangeBoundary GetPtRangeBoundary(int HLTbit) {
 }
 
 const char* EventSelections()
+{ return EventSelections_EndcapPhoton(); }
+const char* EventSelections_EndcapPhoton()
 { return "phoPFChIso<2&&((phoIDbit>>2)&1) == 1 && phoIDMVA > 0.9  && fabs(phoEta) > 1.5 && phoEleVeto == 1"; }
+const char* EventSelections_BarrelPhoton()
+{ return "phoPFChIso<2&&((phoIDbit>>2)&1) == 1 && phoIDMVA > 0.9  && fabs(phoEta) < 1.5 && phoEleVeto == 1"; }
 const char* PassTrg(int ibit)
 { return Form("( ((phoFiredSingleTrgs>>%d)&1) == 1 )", ibit); }
 const char* FailTrg(int ibit)

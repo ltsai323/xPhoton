@@ -49,6 +49,8 @@ static bool USEHLT = false;
 
 const float CUT_DELTAR  = 0.2;
 const float CUT_DELTAPT = 0.35;
+const float NOTHING = -1;
+const int MAX_SINGLE_PHO_TRIG = 10;
 namespace _xphotonFunc_{
 std::vector<int> GenPhoIdxs( TreeReader* event );
 std::vector<int> GenMuonIdxs( TreeReader* event );
@@ -208,10 +210,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     fout_ = new TFile(oname,"recreate");
     LOG_DEBUG("output tfile is opened");
 
-    LOG_DEBUG("hi01 input dataera : %s and it is NOT equal to UL2016 ? %d", dataEra.c_str(), dataEra != "UL2016");
     TTree *outtree_;
     ShowerShapeCorrectionAdapter* SScorr = new ShowerShapeCorrectionAdapter( dataEra, data.HasMC() );
-    LOG_DEBUG("hi02");
 
 
     float ptcut[] = {
@@ -478,6 +478,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t leadingLHEPt;
     Float_t genHT_pthatDef;
 
+
     Int_t phoFillIdx = 0;
     if ( hasSubVtxInfo )
     {
@@ -652,6 +653,27 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("leadingPUPtHat" ,&leadingPUPtHat);
     }
 
+    // mc efficiency check
+    // GenPhoNumbering shows how much photon passed the Gen-selection.
+    // One should only assigned 0 for mc selection. (0 is leading gen selected photon)
+    TNtuple* selectionRes = new TNtuple("selRes", "monte carlo cut results",
+            "passed:mcPt:mcEta:recoPt:recoEta:jetPt:jetEta:matchDeltaR:matchPt:matchGenIso:chIso:passedHLTbit:GenPhoNumbering");
+
+            // 0 passed
+            // 1 mcPt
+            // 2 mcEta
+            // 3 recoPt
+            // 4 recoEta
+            // 5 jetPt
+            // 6 jetEta
+            // 7 matchDeltaR
+            // 8 matchPt
+            // 9 matchGenIso
+            //10 chIso
+            //11 passedHLTbit
+            //12 GenPhoNumbering
+
+
 
     TH1F *hist_measured = new TH1F("hist_measure","measure", 100, 0., 1000);
     TH1F *hist_reco = new TH1F("hist_reco","reco", 100, 0., 1000);
@@ -663,9 +685,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     {
         puCalc.Init( ExternalFilesMgr::RooFile_PileUp(dataEra) );
     }
-    std::cerr << "hi00\n";
     PhotonMVACalculator mvaloader( &data, dataEra );
-    std::cerr << "hi01\n";
 
 
 
@@ -675,11 +695,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++) {
         if ( ev %10000 == 0 ) 
             LOG_INFO(" processing entries %lld in %lld \n", ev, data.GetEntriesFast());
-    LOG_DEBUG("hi00");
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
-    LOG_DEBUG("hi01");
         if ( data.HasMC() )
         {
             overallGenweight += data.GetFloat("genWeight");
@@ -688,7 +706,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     hasNon1Val = 1;
         }
 
-    LOG_DEBUG("hi01");
         Int_t run_     = data.GetInt("run");
         Long64_t event_   = data.GetLong64("event");
         Int_t nVtx_    = data.GetInt("nVtx");
@@ -698,7 +715,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         h_nrecojet->Fill(nJet);	  
         if(nJet <1 ) continue;
 
-    LOG_DEBUG("hi02");
         if(!data.HasMC())
         {
             Int_t hasGoodVtx = data.GetInt("nGoodVtx");
@@ -708,7 +724,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             int metFilters_ = data.GetInt("metFilters");
             if(metFilters_ != 0 ) continue;
         }
-    LOG_DEBUG("hi03");
 
 
 
@@ -1027,7 +1042,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 double tmp_mcTrkIso04_ = -999.;
                 int tmp_momid = 0;
  
-                if(verbose) LOG_DEBUG("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[recoPhoIdx], phoEta[recoPhoIdx], phoPhi[recoPhoIdx], phoEleVeto[recoPhoIdx]);
+                if(verbose)
+                { LOG_DEBUG("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[recoPhoIdx], phoEta[recoPhoIdx], phoPhi[recoPhoIdx], phoEleVeto[recoPhoIdx]); }
                 int mcIdx = TruthMatch_GenPhoton(&data, recoPhoIdx, phomcid);
                 if ( mcIdx != -1 )
                 {
@@ -1161,7 +1177,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
             //int pho_presel = 1;
             int pho_presel = PhotonPreselection(data, i, kFALSE);
-            // only for check CSEV eff vs pt {{{
+            // Histogram filling section for checking  CSEV eff vs pt {{{
             if( data.HasMC()) { 
                 if(i==0 && match[i]==1){
 
@@ -1199,13 +1215,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
         }
         h_npho->Fill(photon_list.size());
-        if(photon_list.size() < 1) continue;
+
 
 
         // find photon overlaps to electron
-        TLorentzVector leadingPhoP4;
-        leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
-        if ( ELECTRONVETO ) {
+        if ( ELECTRONVETO && photon_list.size()>0 ) {
+            TLorentzVector leadingPhoP4;
+            leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
             vector<int> eleID;
             ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
             h_nele->Fill(eleID.size());
@@ -1221,23 +1237,66 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         }
 
         //find one jet in event
-        for(int j=0; j<nJet; j++){
+        for(int j=0; j<nJet; j++) {
+            if (photon_list.size() == 0 ) break;
             float jetjecunc = 1.;
             if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
                 if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
 
-                if( jetId[j] ) {	  
+                if( jetId[j] ) {
+                    TLorentzVector leadingPhoP4;
+                    leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
-                        if(jet_index<0) jet_index = j;
-                        else LOG_DEBUG("more than 1 jet pass the selection. Please check!\n");
+                        if(jet_index<0) { jet_index = j; }
+                        else { LOG_DEBUG("more than 1 jet pass the selection. Please check!\n"); }
                     }	    
                 }    
             }  
         }
 
+        // block to record preselection efficiency
+        if ( data.HasMC() && nPho>0 )
+        {
+            // if no any photon selected, use leading photon
+            // Check matching status : selRes->Draw("matchDeltaR", "GenPhoNumbering>0")
+            // Check efficiency : calculate the number of selRes->Draw("mcPt", "GenPhoNumbering==0 && passed==1")
+            //                                divided by  selRes->Draw("mcPt", "GenPhoNumbering==0").
+            // Check Single photon HLT passing status
+            int recoidx = photon_list.size()>0 ? photon_list[0] : 0;
+
+            vector<int> phomcid = GenPhoIdxs(&data);
+            for ( unsigned int midx = 0; midx < phomcid.size(); ++midx )
+            {
+                int mcIdx = phomcid[midx];
+
+                float jet_pt_ = jet_index>=0 ? jetPt[jet_index] : -1;
+                float jet_eta_= jet_index>=0 ? jetEta[jet_index]: -1;
+
+                float dr = usefulFuncs::deltaR(phoEta[recoidx], phoPhi[recoidx], mcEta[mcIdx], mcPhi[mcIdx]);
+                float dpt = (phoEt[recoidx] - mcPt[mcIdx])/mcPt[mcIdx];
+                float mc_gen_iso_ = mcCalIsoDR04[mcIdx]+mcTrkIsoDR04[mcIdx];
+                int hlt_bit_ = -1;
+
+                for ( int iBit = 0; iBit < MAX_SINGLE_PHO_TRIG; ++iBit )
+                    if ( ((phoFiredTrgs[recoidx]>>iBit)&1) == 1 )
+                    { hlt_bit_ = iBit; break; }
+                    
+                selectionRes->Fill(
+                        photon_list.size()>0,
+                        mcPt[mcIdx],mcEta[mcIdx],
+                        phoEt[recoidx],phoEta[recoidx],
+                        jet_pt_,jet_eta_,
+                        dr,dpt,mc_gen_iso_,
+                        phoPFChIso[recoidx], hlt_bit_,
+                        midx
+                        );
+            }
+        }
+        if(photon_list.size() < 1)
+            continue;
 
 
 
@@ -1483,22 +1542,15 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             LOG_DEBUG("start to find seed time");
             if (!data.HasMC() ) {
                 SeedTime_ = phoSeedTime[ipho];
-    LOG_DEBUG("hi04.1");
                 SeedEnergy_ = phoSeedEnergy[ipho];
-    LOG_DEBUG("hi04.2");
                 MIPTotEnergy_ = phoMIPTotEnergy[ipho];
-    LOG_DEBUG("hi04.3");
                 HLT = data.GetLong64("HLTPho");
-    LOG_DEBUG("hi04.4");
                 HLTIsPrescaled  = data.GetLong64("HLTPhoIsPrescaled");
-    LOG_DEBUG("hi04.5");
                 metFilters = data.GetInt("metFilters");
-    LOG_DEBUG("hi04.6");
             }
 
 
 
-    LOG_DEBUG("hi05");
             recoPt    = phoEt[ipho];
             recoPtCalib    = phoEtCalib[ipho];
             recoEta   = phoEta[ipho];
@@ -1508,12 +1560,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             eleVeto   = phoEleVeto[ipho];
             HoverE    = phoHoverE[ipho];
 
-    LOG_DEBUG("hi06");
             phohasPixelSeed_ = phohasPixelSeed[ipho];
             chIsoRaw   = phoPFChIso[ipho];
             phoIsoRaw  = phoPFPhoIso[ipho];
             nhIsoRaw   = phoPFNeuIso[ipho];
-    LOG_DEBUG("hi07");
             calib_chIso = data.HasMC() ? -1 : CorrectedRho( chIsoRaw, rho, EffectiveArea_ChIso(recoSCEta,dataEra) );
             LOG_DEBUG("end of Rho Correction");
 
@@ -1591,6 +1641,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
     if ( data.HasMC() )
     {
+        selectionRes->Write();
     	nt_sumupgenweight->Fill(overallGenweight,hasNon1Val);
     	nt_sumupgenweight->Write();
     }
@@ -1790,7 +1841,7 @@ std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )
     std::vector<int> phomcid;
     for (Int_t k=0; k<nMC; ++k) {
         if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
-        if(verbose) LOG_DEBUG("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]);
+        if(verbose) { LOG_DEBUG("   true photon in generator pt %.2f, eta %.2f, phi %.2f \n", mcPt[k], mcEta[k], mcPhi[k]); }
         phomcid.push_back(k);
         }
     }
@@ -1852,11 +1903,11 @@ int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std:
         hmcTrkIsoMini->Fill(mcTrkIsoDR04[mcIdx]); 
         hmcTrkIsoMicro->Fill(mcTrkIsoDR04[mcIdx]); 
 
-        if(verbose) LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", mcIdx, dr, dpt);
-        if(verbose) LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatusFlag[mcIdx], mcCalIsoDR04[mcIdx], mcTrkIsoDR04[mcIdx]);
+        if(verbose) { LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", mcIdx, dr, dpt); }
+        if(verbose) { LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatusFlag[mcIdx], mcCalIsoDR04[mcIdx], mcTrkIsoDR04[mcIdx]); }
         if (dr < CUT_DELTAR && dpt < CUT_DELTAPT){
             if ( mcCalIsoDR04[mcIdx]<5.0 ){ //for gammajet photon pythia	      
-                if(verbose) LOG_DEBUG("  mc matched !!! \n");	    
+                if(verbose) { LOG_DEBUG("  mc matched !!! \n"); }
                 return mcIdx;
             }
         }

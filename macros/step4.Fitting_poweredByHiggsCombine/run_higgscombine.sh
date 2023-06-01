@@ -7,6 +7,10 @@ if [ "$2" == "" ]; then
     exit
 fi
 
+function raiseError() { echo 'Please load higgs combine environment!';  exit 1; }
+sh ~/goToWorkSession/higgsCombine.sh check && echo 'passed higgs combine env checking' || raiseError
+
+
 touch out_fit_result; /bin/rm -r out_fit_result # clean up
 echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > 2016ReReco.data.yield.dat
 echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > 2016ReReco.data.bkg.dat
@@ -14,8 +18,7 @@ echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > 2016ReReco.data.bkg.dat
 
 python3 py_GetDataDetail.py 2016ReReco $inputfile || exit
 echo [$outputLabel] processing run_single.sh
-#for pPtBin in {0..20}; do
-for pPtBin in {0..15}; do # for merged 2016 bin
+for pPtBin in {0..20}; do # assigned binning > actual binning is allowed
     for pEtaBin in {0..1}; do
         for jEtaBin in {0..1}; do
 
@@ -30,5 +33,7 @@ echo [$outputLabel] collecting results
 mv *.dat out_fit_result
 mkdir out_fit_result/logs; mv log_* out_fit_result/logs/
 
-sh collect_result.sh $outputLabel
+#sh collect_result.sh $outputLabel && /bin/rm -r out_fit_result
 echo [$outputLabel] all job finished
+
+echo tmp_BDTFit_blah is kept. you can simply delete them.

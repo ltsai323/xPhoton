@@ -80,6 +80,7 @@ struct xQCDTreeContent
         genHT_pthatDef = INITVAL;
         MET = INITVAL;
 
+        genweight = INITVAL;
         pthat_PU.clear();
     }
     void AddGenIdx(int idx)
@@ -113,6 +114,8 @@ struct xQCDTreeContent
         t->Branch("genHT_pthatDef", &genHT_pthatDef, "genHT_pthatDef/F");
         t->Branch("MET",              &MET,               "MET/F");
         t->Branch("pthat_PU" ,&pthat_PU);
+
+        t->Branch("genweight", &genweight, "genweight/F");
     }
 
     Int_t lheNum;
@@ -141,6 +144,9 @@ struct xQCDTreeContent
     Int_t   leadingJetPartonID;
     Int_t   leadingJetGenPartonID;
 
+
+
+    Float_t genweight;
     // used for record event
     vector<int> _genidxRec;
 };
@@ -176,6 +182,10 @@ void FillEvent(TreeReader* data, xQCDTreeContent* evt)
 
     Float_t* pupthat_max = data->GetPtrFloat("pupthat_max");
     Int_t    nPU = data->GetInt("nPUInfo");
+
+    evt->genweight = data->GetFloat("genWeight");
+    
+    
 
     float ptsum = 0;
     for( int lheIdx : evt->GenIdxs() )
@@ -234,6 +244,8 @@ void xQCDChecker(vector<string> pathes, Char_t oname[200], const std::string dat
     TFile* fout = new TFile(oname,"recreate");
     fout->cd();
     TTree* tout = new TTree("t", "");
+    Float_t overallGenweight = 0;
+    Float_t hasNon1Val = 0;
 
     xQCDTreeContent storage(tout);
 
@@ -249,11 +261,22 @@ void xQCDChecker(vector<string> pathes, Char_t oname[200], const std::string dat
         data.GetEntry(ev);
         storage.Clear();
 
+        // record gen weight for calculate evnet weight
+        overallGenweight += data.GetFloat("genWeight");
+        if ( hasNon1Val < 0.1 )
+            if ( data.GetFloat("genWeight") != 1. )
+                hasNon1Val = 1;
+
+        // orig sorting
+        Int_t    nLHE   = data.GetInt("nLHE");
+        for ( int iLHE = 0; iLHE < nLHE; ++iLHE )
+        { storage.AddGenIdx(iLHE); }
+
+        /*
         Int_t    nLHE   = data.GetInt("nLHE");
         Float_t* lhePx  = data.GetPtrFloat("lhePx");
         Float_t* lhePy  = data.GetPtrFloat("lhePy");
 
-        /*
         // pt sorting
         std::map<float, int, std::greater<float>> genIdx_ptSorted;
         for ( int iLHE = 0; iLHE < nLHE; ++iLHE )
@@ -264,9 +287,6 @@ void xQCDChecker(vector<string> pathes, Char_t oname[200], const std::string dat
         for ( auto iter = genIdx_ptSorted.begin(); iter != genIdx_ptSorted.end(); ++iter )
         { storage.AddGenIdx(iter->second); }
         */
-        // orig sorting
-        for ( int iLHE = 0; iLHE < nLHE; ++iLHE )
-        { storage.AddGenIdx(iLHE); }
 
         FillEvent( &data, &storage );
 
@@ -279,6 +299,10 @@ void xQCDChecker(vector<string> pathes, Char_t oname[200], const std::string dat
 
     fout->cd();
     tout->Write();
+
+    TNtuple* nt_sumupgenweight = new TNtuple("genweightsummary", "", "sumupgenweight:hasNon1Val");
+    nt_sumupgenweight->Fill(overallGenweight,hasNon1Val);
+    nt_sumupgenweight->Write();
 
 
     fout->Close();

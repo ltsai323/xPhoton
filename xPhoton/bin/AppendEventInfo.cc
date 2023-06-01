@@ -100,6 +100,7 @@ void DisableBranch(TTree* t)
 
 //#define BUG(format, args...)     fprintf(stderr, "---------------------debug-    %s  \n  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
 #define BUG(format, args...)
+#define INFO(format, args...)     fprintf(stderr, "---------------------info -    %s  \n  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
 bool JetPtSel_RemoveLowStatSample(TH1* h, float pt);
 float ReweightedHT(TH1* h, float gen_ht);
 int main(int argc, const char* argv[])
@@ -165,6 +166,8 @@ int main(int argc, const char* argv[])
     //std::vector<Float_t>* pthat_PU = nullptr;
     Float_t leadingPUPtHat;
 
+    INFO("Using xPhoton variables");
+    // for xPhoton
     iT->SetBranchAddress("genWeight", &genweight);
     iT->SetBranchAddress("jetPt", &jetPt);
     iT->SetBranchAddress("nLHE", &nLHE);

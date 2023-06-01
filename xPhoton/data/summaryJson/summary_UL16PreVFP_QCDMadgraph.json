@@ -1,0 +1,164 @@
+{
+  "QCD_HT1000to1500_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        1126.0, 
+        10.81, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.8881, 
+        0.008574, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        22.18, 
+        0.2124, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        45.09, 
+        0.4343, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT100to200_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        23590000.0, 
+        208900.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        4.239e-05, 
+        3.779e-07, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT1500to2000_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        108.8, 
+        1.044, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        9.195, 
+        0.08871, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT200to300_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v2": {
+      "xs": [
+        1561000.0, 
+        14640.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.0006408, 
+        6.044e-06, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        30270.0, 
+        281.7, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.03303, 
+        0.0003092, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT300to500_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v2": {
+      "xs": [
+        326400.0, 
+        3090.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.003064, 
+        2.916e-05, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        6368.0, 
+        61.13, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        0.157, 
+        0.001516, 
+        "1/fb"
+      ]
+    }
+  }, 
+  "QCD_HT50to100_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8": {
+    "v11-v1": {
+      "xs": [
+        183600000.0, 
+        1610000.0, 
+        "pb"
+      ], 
+      "fracofevt": [
+        0.0, 
+        0.0
+      ], 
+      "lumiper1Mevt": [
+        5.446e-06, 
+        4.807e-08, 
+        "1/fb"
+      ]
+    }
+  }
+}

@@ -1,5 +1,4 @@
 #include "xPhoton/xPhoton/bin/xPhotonRunnerUL2016PostVFP.h"
-//#include "xPhoton/xPhoton/bin/xPhotonRunnerUL2016PreVFP.h"
 #include "xPhoton/xPhoton/interface/xPhotonHFJet_subVtxInfo.h"
 #include <iostream>
 #include <sstream>
@@ -53,6 +52,5 @@ int main(int argc, char* argv[])
             GetFileName(argc,argv),
             GetOption  (argc,argv),
             "UL2016PostVFP"
-            //"UL2016PreVFP"
             );
 }

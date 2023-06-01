@@ -5,8 +5,11 @@ you can see the related python or bash shell files to get input hint.
 Or directly see the source code for hint.
 
 ## AppendBTagCalibration.cc
-Used for BTagging 
+Append Reweights of bTagging scores to xPhoton ntuples. Focusing on b+bb score. Adds re-shaping weight and shape uncertainties from b tagging groups. This is previous version. Abandoned code.
+## AppendCTagCalibration.cc
+Append Reweights of bTagging scores to xPhoton ntuples. Focusing on b+bb, CvsB and CvsL score. Adds re-shaping weight and shape uncertainties from Higgs group. This is more recommended for this analysis.
 ## AppendEventInfo.cc
+Append MC information to event. *mcweight* is luminsity weight normalize every event to data, containing GenWeight, IntegratedLuminosity and GenCrossSection. *isQCD* shows this root file is QCD or not. *passMaxPUhat* is used for QCD sample only. This variable indicates whether file should drop some event to prevent spike. *weight_passMaxPUhat* reweights the event back to normal.
 ## checkJetIDRunner.cc
 ## xElectronsRunner.cc
 ## xPhotonInfoUpdate2.cc
