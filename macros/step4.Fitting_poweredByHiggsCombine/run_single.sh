@@ -37,3 +37,5 @@ root -b -q '../plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEt
 
 
 cd ..; mv $tmpdir out_fit_result/$outdir
+
+# if the job failed.the folder tmp_${outdir} would leave.
