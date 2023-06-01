@@ -98,11 +98,12 @@ struct OutputModule_TreeText : OutputModule
         OutputModule(oFILEname, "ptbin/I:EBEE/I:jetbin/I:efficiency/F:error/F") { }
 
     virtual void Write( int pETAbin, int jETAbin, int pPTbin, efficiency_record rec ) override
-    { output << Form("%d %d %d %.10f %.10f\n", pPTbin,pETAbin,pETAbin, rec.eff, rec.err); }
+    { output << Form("%d %d %d %.10f %.10f\n", pPTbin,pETAbin,jETAbin, rec.eff, rec.err); }
 
 };
 void preselection_efficiency(const std::vector<const char*> iFILEnames)
 {
+    ROOT::EnableImplicitMT();
     const char* oFileName = "dat_preselectionEfficiency.dat";
     std::vector<LumiRDF*> rdfs;
     rdfs.reserve(iFILEnames.size());
@@ -113,13 +114,14 @@ void preselection_efficiency(const std::vector<const char*> iFILEnames)
     const int NUMBIN_PHOPT = phopt_def.size();
 
     OutputModule* outs = new OutputModule_TreeText(oFileName);
-    //for ( int pEtaBin = 0; pEtaBin < 2; ++pEtaBin )
-    //    for ( int jEtaBin = 0; jEtaBin < 3; ++jEtaBin )
-    //        for ( int pPtBin = 0; pPtBin < NUMBIN_PHOPT- 1; ++pPtBin )
+    for ( int pEtaBin = 0; pEtaBin < 2; ++pEtaBin )
+        for ( int jEtaBin = 0; jEtaBin < 3; ++jEtaBin )
+            //for ( int pPtBin = 0; pPtBin < NUMBIN_PHOPT- 1; ++pPtBin )
+            for ( int pPtBin = 0; pPtBin < NUMBIN_PHOPT; ++pPtBin )
     // for test
-    for ( int pEtaBin = 0; pEtaBin < 1; ++pEtaBin ) // for test
-        for ( int jEtaBin = 0; jEtaBin < 1; ++jEtaBin )
-            for ( int pPtBin = 0; pPtBin < 1; ++pPtBin )
+    //for ( int pEtaBin = 0; pEtaBin < 1; ++pEtaBin ) // for test
+    //    for ( int jEtaBin = 0; jEtaBin < 1; ++jEtaBin )
+    //        for ( int pPtBin = 0; pPtBin < 1; ++pPtBin )
     {
         double efficiency = BinnedPreSelEfficiency( rdfs, pEtaBin, jEtaBin, pPtBin );
         efficiency_record rec;
