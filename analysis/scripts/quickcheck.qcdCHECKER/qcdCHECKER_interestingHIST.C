@@ -164,19 +164,46 @@ void OutputManager::GetHistFrom(const char* ifilename)
     Drawing(&data_loader, &hists_noEvtWeig, &noweig);
 }
 
+void AddFiles_Old(OutputManager* output)
+{
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT50to100.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT100to200.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT200to300.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT300to500.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT500to700.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT700to1000.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT1000to1500.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT1500to2000.root");
+    output->GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT2000toInf.root");
+}
+void AddFiles_UL2016PreVFP(OutputManager* output)
+{
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT50to100.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT100to200.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT200to300.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT300to500.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT500to700.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT700to1000.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT1000to1500.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT1500to2000.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT2000toInf.root");
+}
+void AddFiles_UL2016PostVFP(OutputManager* output)
+{
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT50to100.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT100to200.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT200to300.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT300to500.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT500to700.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT700to1000.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT1000to1500.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT1500to2000.root");
+    output->GetHistFrom("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/xQCD2nd_ReweightChecking_Madgraph_cc_HT2000toInf.root");
+}
 void qcdCHECKER_interestingHIST()
 {
     OutputManager newfile("_qcdCHECKER_interestingHIST_C.root");
 
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT50to100.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT100to200.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT200to300.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT300to500.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT500to700.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT700to1000.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT1000to1500.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT1500to2000.root");
-    newfile.GetHistFrom("/home/ltsai/Work/github/xPhoton/xPhoton/bin/xQCD2nd_ReweightChecking_Madgraph_cc_HT2000toInf.root");
-
-
+    //AddFiles_UL2016PreVFP(&newfile);
+    AddFiles_UL2016PostVFP(&newfile);
 }

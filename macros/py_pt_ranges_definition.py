@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-testmode = 0
+testmode = 3
+
+# original version (testmode = -1)
+def pt_ranges(dataERA):
+    if dataERA == '2016ReReco' or dataERA == 'UL2016':
+        return (25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000)
+def hltbin_ptbin(dataERA):
+    if dataERA == '2016ReReco' or dataERA == 'UL2016':
+        return ( 0, 1, 2, 3, 3, 4,  5,  5,  6,  6,  6,  7,  7,  7,  7,  7,  7,  8,  8,  8,   8)
+
 
 # stable version (testmode = 0)
 def pt_ranges_test_for_merge_bin(dataERA):
@@ -28,6 +37,13 @@ def hltbin_ptbin_definition_merbe_bin_test2(dataERA):
     if dataERA == '2016ReReco' or dataERA == 'UL2016':
         return ( 0, 1, 3, 3,  5,  5,  6,  7,  7,  7,  7,  7,  8,  8,  8)
 
+# test mode == 3
+def pt_ranges_test_for_merge_bin_test3(dataERA):
+    if dataERA == '2016ReReco' or dataERA == 'UL2016':
+        return (25,34,56,70,100,115,135,190,250,300,350,400,500,700)
+def hltbin_ptbin_definition_merbe_bin_test3(dataERA):
+    if dataERA == '2016ReReco' or dataERA == 'UL2016':
+        return ( 0, 1, 3, 3,  5,  5,  6,  7,  7,  7,  7,  8,  8,  8)
 
 def ptbin_ranges_2016(dataERA):
     # comes from step2.makehisto ptbin_ranges()
@@ -58,21 +74,29 @@ HLTBIT_2016_106X = {
 
 
 def PhoPtBinning(dataERA):
+    if testmode == -1:
+        return pt_ranges(dataERA)
     if testmode == 0:
         return pt_ranges_test_for_merge_bin(dataERA)
     if testmode == 1:
         return pt_ranges_test_for_merge_bin_test1(dataERA)
     if testmode == 2:
         return pt_ranges_test_for_merge_bin_test2(dataERA)
+    if testmode == 3:
+        return pt_ranges_test_for_merge_bin_test3(dataERA)
 def ptbin_ranges(dataERA): #asdf tmp func
     return PhoPtBinning(dataERA)
 def hltbin_ptbin_definition(dataERA):
+    if testmode == -1:
+        return hltbin_ptbin(dataERA)
     if testmode == 0:
         return hltbin_ptbin_definition_merbe_bin(dataERA)
     if testmode == 1:
         return hltbin_ptbin_definition_merbe_bin_test1(dataERA)
     if testmode == 2:
         return hltbin_ptbin_definition_merbe_bin_test2(dataERA)
+    if testmode == 3:
+        return hltbin_ptbin_definition_merbe_bin_test3(dataERA)
     return None
 def FindEffLumi(dataERA, ptBIN):
     hltbit_definition = None

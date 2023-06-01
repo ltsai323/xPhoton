@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 
+
 std::vector<float> ptbin_ranges();
 Int_t TriggerBit( const std::string& dataera, Int_t ptbin );
 
@@ -81,6 +82,30 @@ Int_t TriggerBit_2016_mergedBin_test2(Int_t ptbin)
     return -1; // nothing
 }
 // merge bin 135-175 and 175-190. All they used HLT120 end }}}
+// merge bin 135-175 and 175-190. All they used HLT120 . And merge 190-220-250{{{
+std::vector<float> ptbin_ranges_2016_mergedBin_test3()
+{ return std::vector<float>({25,34,56,70,100,115,135,190,250,300,350,400,500,700}); }  // only 0~14 bins
+
+Int_t TriggerBit_2016_mergedBin_test3(Int_t ptbin)
+{
+    if ( ptbin == 0 ) return 0;  //  25- 34
+    if ( ptbin == 1 ) return 1;  //  34- 56
+    if ( ptbin == 2 ) return 3;  //  56- 70
+    if ( ptbin == 3 ) return 3;  //  70-100
+    if ( ptbin == 4 ) return 5;  // 100-115
+    if ( ptbin == 5 ) return 5;  // 115-135
+    if ( ptbin == 6 ) return 6;  // 135-190
+    if ( ptbin == 7 ) return 7;  // 190-250
+    if ( ptbin == 8 ) return 7;  // 250-300
+    if ( ptbin == 9 ) return 7;  // 300-350
+    if ( ptbin ==10 ) return 7;  // 350-400
+    if ( ptbin ==11 ) return 8;  // 400-500
+    if ( ptbin ==12 ) return 8;  // 500-700
+    if ( ptbin ==13 ) return 8;  // 700-inf
+
+    return -1; // nothing
+}
+// merge bin 135-175 and 175-190. All they used HLT120 . And merge 190-220-250 }}}
 // 2016 binning {{{
 std::vector<float> ptbin_ranges_2016()
 { return std::vector<float>({25,34,40,56,70,85,100,115,135,155,175,190,200,220,250,300,350,400,500,750,1000}); } // only bin 0~20. size of vector = 21 // stable version
@@ -119,9 +144,10 @@ Int_t TriggerBit_2016(Int_t ptbin)
 std::vector<float> ptbin_ranges()
 {
     //return ptbin_ranges_2016_mergedBin();
-    return ptbin_ranges_2016_mergedBin_test1(); // merge 190
+    //return ptbin_ranges_2016_mergedBin_test1(); // merge 190
     //return ptbin_ranges_2016_mergedBin_test2(); // merge 175
-    // return ptbin_ranges_2016();
+    return ptbin_ranges_2016_mergedBin_test3();
+    //return ptbin_ranges_2016();
 }
 
 Int_t TriggerBit( const std::string& dataera, Int_t ptbin){
@@ -131,9 +157,10 @@ Int_t TriggerBit( const std::string& dataera, Int_t ptbin){
          dataera == "UL16PostVFP" )
     {
         //return TriggerBit_2016_mergedBin(ptbin);
-        return TriggerBit_2016_mergedBin_test1(ptbin); // merge 190
+        //return TriggerBit_2016_mergedBin_test1(ptbin); // merge 190
         //return TriggerBit_2016_mergedBin_test2(ptbin); // merge 175
-        //TriggerBit_2016(ptbin);
+        return TriggerBit_2016_mergedBin_test3(ptbin); // merge 175
+        //return TriggerBit_2016(ptbin);
     }
     if ( dataera == "UL2017" )
     {

@@ -88,7 +88,7 @@ void qcdCHECKER_plotHTSlicesComposition()
         mcslices_hists.push_back( histFactory_MergePtBinning(ifile,histnameTEMPLATE) );
         SetHistProperty(mcslices_hists.back(), colors[iMC], Form("slice_%d",iMC), slicename[iMC]);
 
-        //LowStatEntryRemoval( mcslices_hists.back(), iMC );
+        LowStatEntryRemoval( mcslices_hists.back(), iMC );
     }
 
 

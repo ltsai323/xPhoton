@@ -8,12 +8,16 @@ static std::vector<float> jetptBin({25,34,41,56,70,85,100,115,135,155,175,190,20
 int jetptBin_100CUT[NMCSEP] = {7,16,16,18,20,21,22,23,24};
 int jetptBin_10CUT[NMCSEP] = {11,20,20,21,22,23,24,24,24};
 int jetptBin_tenToMinusFiveCut[NMCSEP] = {10,10,15,17,20,20,22,23,24};
-
 void LowStatEntryRemoval(TH1* hh, int iMC)
 {
-    for ( int ibin = hh->GetNbinsX(); ibin >= jetptBin_tenToMinusFiveCut[iMC]; --ibin )
+    for ( int ibin = hh->GetNbinsX(); ibin != 0; --ibin )
+    {
+        //if ( ibin < jetptBin_tenToMinusFiveCut[iMC] ) break;
+        if ( ibin < jetptBin_10CUT[iMC] ) break;
         hh->SetBinContent(ibin,0.);
+    }
 }
+
 TH1* histFactory_MergeMCSlices(TFile* ifile, const char* nameTEMPLATE)
 {
     std::vector<TH1*> loadhists(NMCSEP, nullptr);
@@ -22,8 +26,6 @@ TH1* histFactory_MergeMCSlices(TFile* ifile, const char* nameTEMPLATE)
     TH1* l = loadhists.at(0);
     TH1F* outhist = new TH1F( "tmp", "", l->GetNbinsX(), l->GetXaxis()->GetXbins()->GetArray() );
 
-    for ( int iMC = 0; iMC < loadhists.size(); ++iMC )
-        LowStatEntryRemoval(loadhists[iMC], iMC);
     for ( int ibin = outhist->GetNbinsX()+1; ibin !=0; --ibin )
     {
         double bin_integral = 0.;
@@ -59,8 +61,7 @@ void SetHistProperty(TH1* h, int fillcolor, const char* name, const char* illust
 }
 void normalization_eachBinBackToOne(std::list<TH1*>& hists)
 {
-    TH1* h = hists.front();
-    for ( auto ibin = h->GetNbinsX(); ibin != 0; --ibin )
+    for ( auto ibin = hists.front()->GetNbinsX(); ibin != 0; --ibin )
     {
         double integral = 0.;
         for ( TH1* hist : hists )
@@ -71,35 +72,37 @@ void normalization_eachBinBackToOne(std::list<TH1*>& hists)
 }
 
 
+const char* slicename[NMCSEP] = { "50To100", "100To200", "200To300", "300To500", "500To700", "700To1000", "1000To1500", "1500To2000", "2000ToInf" };
 
-void qcdCHECKER_plotQuarkComposition()
+void qcdCHECKER_plotHTSlicesComposition()
 {
     TFile* ifile = TFile::Open("qcdCHECKER_interestingHIST_C.root");
+    //TFile* ifile = TFile::Open("qcdCHECKER_histTOcheckCUTs_C.root");
     TCanvas* canv = new TCanvas("canv", "", 1000,1000);
 
-    std::list<TH1*> quark_hists;
-    // load b
-    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "allsample/b_yield_file%d") );
-    //quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/b_yield_file%d") );
-    SetHistProperty(quark_hists.back(), colors[0], "bYield", "b quark");
-    // load c
-    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "allsample/c_yield_file%d") );
-    //quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/c_yield_file%d") );
-    SetHistProperty(quark_hists.back(), colors[1], "cYield", "c quark");
-    // load L
-    quark_hists.push_back( histFactory_MergeMCSlices(ifile, "allsample/L_yield_file%d") );
-    //quark_hists.push_back( histFactory_MergeMCSlices(ifile, "noLargePU/L_yield_file%d") );
-    SetHistProperty(quark_hists.back(), colors[2], "LYield", "light quark");
+    std::list<TH1*> mcslices_hists;
+    for ( int iMC = 0; iMC < NMCSEP; ++iMC )
+    {
+        //const char* histnameTEMPLATE = Form("%s_%s","allSample/weight_ptbin%d", Form("file%d",iMC));
+        const char* histnameTEMPLATE = Form("%s_%s","allsample/weight_ptbin%d", Form("file%d",iMC));
+        //const char* histnameTEMPLATE = Form("%s_%s","noLargePU/weight_ptbin%d", Form("file%d",iMC));
+        mcslices_hists.push_back( histFactory_MergePtBinning(ifile,histnameTEMPLATE) );
+        SetHistProperty(mcslices_hists.back(), colors[iMC], Form("slice_%d",iMC), slicename[iMC]);
 
-    normalization_eachBinBackToOne(quark_hists);
+        LowStatEntryRemoval( mcslices_hists.back(), iMC );
+    }
+
+
+
+    normalization_eachBinBackToOne(mcslices_hists);
 
     THStack* stackplot = new THStack( "thestackplot", "");
-    TLegend* legend = new TLegend(0.5, 0.55, 0.89,0.8);
+    TLegend* legend = new TLegend(0.13, 0.15, 0.33,0.4);
     legend->SetFillColor(4000);
     legend->SetFillStyle(4000);
     legend->SetBorderSize(0);
 
-    for ( TH1* hist : quark_hists )
+    for ( TH1* hist : mcslices_hists )
     {
         stackplot->Add(hist);
         legend->AddEntry(hist, hist->GetTitle(), "F");
@@ -109,21 +112,12 @@ void qcdCHECKER_plotQuarkComposition()
     legend->Draw();
 
     stackplot->GetXaxis()->SetTitle("reco jet Pt (GeV)");
-    stackplot->GetYaxis()->SetTitle("Quark Composition");
+    stackplot->GetYaxis()->SetTitle("Compositions");
+
     canv->Modified();
     canv->SetFillStyle(4000);
     canv->SetFillColor(4000);
-    canv->SaveAs("h_compositionPlot_quarkcomposition.pdf");
-
-    stackplot->Draw("AXIS");
-    for ( TH1* h : quark_hists )
-    {
-        h->SetLineWidth(2);
-        h->SetLineColor( h->GetFillColor() );
-        h->SetFillStyle(0);
-        h->Draw("L same");
-    }
-    legend->Draw();
-    canv->SaveAs("h_compositionPlot_quarkcomposition_nonstack.pdf");
+    canv->SetLogx();
+    canv->SaveAs("qcdCHECKER_plotHTSlicesComposition_C.pdf");
 
 }
