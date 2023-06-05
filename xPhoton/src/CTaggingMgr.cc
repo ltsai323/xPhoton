@@ -290,18 +290,21 @@ void CTaggingMgr::InitVars()
 CTaggingMgr_DeepFlavour::CTaggingMgr_DeepFlavour(const char* dataera, bool isMC) : CTaggingMgr(dataera, "DeepFlavour", isMC) {}
 void CTaggingMgr_DeepFlavour::SetBranchAddress(TTree* t)
 {
-    t->SetBranchAddress("jetDeepFlavourTags_bb" ,&_bbval);
-    t->SetBranchAddress("jetDeepFlavourTags_b"  , &_bval);
-    t->SetBranchAddress("jetDeepFlavourTags_c"  , &_cval);
-    t->SetBranchAddress("jetDeepFlavourTags_uds", &_qval);
-    t->SetBranchAddress("jetDeepFlavourTags_g"  , &_gval);
+    // b = b+bb+b_lep
+    // l = uds + g
+    t->SetBranchAddress("jetDeepFlavourTags_bb"  ,&_bbval);
+    t->SetBranchAddress("jetDeepFlavourTags_b"   , &_bval);
+    t->SetBranchAddress("jetDeepFlavourTags_lepb", &_blep);
+    t->SetBranchAddress("jetDeepFlavourTags_c"   , &_cval);
+    t->SetBranchAddress("jetDeepFlavourTags_uds" , &_qval);
+    t->SetBranchAddress("jetDeepFlavourTags_g"   , &_gval);
 
     if (!IsMC()) return;
     t->SetBranchAddress("jetHadFlvr", &_hadflvr);
 }
 void CTaggingMgr_DeepFlavour::FillBranch()
 {
-    this->calculation(_hadflvr, _bval+_bbval, _cval, _qval+_gval);
+    this->calculation(_hadflvr, _bval+_bbval+_blep, _cval, _qval+_gval);
 }
 
 
