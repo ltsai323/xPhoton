@@ -116,10 +116,50 @@ int main(int argc, const char* argv[])
     if ( useDeepCSV )
     {
         ctagCalibs["deepcsv"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepCSV    (era, ismc));
+
+        // clear old information
+        const char* _algoType = "DeepCSV";
+        if ( iT->FindBranch( Form("%s.CvsB",_algoType) ) != nullptr )
+        {
+            iT->SetBranchStatus( Form("%s.CvsB",_algoType), false);
+            iT->SetBranchStatus( Form("%s.CvsL",_algoType), false);
+            iT->SetBranchStatus( Form("%s.bScore",_algoType), false);
+
+            if ( ismc )
+            {
+                iT->SetBranchStatus( Form("%s.ctagWeight.central",_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.PUWeightUp"           ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.PUWeightDown"         ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.StatUp"               ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.StatDown"             ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.TotalUncUp"           ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.TotalUncDown"         ,_algoType), false);
+            }
+        }
     }
     if ( useDeepJet )
     {
         ctagCalibs["deepjet"] = std::unique_ptr<CTaggingMgr>(new CTaggingMgr_DeepFlavour(era, ismc));
+
+        // clear old information
+        const char* _algoType = "DeepFlavour";
+        if ( iT->FindBranch( Form("%s.CvsB",_algoType) ) != nullptr )
+        {
+            iT->SetBranchStatus( Form("%s.CvsB",_algoType), false);
+            iT->SetBranchStatus( Form("%s.CvsL",_algoType), false);
+            iT->SetBranchStatus( Form("%s.bScore",_algoType), false);
+
+            if ( ismc )
+            {
+                iT->SetBranchStatus( Form("%s.ctagWeight.central",_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.PUWeightUp"           ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.PUWeightDown"         ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.StatUp"               ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.StatDown"             ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.TotalUncUp"           ,_algoType), false);
+                iT->SetBranchStatus( Form("%s.ctagWeight.TotalUncDown"         ,_algoType), false);
+            }
+        }
     }
 
 
