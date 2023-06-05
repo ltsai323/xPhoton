@@ -126,7 +126,7 @@ class CTaggingMgr_DeepFlavour : public CTaggingMgr
     virtual void FillBranch() override;
     virtual ~CTaggingMgr_DeepFlavour() {}
     private:
-    float _bval, _bbval, _cval, _qval, _gval;
+    float _bval, _bbval, _blep, _cval, _qval, _gval;
     int _hadflvr;
 };
 class CTaggingMgr_DeepCSV : public CTaggingMgr

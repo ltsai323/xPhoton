@@ -20,5 +20,5 @@ mv makehisto_*.root $outputfolder/
 
 
 exec_code 0 makehistoDeepFlavour.C DeepFlavour_cutIdx0_mergeBin_test3
-#exec_code 0 makehistoDeepCSV.C DeepCSV_cutIdx0_mergeBin_test3
+exec_code 0 makehistoDeepCSV.C DeepCSV_cutIdx0_mergeBin_test3
 

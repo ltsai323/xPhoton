@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from __future__ import print_function
 
 
@@ -52,12 +52,10 @@ class InputConnector(object):
 if __name__ == "__main__":
     import sys
     import os
-    InputConnector.source_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/'
+    InputConnector.source_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/'
+    InputConnector.output_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.3rd/'
+    destFolder = InputConnector.output_dir
 
-    print('hi')
-    outputDir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/'
-    destFolder = f'{outputDir}/xQCD.3rd'
-    #destFolder = GetArg_dest(sys.argv)
 
 
     executable='xQCD3rd_ScaleFactorCalculationAndJetPtThreshold'

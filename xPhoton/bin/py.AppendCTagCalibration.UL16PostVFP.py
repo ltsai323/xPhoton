@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 oldfolder='step2.mergePDversion'
 newfolder='step3.btagSFappended'
 dataera='UL2016PostVFP'
