@@ -25,7 +25,8 @@
 #define ZERO_VAL 1e-8
 
 #define NUMBIN_PHOETA 2
-#define NUMBIN_JETETA 3
+#define NUMBIN_JETETA 2 // do not contain photon only event
+//#define NUMBIN_JETETA 3
 #define NUMBIT_HLT 9 // 0~8
 #define NUMBIN_ISOVAR 4
 #define NUMBIN_MATCHEDPHOTONSTATUS 5
@@ -54,29 +55,58 @@ struct EventBinning
     int phosignalregion(float isovar) const;
     int phodatasideband(float isovar) const;
 };
+struct Fraction
+{
+    Fraction(): entries(0),sumval(0) {}
+    void Add(double value_) { ++entries; sumval += value_; }
+    double frac() const { if ( entries<1.) return 1.; return entries / sumval; }
+    double entries; double sumval;
+};
 struct normalization_ctagreshaped
 {
-    normalization_ctagreshaped():
-        entries(0),central(0),puweight_up(0),puweight_down(0),stat_up(0),stat_down(0)
+    normalization_ctagreshaped() :
+        central(new Fraction()),
+        puweight_up(new Fraction()), puweight_down(new Fraction()),
+        stat_up(new Fraction()),stat_down(new Fraction())
     {}
+    ~normalization_ctagreshaped()
+    {
+        delete central;
+        delete puweight_up,puweight_down;
+        delete stat_up,stat_down;
+    }
+    //normalization_ctagreshaped():
+    //    entries(0),central(0),puweight_up(0),puweight_down(0),stat_up(0),stat_down(0)
+    //{}
     void Add(
         double central_, double puweight_up_, double puweight_down_, double stat_up_, double stat_down_
         )
     {
-        ++entries;
-        central+=central_;
-        puweight_up+=puweight_up_;
-        puweight_down+=puweight_down_;
-        stat_up+=stat_up_;
-        stat_down+=stat_down_;
+        //++entries;
+        //central+=central_;
+        //puweight_up+=puweight_up_;
+        //puweight_down+=puweight_down_;
+        //stat_up+=stat_up_;
+        //stat_down+=stat_down_;
+
+        central->Add(central_);
+        puweight_up->Add(puweight_up_);
+        puweight_down->Add(puweight_down_);
+        stat_up->Add(stat_up_);
+        stat_down->Add(stat_down_);
     }
 
-    int entries;
-    double central;
-    double puweight_up;
-    double puweight_down;
-    double stat_up;
-    double stat_down;
+    //int entries;
+    //double central;
+    //double puweight_up;
+    //double puweight_down;
+    //double stat_up;
+    //double stat_down;
+    Fraction* central;
+    Fraction* puweight_up;
+    Fraction* puweight_down;
+    Fraction* stat_up;
+    Fraction* stat_down;
 };
 
 struct Normalization_CTagReshaped
@@ -151,9 +181,15 @@ struct Hists
                     sprintf(histname, "%s_%04d",naME,idx++); // not to use Form. Unknown reason it failed
                     hists[pEtaIdx][jEtaIdx][pPtIdx] = new TH1F(histname, varname, nbin, xmin, xmax);
                 }
+        overallhist = new TH1F(naME, varname, nbin, xmin, xmax);
+        overallnormalization = new Fraction();
     }
+    ~Hists() { delete overallnormalization; }
     const std::string name;
     TH1F* hists[NUMBIN_PHOETA][NUMBIN_JETETA][30];
+
+    Fraction* overallnormalization;
+    TH1F* overallhist;
 
     const char* GetName() { return name.c_str(); }
 };
@@ -167,13 +203,15 @@ Hists* Hists_SubVtxMass(const char* histname, const char* varname)
 struct Hists_CTagReshaped
 {
     Hists_CTagReshaped(const char* naME, const char* varname):
+        original    ( Hists_CTags( Form("%s_original"    ,naME), varname) ),
         central     ( Hists_CTags( Form("%s_central"     ,naME), varname) ),
         PUweightUp  ( Hists_CTags( Form("%s_PUweightUp"  ,naME), varname) ),
         PUweightDown( Hists_CTags( Form("%s_PUweightDown",naME), varname) ),
         StatUp      ( Hists_CTags( Form("%s_StatUp"      ,naME), varname) ),
         StatDown    ( Hists_CTags( Form("%s_StatDown"    ,naME), varname) )
     {}
-    virtual ~Hists_CTagReshaped() { delete central; delete PUweightUp; delete PUweightDown; delete StatUp; delete StatDown; }
+    virtual ~Hists_CTagReshaped() { delete original; delete central; delete PUweightUp; delete PUweightDown; delete StatUp; delete StatDown; }
+    Hists* original;
     Hists* central;
     Hists* PUweightUp;
     Hists* PUweightDown;
@@ -190,18 +228,28 @@ struct Hists_CTagReshaped
 
 inline void Fill( const EventBinning& bin,Hists* h, float val, float weight = NOTHING )
 {
-    if ( weight == NOTHING ) h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val);
-    else                     h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val, weight);
+    //if ( weight == NOTHING ) h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val);
+    //else                     h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val, weight);
+    float fillweight = weight == NOTHING ? 1. : weight;
+    h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val, fillweight);
+    h->overallhist->Fill(val,fillweight);
 }
 void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight,
         float w_central, float w_puweightup, float w_puweightdown, float w_statup, float w_statdown );
 
 
-inline void Write(const EventBinning& bin, Hists* h, double normalization = NOTHING)
+inline void Write(const EventBinning& bin, Hists* h, Fraction* norm_ = nullptr )
 {
     TH1* hh = h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    if ( normalization != NOTHING ) 
-        hh->Scale(1./normalization);
+
+    double normalization = 1.;
+    if ( norm_ != nullptr )
+    {
+        h->overallnormalization->entries += norm_->entries;
+        h->overallnormalization->sumval += norm_->sumval;
+        normalization = norm_->frac();
+    }
+    hh->Scale(1./normalization);
 
     hh->SetName(h->GetName());
     hh->Write();
@@ -212,10 +260,13 @@ inline void Write(const EventBinning& bin, Hists* h, double normalization = NOTH
     double normVal = hhh->GetEntries() > 0 ? 1. / hhh->Integral() : 0.; // check 0
     hhh->Scale( normVal );
     hhh->Write();
-
 }
+/*
 void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
         float norm_central, float norm_puweightup, float norm_puweightdown, float norm_statup, float norm_statdown );
+*/
+void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
+        Fraction* norm_central, Fraction* norm_puweightup, Fraction* norm_puweightdown, Fraction* norm_statup, Fraction* norm_statdown );
 void Write_AllCTagReshaped(const EventBinning& bin, Hists_CTagReshaped* h, const Normalization_CTagReshaped& N);
 void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEuncUP);
 
@@ -309,6 +360,7 @@ void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h
         )
 {
     // all ctag weights needs renormalization. See Write_AllCTagReshaped() for more detail
+    Fill(bin,h->original    , val, evt_weight                 );
     Fill(bin,h->central     , val, evt_weight * w_central     );
     Fill(bin,h->PUweightUp  , val, evt_weight * w_puweightup  );
     Fill(bin,h->PUweightDown, val, evt_weight * w_puweightdown);
@@ -317,6 +369,18 @@ void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h
 }
 
 
+void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
+        Fraction* norm_central, Fraction* norm_puweightup, Fraction* norm_puweightdown, Fraction* norm_statup, Fraction* norm_statdown
+        )
+{
+    Write(bin, h->original    );
+    Write(bin, h->central     , norm_central     );
+    Write(bin, h->PUweightUp  , norm_puweightup  );
+    Write(bin, h->PUweightDown, norm_puweightdown);
+    Write(bin, h->StatUp      , norm_statup      );
+    Write(bin, h->StatDown    , norm_statdown    );
+}
+/*
 void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
         float norm_central, float norm_puweightup, float norm_puweightdown, float norm_statup, float norm_statdown
         )
@@ -327,6 +391,7 @@ void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* 
     Write(bin, h->StatUp      , norm_statup      );
     Write(bin, h->StatDown    , norm_statdown    );
 }
+*/
 void Write_AllCTagReshaped(const EventBinning& bin, Hists_CTagReshaped* h, const Normalization_CTagReshaped& N)
 {
     // Normalization_CTagReShaped collects the event number and weight integration. Renormalization is done by #evt/integral(weight)
@@ -367,3 +432,63 @@ void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEun
     hhh->Write();
 }
 #endif // usefulfunctions_cxx end }}}
+// overall hist {{{
+void Write_OverallHist(Hists* h)
+{
+    TH1* hh = h->overallhist;
+
+    double normalization = h->overallnormalization->frac();
+    hh->Scale(1./normalization);
+
+    hh->SetName(h->GetName());
+    hh->Write();
+
+    // Write PDF
+    TH1* hhh = (TH1*) hh->Clone( Form("%s_norm",h->GetName()) );
+
+    double normVal = hhh->GetEntries() > 0 ? 1. / hhh->Integral() : 0.; // check 0
+    hhh->Scale( normVal );
+    hhh->Write();
+}
+void Write_AllCTagReshaped_OverallHist(Hists_CTagReshaped* h)
+{
+    Write_OverallHist(h->original    );
+    Write_OverallHist(h->central     );
+    Write_OverallHist(h->PUweightUp  );
+    Write_OverallHist(h->PUweightDown);
+    Write_OverallHist(h->StatUp      );
+    Write_OverallHist(h->StatDown    );
+}
+void WriteShapeUncDown_OverallHist(Hists* hCENTRAL, Hists* hSHAPEuncUP)
+{
+    TH1F* h_central    = hCENTRAL   ->overallhist;
+    TH1F* h_shapeUncUp = hSHAPEuncUP->overallhist;
+
+    TH1F* h_shapeUncDown = new TH1F( Form("%s_shapeUncDown", h_central->GetName()), h_shapeUncUp->GetTitle(),
+                //h_central->GetNbinsX(), h_central->GetXaxis()->GetXbins()->GetArray() );
+                h_central->GetNbinsX(), -1., 1.);
+    for ( int ibin = h_central->GetNbinsX()+1; ibin != 0; --ibin )
+    {
+        double bincontent_central =  h_central   ->GetBinContent(ibin);
+        double bincontent_uncUp   =  h_shapeUncUp->GetBinContent(ibin);
+        double bincontent_uncDown =  2. * bincontent_central - bincontent_uncUp;
+        if ( bincontent_central < ZERO_VAL && bincontent_uncUp < ZERO_VAL )
+            bincontent_uncDown = ZERO_VAL;
+        else if ( bincontent_uncDown < 0. )
+        {
+            LOG("--WARNING-- negative PDF found at bin%d from %s calculation. Forced them to 1e-8. central value and upper value : %.6f, %.6f",
+                    ibin, h_shapeUncDown->GetName(), bincontent_central, bincontent_uncUp);
+            bincontent_uncDown = ZERO_VAL;
+        }
+        h_shapeUncDown->SetBinContent(ibin,bincontent_uncDown);
+    }
+    h_shapeUncDown->Write();
+
+    // Write PDF
+    TH1* hhh = (TH1*) h_shapeUncDown->Clone( Form("%s_norm",h_shapeUncDown->GetName()) );
+
+    double normVal = hhh->GetEntries() > 0 ? 1. / hhh->Integral() : 0.;
+    hhh->Scale(normVal);
+    hhh->Write();
+}
+// overall hist end }}}
