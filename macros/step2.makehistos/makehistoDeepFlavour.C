@@ -422,6 +422,66 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         Write(bin,jettag3_QCD_GJetsB_signalRegion);
     }
     
+    TDirectory* outputfolder = fout->mkdir("overall_binning"); outputfolder->cd();
+    Write_OverallHist(BDT_QCD_signalRegion);
+    Write_OverallHist(BDT_QCD_dataSideband);
+
+    Write_OverallHist(BDT_QCD_signalRegion_shapeUncUp);
+    Write_OverallHist(BDT_QCD_dataSideband_shapeUncUp);
+    WriteShapeUncDown_OverallHist(BDT_QCD_signalRegion,BDT_QCD_signalRegion_shapeUncUp);
+    WriteShapeUncDown_OverallHist(BDT_QCD_dataSideband,BDT_QCD_dataSideband_shapeUncUp);
+
+
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetB_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsB_dataSideband);
+
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetB_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsB_dataSideband);
+
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetB_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsB_dataSideband);
+
+    Write_OverallHist(jettag3_QCD_DiJetL_signalRegion);
+    Write_OverallHist(jettag3_QCD_DiJetL_dataSideband);
+    Write_OverallHist(jettag3_QCD_DiJetC_signalRegion);
+    Write_OverallHist(jettag3_QCD_DiJetC_dataSideband);
+    Write_OverallHist(jettag3_QCD_DiJetB_signalRegion);
+    Write_OverallHist(jettag3_QCD_DiJetB_dataSideband);
+    Write_OverallHist(jettag3_QCD_GJetsL_signalRegion);
+    Write_OverallHist(jettag3_QCD_GJetsL_dataSideband);
+    Write_OverallHist(jettag3_QCD_GJetsC_signalRegion);
+    Write_OverallHist(jettag3_QCD_GJetsC_dataSideband);
+    Write_OverallHist(jettag3_QCD_GJetsB_signalRegion);
     fout->Close();
 }
 // QCD section end }}}
@@ -822,6 +882,66 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         Write(bin,jettag3_gjet_GJetsC_dataSideband);
         Write(bin,jettag3_gjet_GJetsB_signalRegion);
     }
+    TDirectory* outputfolder = fout->mkdir("overall_binning"); outputfolder->cd();
+    Write_OverallHist(BDT_gjet_signalRegion);
+    Write_OverallHist(BDT_gjet_dataSideband);
+
+    Write_OverallHist(BDT_gjet_signalRegion_shapeUncUp);
+    Write_OverallHist(BDT_gjet_dataSideband_shapeUncUp);
+    WriteShapeUncDown_OverallHist(BDT_gjet_signalRegion,BDT_gjet_signalRegion_shapeUncUp);
+    WriteShapeUncDown_OverallHist(BDT_gjet_dataSideband,BDT_gjet_dataSideband_shapeUncUp);
+
+
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetB_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsB_dataSideband);
+
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetB_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsB_dataSideband);
+
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetB_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsL_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsL_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsC_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsC_dataSideband);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsB_signalRegion);
+    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsB_dataSideband);
+
+    Write_OverallHist(jettag3_gjet_DiJetL_signalRegion);
+    Write_OverallHist(jettag3_gjet_DiJetL_dataSideband);
+    Write_OverallHist(jettag3_gjet_DiJetC_signalRegion);
+    Write_OverallHist(jettag3_gjet_DiJetC_dataSideband);
+    Write_OverallHist(jettag3_gjet_DiJetB_signalRegion);
+    Write_OverallHist(jettag3_gjet_DiJetB_dataSideband);
+    Write_OverallHist(jettag3_gjet_GJetsL_signalRegion);
+    Write_OverallHist(jettag3_gjet_GJetsL_dataSideband);
+    Write_OverallHist(jettag3_gjet_GJetsC_signalRegion);
+    Write_OverallHist(jettag3_gjet_GJetsC_dataSideband);
+    Write_OverallHist(jettag3_gjet_GJetsB_signalRegion);
     
     fout->Close();
 }
@@ -1004,6 +1124,21 @@ void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const 
         Write(bin,jettag3_data_signalRegion);
         Write(bin,jettag3_data_dataSideband);
     }
+    TDirectory* outputfolder = fout->mkdir("overall_binning"); outputfolder->cd();
+    Write_OverallHist(BDT_data_signalRegion);
+    Write_OverallHist(BDT_data_dataSideband);
+
+    Write_OverallHist(jettag0_data_signalRegion);
+    Write_OverallHist(jettag0_data_dataSideband);
+
+    Write_OverallHist(jettag1_data_signalRegion);
+    Write_OverallHist(jettag1_data_dataSideband);
+
+    Write_OverallHist(jettag2_data_signalRegion);
+    Write_OverallHist(jettag2_data_dataSideband);
+
+    Write_OverallHist(jettag3_data_signalRegion);
+    Write_OverallHist(jettag3_data_dataSideband);
     
     fout->Close();
 }
@@ -1013,8 +1148,12 @@ void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const char*
 {
     const std::string dataType(dataTYPE);
 
-    //int NEVENT = 10; // testing event
-    int NEVENT = -1; // all event
+    int NEVENT = -1; // for all event
+    if ( extracut < 0 )
+    { // for testing
+        NEVENT = 10;
+        extracut = 0;
+    }
 
     int processTag = 0;
     if ( dataType == "data" )
