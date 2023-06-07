@@ -160,8 +160,8 @@ int main(int argc, const char* argv[])
     isQCD = int(isQCDsample);
     BUG("09");
     
-    //unsigned int nevt = iT->GetEntries();
-    unsigned int nevt = 10;
+    unsigned int nevt = iT->GetEntries();
+    //unsigned int nevt = 10;
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
     BUG("09.1");
