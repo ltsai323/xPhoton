@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 arg_summaryfile='../data/summaryJson/summary_UL16PostVFP_QCDMadgraph.json'
 arg_Reweig_file='/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.3rd/xQCD3rd_UL2016.json'
-arg_dataera=2016
+arg_dataera='UL2016PostVFP'
 arg_isQCD=True
 
 fDict={

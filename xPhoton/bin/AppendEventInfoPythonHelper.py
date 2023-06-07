@@ -2,7 +2,7 @@
 summaryfile='../data/summaryJson/summary_18QCDMadgraph.json'
 ARG_tmpdir='step1.xsinfoAppended'
 ARG_outdir='step2.mergePDversion'
-ARG_datalumi={ 2016: 35.9, 2017:41.54, 2018:59.96 }
+ARG_datalumi={ 2016: 35.9, 2017:41.54, 2018:59.96, 'UL2016PreVFP':19.52, 'UL2016PostVFP':16.81 }
 TESTmode=False
 testDict={
   "QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8": {
@@ -99,6 +99,7 @@ def executeCommandToTmp( xsweight_,
     execfile='exec_AppendEventInfo'
 
     if not dataera_ in ARG_datalumi:
+        print(dataera_)
         raise KeyError('input key "%d" not foun. Available options are [%s]' %
                 ( dataera_, ', '.join(['%d'%_s for _s in ARG_datalumi.keys()]) )
                 )
