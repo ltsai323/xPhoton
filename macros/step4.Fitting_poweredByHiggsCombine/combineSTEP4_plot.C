@@ -65,7 +65,7 @@ void UNCchecker(TH1* source, TH1* updated)
         printf("\n");
     }
 }
-void plot(
+void combineSTEP4_plot(
     int pETAbin, int jETAbin, int pPTbin,
     const char* pETArange, const char* jETArange, const char* pPTrange,
     const char* sourceHISTfile)

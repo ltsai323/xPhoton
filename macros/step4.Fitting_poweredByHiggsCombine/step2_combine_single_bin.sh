@@ -25,7 +25,14 @@ _pEtaBinDesc_=`echo $dataDetail | awk -F':' '{ print $7 }'`
 _jEtaBinDesc_=`echo $dataDetail | awk -F':' '{ print $8 }'`
 _pPtRangeStr_=`echo $dataDetail | awk -F':' '{ print $9 }'`
 
-python3 ../py_makedatacard.py $pEtaBin $jEtaBin $pPtBin $inputfile || exit
+echo $_dataEntries_
+echo $_initialNsig_
+echo $_initialNbkg_
+echo $_pEtaBinDesc_
+echo $_jEtaBinDesc_
+echo $_pPtRangeStr_
+
+python3 ../combineSTEP1_py_makedatacard.py $pEtaBin $jEtaBin $pPtBin $inputfile || exit
 text2workspace.py datacard.txt -o ws.root \
     -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
     --PO "map=.*/signalMC:mu1[$_initialNsig_,0,$_dataEntries_]" \
@@ -33,7 +40,7 @@ text2workspace.py datacard.txt -o ws.root \
     
 combine --saveWorkspace -M MultiDimFit -d ws.root --saveFitResult --saveNLL --robustFit on && \
 PostFitShapesFromWorkspace -d datacard.txt -w higgsCombineTest.MultiDimFit.mH120.root  -m 120 -f multidimfitTest.root:fit_mdf --postfit --print --output postfit.root || exit
-root -b -q '../plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' || exit
+root -b -q '../combineSTEP4_plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' || exit
 
 
 cd ..; mv $tmpdir out_fit_result/$outdir

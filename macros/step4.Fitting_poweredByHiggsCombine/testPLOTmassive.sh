@@ -18,7 +18,7 @@ _pPtRangeStr_=`echo $dataDetail | awk -F':' '{ print $9 }'`
 cd out_fit_result/BDTFit_${pEtaBin}_${jEtaBin}_${pPtBin}/
 
 touch a.pdf; /bin/rm *.pdf
-root -b -q '../../plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' > /dev/null || exit
+root -b -q '../../combineSTEP4_plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' > /dev/null || exit
 
 mv *.pdf ../../checkplot/BDTFit_${pEtaBin}_${jEtaBin}_${pPtBin}.pdf
 cd -
@@ -32,3 +32,4 @@ for pPtBin in {0..14}; do # for merged 2016 bin
         for jEtaBin in {0..1}; do
             plotSingle $pEtaBin $jEtaBin $pPtBin getdatadetail.txt
 done; done& done
+#plotSingle 1 1 18 getdatadetail.txt
