@@ -135,8 +135,8 @@ public :
    Float_t         integratedGenWeight;
    Float_t         mcweight;
    Int_t           isQCD;
-   Float_t         weight_passMaxPUcut;
-   Int_t           passMaxPUcut;
+   //Float_t         weight_passMaxPUcut;
+   //Int_t           passMaxPUcut;
    Float_t         DeepCSV_CvsB;
    Float_t         DeepCSV_CvsL;
    Float_t         DeepCSV_bScore;
@@ -272,8 +272,8 @@ public :
    TBranch        *b_integratedGenWeight;   //!
    TBranch        *b_mcweight;   //!
    TBranch        *b_isQCD;   //!
-   TBranch        *b_weight_passMaxPUcut;   //!
-   TBranch        *b_passMaxPUcut;   //!
+   //TBranch        *b_weight_passMaxPUcut;   //!
+   //TBranch        *b_passMaxPUcut;   //!
    TBranch        *b_DeepCSV_CvsB;   //!
    TBranch        *b_DeepCSV_CvsL;   //!
    TBranch        *b_DeepCSV_bScore;   //!
@@ -478,8 +478,8 @@ void MakeHistoSIG::Init(TTree *tree)
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
-   fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
-   fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
+   //fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
+   //fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
    fChain->SetBranchAddress("DeepCSV.CvsB", &DeepCSV_CvsB, &b_DeepCSV_CvsB);
    fChain->SetBranchAddress("DeepCSV.CvsL", &DeepCSV_CvsL, &b_DeepCSV_CvsL);
    fChain->SetBranchAddress("DeepCSV.bScore", &DeepCSV_bScore, &b_DeepCSV_bScore);

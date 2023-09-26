@@ -17,6 +17,7 @@
 #include "MakeHistoSIG.h"
 #include "MakeHistoQCD.h"
 
+bool _testing = false;
 
 
 
@@ -26,10 +27,8 @@
 // QCD section {{{
 EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar);
 void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars);
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoQCD& loadvars );
 void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 );
 EventBinning BinningFactory(const MakeHistoQCD & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
-
 
 EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
 {
@@ -69,11 +68,13 @@ EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
     output.SetUsedVar_2(
         loadvar.jetPt,
         loadvar.jetEta,
-        loadvar.jetDeepCSVTags_c,
+        //loadvar.jetDeepCSVTags_c,
+        loadvar.jetDeepFlavourTags_c,
         loadvar.jetID,
         loadvar.jetPUIDbit,
         loadvar.jetSubVtxMass,
-        loadvar.DeepCSV_CvsL,
+        //loadvar.DeepCSV_CvsL,
+        loadvar.DeepFlavour_CvsL,
         loadvar.passMaxPUcut);
 
     output.SetUsedVar_1(
@@ -93,17 +94,6 @@ EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
 void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoQCD& loadvars)
 {
     Fill_allctagreshaped_general(bin,h,val, evt_weight,
-            loadvars.DeepFlavour_ctagWeight_central,
-            loadvars.DeepFlavour_ctagWeight_PUWeightUp,
-            loadvars.DeepFlavour_ctagWeight_PUWeightDown,
-            loadvars.DeepFlavour_ctagWeight_StatUp,
-            loadvars.DeepFlavour_ctagWeight_StatDown
-            );
-}
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoQCD& loadvars )
-{
-    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    n.Add(
             loadvars.DeepFlavour_ctagWeight_central,
             loadvars.DeepFlavour_ctagWeight_PUWeightUp,
             loadvars.DeepFlavour_ctagWeight_PUWeightDown,
@@ -183,18 +173,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     Hists* jettag3_QCD_GJetsB_dataSideband = Hists_SubVtxMass("jettag3_QCD_GJetsB_dataSideband", "jetSubVtxMass");
 
 
-    Normalization_CTagReshaped norm_QCD_DiJetL_signalRegion;
-    Normalization_CTagReshaped norm_QCD_DiJetL_dataSideband;
-    Normalization_CTagReshaped norm_QCD_DiJetC_signalRegion;
-    Normalization_CTagReshaped norm_QCD_DiJetC_dataSideband;
-    Normalization_CTagReshaped norm_QCD_DiJetB_signalRegion;
-    Normalization_CTagReshaped norm_QCD_DiJetB_dataSideband;
-    Normalization_CTagReshaped norm_QCD_GJetsL_signalRegion;
-    Normalization_CTagReshaped norm_QCD_GJetsL_dataSideband;
-    Normalization_CTagReshaped norm_QCD_GJetsC_signalRegion;
-    Normalization_CTagReshaped norm_QCD_GJetsC_dataSideband;
-    Normalization_CTagReshaped norm_QCD_GJetsB_signalRegion;
-    Normalization_CTagReshaped norm_QCD_GJetsB_dataSideband;
 
     TFile* iii = TFile::Open(inputfilename);
     TTree* ttt = (TTree*) iii->Get("t");
@@ -207,6 +185,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
+        if ( _testing ) if ( jentry > 100 ) break; // asdf testing
         Long64_t ientry = load_qcd.LoadTree(jentry);
         
         if (ientry < 0) break;
@@ -215,7 +194,11 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         if (jentry % 100000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
 
 
-        Float_t eventweight = load_qcd.mcweight * load_qcd.puwei * load_qcd.weight_passMaxPUcut;
+        // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
+        //Float_t eventweight = load_qcd.mcweight * load_qcd.puwei * load_qcd.weight_passMaxPUcut;
+        Float_t eventweight = load_qcd.weight_passMaxPUcut * \
+                              load_qcd.puwei * \
+                              load_qcd.genWeight * load_qcd.crossSection / load_qcd.integratedGenWeight;
 
 	
         const EventBinning evtbin = BinningFactory(load_qcd);
@@ -232,12 +215,12 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         if (!sel.PassHLT(hltbit) ) continue; // indeed it is useless in signal MC
 
 
-        if ( evtbin.isSignalRegion &&!isFakePhoton )
+        if ( evtbin.isSignalRegion && isFakePhoton )
         {
             Fill(evtbin,BDT_QCD_signalRegion           , load_qcd.calib_mva,eventweight);
             Fill(evtbin,BDT_QCD_signalRegion_shapeUncUp, load_qcd.mva      ,eventweight);
         }
-        if ( evtbin.isDataSideband &&!isFakePhoton )
+        if ( evtbin.isDataSideband && isFakePhoton )
         {
             Fill(evtbin,BDT_QCD_dataSideband           , load_qcd.calib_mva,eventweight);
             Fill(evtbin,BDT_QCD_dataSideband_shapeUncUp, load_qcd.mva      ,eventweight);
@@ -247,7 +230,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         // L jet
         if ( evtbin.isSignalRegion && isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_QCD_DiJetL_signalRegion, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_DiJetL_signalRegion, load_qcd.DeepFlavour_bScore, eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_DiJetL_signalRegion, load_qcd.DeepFlavour_CvsL  , eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_DiJetL_signalRegion, load_qcd.DeepFlavour_CvsB  , eventweight, load_qcd);
@@ -255,7 +237,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband && isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_QCD_DiJetL_dataSideband, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_DiJetL_dataSideband, load_qcd.DeepFlavour_bScore,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_DiJetL_dataSideband, load_qcd.DeepFlavour_CvsL  ,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_DiJetL_dataSideband, load_qcd.DeepFlavour_CvsB  ,eventweight, load_qcd);
@@ -264,7 +245,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 
         if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_QCD_GJetsL_signalRegion, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_GJetsL_signalRegion, load_qcd.DeepFlavour_bScore, eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_GJetsL_signalRegion, load_qcd.DeepFlavour_CvsL  , eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_GJetsL_signalRegion, load_qcd.DeepFlavour_CvsB  , eventweight, load_qcd);
@@ -272,7 +252,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband &&!isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_QCD_GJetsL_dataSideband, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_GJetsL_dataSideband, load_qcd.DeepFlavour_bScore,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_GJetsL_dataSideband, load_qcd.DeepFlavour_CvsL  ,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_GJetsL_dataSideband, load_qcd.DeepFlavour_CvsB  ,eventweight, load_qcd);
@@ -283,7 +262,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         // c jet
         if ( evtbin.isSignalRegion && isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_QCD_DiJetC_signalRegion, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_DiJetC_signalRegion, load_qcd.DeepFlavour_bScore, eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_DiJetC_signalRegion, load_qcd.DeepFlavour_CvsL  , eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_DiJetC_signalRegion, load_qcd.DeepFlavour_CvsB  , eventweight, load_qcd);
@@ -291,7 +269,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband && isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_QCD_DiJetC_dataSideband, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_DiJetC_dataSideband, load_qcd.DeepFlavour_bScore,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_DiJetC_dataSideband, load_qcd.DeepFlavour_CvsL  ,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_DiJetC_dataSideband, load_qcd.DeepFlavour_CvsB  ,eventweight, load_qcd);
@@ -300,7 +277,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 
         if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_QCD_GJetsC_signalRegion, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_GJetsC_signalRegion, load_qcd.DeepFlavour_bScore, eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_GJetsC_signalRegion, load_qcd.DeepFlavour_CvsL  , eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_GJetsC_signalRegion, load_qcd.DeepFlavour_CvsB  , eventweight, load_qcd);
@@ -308,7 +284,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband &&!isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_QCD_GJetsC_dataSideband, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_GJetsC_dataSideband, load_qcd.DeepFlavour_bScore,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_GJetsC_dataSideband, load_qcd.DeepFlavour_CvsL  ,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_GJetsC_dataSideband, load_qcd.DeepFlavour_CvsB  ,eventweight, load_qcd);
@@ -319,7 +294,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         // bjet
         if ( evtbin.isSignalRegion && isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_QCD_DiJetB_signalRegion, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_DiJetB_signalRegion, load_qcd.DeepFlavour_bScore, eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_DiJetB_signalRegion, load_qcd.DeepFlavour_CvsL  , eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_DiJetB_signalRegion, load_qcd.DeepFlavour_CvsB  , eventweight, load_qcd);
@@ -327,7 +301,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband && isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_QCD_DiJetB_dataSideband, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_DiJetB_dataSideband, load_qcd.DeepFlavour_bScore,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_DiJetB_dataSideband, load_qcd.DeepFlavour_CvsL  ,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_DiJetB_dataSideband, load_qcd.DeepFlavour_CvsB  ,eventweight, load_qcd);
@@ -336,7 +309,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 
         if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_QCD_GJetsB_signalRegion, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_GJetsB_signalRegion, load_qcd.DeepFlavour_bScore, eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_GJetsB_signalRegion, load_qcd.DeepFlavour_CvsL  , eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_GJetsB_signalRegion, load_qcd.DeepFlavour_CvsB  , eventweight, load_qcd);
@@ -344,7 +316,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband &&!isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_QCD_GJetsB_dataSideband, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag0_QCD_GJetsB_dataSideband, load_qcd.DeepFlavour_bScore,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag1_QCD_GJetsB_dataSideband, load_qcd.DeepFlavour_CvsL  ,eventweight, load_qcd);
             Fill_AllCTagReshaped(evtbin,jettag2_QCD_GJetsB_dataSideband, load_qcd.DeepFlavour_CvsB  ,eventweight, load_qcd);
@@ -370,44 +341,44 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         WriteShapeUncDown(bin,BDT_QCD_dataSideband,BDT_QCD_dataSideband_shapeUncUp);
 
 
-        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetL_signalRegion,norm_QCD_DiJetL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetL_dataSideband,norm_QCD_DiJetL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetC_signalRegion,norm_QCD_DiJetC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetC_dataSideband,norm_QCD_DiJetC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetB_signalRegion,norm_QCD_DiJetB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetB_dataSideband,norm_QCD_DiJetB_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsL_signalRegion,norm_QCD_GJetsL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsL_dataSideband,norm_QCD_GJetsL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsC_signalRegion,norm_QCD_GJetsC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsC_dataSideband,norm_QCD_GJetsC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsB_signalRegion,norm_QCD_GJetsB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsB_dataSideband,norm_QCD_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_QCD_DiJetB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_QCD_GJetsB_dataSideband);
 
-        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetL_signalRegion,norm_QCD_DiJetL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetL_dataSideband,norm_QCD_DiJetL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetC_signalRegion,norm_QCD_DiJetC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetC_dataSideband,norm_QCD_DiJetC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetB_signalRegion,norm_QCD_DiJetB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetB_dataSideband,norm_QCD_DiJetB_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsL_signalRegion,norm_QCD_GJetsL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsL_dataSideband,norm_QCD_GJetsL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsC_signalRegion,norm_QCD_GJetsC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsC_dataSideband,norm_QCD_GJetsC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsB_signalRegion,norm_QCD_GJetsB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsB_dataSideband,norm_QCD_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_QCD_DiJetB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_QCD_GJetsB_dataSideband);
 
-        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetL_signalRegion,norm_QCD_DiJetL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetL_dataSideband,norm_QCD_DiJetL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetC_signalRegion,norm_QCD_DiJetC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetC_dataSideband,norm_QCD_DiJetC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetB_signalRegion,norm_QCD_DiJetB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetB_dataSideband,norm_QCD_DiJetB_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsL_signalRegion,norm_QCD_GJetsL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsL_dataSideband,norm_QCD_GJetsL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsC_signalRegion,norm_QCD_GJetsC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsC_dataSideband,norm_QCD_GJetsC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsB_signalRegion,norm_QCD_GJetsB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsB_dataSideband,norm_QCD_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_QCD_DiJetB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_QCD_GJetsB_dataSideband);
 
         Write(bin,jettag3_QCD_DiJetL_signalRegion);
         Write(bin,jettag3_QCD_DiJetL_dataSideband);
@@ -422,66 +393,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         Write(bin,jettag3_QCD_GJetsB_signalRegion);
     }
     
-    TDirectory* outputfolder = fout->mkdir("overall_binning"); outputfolder->cd();
-    Write_OverallHist(BDT_QCD_signalRegion);
-    Write_OverallHist(BDT_QCD_dataSideband);
-
-    Write_OverallHist(BDT_QCD_signalRegion_shapeUncUp);
-    Write_OverallHist(BDT_QCD_dataSideband_shapeUncUp);
-    WriteShapeUncDown_OverallHist(BDT_QCD_signalRegion,BDT_QCD_signalRegion_shapeUncUp);
-    WriteShapeUncDown_OverallHist(BDT_QCD_dataSideband,BDT_QCD_dataSideband_shapeUncUp);
-
-
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_DiJetB_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_QCD_GJetsB_dataSideband);
-
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_DiJetB_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_QCD_GJetsB_dataSideband);
-
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_DiJetB_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_QCD_GJetsB_dataSideband);
-
-    Write_OverallHist(jettag3_QCD_DiJetL_signalRegion);
-    Write_OverallHist(jettag3_QCD_DiJetL_dataSideband);
-    Write_OverallHist(jettag3_QCD_DiJetC_signalRegion);
-    Write_OverallHist(jettag3_QCD_DiJetC_dataSideband);
-    Write_OverallHist(jettag3_QCD_DiJetB_signalRegion);
-    Write_OverallHist(jettag3_QCD_DiJetB_dataSideband);
-    Write_OverallHist(jettag3_QCD_GJetsL_signalRegion);
-    Write_OverallHist(jettag3_QCD_GJetsL_dataSideband);
-    Write_OverallHist(jettag3_QCD_GJetsC_signalRegion);
-    Write_OverallHist(jettag3_QCD_GJetsC_dataSideband);
-    Write_OverallHist(jettag3_QCD_GJetsB_signalRegion);
     fout->Close();
 }
 // QCD section end }}}
@@ -489,7 +400,6 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 // sig section {{{
 EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar);
 void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars);
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars );
 void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt = -1 );
 EventBinning BinningFactory(const MakeHistoSIG & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
 
@@ -556,17 +466,6 @@ EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
 void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
 {
     Fill_allctagreshaped_general(bin,h,val, evt_weight,
-            loadvars.DeepFlavour_ctagWeight_central,
-            loadvars.DeepFlavour_ctagWeight_PUWeightUp,
-            loadvars.DeepFlavour_ctagWeight_PUWeightDown,
-            loadvars.DeepFlavour_ctagWeight_StatUp,
-            loadvars.DeepFlavour_ctagWeight_StatDown
-            );
-}
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars )
-{
-    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    n.Add(
             loadvars.DeepFlavour_ctagWeight_central,
             loadvars.DeepFlavour_ctagWeight_PUWeightUp,
             loadvars.DeepFlavour_ctagWeight_PUWeightDown,
@@ -644,18 +543,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     Hists* jettag3_gjet_GJetsB_dataSideband = Hists_SubVtxMass("jettag3_gjet_GJetsB_dataSideband", "jetSubVtxMass");
 
 
-    Normalization_CTagReshaped norm_gjet_DiJetL_signalRegion;
-    Normalization_CTagReshaped norm_gjet_DiJetL_dataSideband;
-    Normalization_CTagReshaped norm_gjet_DiJetC_signalRegion;
-    Normalization_CTagReshaped norm_gjet_DiJetC_dataSideband;
-    Normalization_CTagReshaped norm_gjet_DiJetB_signalRegion;
-    Normalization_CTagReshaped norm_gjet_DiJetB_dataSideband;
-    Normalization_CTagReshaped norm_gjet_GJetsL_signalRegion;
-    Normalization_CTagReshaped norm_gjet_GJetsL_dataSideband;
-    Normalization_CTagReshaped norm_gjet_GJetsC_signalRegion;
-    Normalization_CTagReshaped norm_gjet_GJetsC_dataSideband;
-    Normalization_CTagReshaped norm_gjet_GJetsB_signalRegion;
-    Normalization_CTagReshaped norm_gjet_GJetsB_dataSideband;
 
     TFile* iii = TFile::Open(inputfilename);
     TTree* ttt = (TTree*) iii->Get("t");
@@ -668,6 +555,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
+        if ( _testing ) if ( jentry > 100 ) break; // asdf testing
         Long64_t ientry = load_sig.LoadTree(jentry);
         
         if (ientry < 0) break;
@@ -676,7 +564,10 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         if (jentry % 100000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
 
 
-        Float_t eventweight = load_sig.mcweight * load_sig.puwei;
+        // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
+        //Float_t eventweight = load_sig.mcweight * load_sig.puwei;
+        Float_t eventweight = load_sig.puwei * \
+                              load_sig.genWeight * load_sig.crossSection / load_sig.integratedGenWeight;
 
 	
         const EventBinning evtbin = BinningFactory(load_sig);
@@ -708,7 +599,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         // L jet
         if ( evtbin.isSignalRegion && isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_gjet_DiJetL_signalRegion, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetL_signalRegion, load_sig.DeepFlavour_bScore, eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetL_signalRegion, load_sig.DeepFlavour_CvsL  , eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetL_signalRegion, load_sig.DeepFlavour_CvsB  , eventweight, load_sig);
@@ -716,7 +606,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband && isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_gjet_DiJetL_dataSideband, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetL_dataSideband, load_sig.DeepFlavour_bScore,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetL_dataSideband, load_sig.DeepFlavour_CvsL  ,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetL_dataSideband, load_sig.DeepFlavour_CvsB  ,eventweight, load_sig);
@@ -725,7 +614,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 
         if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_gjet_GJetsL_signalRegion, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsL_signalRegion, load_sig.DeepFlavour_bScore, eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsL_signalRegion, load_sig.DeepFlavour_CvsL  , eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsL_signalRegion, load_sig.DeepFlavour_CvsB  , eventweight, load_sig);
@@ -733,7 +621,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband &&!isFakePhoton && sel.isLJet() )
         {
-            SumNormalization(evtbin,norm_gjet_GJetsL_dataSideband, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsL_dataSideband, load_sig.DeepFlavour_bScore,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsL_dataSideband, load_sig.DeepFlavour_CvsL  ,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsL_dataSideband, load_sig.DeepFlavour_CvsB  ,eventweight, load_sig);
@@ -744,7 +631,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         // c jet
         if ( evtbin.isSignalRegion && isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_gjet_DiJetC_signalRegion, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetC_signalRegion, load_sig.DeepFlavour_bScore, eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetC_signalRegion, load_sig.DeepFlavour_CvsL  , eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetC_signalRegion, load_sig.DeepFlavour_CvsB  , eventweight, load_sig);
@@ -752,7 +638,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband && isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_gjet_DiJetC_dataSideband, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetC_dataSideband, load_sig.DeepFlavour_bScore,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetC_dataSideband, load_sig.DeepFlavour_CvsL  ,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetC_dataSideband, load_sig.DeepFlavour_CvsB  ,eventweight, load_sig);
@@ -761,7 +646,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 
         if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_gjet_GJetsC_signalRegion, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsC_signalRegion, load_sig.DeepFlavour_bScore, eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsC_signalRegion, load_sig.DeepFlavour_CvsL  , eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsC_signalRegion, load_sig.DeepFlavour_CvsB  , eventweight, load_sig);
@@ -769,7 +653,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband &&!isFakePhoton && sel.isCJet() )
         {
-            SumNormalization(evtbin,norm_gjet_GJetsC_dataSideband, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsC_dataSideband, load_sig.DeepFlavour_bScore,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsC_dataSideband, load_sig.DeepFlavour_CvsL  ,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsC_dataSideband, load_sig.DeepFlavour_CvsB  ,eventweight, load_sig);
@@ -780,7 +663,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         // bjet
         if ( evtbin.isSignalRegion && isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_gjet_DiJetB_signalRegion, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetB_signalRegion, load_sig.DeepFlavour_bScore, eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetB_signalRegion, load_sig.DeepFlavour_CvsL  , eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetB_signalRegion, load_sig.DeepFlavour_CvsB  , eventweight, load_sig);
@@ -788,7 +670,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband && isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_gjet_DiJetB_dataSideband, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetB_dataSideband, load_sig.DeepFlavour_bScore,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetB_dataSideband, load_sig.DeepFlavour_CvsL  ,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetB_dataSideband, load_sig.DeepFlavour_CvsB  ,eventweight, load_sig);
@@ -797,7 +678,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
 
         if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_gjet_GJetsB_signalRegion, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsB_signalRegion, load_sig.DeepFlavour_bScore, eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsB_signalRegion, load_sig.DeepFlavour_CvsL  , eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsB_signalRegion, load_sig.DeepFlavour_CvsB  , eventweight, load_sig);
@@ -805,7 +685,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         }
         if ( evtbin.isDataSideband &&!isFakePhoton && sel.isBJet() )
         {
-            SumNormalization(evtbin,norm_gjet_GJetsB_dataSideband, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsB_dataSideband, load_sig.DeepFlavour_bScore,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsB_dataSideband, load_sig.DeepFlavour_CvsL  ,eventweight, load_sig);
             Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsB_dataSideband, load_sig.DeepFlavour_CvsB  ,eventweight, load_sig);
@@ -831,44 +710,44 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         WriteShapeUncDown(bin,BDT_gjet_dataSideband,BDT_gjet_dataSideband_shapeUncUp);
 
 
-        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetL_signalRegion,norm_gjet_DiJetL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetL_dataSideband,norm_gjet_DiJetL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetC_signalRegion,norm_gjet_DiJetC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetC_dataSideband,norm_gjet_DiJetC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetB_signalRegion,norm_gjet_DiJetB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetB_dataSideband,norm_gjet_DiJetB_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsL_signalRegion,norm_gjet_GJetsL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsL_dataSideband,norm_gjet_GJetsL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_signalRegion,norm_gjet_GJetsC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_dataSideband,norm_gjet_GJetsC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_signalRegion,norm_gjet_GJetsB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_dataSideband,norm_gjet_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_dataSideband);
 
-        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetL_signalRegion,norm_gjet_DiJetL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetL_dataSideband,norm_gjet_DiJetL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetC_signalRegion,norm_gjet_DiJetC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetC_dataSideband,norm_gjet_DiJetC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetB_signalRegion,norm_gjet_DiJetB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetB_dataSideband,norm_gjet_DiJetB_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsL_signalRegion,norm_gjet_GJetsL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsL_dataSideband,norm_gjet_GJetsL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_signalRegion,norm_gjet_GJetsC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_dataSideband,norm_gjet_GJetsC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_signalRegion,norm_gjet_GJetsB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_dataSideband,norm_gjet_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_dataSideband);
 
-        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetL_signalRegion,norm_gjet_DiJetL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetL_dataSideband,norm_gjet_DiJetL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetC_signalRegion,norm_gjet_DiJetC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetC_dataSideband,norm_gjet_DiJetC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetB_signalRegion,norm_gjet_DiJetB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetB_dataSideband,norm_gjet_DiJetB_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsL_signalRegion,norm_gjet_GJetsL_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsL_dataSideband,norm_gjet_GJetsL_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_signalRegion,norm_gjet_GJetsC_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_dataSideband,norm_gjet_GJetsC_dataSideband);
-        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_signalRegion,norm_gjet_GJetsB_signalRegion);
-        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_dataSideband,norm_gjet_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsL_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsL_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_signalRegion);
+        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_dataSideband);
 
         Write(bin,jettag3_gjet_DiJetL_signalRegion);
         Write(bin,jettag3_gjet_DiJetL_dataSideband);
@@ -882,67 +761,6 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
         Write(bin,jettag3_gjet_GJetsC_dataSideband);
         Write(bin,jettag3_gjet_GJetsB_signalRegion);
     }
-    TDirectory* outputfolder = fout->mkdir("overall_binning"); outputfolder->cd();
-    Write_OverallHist(BDT_gjet_signalRegion);
-    Write_OverallHist(BDT_gjet_dataSideband);
-
-    Write_OverallHist(BDT_gjet_signalRegion_shapeUncUp);
-    Write_OverallHist(BDT_gjet_dataSideband_shapeUncUp);
-    WriteShapeUncDown_OverallHist(BDT_gjet_signalRegion,BDT_gjet_signalRegion_shapeUncUp);
-    WriteShapeUncDown_OverallHist(BDT_gjet_dataSideband,BDT_gjet_dataSideband_shapeUncUp);
-
-
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_DiJetB_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag0_gjet_GJetsB_dataSideband);
-
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_DiJetB_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag1_gjet_GJetsB_dataSideband);
-
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_DiJetB_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsL_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsL_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsC_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsC_dataSideband);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsB_signalRegion);
-    Write_AllCTagReshaped_OverallHist(jettag2_gjet_GJetsB_dataSideband);
-
-    Write_OverallHist(jettag3_gjet_DiJetL_signalRegion);
-    Write_OverallHist(jettag3_gjet_DiJetL_dataSideband);
-    Write_OverallHist(jettag3_gjet_DiJetC_signalRegion);
-    Write_OverallHist(jettag3_gjet_DiJetC_dataSideband);
-    Write_OverallHist(jettag3_gjet_DiJetB_signalRegion);
-    Write_OverallHist(jettag3_gjet_DiJetB_dataSideband);
-    Write_OverallHist(jettag3_gjet_GJetsL_signalRegion);
-    Write_OverallHist(jettag3_gjet_GJetsL_dataSideband);
-    Write_OverallHist(jettag3_gjet_GJetsC_signalRegion);
-    Write_OverallHist(jettag3_gjet_GJetsC_dataSideband);
-    Write_OverallHist(jettag3_gjet_GJetsB_signalRegion);
-    
     fout->Close();
 }
 // sig section end }}}
@@ -1053,6 +871,7 @@ void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const 
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
+        if ( _testing ) if ( jentry > 100 ) break; // asdf testing
         Long64_t ientry = load_data.LoadTree(jentry);
         
         if (ientry < 0) break;
@@ -1124,21 +943,6 @@ void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const 
         Write(bin,jettag3_data_signalRegion);
         Write(bin,jettag3_data_dataSideband);
     }
-    TDirectory* outputfolder = fout->mkdir("overall_binning"); outputfolder->cd();
-    Write_OverallHist(BDT_data_signalRegion);
-    Write_OverallHist(BDT_data_dataSideband);
-
-    Write_OverallHist(jettag0_data_signalRegion);
-    Write_OverallHist(jettag0_data_dataSideband);
-
-    Write_OverallHist(jettag1_data_signalRegion);
-    Write_OverallHist(jettag1_data_dataSideband);
-
-    Write_OverallHist(jettag2_data_signalRegion);
-    Write_OverallHist(jettag2_data_dataSideband);
-
-    Write_OverallHist(jettag3_data_signalRegion);
-    Write_OverallHist(jettag3_data_dataSideband);
     
     fout->Close();
 }
