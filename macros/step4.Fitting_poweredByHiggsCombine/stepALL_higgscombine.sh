@@ -12,7 +12,6 @@ function raiseError() { echo 'Please load higgs combine environment!';  exit 1; 
 sh ~/goToWorkSession/higgsCombine.sh check && echo 'passed higgs combine env checking' || raiseError
 
 
-touch out_fit_result; /bin/rm -r out_fit_result # clean up
 echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > ${data_era}.data.yield.dat
 echo "ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F" > ${data_era}.data.bkg.dat
 
@@ -34,7 +33,7 @@ echo [$outputLabel] collecting results
 mv *.dat out_fit_result
 mkdir out_fit_result/logs; mv log_* out_fit_result/logs/
 
-sh step4_collect_result.sh $outputLabel && /bin/rm -r out_fit_result
+sh step4_collect_result.sh $outputLabel && mv out_fit_result $outputLabel
 echo [$outputLabel] all job finished
 
 echo tmp_BDTFit_blah is kept. you can simply delete them.
