@@ -15,29 +15,38 @@ f_qcd=$6
 mkdir -p $outputfolder
 root -b <<EOF
 .L $inputcode
-Loop($jetCutIdx, "UL16PreVFP", "data", "$f_data");
-Loop($jetCutIdx, "UL16PreVFP", "gjet", "$f_sign");
-Loop($jetCutIdx, "UL16PreVFP", "QCD" , "$f_qcd" );
+Loop($jetCutIdx, "UL2016PreVFP", "data", "$f_data");
+Loop($jetCutIdx, "UL2016PreVFP", "gjet", "$f_sign");
+Loop($jetCutIdx, "UL2016PreVFP", "QCD" , "$f_qcd" );
 EOF
 hadd makehisto.root makehisto_*.root
 
 mv makehisto.root $outputfolder/
 mv makehisto_*.root $outputfolder/
 }
+function the_exit()
+{
+    echo $1
+    exit
+}
 
+
+# check using default ptbin_definition
+used_pt_def=../ptbin_definitions.h
+unlink ptbin_definitions.h && ln -s $used_pt_def || the_exit "link failed to $used_pt_def"
 
 cutIdx=0 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
 mainFunc=makehistoDeepFlavour.C
-outDir=DeepFlavour_cutIdx0_mergeBin0
+outDir=DeepFlavour_cutIdx0
 exec_code $cutIdx $mainFunc $outDir $datafile $signfile $qcdfile
 exit
 cutIdx=1 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
 mainFunc=makehistoDeepFlavour.C
-outDir=DeepFlavour_cutIdx1_mergeBin_origBin
+outDir=DeepFlavour_cutIdx1
 exec_code $cutIdx $mainFunc $outDir $datafile $signfile $qcdfile
 cutIdx=2 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155
 mainFunc=makehistoDeepFlavour.C
-outDir=DeepFlavour_cutIdx2_mergeBin_origBin
+outDir=DeepFlavour_cutIdx2
 exec_code $cutIdx $mainFunc $outDir $datafile $signfile $qcdfile
 
 #cutIdx=0 # 0: no extra cut. 1: subJetVtxMass > 0. 2: CvsL > 0.155

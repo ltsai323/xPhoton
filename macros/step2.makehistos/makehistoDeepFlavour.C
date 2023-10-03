@@ -17,7 +17,6 @@
 #include "MakeHistoSIG.h"
 #include "MakeHistoQCD.h"
 
-bool _testing = false;
 
 
 
@@ -185,13 +184,12 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
-        if ( _testing ) if ( jentry > 100 ) break; // asdf testing
         Long64_t ientry = load_qcd.LoadTree(jentry);
         
         if (ientry < 0) break;
         nb = load_qcd.GetEntry(jentry); nbytes += nb;
 
-        if (jentry % 100000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
+        if (jentry % 1000000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
 
 
         // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
@@ -555,13 +553,12 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const c
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
-        if ( _testing ) if ( jentry > 100 ) break; // asdf testing
         Long64_t ientry = load_sig.LoadTree(jentry);
         
         if (ientry < 0) break;
         nb = load_sig.GetEntry(jentry); nbytes += nb;
 
-        if (jentry % 100000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
+        if (jentry % 1000000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
 
 
         // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
@@ -871,13 +868,12 @@ void LoopData( Int_t extracut, const char* dataERA, const char* dataTYPE, const 
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++)
     {
-        if ( _testing ) if ( jentry > 100 ) break; // asdf testing
         Long64_t ientry = load_data.LoadTree(jentry);
         
         if (ientry < 0) break;
         nb = load_data.GetEntry(jentry); nbytes += nb;
 
-        if (jentry % 100000 == 0)
+        if (jentry % 1000000 == 0)
         { fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
         Float_t eventweight = 1.;
 

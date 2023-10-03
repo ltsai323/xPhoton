@@ -20,7 +20,8 @@
 #include "ptbin_definitions.h"
 
 #define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
-#define BUG(format, args...)     fprintf(stderr, "[BUG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+//#define BUG(format, args...)     fprintf(stderr, "[BUG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+#define BUG(format, args...)
 #define NOTHING -999
 #define ZERO_VAL 1e-8
 
@@ -322,7 +323,7 @@ void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEun
             bincontent_uncDown = ZERO_VAL;
         else if ( bincontent_uncDown < 0. )
         {
-            LOG("--WARNING-- negative PDF found at bin%d in %s(%d,%d,%d) calculation. Forced them to 1e-8. central value and upper value : %.6f, %.6f",
+            BUG("--WARNING-- negative PDF found at bin%d in %s(%d,%d,%d) calculation. Forced them to 1e-8. central value and upper value : %.6f, %.6f",
                     ibin, h_shapeUncDown->GetName(), bin.pEtaBin, bin.jEtaBin, bin.pPtBin, bincontent_central, bincontent_uncUp);
             bincontent_uncDown = ZERO_VAL;
         }
