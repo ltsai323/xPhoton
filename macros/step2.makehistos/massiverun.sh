@@ -1,33 +1,114 @@
-function exec_code()
+#!/usr/bin/env sh
+# valid dataEra = "2016ReReco", "UL2016PreVFP", "UL2016PostVFP", "UL2017", "UL2018"
+function the_exit()
+{ echo "$1";exit; }
+
+function change_running_location()
 {
-jetCutIdx=$1
-inputcode=$2
-outputfolder=$3
+    echo "change_running_location start..."
+    outputLABEL=$1
+    if [ "$2" == "-1" ]; then return 0; fi # running in test mode
+    mkdir -p "$outputLABEL" ; cd "$outputLABEL" || the_exit "cd to $outputLABEL failed"
+    for usedfile in ../{*.h,*.C}; do ln -s $usedfile; done
+    echo "change_running_location end..."
+}
+function tidy_up_working_area()
+{
+    echo "tidy_up_working_area start..."
+    outputFOLDER=$1
+    for usedfile in {*.h,*.C}; do unlink $usedfile; done
+    current_folder=`realpath .`
+    mv $current_folder $outputFOLDER
+    echo "tidy_up_working_area end..."
+}
+function main_code()
+{
+echo "main_code start..."
+num=$1
+inputCODE=$2
+outputLABEL=$3
+outputFOLDER=$4
 
 
-datafile=/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/Run2016_Legacy_ctagReshape.root
-signfile=/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/sigMC_madgraph_ctagReshaped.root
-fakefile=/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/QCD_madgraph_ctagReshape.root
-
-mkdir -p $outputfolder
+change_running_location $outputLABEL $num
 root -b <<EOF
-.L $inputcode
-Loop($jetCutIdx, "2016ReReco", "data", "$datafile");
-Loop($jetCutIdx, "2016ReReco", "gjet", "$signfile");
-Loop($jetCutIdx, "2016ReReco", "QCD" , "$fakefile");
+.L $inputCODE
+Loop($num, "UL2016PreVFP", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/data.root");
+Loop($num, "UL2016PreVFP", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/gjet.pythia.root");
+Loop($num, "UL2016PreVFP", "QCD", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/qcd.madgraph.root");
 EOF
 
-hadd ${outputfolder}.root makehisto_*.root
-mv makehisto_*.root $outputfolder/
+if [ "$num" == "-1" ]; then exit; fi
+hadd makehisto.root makehisto_*.root
+tidy_up_working_area /wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/
+echo "main_code end..."
 }
+function exec_code()
+{ main_code "$1" "$2" "$3" > "$3"_log 2>&1; }
+function test_code()
+{ main_code "-1" "$2" "$3"; }
 
-touch makehisto_aaaa.root; /bin/rm makehisto_*.root # clean up
+function link_pt_bin_definition()
+{ unlink ptbin_definitions.h; ln -s $1 ptbin_definitions.h|| the_exit "link failed to $1"; }
 
-exec_code 0 makehistoDeepFlavour.C newBin_deepflavour_CUT_NOCUT
-exec_code 1 makehistoDeepFlavour.C newBin_deepflavour_CUT_subJetVtxMass
-exec_code 2 makehistoDeepFlavour.C newBin_deepflavour_CUT_CvsL
 
-exec_code 0 makehistoDeepCSV.C newBin_deepcsv_CUT_NOCUT
-exec_code 1 makehistoDeepCSV.C newBin_deepcsv_CUT_subJetVtxMass
-exec_code 2 makehistoDeepCSV.C newBin_deepcsv_CUT_CvsL
 
+#link_pt_bin_definition ../ptbin_definitions_testmodeOrig.h
+#exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_Orig&
+#exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_Orig&
+#exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_Orig&
+#exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_Orig&
+#exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_Orig&
+#exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_Orig&
+#wait
+
+
+#link_pt_bin_definition ../ptbin_definitions_testmode0.h
+#exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_0&
+#exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_0&
+#exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_0&
+#exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_0&
+#exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_0&
+#exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_0&
+#wait
+
+
+
+link_pt_bin_definition ../ptbin_definitions_testmode1.h
+exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_1&
+exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_1&
+exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_1&
+exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_1&
+exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_1&
+exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_1&
+wait
+
+
+
+link_pt_bin_definition ../ptbin_definitions_testmode2.h
+exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_2&
+exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_2&
+exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_2&
+exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_2&
+exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_2&
+exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_2&
+wait
+
+
+
+link_pt_bin_definition ../ptbin_definitions_testmode3.h
+exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_3&
+exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_3&
+exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_3&
+exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_3&
+exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_3&
+exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_3&
+wait
+
+# real    73m22.047s
+# user    343m22.508s
+# sys     30m48.940s
+
+
+
+#test_code 0 makehistoDeepFlavour.C DeepFlavour_cutIdx0_mergeBin_test3
