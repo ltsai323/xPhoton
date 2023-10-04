@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
 import ROOT
-from xPhoton.analysis.MyCanvas import MyCanvasSetup, MyRatioCanvasSetup
-from xPhoton.analysis.PlotObjectMgr import HistFraming as framingFUNC
-from xPhoton.analysis.PlotObjectMgr import Legend
-from py_pt_ranges_definition import PhoPtBinning
 
 def LOG(*args):
-    print('[LOG] ', *args)
+    print('[check.ctaggingVars-LOG] ', *args)
+printbug = False
+def BUG(*args):
+    if printbug:
+        print('[check.ctaggingVars-BUGGING] ', *args)
 
-class BinnedYield:
-    def __init__(self, datFILE):
 
 
 def GetHist(
@@ -36,63 +34,40 @@ def GetHist(
 
     h.GetXaxis().SetTitle(xAXISname)
 
-
     return h
-def HistFraming(h, varNAME):
-    '''
-    Setup a TH1 like object.
-    No argument needed.
-    '''
-    binwidth = h.GetXaxis().GetBinWidth(1)
-    framingFUNC(h,
-                xLABEL=varNAME,yLABEL=f'Entries / {binwidth}',
-                minFACTOR = 0.5e-1, maxFACTOR = 1e4
-                )
+
+
 
 class CommonVars:
-    def __init__(self, inFILE):
+    def __init__(self, inFILE, numPLOTs = 1):
         self.ifile = inFILE
-        self.canv, self.upperpad, self.lowerpad = MyRatioCanvasSetup()
 
-### old variables loading method
-def varCheckInCTaggingWeighted(varNAME:str, inFILE:ROOT.TFile):
-    print(f'[INFO] received input file {inFILE.GetName()}')
-    hdata = GetHist(inFILE,f'{varNAME}/hdata',
-                    markerCOLOR=1, markerSIZE=2, xAXISname=varName)
-    hsign = GetHist(inFILE,f'{varNAME}/hsign_weighed',
-                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-    hfake = GetHist(inFILE,f'{varNAME}/hfake_weighed',
-                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-    hside = GetHist(inFILE,f'{varNAME}/hside',
-                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-    ''' scaling section '''
-    hsign_w_orig = inFILE.Get("weight_integration/hsign")
-    hsign_w_weig = inFILE.Get("weight_integration/hsign_weighed")
-    re_normalization_sign = hsign_w_orig.GetBinContent(1) / hsign_w_weig.GetBinContent(1)
-    hsign.Scale(re_normalization_sign)
-
-    hfake_w_orig = inFILE.Get("weight_integration/hfake")
-    hfake_w_weig = inFILE.Get("weight_integration/hfake_weighed")
-    re_normalization_fake = hfake_w_orig.GetBinContent(1) / hfake_w_weig.GetBinContent(1)
-    hfake.Scale(re_normalization_fake)
+        from xPhoton.analysis.MyCanvas import MassiveRatioCanvasSetup
+        self.canv, self.allpads = MassiveRatioCanvasSetup(numRATIOplot=numPLOTs)
+        self.drawables = {}
 
 
-    the_factor = round(hdata.Integral() / (hsign.Integral()+hfake.Integral()),2)
-    print(f'[BUGGING] tunned scale factor : {the_factor}')
-    hsign.Scale(the_factor)
-    hfake.Scale(the_factor)
-    hside.Scale(hfake.Integral() / hside.Integral())
+    def SetDiJetYield(self, bkgYIELD):
+        self.fake_yield = bkgYIELD
+    def SetCurrentBin(self, *bins):
+        self.pEtaBin, self.jEtaBin, self.pPtBin = bins
+    def SetCurrentPad(self, padIDX):
+        if padIDX >= len(self.allpads): raise OverflowError(
+                f'SetCurrentPad():: input idx {padIDX} is larger than pads length {len(self.allpads)}')
+        self.upperpad = self.allpads[padIDX][0]
+        self.lowerpad = self.allpads[padIDX][1]
+    def keep_drawing_obj(self, label, drawABLEs):
+        self.drawables[label] = drawABLEs
 
-    hdata.SetTitle( 'data in 19.52 fb^{-1}')
-    hsign.SetTitle(f'weighed gjet MC sample (#times{the_factor})')
-    hfake.SetTitle(f'weighed QCD MC samele (#times{the_factor})')
-    hside.SetTitle(f'data sideband as di-jet contribution')
-    ''' scaling section end'''
+class CurrentDrawings:
+    outTag = ''
+    hdata = None
+    hsign = None
+    hfake = None
+    useLogScale = False
+    legTitle = ''
 
-    ## old version modification needed
-    #return draw_stackplot_comparison("weighed_"+varNAME, inFILE.GetName(), hdata, hsign, hside)
 
-    #return draw_stackplot_comparison(varNAME, inFILE.GetName(), hdata, hsign, hside)
 
 
 def merge_hist(newname, hists):
@@ -103,130 +78,208 @@ def merge_hist(newname, hists):
     for hist in hists: h.Add(hist)
     return h
 
-def CTaggingVarCentral(folderNAME:str, commonobj:CommonVars):
+def scale_hist_according_to_dijet_fit_yield(hDATA, hSIGN, hFAKE, dijetFITyield):
+    yield_fake = dijetFITyield
+    yield_sign = hDATA.Integral() - yield_fake
+    hFAKE.Scale(yield_fake / hFAKE.Integral())
+    hSIGN.Scale(yield_sign / hSIGN.Integral())
+def scale_hist_according_to_k_factor(hDATA, hSIGN, hFAKE, fakeORIGyield):
+    the_factor = round(hDATA.Integral() / (hSIGN.Integral()+fakeORIGyield),2)
+    print(f'[BUGGING] tunned scale factor : {the_factor}')
+    hSIGN.Scale(the_factor)
+    hFAKE.Scale(the_factor * fakeORIGyield / hFAKE.Integral())
+    return the_factor
+
+def drawhist1_ctag_var_calb(folderNAME:str, commonobj:CommonVars, jettagIDX:int):
     inFILE = commonobj.ifile
-    binName=folderNAME
-    for i in range(3):
-        varName = f'jettag{i:d}'
-        print(f'[INFO] received input file {inFILE.GetName()}')
-        hdata = GetHist(inFILE,f'{folderNAME}/{varName}_data_signalRegion',
-                        markerCOLOR=1, markerSIZE=2, xAXISname=varName)
-        hsign1= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsL_signalRegion_central',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-        hsign2= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsC_signalRegion_central',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-        hsign3= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsB_signalRegion_central',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-        hfake1= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetL_signalRegion_central',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hfake2= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetC_signalRegion_central',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hfake3= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetB_signalRegion_central',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hside = GetHist(inFILE,f'{folderNAME}/{varName}_data_dataSideband',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hsign = merge_hist(f'{varName}_gjet_signalRegion_central', [hsign1,hsign2,hsign3])
-        #hfake = merge_hist(f'{varName}_QCD_signalRegion_central',  [hfake1,hfake2,hfake3])
-        hfake = hfake1.Clone(f'{varName}_QCD_signalRegion_central')
-        hfake.Add(hfake2)
-        hfake.Add(hfake3)
+    jet_tag_names = ['bScore', 'CvsL', 'CvsB']
 
-        ''' scaling section '''
-        the_factor = round(hdata.Integral() / (hsign.Integral()+hfake.Integral()),2)
-        print(f'[BUGGING] tunned scale factor : {the_factor}')
-        hsign.Scale(the_factor)
-        hfake.Scale(the_factor)
-        hside.Scale(hfake.Integral() / hside.Integral())
+    varName = f'jettag{jettagIDX:d}'
+    xAxisName = jet_tag_names[jettagIDX]
+    hdata = GetHist(inFILE,f'{folderNAME}/{varName}_data_signalRegion',
+                    markerCOLOR=1, markerSIZE=2, xAXISname=xAxisName)
+    hsign1= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsL_signalRegion_central',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsign2= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsC_signalRegion_central',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsign3= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsB_signalRegion_central',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hfake1= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetL_signalRegion_central',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hfake2= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetC_signalRegion_central',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hfake3= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetB_signalRegion_central',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hside = GetHist(inFILE,f'{folderNAME}/{varName}_data_dataSideband',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hsign = merge_hist(f'{varName}_gjet_signalRegion_central', [hsign1,hsign2,hsign3])
+    #hfake = merge_hist(f'{varName}_QCD_signalRegion_central',  [hfake1,hfake2,hfake3])
+    hfake = hfake1.Clone(f'{varName}_QCD_signalRegion_central')
+    hfake.Add(hfake2)
+    hfake.Add(hfake3)
 
-        hdata.SetTitle( 'data in 19.52 fb^{-1}')
-        hsign.SetTitle(f'gjet MC sample (#times{the_factor})')
-        hfake.SetTitle(f'QCD MC samele (#times{the_factor})')
-        hside.SetTitle(f'di-jet contribution from data sideband')
-        ''' scaling section end'''
+    ''' scaling section '''
+    scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
+    hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    hsign.SetTitle(f'gjet MC sample {hsign.Integral():.1f}')
+    hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
 
-        pEtaBin, jEtaBin, pPtBin = [ int(thebin) for thebin in binName.split('_')[1:] ]
+    #k_factor = scale_hist_according_to_k_factor(hdata, hsign, hside, hfake.Integral())
+    #hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    #hsign.SetTitle(f'gjet MC sample (#times{k_factor})')
+    #hfake.SetTitle(f'QCD MC samele (#times{k_factor})')
+    #hside.SetTitle(f'di-jet contribution from data sideband')
+    ''' scaling section end'''
 
-        legTitle = binning_info(pEtaBin,jEtaBin,pPtBin)
-        newfilename = f"varCheck_{varName}_{pEtaBin}_{jEtaBin}_{pPtBin}_central"
-        draw_stackplot_comparison(newfilename, legTitle, hdata, hsign, hside, commonobj)
-def CTaggingVarOriginal(folderNAME:str, commonobj:CommonVars):
+    output = CurrentDrawings()
+    output.outTag = varName
+    output.hdata = hdata
+    output.hsign = hsign
+    output.hfake = hside
+    output.useLogScale = True
+    return output
+
+def drawhist1_ctag_var_orig(folderNAME:str, commonobj:CommonVars, jettagIDX:int):
     inFILE = commonobj.ifile
-    binName=folderNAME
-    for i in range(3):
-        varName = f'jettag{i:d}'
-        print(f'[INFO] received input file {inFILE.GetName()}')
-        hdata = GetHist(inFILE,f'{folderNAME}/{varName}_data_signalRegion',
-                        markerCOLOR=1, markerSIZE=2, xAXISname=varName)
-        hsign1= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsL_signalRegion_original',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-        hsign2= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsC_signalRegion_original',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-        hsign3= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsB_signalRegion_original',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-        hfake1= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetL_signalRegion_original',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hfake2= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetC_signalRegion_original',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hfake3= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetB_signalRegion_original',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hside = GetHist(inFILE,f'{folderNAME}/{varName}_data_dataSideband',
-                        lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
-        hsign = merge_hist(f'{varName}_gjet_signalRegion_original', [hsign1,hsign2,hsign3])
-        hfake = merge_hist(f'{varName}_QCD_signalRegion_original',  [hfake1,hfake2,hfake3])
+    jet_tag_names = ['bScore', 'CvsL', 'CvsB']
 
-        ''' scaling section '''
-        the_factor = round(hdata.Integral() / (hsign.Integral()+hfake.Integral()),2)
-        print(f'[BUGGING] tunned scale factor : {the_factor}')
-        hsign.Scale(the_factor)
-        hfake.Scale(the_factor)
-        hside.Scale(hfake.Integral() / hside.Integral())
+    varName = f'jettag{jettagIDX:d}'
+    xAxisName = jet_tag_names[jettagIDX]
+    hdata = GetHist(inFILE,f'{folderNAME}/{varName}_data_signalRegion',
+                    markerCOLOR=1, markerSIZE=2, xAXISname=xAxisName)
+    hsign1= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsL_signalRegion_original',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsign2= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsC_signalRegion_original',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsign3= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsB_signalRegion_original',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hfake1= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetL_signalRegion_original',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hfake2= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetC_signalRegion_original',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hfake3= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetB_signalRegion_original',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hside = GetHist(inFILE,f'{folderNAME}/{varName}_data_dataSideband',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hsign = merge_hist(f'{varName}_gjet_signalRegion_original', [hsign1,hsign2,hsign3])
+    hfake = merge_hist(f'{varName}_QCD_signalRegion_original',  [hfake1,hfake2,hfake3])
 
-        hdata.SetTitle( 'data in 19.52 fb^{-1}')
-        hsign.SetTitle(f'gjet MC sample (#times{the_factor})')
-        hfake.SetTitle(f'QCD MC samele (#times{the_factor})')
-        hside.SetTitle(f'di-jet contribution from data sideband')
-        ''' scaling section end'''
+    ''' scaling section '''
+    scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
+    hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    hsign.SetTitle(f'gjet MC sample {hsign.Integral():.1f}')
+    hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
 
-        pEtaBin, jEtaBin, pPtBin = [ int(thebin) for thebin in binName.split('_')[1:] ]
+    #k_factor = scale_hist_according_to_k_factor(hdata, hsign, hside, hfake.Integral())
+    #hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    #hsign.SetTitle(f'gjet MC sample (#times{k_factor})')
+    #hfake.SetTitle(f'QCD MC samele (#times{k_factor})')
+    #hside.SetTitle(f'di-jet contribution from data sideband')
+    ''' scaling section end'''
 
-        legTitle = binning_info(pEtaBin,jEtaBin,pPtBin)
-        newfilename = f"varCheck_{varName}_{pEtaBin}_{jEtaBin}_{pPtBin}_original"
-        draw_stackplot_comparison(newfilename, legTitle, hdata, hsign, hside, commonobj)
-def BDTCheck(folderNAME:str, commonobj:CommonVars):
+    output = CurrentDrawings()
+    output.outTag = varName + 'orig'
+    output.hdata = hdata
+    output.hsign = hsign
+    output.hfake = hside
+    output.useLogScale = True
+    return output
+
+def drawhist1_subvtxmass(folderNAME:str, commonobj:CommonVars):
+    inFILE = commonobj.ifile
+
+    varName = 'jettag3'
+    xAxisName = 'subVtxMass'
+    hdata = GetHist(inFILE,f'{folderNAME}/{varName}_data_signalRegion',
+                    markerCOLOR=1, markerSIZE=2, xAXISname=xAxisName)
+    hsign1= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsL_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsign2= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsC_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsign3= GetHist(inFILE,f'{folderNAME}/{varName}_gjet_GJetsB_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hfake1= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetL_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hfake2= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetC_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hfake3= GetHist(inFILE,f'{folderNAME}/{varName}_QCD_DiJetB_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hside = GetHist(inFILE,f'{folderNAME}/{varName}_data_dataSideband',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+    hsign = merge_hist(f'{varName}_gjet_signalRegion', [hsign1,hsign2,hsign3])
+    hfake = merge_hist(f'{varName}_QCD_signalRegion',  [hfake1,hfake2,hfake3])
+
+    ''' scaling section '''
+    scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
+    hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    hsign.SetTitle(f'gjet MC sample {hsign.Integral():.1f}')
+    hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
+    ''' scaling section end'''
+
+    output = CurrentDrawings()
+    output.outTag = varName
+    output.hdata = hdata
+    output.hsign = hsign
+    output.hfake = hside
+    output.useLogScale = True
+    return output
+
+def drawhist1_bdt_score(folderNAME:str, commonobj:CommonVars):
     inFILE = commonobj.ifile
     varName='BDTscore'
-    binName=folderNAME
-    print(f'[INFO] received input file {inFILE.GetName()}')
     hdata = GetHist(inFILE,f'{folderNAME}/BDT_data_signalRegion',
                     markerCOLOR=1, markerSIZE=2, xAXISname=varName)
     hsign = GetHist(inFILE,f'{folderNAME}/BDT_gjet_signalRegion',
                     lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
-    hfake = GetHist(inFILE,f'{folderNAME}/BDT_QCD_signalRegion',
-                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
+    #hfake = GetHist(inFILE,f'{folderNAME}/BDT_QCD_signalRegion',
+    #                lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
     hside = GetHist(inFILE,f'{folderNAME}/BDT_data_dataSideband',
                     lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
 
     ''' scaling section '''
-    the_factor = round(hdata.Integral() / (hsign.Integral()+hfake.Integral()),2)
-    print(f'[BUGGING] tunned scale factor : {the_factor}')
-    hsign.Scale(the_factor)
-    hfake.Scale(the_factor)
-    hside.Scale(hfake.Integral() / hside.Integral())
+    #yield_fake = commonobj.fake_yield
+    #yield_sign = hdata.Integral() - yield_fake
+    #hside.Scale(yield_fake / hside.Integral())
+    #hsign.Scale(yield_sign / hsign.Integral())
+    scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
 
     hdata.SetTitle( 'data in 19.52 fb^{-1}')
-    hsign.SetTitle(f'gjet MC sample (#times{the_factor})')
-    hfake.SetTitle(f'QCD MC samele (#times{the_factor})')
+    hsign.SetTitle(f'gjet MC sample')
+    #hfake.SetTitle(f'QCD MC samele')
     hside.SetTitle(f'di-jet contribution from data sideband')
     ''' scaling section end'''
 
-    pEtaBin, jEtaBin, pPtBin = [ int(thebin) for thebin in binName.split('_')[1:] ]
+    output = CurrentDrawings()
+    output.outTag = varName
+    output.hdata = hdata
+    output.hsign = hsign
+    output.hfake = hside
+    output.useLogScale = True
+    return output
 
+def DrawHist(folderNAME:str, commonobj:CommonVars, drawVAR:str):
+    pEtaBin, jEtaBin, pPtBin = (commonobj.pEtaBin, commonobj.jEtaBin, commonobj.pPtBin)
     legTitle = binning_info(pEtaBin,jEtaBin,pPtBin)
-    newfilename = f"varCheck_{varName}_{pEtaBin}_{jEtaBin}_{pPtBin}"
-    draw_stackplot_comparison(newfilename, legTitle, hdata, hsign, hside, commonobj)
+    LOG(f'DrawHist():: Drawing var {drawVAR} in folder {folderNAME} @ bin{pEtaBin}_{jEtaBin}_{pPtBin}')
 
-    low_statistics_warning = True if hsign.GetEntries() < 100 or hfake.GetEntries() < 100 else False
-    return low_statistics_warning
+    if drawVAR == 'BDTscore':
+        current_drawing = drawhist1_bdt_score(folderNAME, commonobj)
+    if drawVAR == 'jettag0'+'orig':
+        current_drawing = drawhist1_ctag_var_orig(folderNAME, commonobj,0)
+    if drawVAR == 'jettag1'+'orig':
+        current_drawing = drawhist1_ctag_var_orig(folderNAME, commonobj,1)
+    if drawVAR == 'jettag2'+'orig':
+        current_drawing = drawhist1_ctag_var_orig(folderNAME, commonobj,2)
+    if drawVAR == 'jettag0'+'calb':
+        current_drawing = drawhist1_ctag_var_calb(folderNAME, commonobj,0)
+    if drawVAR == 'jettag1'+'calb':
+        current_drawing = drawhist1_ctag_var_calb(folderNAME, commonobj,1)
+    if drawVAR == 'jettag2'+'calb':
+        current_drawing = drawhist1_ctag_var_calb(folderNAME, commonobj,2)
+    if drawVAR == 'jettag3':
+        current_drawing = drawhist1_subvtxmass(folderNAME, commonobj)
+
+    drawhist0_stackplot_comparison(current_drawing, commonobj)
 
 def binning_info(pETAbin, jETAbin, pPTbin):
     # input file as the format: out_kinematics_0_1__ptcut_400_600.root
@@ -242,7 +295,8 @@ def binning_info(pETAbin, jETAbin, pPTbin):
     if jETAbin == 1:
         jEtaName = '1.5 < |\eta^{jet}| < 2.4'
 
-    pt_ranges = PhoPtBinning('UL2016')
+    from py_pt_ranges_definition import PhoPtBinning
+    pt_ranges = PhoPtBinning('UL2016PreVFP')
     pPTrange = [ pt_ranges[pPTbin],pt_ranges[pPTbin+1] ]
     pPtName = f'p_{{T}}^{{\gamma}} = [{pPTrange[0]},{pPTrange[1]}] GeV'
 
@@ -256,55 +310,73 @@ def extract_binning_info_from_filename(inFILE):
         return binning_info(petabin,jetabin,pptrange)
     return 'FAILED_EXTRACTED_BINNING_INFO'
 
+def funcFRAG1_chi2_calc( hRATIO):
+    ndof = 0.
+    chi2 = 0.
+    for ibin in range(1,hRATIO.GetNbinsX()+1):
+        bincont = hRATIO.GetBinContent(ibin)
+        binerro = hRATIO.GetBinError(ibin)
+        if bincont == 0.: continue
+        BUG(f"bin{ibin} at content {bincont:.2e} and error {binerro:.2e}. The calculated chi2 is {(bincont-1)*(bincont-1)/binerro/binerro:.2e}")
+        ndof += 1
+        c2 = (bincont - 1.)**2 / binerro / binerro
+        chi2 += c2
+    return chi2 / (ndof-1)
 
 
-def draw_stackplot_comparison(
-        outputFILEname,
-        legendTITLE,
-        hDATA, hSIGN, hFAKE,
+def drawhist0_stackplot_comparison(
+        currentDRAWINGs:CurrentDrawings,
         commonobj:CommonVars):
     ROOT.gROOT.SetBatch(True)
-    hdata = hDATA
-    hsign = hSIGN
-    hfake = hFAKE
+    hdata = currentDRAWINGs.hdata
+    hsign = currentDRAWINGs.hsign
+    hfake = currentDRAWINGs.hfake
+    legendTITLE = currentDRAWINGs.legTitle
+    outLABEL = currentDRAWINGs.outTag
+    useLOGscale = currentDRAWINGs.useLogScale
+    useLOGscale = False
 
     canv = commonobj.canv
     upperpad = commonobj.upperpad
     lowerpad = commonobj.lowerpad
-    #canv, upperpad, lowerpad = MyRatioCanvasSetup()
     upperpad.cd()
 
-    stackplot = ROOT.THStack('hs', '')
 
+    stackplot = ROOT.THStack('hs', '')
     stackplot.Add(hsign, "HIST")
     stackplot.Add(hfake, "HIST")
     stackplot.Draw()
-    HistFraming(stackplot, hsign.GetXaxis().GetTitle())
 
-    useLogScale = False
-    if useLogScale:
+
+    def HistFraming(h, varNAME):
+        '''
+        Setup a TH1 like object.
+        No argument needed.
+        '''
+        binwidth = h.GetXaxis().GetBinWidth(1)
+        from xPhoton.analysis.PlotObjectMgr import HistFraming as framingFUNC
+        framingFUNC(h,
+                    xLABEL=varNAME,yLABEL=f'Entries / {binwidth}',
+                    minFACTOR = 0.5e-1, maxFACTOR = 1e4
+                    )
+    HistFraming(stackplot, hsign.GetXaxis().GetTitle())
+    if useLOGscale:
         maxFACTOR = 1e3
-        stackplot.SetMinimum( 1e-3 )
+        stackplot.SetMinimum( hdata.GetMinimum() * 0.1 )
         stackplot.SetMaximum( hdata.GetMaximum() * maxFACTOR)
-        canv.SetLogy()
-        pad.SetLogy()
+        upperpad.SetLogy()
     else:
         minFACTOR = 1e-2
         maxFACTOR = 1.5
         stackplot.SetMinimum( hdata.GetMinimum() * minFACTOR)
         stackplot.SetMaximum( hdata.GetMaximum() * maxFACTOR)
 
-    #stackplot.GetXaxis().SetTitle( hdata.GetXaxis().SetTitle() )
-
 
     stackplot.Draw()
     hdata.Draw("E0 P SAME")
 
-    #leg_title = binning_info(pETAbin,jETAbin,pPTrange)
-    leg_title = legendTITLE
-
-    leg = Legend( p0_=(0.2,0.68), p1_=(0.8,0.90), title=leg_title, useNDC=True)
-
+    from xPhoton.analysis.PlotObjectMgr import Legend
+    leg = Legend( p0_=(0.2,0.68), p1_=(0.8,0.90), title=legendTITLE, useNDC=True)
     leg.AddEntry(hdata, hdata.GetTitle(), 'p')
     leg.AddEntry(hsign, hsign.GetTitle(), 'f')
     leg.AddEntry(hfake, hfake.GetTitle(), 'f')
@@ -329,22 +401,10 @@ def draw_stackplot_comparison(
     hratio.SetLineColor(1)
     hratio.SetXTitle( stackplot.GetXaxis().GetTitle() )
     hratio.SetYTitle('Data/MC')
-    #hratio.SetMinimum(0.7)
-    #hratio.SetMaximum(1.3)
     hratio.Draw("P")
 
 
-    ndof = 0.
-    chi2 = 0.
-    for ibin in range(1,hratio.GetNbinsX()+1):
-        bincont = hratio.GetBinContent(ibin)
-        binerro = hratio.GetBinError(ibin)
-        LOG(f"bin{ibin} at content {bincont:.2e} and error {binerro:.2e}. The calculated chi2 is {(bincont-1)*(bincont-1)/binerro/binerro:.2e}")
-        if bincont == 0.: continue
-        ndof += 1
-        c2 = (bincont - 1.)**2 / binerro / binerro
-        chi2 += c2
-    chi2_value = chi2 / ndof
+    chi2_value = funcFRAG1_chi2_calc(hratio)
     latex = ROOT.TLatex()
     latex.SetTextSize(0.14)
     latex.SetNDC()
@@ -358,29 +418,41 @@ def draw_stackplot_comparison(
     refline.Draw("SAME")
     hratio.Draw("P SAME")
 
-    canv.SaveAs(f"{outputFILEname}.pdf")
+    commonobj.keep_drawing_obj(outLABEL, (hdata, stackplot, leg, hratio,latex,refline))
+
 if __name__ == "__main__":
+    from DATReadingTools import ReadEvt_FitResult, ReadEvt_Eff, BinValue
     import sys
     #inputfile = sys.argv[1]
     inputfile = 'makehisto.root'
-    print(f'[INFO] input file {inputfile}\n\n\n')
-    inputfitresult = 'UL2016PreVFP.data.bkg.dat'
+    LOG(f'input file {inputfile}\n\n')
+
+    input_dat_file= 'UL2016PreVFP.data.bkg.dat'
+    fit_bkgs = ReadEvt_FitResult(input_dat_file)
 
 
     import xPhoton.analysis.MyCanvas
-    xPhoton.analysis.MyCanvas.isTransparent = False
+    xPhoton.analysis.MyCanvas.isTransparent = True
 
     inFile = ROOT.TFile.Open(inputfile)
-
-    commonobj = CommonVars(inFile)
+    numCTag = 3
+    commonobj = CommonVars(inFile, numCTag+1)
 
     for pEtaBin in range(2):
         for jEtaBin in range(2):
-            for pPtBin in range(10,16):
-                lowStatusWarning = BDTCheck(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj)
-                if lowStatusWarning == True:
-                    ptrange = PhoPtBinning('UL2016')
-                    LOG(f'\n------\n[bin_{pEtaBin}_{jEtaBin}_{pPtBin}] pt {ptrange[pPtBin]} to {ptrange[pPtBin+1]} gjet or QCD has very low statistics. Attempt not to draw plot\n------\n')
-                    continue
-                CTaggingVarOriginal(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj)
-                CTaggingVarCentral(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj)
+            for pPtBin in range(19):
+                fit_bkg, fit_err = BinValue(pEtaBin,jEtaBin,pPtBin, fit_bkgs)
+                commonobj.SetDiJetYield(fit_bkg)
+                commonobj.SetCurrentBin(pEtaBin,jEtaBin,pPtBin)
+                commonobj.SetCurrentPad(0)
+
+                DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, 'BDTscore')
+                #DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, 'jettag3')
+                for ctag_var_idx in range(numCTag):
+                    commonobj.SetCurrentPad(ctag_var_idx+1)
+                    DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, f'jettag{ctag_var_idx}'+'orig')
+                commonobj.canv.SaveAs(f"varcheck_allvars_{pEtaBin}_{jEtaBin}_{pPtBin}_orig.pdf")
+                for ctag_var_idx in range(numCTag):
+                    commonobj.SetCurrentPad(ctag_var_idx+1)
+                    DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, f'jettag{ctag_var_idx}'+'calb')
+                commonobj.canv.SaveAs(f"varcheck_allvars_{pEtaBin}_{jEtaBin}_{pPtBin}_calb.pdf")
