@@ -13,9 +13,10 @@ tmpdir=tmp_$outdir
 touch $tmpdir; /bin/rm -rf $tmpdir
 mkdir -p $tmpdir; cd $tmpdir
 
+function the_exit()
+{ echo -e "\nvvvvv\n$1\n^^^^^\n"; exit 0; }
 
-# generate getdatadetail.txt
-#python3 ../py_GetDataDetail.py $pEtaBin $jEtaBin $pPtBin 2016ReReco $inputfile || exit
+
 
 dataDetail=`grep $pEtaBin:$jEtaBin:$pPtBin: $inputdatadetail`
 _dataEntries_=`echo $dataDetail | awk -F':' '{ print $4 }'`
@@ -32,15 +33,15 @@ echo $_pEtaBinDesc_
 echo $_jEtaBinDesc_
 echo $_pPtRangeStr_
 
-python3 ../combineSTEP1_py_makedatacard.py $pEtaBin $jEtaBin $pPtBin $inputfile || exit
+python3 ../combineFRAG1_py_makedatacard.py $pEtaBin $jEtaBin $pPtBin $inputfile || the_exit "combineFRAG1 failed datacard.txt creation"
 text2workspace.py datacard.txt -o ws.root \
     -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
     --PO "map=.*/signalMC:mu1[$_initialNsig_,0,$_dataEntries_]" \
-    --PO "map=.*/bkgShape:mu2[$_initialNbkg_,0,$_dataEntries_]"  || exit
+    --PO "map=.*/bkgShape:mu2[$_initialNbkg_,0,$_dataEntries_]"  || the_exit "text2workspace failed to generate ws.root"
     
 combine --saveWorkspace -M MultiDimFit -d ws.root --saveFitResult --saveNLL --robustFit on && \
-PostFitShapesFromWorkspace -d datacard.txt -w higgsCombineTest.MultiDimFit.mH120.root  -m 120 -f multidimfitTest.root:fit_mdf --postfit --print --output postfit.root || exit
-root -b -q '../combineSTEP4_plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' || exit
+PostFitShapesFromWorkspace -d datacard.txt -w higgsCombineTest.MultiDimFit.mH120.root  -m 120 -f multidimfitTest.root:fit_mdf --postfit --print --output postfit.root || the_exit "PostFitShapeFromWorkspace failed to activate the command"
+root -b -q '../combineFRAG2_plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' || "combineFRAG2_plot failed to active the command"
 
 
 cd ..; mv $tmpdir out_fit_result/$outdir

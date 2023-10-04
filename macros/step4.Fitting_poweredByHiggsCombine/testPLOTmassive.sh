@@ -18,7 +18,7 @@ _pPtRangeStr_=`echo $dataDetail | awk -F':' '{ print $9 }'`
 cd out_fit_result/BDTFit_${pEtaBin}_${jEtaBin}_${pPtBin}/
 
 touch a.pdf; /bin/rm *.pdf
-root -b -q '../../combineSTEP4_plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' > /dev/null || exit
+root -b -q '../../combineFRAG2_plot.C('$pEtaBin','$jEtaBin','$pPtBin',"'$_pEtaBinDesc_'","'$_jEtaBinDesc_'","'$_pPtRangeStr_'", "'$inputfile'")' > /dev/null || exit
 
 mv *.pdf ../../checkplot/BDTFit_${pEtaBin}_${jEtaBin}_${pPtBin}.pdf
 cd -
