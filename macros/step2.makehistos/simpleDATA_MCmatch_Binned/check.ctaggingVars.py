@@ -118,18 +118,11 @@ def drawhist1_ctag_var_calb(folderNAME:str, commonobj:CommonVars, jettagIDX:int)
     hfake.Add(hfake2)
     hfake.Add(hfake3)
 
-    ''' scaling section '''
     scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
-    hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    hdata.SetTitle( 'data in 19.52 fb^{-1}')
     hsign.SetTitle(f'gjet MC sample {hsign.Integral():.1f}')
     hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
 
-    #k_factor = scale_hist_according_to_k_factor(hdata, hsign, hside, hfake.Integral())
-    #hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
-    #hsign.SetTitle(f'gjet MC sample (#times{k_factor})')
-    #hfake.SetTitle(f'QCD MC samele (#times{k_factor})')
-    #hside.SetTitle(f'di-jet contribution from data sideband')
-    ''' scaling section end'''
 
     output = CurrentDrawings()
     output.outTag = varName
@@ -166,12 +159,12 @@ def drawhist1_ctag_var_orig(folderNAME:str, commonobj:CommonVars, jettagIDX:int)
 
     ''' scaling section '''
     scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
-    hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    hdata.SetTitle( 'data in 19.52 fb^{-1}')
     hsign.SetTitle(f'gjet MC sample {hsign.Integral():.1f}')
     hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
 
     #k_factor = scale_hist_according_to_k_factor(hdata, hsign, hside, hfake.Integral())
-    #hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    #hdata.SetTitle( 'data in 19.52 fb^{-1}')
     #hsign.SetTitle(f'gjet MC sample (#times{k_factor})')
     #hfake.SetTitle(f'QCD MC samele (#times{k_factor})')
     #hside.SetTitle(f'di-jet contribution from data sideband')
@@ -209,12 +202,10 @@ def drawhist1_subvtxmass(folderNAME:str, commonobj:CommonVars):
     hsign = merge_hist(f'{varName}_gjet_signalRegion', [hsign1,hsign2,hsign3])
     hfake = merge_hist(f'{varName}_QCD_signalRegion',  [hfake1,hfake2,hfake3])
 
-    ''' scaling section '''
     scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
-    hdata.SetTitle( 'UL2016PreVFP data in 19.52 fb^{-1}')
+    hdata.SetTitle( 'data in 19.52 fb^{-1}')
     hsign.SetTitle(f'gjet MC sample {hsign.Integral():.1f}')
     hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
-    ''' scaling section end'''
 
     output = CurrentDrawings()
     output.outTag = varName
@@ -236,18 +227,12 @@ def drawhist1_bdt_score(folderNAME:str, commonobj:CommonVars):
     hside = GetHist(inFILE,f'{folderNAME}/BDT_data_dataSideband',
                     lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
 
-    ''' scaling section '''
-    #yield_fake = commonobj.fake_yield
-    #yield_sign = hdata.Integral() - yield_fake
-    #hside.Scale(yield_fake / hside.Integral())
-    #hsign.Scale(yield_sign / hsign.Integral())
     scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
 
     hdata.SetTitle( 'data in 19.52 fb^{-1}')
     hsign.SetTitle(f'gjet MC sample')
     #hfake.SetTitle(f'QCD MC samele')
     hside.SetTitle(f'di-jet contribution from data sideband')
-    ''' scaling section end'''
 
     output = CurrentDrawings()
     output.outTag = varName
@@ -259,7 +244,6 @@ def drawhist1_bdt_score(folderNAME:str, commonobj:CommonVars):
 
 def DrawHist(folderNAME:str, commonobj:CommonVars, drawVAR:str):
     pEtaBin, jEtaBin, pPtBin = (commonobj.pEtaBin, commonobj.jEtaBin, commonobj.pPtBin)
-    legTitle = binning_info(pEtaBin,jEtaBin,pPtBin)
     LOG(f'DrawHist():: Drawing var {drawVAR} in folder {folderNAME} @ bin{pEtaBin}_{jEtaBin}_{pPtBin}')
 
     if drawVAR == 'BDTscore':
@@ -278,6 +262,7 @@ def DrawHist(folderNAME:str, commonobj:CommonVars, drawVAR:str):
         current_drawing = drawhist1_ctag_var_calb(folderNAME, commonobj,2)
     if drawVAR == 'jettag3':
         current_drawing = drawhist1_subvtxmass(folderNAME, commonobj)
+    current_drawing.legTitle = binning_info(pEtaBin,jEtaBin,pPtBin)
 
     drawhist0_stackplot_comparison(current_drawing, commonobj)
 
@@ -310,18 +295,19 @@ def extract_binning_info_from_filename(inFILE):
         return binning_info(petabin,jetabin,pptrange)
     return 'FAILED_EXTRACTED_BINNING_INFO'
 
-def funcFRAG1_chi2_calc( hRATIO):
-    ndof = 0.
+def funcFRAG1_chi2_calc( hDATA, hSTAK):
     chi2 = 0.
-    for ibin in range(1,hRATIO.GetNbinsX()+1):
-        bincont = hRATIO.GetBinContent(ibin)
-        binerro = hRATIO.GetBinError(ibin)
-        if bincont == 0.: continue
-        BUG(f"bin{ibin} at content {bincont:.2e} and error {binerro:.2e}. The calculated chi2 is {(bincont-1)*(bincont-1)/binerro/binerro:.2e}")
-        ndof += 1
-        c2 = (bincont - 1.)**2 / binerro / binerro
-        chi2 += c2
-    return chi2 / (ndof-1)
+    for ibin in range(1,hDATA.GetNbinsX()+1):
+        bincont = hDATA.GetBinContent(ibin)
+        binerro = hDATA.GetBinError(ibin)
+
+        bintarg = sum( [h.GetBinContent(ibin) for h in hSTAK.GetHists()] )
+        if bincont == 0 and binerro == 0:
+            continue
+        chi = (bincont - bintarg) / binerro
+        chi2 += chi * chi
+    ndof = hDATA.GetNbinsX() - 1;
+    return chi2 / ndof
 
 
 def drawhist0_stackplot_comparison(
@@ -349,27 +335,17 @@ def drawhist0_stackplot_comparison(
 
 
     def HistFraming(h, varNAME):
-        '''
-        Setup a TH1 like object.
-        No argument needed.
-        '''
+        ''' Setup a TH1 like object.  '''
         binwidth = h.GetXaxis().GetBinWidth(1)
         from xPhoton.analysis.PlotObjectMgr import HistFraming as framingFUNC
-        framingFUNC(h,
-                    xLABEL=varNAME,yLABEL=f'Entries / {binwidth}',
-                    minFACTOR = 0.5e-1, maxFACTOR = 1e4
-                    )
+        framingFUNC(h, xLABEL=varNAME,yLABEL=f'Entries / {binwidth}')
     HistFraming(stackplot, hsign.GetXaxis().GetTitle())
-    if useLOGscale:
-        maxFACTOR = 1e3
-        stackplot.SetMinimum( hdata.GetMinimum() * 0.1 )
-        stackplot.SetMaximum( hdata.GetMaximum() * maxFACTOR)
-        upperpad.SetLogy()
-    else:
-        minFACTOR = 1e-2
-        maxFACTOR = 1.5
-        stackplot.SetMinimum( hdata.GetMinimum() * minFACTOR)
-        stackplot.SetMaximum( hdata.GetMaximum() * maxFACTOR)
+
+    minFACTOR = 0.1 if useLOGscale else 1e-2
+    maxFACTOR = 1e3 if useLOGscale else 1.5
+    upperpad.SetLogy(useLOGscale)
+    stackplot.SetMinimum( hdata.GetMinimum() * minFACTOR)
+    stackplot.SetMaximum( hdata.GetMaximum() * maxFACTOR)
 
 
     stackplot.Draw()
@@ -377,8 +353,11 @@ def drawhist0_stackplot_comparison(
 
     from xPhoton.analysis.PlotObjectMgr import Legend
     leg = Legend( p0_=(0.2,0.68), p1_=(0.8,0.90), title=legendTITLE, useNDC=True)
-    leg.AddEntry(hdata, hdata.GetTitle(), 'p')
+    leg.SetNColumns(2)
+
+    leg.AddEntry('', 'fit chi2 = %.1f'%funcFRAG1_chi2_calc(hdata, stackplot), '')
     leg.AddEntry(hsign, hsign.GetTitle(), 'f')
+    leg.AddEntry(hdata, hdata.GetTitle(), 'p')
     leg.AddEntry(hfake, hfake.GetTitle(), 'f')
     leg.Draw()
 
@@ -404,11 +383,6 @@ def drawhist0_stackplot_comparison(
     hratio.Draw("P")
 
 
-    chi2_value = funcFRAG1_chi2_calc(hratio)
-    latex = ROOT.TLatex()
-    latex.SetTextSize(0.14)
-    latex.SetNDC()
-    latex.DrawLatex(0.45,0.9, f'chi2/dof = {chi2_value:.1f}')
 
     refline = ROOT.TLine(
             hratio.GetXaxis().GetXmin(), 1.,
@@ -418,15 +392,16 @@ def drawhist0_stackplot_comparison(
     refline.Draw("SAME")
     hratio.Draw("P SAME")
 
-    commonobj.keep_drawing_obj(outLABEL, (hdata, stackplot, leg, hratio,latex,refline))
+    commonobj.keep_drawing_obj(outLABEL, (hdata, stackplot, leg, hratio,refline))
 
 if __name__ == "__main__":
     from DATReadingTools import ReadEvt_FitResult, ReadEvt_Eff, BinValue
     import sys
     #inputfile = sys.argv[1]
+    #inputfile = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/DeepCSV_gjetMadgraph_cutIdx0_mergeBin_0/makehisto.root'
+    #inputfile = 'testregion/postfit.root'
     inputfile = 'makehisto.root'
     LOG(f'input file {inputfile}\n\n')
-
     input_dat_file= 'UL2016PreVFP.data.bkg.dat'
     fit_bkgs = ReadEvt_FitResult(input_dat_file)
 
@@ -456,3 +431,4 @@ if __name__ == "__main__":
                     commonobj.SetCurrentPad(ctag_var_idx+1)
                     DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, f'jettag{ctag_var_idx}'+'calb')
                 commonobj.canv.SaveAs(f"varcheck_allvars_{pEtaBin}_{jEtaBin}_{pPtBin}_calb.pdf")
+                break
