@@ -19,7 +19,7 @@ cmd_exec sh step1_preparsion.sh $data_era $inputfolder > log_step1_preparsion ||
 
 touch out_fit_result; /bin/rm -r out_fit_result
 mkdir -p out_fit_result
-echo [$outputLabel] processing run_single.sh
+echo [$outputLabel] processing step2: combine in single bin.
 for pPtBin in {0..20}; do # assigned binning > actual binning is allowed
     for pEtaBin in {0..1}; do
         for jEtaBin in {0..1}; do
@@ -32,7 +32,13 @@ cmd_exec python3 step3_collect_postfit_info.py $data_era out_fit_result/ || the_
 echo [$outputLabel] collecting results
 mv *.csv out_fit_result/; mkdir -p out_fit_result/logs; mv log_* out_fit_result/logs/
 
-sh step4_collect_result.sh $outputLabel && mv out_fit_result $outputLabel || the_exit 'step4 execution failed'
+outputFolder=$inputfolder/CTagSimultaneousFit
+sh step4_collect_result.sh $outputLabel && mv out_fit_result $outputFolder && ln -s $outputFolder $outputLabel || the_exit 'step4 execution failed'
 echo [$outputLabel] all job finished
+echo [$ouptutLabel] Output is located at $outputFolder
+#sh step4_collect_result.sh $outputLabel && mv out_fit_result $outputLabel || the_exit 'step4 execution failed'
+#echo [$ouptutLabel] Output is located at $outputLabel
+
+
 
 echo tmp_blah_blah is kept. you can simply delete them.

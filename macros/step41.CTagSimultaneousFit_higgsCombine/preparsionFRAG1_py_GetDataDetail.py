@@ -89,7 +89,7 @@ if __name__ == "__main__":
                 BUG(f'step1_py_GetDataDetail.py at bin {pEtaBin}_{jEtaBin}_{pPtBin}')
                 try:
                     if InValidBin(ifile, pEtaBin, jEtaBin, pPtBin):
-                        raise ValueError(f'folder bin_{pEtaBin}_{jEtaBin}_{pPtbin} does not exist in root file.')
+                        raise ValueError(f'folder bin_{pEtaBin}_{jEtaBin}_{pPtBin} does not exist in root file: {ifile}')
                     dataEntries = GetDataEntries(ifile, pEtaBin,jEtaBin,pPtBin)
                     fake_value, fake_error = BinValue(pEtaBin,jEtaBin,pPtBin, fit_bkgs)
                     bkgEntries = round(fake_value,2)
