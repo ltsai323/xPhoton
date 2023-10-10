@@ -6,8 +6,9 @@ inputdatadetail=`realpath $4`
 outDIR=$5
 
 
-cat > cmd_history_step2.sh
-function cmd_exec() { echo -e "[step2.EXEC] $*"; echo "$*" >> cmd_history_step2.sh; "$@"; }
+cmd_file=cmd_history_step2_$pEtaBin_${jEtaBin}_${pPtBin}.sh
+cat > $cmd_file
+function cmd_exec() { echo -e "[step2.EXEC] $*"; echo "$*" >> $cmd_file; "$@"; }
 function the_exit() { echo -e "\nvvvvv\n$1\n^^^^^\n\n"; exit; }
 
 dataDetail=`grep $pEtaBin,$jEtaBin,$pPtBin, $inputdatadetail`
@@ -57,5 +58,6 @@ for pdfFile in *.pdf; do b=`echo $pdfFile | cut -d'.' -f1`; mv $pdfFile ${b}_${p
 
 cmd_exec cd ..
 cmd_exec mv $tmpdir $outDIR/$outdir
+mv $cmd_file $outDIR/$outdir/cmd_history_step2.sh
 
 # if the job failed.the folder tmp_${outdir} would leave.
