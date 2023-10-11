@@ -20,12 +20,14 @@
 #include "ptbin_definitions.h"
 
 #define LOG(format, args...)     fprintf(stderr, "[LOG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
-#define BUG(format, args...)     fprintf(stderr, "[BUG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+//#define BUG(format, args...)     fprintf(stderr, "[BUG]  %s  >>  " format "\n", __PRETTY_FUNCTION__,  ##args)
+#define BUG(format, args...)
 #define NOTHING -999
 #define ZERO_VAL 1e-8
 
 #define NUMBIN_PHOETA 2
-#define NUMBIN_JETETA 3
+#define NUMBIN_JETETA 2 // do not contain photon only event
+//#define NUMBIN_JETETA 3
 #define NUMBIT_HLT 9 // 0~8
 #define NUMBIN_ISOVAR 4
 #define NUMBIN_MATCHEDPHOTONSTATUS 5
@@ -54,36 +56,7 @@ struct EventBinning
     int phosignalregion(float isovar) const;
     int phodatasideband(float isovar) const;
 };
-struct normalization_ctagreshaped
-{
-    normalization_ctagreshaped():
-        entries(0),central(0),puweight_up(0),puweight_down(0),stat_up(0),stat_down(0)
-    {}
-    void Add(
-        double central_, double puweight_up_, double puweight_down_, double stat_up_, double stat_down_
-        )
-    {
-        ++entries;
-        central+=central_;
-        puweight_up+=puweight_up_;
-        puweight_down+=puweight_down_;
-        stat_up+=stat_up_;
-        stat_down+=stat_down_;
-    }
 
-    int entries;
-    double central;
-    double puweight_up;
-    double puweight_down;
-    double stat_up;
-    double stat_down;
-};
-
-struct Normalization_CTagReshaped
-{ // the magic 30 number must be larger than NUMBIN_PHOPT
-    Normalization_CTagReshaped() { }
-    normalization_ctagreshaped binned_norm[NUMBIN_PHOETA][NUMBIN_JETETA][30];
-};
 struct EvtSelMgr
 {
     EvtSelMgr(bool ismc, bool isqcd, bool hltoption) : isMC(ismc), isQCD(isqcd), HLTOPTION(hltoption)
@@ -152,8 +125,10 @@ struct Hists
                     hists[pEtaIdx][jEtaIdx][pPtIdx] = new TH1F(histname, varname, nbin, xmin, xmax);
                 }
     }
+    ~Hists() { }
     const std::string name;
     TH1F* hists[NUMBIN_PHOETA][NUMBIN_JETETA][30];
+
 
     const char* GetName() { return name.c_str(); }
 };
@@ -167,13 +142,15 @@ Hists* Hists_SubVtxMass(const char* histname, const char* varname)
 struct Hists_CTagReshaped
 {
     Hists_CTagReshaped(const char* naME, const char* varname):
+        original    ( Hists_CTags( Form("%s_original"    ,naME), varname) ),
         central     ( Hists_CTags( Form("%s_central"     ,naME), varname) ),
         PUweightUp  ( Hists_CTags( Form("%s_PUweightUp"  ,naME), varname) ),
         PUweightDown( Hists_CTags( Form("%s_PUweightDown",naME), varname) ),
         StatUp      ( Hists_CTags( Form("%s_StatUp"      ,naME), varname) ),
         StatDown    ( Hists_CTags( Form("%s_StatDown"    ,naME), varname) )
     {}
-    virtual ~Hists_CTagReshaped() { delete central; delete PUweightUp; delete PUweightDown; delete StatUp; delete StatDown; }
+    virtual ~Hists_CTagReshaped() { delete original; delete central; delete PUweightUp; delete PUweightDown; delete StatUp; delete StatDown; }
+    Hists* original;
     Hists* central;
     Hists* PUweightUp;
     Hists* PUweightDown;
@@ -190,18 +167,21 @@ struct Hists_CTagReshaped
 
 inline void Fill( const EventBinning& bin,Hists* h, float val, float weight = NOTHING )
 {
-    if ( weight == NOTHING ) h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val);
-    else                     h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val, weight);
+    //if ( weight == NOTHING ) h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val);
+    //else                     h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val, weight);
+    float fillweight = weight == NOTHING ? 1. : weight;
+    h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Fill(val, fillweight);
 }
 void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight,
         float w_central, float w_puweightup, float w_puweightdown, float w_statup, float w_statdown );
 
 
-inline void Write(const EventBinning& bin, Hists* h, double normalization = NOTHING)
+inline void Write(const EventBinning& bin, Hists* h, double scaleFACTOR = 1. )
 {
     TH1* hh = h->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    if ( normalization != NOTHING ) 
-        hh->Scale(1./normalization);
+
+    if ( scaleFACTOR != 1 )
+        hh->Scale(scaleFACTOR);
 
     hh->SetName(h->GetName());
     hh->Write();
@@ -212,11 +192,11 @@ inline void Write(const EventBinning& bin, Hists* h, double normalization = NOTH
     double normVal = hhh->GetEntries() > 0 ? 1. / hhh->Integral() : 0.; // check 0
     hhh->Scale( normVal );
     hhh->Write();
-
 }
-void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
-        float norm_central, float norm_puweightup, float norm_puweightdown, float norm_statup, float norm_statdown );
-void Write_AllCTagReshaped(const EventBinning& bin, Hists_CTagReshaped* h, const Normalization_CTagReshaped& N);
+
+void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h);
+void Write_AllCTagReshaped(const EventBinning& bin, Hists_CTagReshaped* h);
+
 void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEuncUP);
 
 #endif // end of makehisto_h }}}
@@ -296,19 +276,12 @@ int EventBinning::phodatasideband(float isovar) const
 #endif // end of define EventBinning_cxx }}}
 #ifdef usefulfunctions_cxx // {{{
 
-
-
-
-
-
-
-
-
 void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight,
         float w_central, float w_puweightup, float w_puweightdown, float w_statup, float w_statdown
         )
 {
     // all ctag weights needs renormalization. See Write_AllCTagReshaped() for more detail
+    Fill(bin,h->original    , val, evt_weight                 );
     Fill(bin,h->central     , val, evt_weight * w_central     );
     Fill(bin,h->PUweightUp  , val, evt_weight * w_puweightup  );
     Fill(bin,h->PUweightDown, val, evt_weight * w_puweightdown);
@@ -317,22 +290,21 @@ void Fill_allctagreshaped_general( const EventBinning& bin,Hists_CTagReshaped* h
 }
 
 
-void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h,
-        float norm_central, float norm_puweightup, float norm_puweightdown, float norm_statup, float norm_statdown
-        )
+void Write_AllCTagReshaped_General(const EventBinning& bin, Hists_CTagReshaped* h)
 {
-    Write(bin, h->central     , norm_central     );
-    Write(bin, h->PUweightUp  , norm_puweightup  );
-    Write(bin, h->PUweightDown, norm_puweightdown);
-    Write(bin, h->StatUp      , norm_statup      );
-    Write(bin, h->StatDown    , norm_statdown    );
+    double int_orig = h->original->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Integral();
+    double int_weig = h->central ->hists[bin.pEtaBin][bin.jEtaBin][bin.pPtBin]->Integral();
+    double scale_factor = int_orig / int_weig; // renormalize the c-tagging reweigh to original integration.
+
+    Write(bin, h->original    );
+    Write(bin, h->central     , scale_factor);
+    Write(bin, h->PUweightUp  , scale_factor);
+    Write(bin, h->PUweightDown, scale_factor);
+    Write(bin, h->StatUp      , scale_factor);
+    Write(bin, h->StatDown    , scale_factor);
 }
-void Write_AllCTagReshaped(const EventBinning& bin, Hists_CTagReshaped* h, const Normalization_CTagReshaped& N)
-{
-    // Normalization_CTagReShaped collects the event number and weight integration. Renormalization is done by #evt/integral(weight)
-    const normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    Write_AllCTagReshaped_General(bin,h , n.central, n.puweight_up, n.puweight_down, n.stat_up, n.stat_down);
-}
+void Write_AllCTagReshaped(const EventBinning& bin, Hists_CTagReshaped* h)
+{ Write_AllCTagReshaped_General(bin,h); }
 
 void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEuncUP)
 {
@@ -351,7 +323,7 @@ void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEun
             bincontent_uncDown = ZERO_VAL;
         else if ( bincontent_uncDown < 0. )
         {
-            LOG("--WARNING-- negative PDF found at bin%d in %s(%d,%d,%d) calculation. Forced them to 1e-8. central value and upper value : %.6f, %.6f",
+            BUG("--WARNING-- negative PDF found at bin%d in %s(%d,%d,%d) calculation. Forced them to 1e-8. central value and upper value : %.6f, %.6f",
                     ibin, h_shapeUncDown->GetName(), bin.pEtaBin, bin.jEtaBin, bin.pPtBin, bincontent_central, bincontent_uncUp);
             bincontent_uncDown = ZERO_VAL;
         }

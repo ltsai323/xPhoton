@@ -7,7 +7,7 @@ for bpe in {0..1}; do
 
     ls $ifile >/dev/null || continue
 
-    sh extractFitValue.sh $ifile $bpe $bje $bpp fityield.dat bkgestimation.dat
+    sh step3_extractFitValue.sh $ifile $bpe $bje $bpp fityield.dat bkgestimation.dat
 done
 done
 done

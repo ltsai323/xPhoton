@@ -434,6 +434,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     //Long64_t HLT, HLTIsPrescaled, HLT50ns, HLTIsPrescaled50ns;
     Long64_t HLT, HLTIsPrescaled;// HLT50ns, HLTIsPrescaled50ns;
     Float_t  MET,   METPhi;
+    Float_t  puppiMET,   puppiMETPhi;
     Int_t metFilters;
     Float_t jetPt_, jetEta_, jetPhi_, jetY_, jetJECUnc_;
     Float_t jetGenJetPt_, jetGenJetEta_, jetGenJetPhi_, jetGenJetY_, genHT_;
@@ -561,12 +562,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     }
     outtree_->Branch("photonIDmva",       &photonIDmva,       "photonIDmva/F");  
     outtree_->Branch("phoIDbit",          &phoIDbit_,          "phoIDbit/I");  
-    outtree_->Branch("MET",    &MET,    "MET/F");  
     if (!data.HasMC() )
     {
     outtree_->Branch("metFilters",    &metFilters,    "metFilters/I");  
     }
+    outtree_->Branch("MET",    &MET,    "MET/F");  
     outtree_->Branch("METPhi",    &METPhi,    "METPhi/F");  
+    outtree_->Branch("puppiMET",    &puppiMET,    "puppiMET/F");  
+    outtree_->Branch("puppiMETPhi",    &puppiMETPhi,    "puppiMETPhi/F");  
     outtree_->Branch("phohasPixelSeed", &phohasPixelSeed_, "phohasPixelSeed/I");
 
     outtree_->Branch("sieieFull5x5",        &sieieFull5x5,        "sieieFull5x5/F");
@@ -883,6 +886,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         Float_t pfMET = data.GetFloat("pfMET");
         Float_t pfMETPhi = data.GetFloat("pfMETPhi");
+        Float_t puppiMET = data.GetFloat("puppiMET");
+        Float_t puppiMETPhi = data.GetFloat("puppiMETPhi");
         //Int_t    nEle     = data.GetInt("nEle");
 
         Float_t* jetPt = data.GetPtrFloat("jetPt");
@@ -1407,6 +1412,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
+            puppiMET = puppiMET;
+            puppiMETPhi = puppiMETPhi;
             nPU=nPU_;
             run     = data.GetInt("run");
             event   = data.GetLong64("event");

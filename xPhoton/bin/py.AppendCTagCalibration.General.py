@@ -13,8 +13,8 @@ def executeCommand( inputfile_ ):
     command='%s {era} {ifile} %s/{newfile}' %(execfile,newfolder)
     os.system( command.format( era=dataera, ifile=inputfile_, newfile=nodir(inputfile_) ) )
 
-def LOG(mesg):
-    print('[LOG] '+ mesg)
+def LOG(mesg): print('[LOG] '+ mesg)
+
 def executeCommand_(
         dataERA:str,
         cmdEXEC:str,

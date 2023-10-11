@@ -2,7 +2,7 @@
 summaryfile='../data/summaryJson/summary_18QCDMadgraph.json'
 ARG_tmpdir='step1.xsinfoAppended'
 ARG_outdir='step2.mergePDversion'
-ARG_datalumi={ 2016: 35.9, 2017:41.54, 2018:59.96 }
+ARG_datalumi={ 2016: 35.9, 2017:41.54, 2018:59.96, 'UL2016PreVFP':19.52, 'UL2016PostVFP':16.81 }
 TESTmode=False
 testDict={
   "QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8": {
@@ -79,6 +79,7 @@ def executeCommand( xsweight_,
 
     ## no GenHT reweight version
     bashCommand = f'exec_AppendEventInfo_noGenHTcut {xs:.8e} {genW} {lumi:.8e} {iFile} {oFile}'
+    print(bashCommand)
 
     if not dataera_ in ARG_datalumi:
         raise KeyError('input key "%d" not foun. Available options are [%s]' %
@@ -96,9 +97,9 @@ def executeCommandToTmp( xsweight_,
         inputfile_,
         weightfile_=''):
     execfile='exec_AppendEventInfo'
-    #execcommand='%s {xs:.10e} {integratedGenWeight:.2e} {integratedLuminosity:.3e} {inputfile} %s/{outputfile} %s {weightfile}' % (execfile,ARG_tmpdir, 'true' if isQCD_ else 'false' )
 
     if not dataera_ in ARG_datalumi:
+        print(dataera_)
         raise KeyError('input key "%d" not foun. Available options are [%s]' %
                 ( dataera_, ', '.join(['%d'%_s for _s in ARG_datalumi.keys()]) )
                 )
@@ -113,34 +114,18 @@ def executeCommandToTmp( xsweight_,
     isqcd = 'true' if isQCD_ else 'false'
     weightfile=weightfile_
 
-    if 'root' in weightfile_ and os.path.exist(weightfile_):
+    if 'root' in weightfile_ and os.path.exists(weightfile_):
         MYLOG(executeCommandToTmp, '--- execute with GenHT cut and reweighted PU weight ---')
         execcommand = f'exec_AppendEventInfo {xs:.2e} {integratedGenWeight:.8e} {integratedLuminosity:.8e} {inputfile:s} {outputfile:s} {isqcd:s} {weightfile:s}'
     else:
         MYLOG(executeCommandToTmp, '--- NO GenHT related information ---')
         execcommand = f'exec_AppendEventInfo_noGenHTcut {xs:.8e} {integratedGenWeight:.8e} {integratedLuminosity:.8e} {inputfile:s} {outputfile:s}'
-    print(execcommand)
-    return
 
 
     if TESTmode:
-        mylog.debug( execcommand.format(
-            xs=xsweight_,
-            integratedGenWeight=integratedGenWeight_,
-            integratedLuminosity=ARG_datalumi[dataera_],
-            inputfile=inputfile_,
-            outputfile=nodir(inputfile_),
-            weightfile=weightfile_
-        ) )
+        print(execcommand)
     else:
-        os.system( execcommand.format(
-            xs=xsweight_,
-            integratedGenWeight=integratedGenWeight_,
-            integratedLuminosity=ARG_datalumi[dataera_],
-            inputfile=inputfile_,
-            outputfile=nodir(inputfile_),
-            weightfile=weightfile_
-        ) )
+        os.system( execcommand )
 
 def CheckWorkingDir():
     import os
