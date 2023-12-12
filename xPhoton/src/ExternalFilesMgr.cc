@@ -1,6 +1,8 @@
 #include "xPhoton/xPhoton/interface/ExternalFilesMgr.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 #include <stdio.h>
+void WRONG_DATAERA(const std::string& funcNAME, const std::string& era)
+{ LOG_FATAL("ExternalFilesMgr::%s():: invalid input dataera %s",funcNAME.c_str(),era.c_str()); }
 
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour(std::string era)
 {
@@ -119,8 +121,10 @@ const char* ExternalFilesMgr::RooFile_PileUp(std::string era)
         return "/wk_cms/ltsai/ReceivedFile/PileupWeight/2017ReReco_WinterMC/puweights_PileupHistogram-goldenJSON-13tev-2017-69200ub.root";
     else if ( era == "2018ReReco" )
         return "/wk_cms/ltsai/ReceivedFile/PileupWeight/2018ReReco_JuneProjectionFull18/puweights_PileupHistogram-goldenJSON-13tev-2018-69200ub.root";
-    else if ( era == "UL2016PostVFP" || era == "UL2016PreVFP" )
-        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2016_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2016-69200ub-99bins.root";
+    else if ( era == "UL2016PreVFP" )
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2016_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2016-preVFP-69200ub-99bins.root";
+    else if ( era == "UL2016PostVFP" )
+        return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2016_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2016-postVFP-69200ub-99bins.root";
     else if ( era == "UL2017"     )
         return "/wk_cms/ltsai/ReceivedFile/PileupWeight/UL2017_PoissonOOTPU/puweights_PileupHistogram-goldenJSON-13tev-2017-69200ub-99bins.root";
     else if ( era == "UL2018"     )
@@ -156,7 +160,7 @@ const char* ExternalFilesMgr::xmlFile_MVAweight(int isEndcap, std::string era)
         else if ( era == "UL2016PostVFP" || era == "UL2016PreVFP" )
 return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2016/UL2016_EE/weights/TMVAnalysis_BDT.weights.xml";
         else if ( era == "UL2017"     )
-            return nullptr;
+        return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2017/TMVA_UL2017_EE/TMVA_UL2017_EE/weights/TMVAnalysis_BDT.weights.xml";
         else if ( era == "UL2018"     )
             return "/home/ltsai/ReceivedFile/hii/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml";
             //return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EE/weights/TMVAnalysis_BDT.weights.xml";
@@ -172,11 +176,54 @@ return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2016/UL2016_EE/weight
         else if ( era == "UL2016PostVFP" || era == "UL2016PreVFP" )
 return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2016/UL2016_EB/weights/TMVAnalysis_BDT.weights.xml";
         else if ( era == "UL2017"     )
-            return nullptr;
+        return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2017/TMVA_UL2017_EB/TMVA_UL2017_EB/weights/TMVAnalysis_BDT.weights.xml";
         else if ( era == "UL2018"     )
             return "/home/ltsai/ReceivedFile/hii/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml";
             //return "/home/ltsai/ReceivedFile/GJet/TMVATrainingResult/UL2018/TMVA_UL2018_EB/weights/TMVAnalysis_BDT.weights.xml";
     }
+    LOG_FATAL( "Unknown input argument era '%s'", era.c_str() );
+    return nullptr;
+}
+const char* ExternalFilesMgr::csvFile_CTagWorkingPoint_DeepCSV(std::string era)
+{
+    std::string funcname = "csvFile_CTagWorkingPoint_DeepCSV";
+    if      ( era == "2016ReReco" )
+        WRONG_DATAERA(funcname,era);
+    else if ( era == "2017ReReco" )
+        WRONG_DATAERA(funcname,era);
+    else if ( era == "2018ReReco" )
+        WRONG_DATAERA(funcname,era);
+
+    else if ( era == "UL2016PostVFP" )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2016postVFP/ctagging_wp_deepCSV.csv";
+    else if ( era == "UL2016PreVFP" )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2016preVFP/ctagging_wp_deepCSV.csv";
+    else if ( era == "UL2017"     )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2017/ctagging_wp_deepCSV.csv";
+    else if ( era == "UL2018"     )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2018/ctagging_wp_deepCSV.csv";
+    LOG_FATAL( "Unknown input argument era '%s'", era.c_str() );
+    return nullptr;
+}
+
+const char* ExternalFilesMgr::csvFile_CTagWorkingPoint_DeepFlavour(std::string era)
+{
+    std::string funcname = "csvFile_CTagWorkingPoint_DeepFlavour";
+    if      ( era == "2016ReReco" )
+        WRONG_DATAERA(funcname,era);
+    else if ( era == "2017ReReco" )
+        WRONG_DATAERA(funcname,era);
+    else if ( era == "2018ReReco" )
+        WRONG_DATAERA(funcname,era);
+
+    else if ( era == "UL2016PostVFP" )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2016postVFP/ctagging_wp_deepJet.csv";
+    else if ( era == "UL2016PreVFP" )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2016preVFP/ctagging_wp_deepJet.csv";
+    else if ( era == "UL2017"     )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2017/ctagging_wp_deepJet.csv";
+    else if ( era == "UL2018"     )
+        return "/wk_cms/ltsai/ReceivedFile/RSprocessedFiles/csvfiles/btv-json-sf_data/UL2018/ctagging_wp_deepJet.csv";
     LOG_FATAL( "Unknown input argument era '%s'", era.c_str() );
     return nullptr;
 }

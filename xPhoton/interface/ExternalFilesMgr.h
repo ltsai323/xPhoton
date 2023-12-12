@@ -15,6 +15,8 @@ namespace ExternalFilesMgr
     const char* RooFile_CTagCalib_DeepFlavour(std::string era);
     const char* RooFile_CTagCalib_DeepCSV(std::string era);
     //const char* RooFile_ShowerShapeCorrection(std::string era);
+    const char* csvFile_CTagWorkingPoint_DeepCSV(std::string era);
+    const char* csvFile_CTagWorkingPoint_DeepFlavour(std::string era);
 };
 /*
 class ExternalFilesMgr_
