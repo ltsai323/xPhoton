@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 exeCMD='exec_xPhotonRunnerUL2016PostVFP'
-nThread=8
+nThread=10
 
 
 def GetArg_PrintHelp():
@@ -20,5 +20,5 @@ if __name__ == '__main__':
     useRemote='True' if 'root://' in f.read() else 'False' # read first line
     f.close()
 
-    print(     'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
-    os.system( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+    print(     'python3 sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+    os.system( 'python3 sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )

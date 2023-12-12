@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 exeCMD='exec_xQCDRunnerUL2016PreVFP'
-nThread=3
+nThread=5
 
 
 def GetArg_PrintHelp():

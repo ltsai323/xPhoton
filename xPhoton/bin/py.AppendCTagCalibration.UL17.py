@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 oldfolder='step2.mergePDversion'
 newfolder='step3.btagSFappended'
-dataera='UL2016PreVFP'
+dataera='UL2017'
 
 import os
 from xPhoton.xPhoton.AppendEventInfo import FindXSInfo, nodir, ShowPD, ShowDetail

@@ -31,6 +31,7 @@
     <bin name="exec_AppendCTagCalibration"        file="AppendCTagCalibration.cc"/>
     <bin name="exec_xPhotonInfoUpdate"            file="xPhotonInfoUpdate.cc"/>
     <bin name="exec_xPhotonBinning"               file="xPhotonBinning.cc"/>
+    <bin name="exec_BranchRecalc"                 file="BranchRecalc.cc"/>
 
 
     <bin name="xQCD2nd_ReweightChecking_Madgraph"

@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdexcept>
-#include "xPhoton/xPhoton/interface/BTaggingMgr.h"
 #include "xPhoton/xPhoton/interface/LogMgr.h"
 // usage :
 //   ./exec_thisfile 3.14e5 200 35.9 input.root outfile.root
@@ -139,18 +138,20 @@ int main(int argc, const char* argv[])
     Int_t isQCD;
     //Int_t passMaxPUcut;
     //Float_t weight_passMaxPUcut;
+    Float_t effLumi10M;
     oT->Branch("xsweight", &xsweight, "xsweight/F"); // xsweight is the variable serve for original RS code.
     oT->Branch("crossSection", &xs, "crossSection/F");
     oT->Branch("integratedLuminosity", &lumi, "integratedLuminosity/F");
     oT->Branch("integratedGenWeight", &sumGenWeight, "integratedGenWeight/F");
     oT->Branch("mcweight", &mcweight, "mcweight/F");
+    oT->Branch("effectiveLuminosityPer10Mevt", &effLumi10M, "effectiveLuminosityPer10Mevt/F");
 
     oT->Branch("isQCD", &isQCD, "isQCD/I");
 
     BUG("06");
 
 
-    Float_t genweight;
+    Float_t genweight = 1;
     INFO("Using xQCD variables");
     iT->SetBranchAddress("genWeight", &genweight);
 
@@ -161,7 +162,6 @@ int main(int argc, const char* argv[])
     BUG("09");
     
     unsigned int nevt = iT->GetEntries();
-    //unsigned int nevt = 10;
     for ( unsigned int ievt = 0; ievt <= nevt; ++ievt )
     {
     BUG("09.1");
@@ -169,6 +169,7 @@ int main(int argc, const char* argv[])
 
         xsweight = genweight > 0 ? new_xs : -1.*new_xs;
         mcweight = new_xs * lumi * genweight / integratedGenWeight;
+        effLumi10M = 1e7 / new_xs;
 
     BUG("09.2");
     BUG("09.3");

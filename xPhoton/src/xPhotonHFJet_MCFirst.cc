@@ -1,4 +1,4 @@
-#include "xPhoton/xPhoton/interface/xPhotonHFJet_subVtxInfo.h"
+#include "xPhoton/xPhoton/interface/xPhotonHFJet_MCFirst.h"
 #include <vector>
 #include <TH1D.h>
 #include <TLorentzVector.h>
@@ -51,156 +51,22 @@ const float CUT_DELTAR  = 0.2;
 const float CUT_DELTAPT = 0.35;
 const float NOTHING = -1;
 const int MAX_SINGLE_PHO_TRIG = 10;
-namespace _xphotonFunc_{
-std::vector<int> GenPhoIdxs( TreeReader* event );
-std::vector<int> GenMuonIdxs( TreeReader* event );
-std::vector<int> GenEleIdxs( TreeReader* event );
-int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> phomcid );
-int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid );
-void FillStatus(TH1* hist, float val) { hist->Fill(val+0.001); }
-};
-using namespace _xphotonFunc_;
+using namespace _xphoton_MCFirstFunc_;
 
-static TH1F* h_subVtxPt    ;
-static TH1F* h_subVtxMass  ;
-static TH1F* h_subVtx3DVal ;
-static TH1F* h_subVtx3DErr ;
-static TH1F* h_subVtxNtrks ;
-
-static TH1F *h_hasGoodVtx ;
-static TH1F *hpthat ;
-static TH1F *hpthat_wide ;
 static TH1F *hdpt ;
-static TH1F *hdpt_signed ;
 static TH1F *hdR ;
-
-static TH1F *hdpt_ele_signed ;
 static TH1F *hdpt_ele;
 static TH1F *hdR_ele ;
-
-static TH1F *hdR_genjet ;
-
-static TH1F *hdR_pho_lep ;
-static TH1F *hdR_fake_lep ;
-
-static TH1F *hmcTrkIso ;
-static TH1F *hmcTrkIsoMini ;
-static TH1F *hmcTrkIsoMicro ;
-static TH1F *hmcCalIso ;
-static TH1F *hmcCalIsoMini ;
-static TH1F *hmcCalIsoMicro ;
-static TH1F *hmcGenIso ;
-static TH1F *hmcpartonIso ;
-static TH1F *hgenphoEB_pt ;
-static TH1F *hgenphoEB_eta ;
-static TH1F *hgenphoEE_pt ;
-static TH1F *hgenphoEE_eta ;
-
-static TH1F *hgenphoEB_pt_vbin ;
-static TH1F *hgenphoEE_pt_vbin ;
-
-static TH1F *hgenphoEBEE0_pt_vbin ;
-static TH1F *hgenphoEBEE1_pt_vbin ;
-static TH1F *hgenphoEBEE2_pt_vbin ;
-static TH1F *hgenphoEBEE3_pt_vbin ;
-
-static TH1F *hgenphoEBEE0_pt_vbin_amcnlo ;
-static TH1F *hgenphoEBEE1_pt_vbin_amcnlo ;
-static TH1F *hgenphoEBEE2_pt_vbin_amcnlo ;
-static TH1F *hgenphoEBEE3_pt_vbin_amcnlo ;
-
-static TH1F *hgenphoEBjet0_pt_vbin_amcnlo ;
-static TH1F *hgenphoEBjet1_pt_vbin_amcnlo ;
-static TH1F *hgenphoEEjet0_pt_vbin_amcnlo ;
-static TH1F *hgenphoEEjet1_pt_vbin_amcnlo ;
-static TH1F* hMCMatchingReport ;
-static TH1F* hMCMatchingMultiplicity ;
-
-
-static TH1F *hphoEB_pt_presel_nocsev ;
-static TH1F *hphoEB_pt_presel_csev ;
-static TH1F *hphoEE_pt_presel_nocsev ;
-static TH1F *hphoEE_pt_presel_csev ;
-
-static TH1F *hphoEB_pt_presel_den ;
-static TH1F *hphoEB_pt_presel_num ;
-static TH1F *hphoEE_pt_presel_den ;
-static TH1F *hphoEE_pt_presel_num ;
-
-static TH2F *h_phoPt_eta_Z_all ;
-static TH2F *h_phoPt_eta_Z_csev ;
-
-static TH2F *hgenpho_eta_phi ;
-static TH2F *hgenpho_eta_pt ;
-
-static TH1F *h_ngenpho ;
 static TH1F *h_npho ;
-static TH1F *h_nele ;
-static TH1F *h_nphoFiredTrgs ;
 static TH1F *h_truepho ;
 static TH1F *h_convpho ;
-static TH1F *h_phoEt ;
-static TH1F *h_jetPt ;
-
-static TH1F *h_pjmass ;
-static TH1F *h_njet ;
-static TH1F *h_nrecojet ;
-static TH1F *h_ngenjet ;
-
-static TH2F *h_detadpt_jet12 ;
-
-
 static TH1F *h_dR_phojet ;
-static TH1F *h_dR_phoele ;
-static TH1F *h_dpt_phojet ;
+static TH1F *h_MCSelectionStat;
 
-static TH1F *h_jetID ;
-static TH1F *h_jetIDv ;
-
-
-static TH1F *h_pho2Pt ;
-
-static TH1F *h_ppmass ;
-static TH1F *h_ppmass_zoom ;
-static TH1F *h_EBSeedTime ;
-static TH1F *h_EESeedTime ;
-static TH1F *h_EBSeedTimeW ;
-static TH1F *h_EESeedTimeW ;
-
-static TH1F *h_EB_bdt ;
-static TH1F *h_EE_bdt ;
-
-static TH1F *h_dphi_recoil ;
-static TH1F *h_dpt_recoil ;
-
-
-static TProfile *tp_rho ;
-static TProfile *tp_rho_EB ;
-static TProfile *tp_rho_EE ;
-static TH2F *h2_nVtx_rho ;
-static TH2F *h2_nVtx_iso ;
-
-static TProfile *tp_chIso[10]; //;
-static TProfile *tp_phIso[10]; //;
-static TProfile *tp_nhIso[10]; //;
-
-static TProfile *tp_chIso_rho[10]; //;
-static TProfile *tp_phIso_rho[10]; //;
-static TProfile *tp_nhIso_rho[10]; //;
-
-static TH1F *h_Zee_mass ;
-static TH1F *h_Zee_mass_csev ;
-static TH1F *h_Zmm_mass ;
-static TH1F *h_MET ;
-static TH1F *h_Wen_mt ;
-static TH1F *h_Wmn_mt ;
-
-static TH2F *h2_mcPID_mcPt ;
-
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string dataEra){
+void xPhotonHFJet_MCFirst(vector<string> pathes, Char_t oname[200], const std::string dataEra){
 
     TreeReader data(pathes);
-    std::string totfile="";
+   std::string totfile="";
     if ( pathes.size() > 1 ) for ( auto pathe : pathes ) totfile=totfile+","+pathe;
     else totfile = pathes[0];
     LOG_INFO("Loading files : %s", totfile.c_str());
@@ -226,176 +92,30 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
     float etabin[] = {0., 0.8, 1.5, 2.1, 2.5};
 
-    h_subVtxPt    = new TH1F("subVtxPt"   , "pt distribution of secondary vertex in bJet", 70, 0., 350. );
-    h_subVtxMass  = new TH1F("subVtxMass" , "mass spectrum of secondary vertex in bJet", 88, 0., 22. );
-    h_subVtx3DVal = new TH1F("subVtx3DVal", "flight distance between PV and SV", 60, 0., 120. );
-    h_subVtx3DErr = new TH1F("subVtx3DErr", "error of flight distance between PV and SV", 88, 0., 22. );
-    h_subVtxNtrks = new TH1F("subVtxNtrks", "number of tracks containing in SV", 18,0.,18. );
-    
-    h_hasGoodVtx = new TH1F("h_hasGoodVtx","hasGoodVtx",2,0,2);
-    hpthat = new TH1F("hpthat","pt hat", 100, 0., 1000.);
-    hpthat_wide = new TH1F("hpthat_wide","pt hat wide window", 600, 0., 6000.);
     
     hdpt = new TH1F("hdpt","dpt", 100, 0., 1.);
-    hdpt_signed = new TH1F("hdpt_signed","dpt_signed", 200, -1., 1.);
     hdR = new TH1F("hdR","dR", 100, 0., 2.);
-    
     hdpt_ele = new TH1F("hdpt_ele","dpt", 100, 0., 1.);
-    hdpt_ele_signed = new TH1F("hdpt_ele_signed","dpt", 200, -1., 1.);
     hdR_ele = new TH1F("hdR_ele","dR", 100, 0., 2.);
-    
-    hdR_genjet = new TH1F("hdR_genjet","dR", 100, 0., 2.);
-    
-    hdR_pho_lep = new TH1F("hdR_pho_lep","dR pho and lepton", 150, 0., 3.);
-    hdR_fake_lep = new TH1F("hdR_fake_lep","dR fake and lepton", 150, 0., 3.);
-    
-    hmcTrkIso = new TH1F("hmcTrkIso","mcTrkIso", 500, 0., 20.);
-    hmcTrkIsoMini = new TH1F("hmcTrkIsoMini","mcTrkIsoMini", 500, 0., 10.);
-    hmcTrkIsoMicro = new TH1F("hmcTrkIsoMicro","mcTrkIsoMicro", 500, 0., 2.);
-    hmcCalIso = new TH1F("hmcCalIso","mcCalIso", 500, 0., 20.);
-    hmcCalIsoMini = new TH1F("hmcCalIsoMini","mcCalIsoMini", 500, 0., 10.);
-    hmcCalIsoMicro = new TH1F("hmcCalIsoMicro","mcCalIsoMicro", 500, 0., 2.);
-    hmcGenIso = new TH1F("hmcGenIso","mcGenIso", 100, 0., 20.);
-    hmcpartonIso = new TH1F("hmcpartonIso","mcpartonIso", 100, 0., 20.);
-    hgenphoEB_pt = new TH1F("hgenphoEB_pt","GenphoEB photon Pt", 3000, 0., 3000.);
-    hgenphoEB_eta = new TH1F("hgenphoEB_eta","GenphoEB photon eta", 600, -3., 3.);
-    hgenphoEE_pt = new TH1F("hgenphoEE_pt","GenphoEE photon Pt", 3000, 0., 3000.);
-    hgenphoEE_eta = new TH1F("hgenphoEE_eta","GenphoEE photon eta", 600, -3., 3.);
-    
-    hgenphoEB_pt_vbin = new TH1F("hgenphoEB_pt_vbin","GenphoEB photon Pt var. bin", 25, ptcut);
-    hgenphoEE_pt_vbin = new TH1F("hgenphoEE_pt_vbin","GenphoEE photon Pt var. bin", 25, ptcut);
-    
-    hgenphoEBEE0_pt_vbin = new TH1F("hgenphoEBEE0_pt_vbin","GenphoEBEE0 photon Pt var. bin", 25, ptcut);
-    hgenphoEBEE1_pt_vbin = new TH1F("hgenphoEBEE1_pt_vbin","GenphoEBEE1 photon Pt var. bin", 25, ptcut);
-    hgenphoEBEE2_pt_vbin = new TH1F("hgenphoEBEE2_pt_vbin","GenphoEBEE2 photon Pt var. bin", 25, ptcut);
-    hgenphoEBEE3_pt_vbin = new TH1F("hgenphoEBEE3_pt_vbin","GenphoEBEE3 photon Pt var. bin", 25, ptcut);
-    
-    hgenphoEBEE0_pt_vbin_amcnlo = new TH1F("hgenphoEBEE0_pt_vbin_amcnlo","GenphoEBEE0 photon Pt var. bin_amcnlo", 25, ptcut);
-    hgenphoEBEE1_pt_vbin_amcnlo = new TH1F("hgenphoEBEE1_pt_vbin_amcnlo","GenphoEBEE1 photon Pt var. bin_amcnlo", 25, ptcut);
-    hgenphoEBEE2_pt_vbin_amcnlo = new TH1F("hgenphoEBEE2_pt_vbin_amcnlo","GenphoEBEE2 photon Pt var. bin_amcnlo", 25, ptcut);
-    hgenphoEBEE3_pt_vbin_amcnlo = new TH1F("hgenphoEBEE3_pt_vbin_amcnlo","GenphoEBEE3 photon Pt var. bin_amcnlo", 25, ptcut);
-    
-    hgenphoEBjet0_pt_vbin_amcnlo = new TH1F("hgenphoEBjet0_pt_vbin_amcnlo","GenphoEB jet0 photon Pt var. bin_amcnlo", 25, ptcut);
-    hgenphoEBjet1_pt_vbin_amcnlo = new TH1F("hgenphoEBjet1_pt_vbin_amcnlo","GenphoEB jet1 photon Pt var. bin_amcnlo", 25, ptcut);
-    hgenphoEEjet0_pt_vbin_amcnlo = new TH1F("hgenphoEEjet0_pt_vbin_amcnlo","GenphoEB jet0 photon Pt var. bin_amcnlo", 25, ptcut);
-    hgenphoEEjet1_pt_vbin_amcnlo = new TH1F("hgenphoEEjet1_pt_vbin_amcnlo","GenphoEB jet1 photon Pt var. bin_amcnlo", 25, ptcut);
-    hMCMatchingReport = new TH1F("hMCMatchingReport", "Selection bits for MC truth matching", 10,0.,10.);
-    hMCMatchingMultiplicity = new TH1F("hMCMatchingMultiplicity", "MC truth matching multiplicity", 10, 0., 10.);
-
-    hgenphoEB_pt->Sumw2();
-    hgenphoEB_eta->Sumw2();
-    hgenphoEE_pt->Sumw2();
-    hgenphoEE_eta->Sumw2();
-    hgenphoEB_pt_vbin->Sumw2();
-    hgenphoEE_pt_vbin->Sumw2();
-    hgenphoEBEE0_pt_vbin->Sumw2();
-    hgenphoEBEE1_pt_vbin->Sumw2();
-    hgenphoEBEE2_pt_vbin->Sumw2();
-    hgenphoEBEE3_pt_vbin->Sumw2();
-
-    hgenphoEBEE0_pt_vbin_amcnlo->Sumw2();
-    hgenphoEBEE1_pt_vbin_amcnlo->Sumw2();
-    hgenphoEBEE2_pt_vbin_amcnlo->Sumw2();
-    hgenphoEBEE3_pt_vbin_amcnlo->Sumw2();  
-    hgenphoEBjet0_pt_vbin_amcnlo->Sumw2(); 
-    hgenphoEBjet1_pt_vbin_amcnlo->Sumw2(); 
-    hgenphoEEjet0_pt_vbin_amcnlo->Sumw2(); 
-    hgenphoEEjet1_pt_vbin_amcnlo->Sumw2(); 
-
-    hphoEB_pt_presel_nocsev = new TH1F("hphoEB_pt_presel_nocsev","pt of EB no csev", 25, ptcut);
-    hphoEB_pt_presel_csev = new TH1F("hphoEB_pt_presel_csev","pt of EB  csev", 25, ptcut);
-    hphoEE_pt_presel_nocsev = new TH1F("hphoEE_pt_presel_nocsev","pt of EE no csev", 25, ptcut);
-    hphoEE_pt_presel_csev = new TH1F("hphoEE_pt_presel_csev","pt of EE  csev", 25, ptcut);
-
-    hphoEB_pt_presel_den = new TH1F("hphoEB_pt_presel_den","pt of EB can", 25, ptcut);
-    hphoEB_pt_presel_num = new TH1F("hphoEB_pt_presel_num","pt of EB sel", 25, ptcut);
-    hphoEE_pt_presel_den = new TH1F("hphoEE_pt_presel_den","pt of EE can", 25, ptcut);
-    hphoEE_pt_presel_num = new TH1F("hphoEE_pt_presel_num","pt of EE sel", 25, ptcut);
-
-    h_phoPt_eta_Z_all = new TH2F("h_phoPt_eta_Z_all","pt eta of photon from Z all", 25, ptcut, 4, etabin);
-    h_phoPt_eta_Z_csev = new TH2F("h_phoPt_eta_Z_csev","pt eta of photon from Z all", 25, ptcut, 4, etabin);
-
-    hgenpho_eta_phi = new TH2F("hgenpho_eta_phi","gen photon eta phi", 500, -2.5, 2.5, 320, -3.2, 3.2);
-    hgenpho_eta_pt = new TH2F("hgenpho_eta_pt","gen photon eta pt", 50, -2.5, 2.5, 100, 0., 1000.);
-
-    h_ngenpho = new TH1F("h_ngenpho","n gen pho", 20, 0., 20);
     h_npho = new TH1F("h_npho","n pho", 20, 0., 20);
-    h_nele = new TH1F("h_nele","n ele", 20, 0., 20);
-    h_nphoFiredTrgs = new TH1F("h_nphoFiredTrgs","n pho", 20, 0., 20);
     h_truepho = new TH1F("h_truepho","true pho", 10, 0., 10.);
     h_convpho = new TH1F("h_convpho","converted pho", 10, 0., 10.);
-    h_phoEt = new TH1F("h_phoEt","pho Et", 200, 0., 1000);
-    h_jetPt = new TH1F("h_jetPt","jet Pt", 200, 0., 1000);
-    //h_npj = new TH1F("h_npj","n pho jet comb", 20, 0., 20.);
-    h_pjmass = new TH1F("h_pjmass","inv mass of pho jet", 1000, 0., 10000);
-    h_njet = new TH1F("h_njet","njet", 20, 0., 20);
-    h_nrecojet = new TH1F("h_nrecojet","n reco jet", 20, 0., 20);
-    h_ngenjet = new TH1F("h_ngenjet","n gen jet", 20, 0., 20);
-
-    h_detadpt_jet12 = new TH2F("h_detadpt_jet12","deta dpt jet12",3,-1,2,100,0., 1.);
-
-
     h_dR_phojet = new TH1F("h_dR_phojet","dR of pho jet", 100, 0., 2.);
-    h_dR_phoele = new TH1F("h_dR_phoele","dR of pho ele", 100, 0., 2.);
-    h_dpt_phojet = new TH1F("h_dpt_phojet","dpt of pho jet", 100, 0., 4.);
-
-    h_jetID = new TH1F("h_jetID", "jetid", 2, 0., 2.);
-    h_jetIDv = new TH1F("h_jetIDv", "jetid v", 2, 0., 2.);
-
-
-    h_pho2Pt = new TH1F("h_pho2Pt","pho2 Pt", 200, 0., 1000);
-    //h_npp = new TH1F("h_npp","pho pho comb", 20, 0., 20.);
-    h_ppmass = new TH1F("h_ppmass","inv mass of pho pho", 1000, 0., 10000);
-    h_ppmass_zoom = new TH1F("h_ppmass_zoom","inv mass of pho pho zoom", 200, 0., 200);
-    h_EBSeedTime = new TH1F("h_EBSeedTime","EBSeedTime from z",1000, -5., 5.);
-    h_EESeedTime = new TH1F("h_EESeedTime","EESeedTime from z",1000, -5., 5.);
-    h_EBSeedTimeW = new TH1F("h_EBSeedTimeW","EBSeedTime from W",1000, -5., 5.);
-    h_EESeedTimeW = new TH1F("h_EESeedTimeW","EESeedTime from W",1000, -5., 5.);
-
-    h_EB_bdt = new TH1F("h_EB_bdt","EB bdt output", 200, -1., 1.);
-    h_EE_bdt = new TH1F("h_EE_bdt","EE bdt output", 200, -1., 1.);
-
-    h_dphi_recoil = new TH1F("h_dphi_recoil","dphi recoil jet", 100., -4., 4.);
-    h_dpt_recoil = new TH1F("h_dpt_recoil","dpt recoil jet", 100.,-2., 2.);
-
-
-    tp_rho = new TProfile("tp_rho","tp_rho", 100, 0., 100.);
-    tp_rho_EB = new TProfile("tp_rho_EB","tp_rho_EB", 100, 0., 100.);
-    tp_rho_EE = new TProfile("tp_rho_EE","tp_rho_EE", 100, 0., 100.);
-    h2_nVtx_rho = new TH2F("h2_nVtx_rho","h2_nVtx_rho",100, 0., 100., 100., 0., 50.);; //= new TProfile();
-    h2_nVtx_iso = new TH2F("h2_nVtx_iso","h2_nVtx_iso",100, 0., 100., 1000., 0., 10.);; //= new TProfile();
-
-
-    h_Zee_mass = new TH1F("h_Zee_mass","Zee mass", 100, 50., 250);
-    h_Zee_mass_csev = new TH1F("h_Zee_mass_csev","Zee mass photon CSEV", 100, 50., 250);
-    h_Zmm_mass = new TH1F("h_Zmm_mass","Zmm mass", 150, 0., 150);
-    h_MET = new TH1F("h_MET","MET", 100, 0., 200.);
-    h_Wen_mt = new TH1F("h_Wen_mt","W enue Mt", 150, 0., 150.); 
-    h_Wmn_mt = new TH1F("h_Wmn_mt","W mnue Mt", 150, 0., 150.); 
-
-    h2_mcPID_mcPt = new TH2F("h2_mcPID_mcPt","mcPID vs mcPt", 100, 0., 1000, 30, 0., 30);
+    // -1 : all events
+    //  0 : MC events contains signal photon
+    //  1 : event passed num(recoJet) > 0
+    //  2 : event passed num(recoJet) > 0 and containing signal photon
+    //  3 : event passed num(recoPho) > 0
+    //  4 : event passed num(recoPho) > 0 and containing signal photon
+    //  5 : event contains preselected photon and they are not electron faked. (photon_list.size()>0)
+    //  6 : event contains preselected photon and they are not electron faked. (photon_list.size()>0). and containing signal photon
+    h_MCSelectionStat = new TH1F("h_MCSelectionStat", "Check cutting", 21, -1., 20.);
+    
 
 
     std::map<std::string, TH1F*> histMap;
     histMap["lheEnergy"] = new TH1F("lheEnergy", "hi", 100, 0., 4000.);
 
-    char txt[50];
-
-    for(int ii=0; ii<10; ii++){
-        sprintf(txt,"tp_chIso_bin%d",ii);
-        tp_chIso[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_phIso_bin%d",ii);
-        tp_phIso[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_nhIso_bin%d",ii);
-        tp_nhIso[ii] = new TProfile(txt,txt, 100, 0., 100.);
-
-        sprintf(txt,"tp_chIso_rho_bin%d",ii);
-        tp_chIso_rho[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_phIso_rho_bin%d",ii);
-        tp_phIso_rho[ii] = new TProfile(txt,txt, 100, 0., 100.);
-        sprintf(txt,"tp_nhIso_rho_bin%d",ii);
-        tp_nhIso_rho[ii] = new TProfile(txt,txt, 100, 0., 100.);
-    }
 
 
     outtree_ = new TTree("t", "mini tree");
@@ -403,11 +123,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t overallGenweight = 0;
     Float_t hasNon1Val = 0;
 
-    // Float_t effArea[3][7] = { //[Ch,Nu,Pho][iPhof_eta]
-    //   { 0.012 , 0.010 , 0.014 , 0.012 , 0.016 , 0.020 , 0.012 } ,
-    //   { 0.030 , 0.057 , 0.039 , 0.015 , 0.024 , 0.039 , 0.072 } ,
-    //   { 0.148 , 0.130 , 0.112 , 0.216 , 0.262 , 0.260 , 0.266 } 
-    // } ;
 
     Float_t jetSubVtxPt_, jetSubVtxMass_, jetSubVtx3DVal_, jetSubVtx3DErr_;
     Int_t jetSubVtxNtrks_;
@@ -703,6 +418,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         TLorentzVector phoP4, lepP4[2], zllP4, electronP4, wlnP4, nueP4, trigger_jetP4, jetP4;
 
         data.GetEntry(ev);
+        FillStatus(h_MCSelectionStat,-1);
+    
         if ( data.HasMC() )
         {
             float gw = data.GetFloat("genWeight");
@@ -716,18 +433,23 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         Int_t    nPho     = data.GetInt("nPho");
         Int_t nJet = data.GetInt("nJet");
-        h_nrecojet->Fill(nJet);	  
+        FillStatus(h_MCSelectionStat,-1);
+        const vector<int> phomcid = GenPhoIdxs(&data);
+        if ( phomcid.size() > 0 )
+            FillStatus(h_MCSelectionStat,0);
+
         if(nJet <1 ) continue;
 
         if(!data.HasMC())
         {
             Int_t hasGoodVtx = data.GetInt("nGoodVtx");
-            if(hasGoodVtx) h_hasGoodVtx->Fill(1.1);
-            else h_hasGoodVtx->Fill(0.1);
             if(!hasGoodVtx) continue;
             int metFilters_ = data.GetInt("metFilters");
             if(metFilters_ != 0 ) continue;
         }
+        FillStatus(h_MCSelectionStat,1);
+        if ( phomcid.size() > 0 )
+            FillStatus(h_MCSelectionStat,2);
 
 
 
@@ -762,9 +484,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         puwei_ = 1;
         // gen histos {{{
         if( data.HasMC()) { 
+
             pthat     = data.GetFloat("pthat");
-            hpthat->Fill(pthat,xsweight);
-            hpthat_wide->Fill(pthat,xsweight);
 
             nMC       = data.GetInt("nMC");
             mcPID     = data.GetPtrInt("mcPID");
@@ -800,9 +521,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             mcCalIsoDR04 = data.GetPtrFloat("mcCalIsoDR04");
             mcTrkIsoDR04 = data.GetPtrFloat("mcTrkIsoDR04");
             puwei_ = puCalc.GetWeight(run_, puTrue[1]); // in-time PU
-            //if ( puwei_ > 5. ) { std::cout << Form("at entry %llu. Here finds weird puwei = %f\n", ev, puwei_); throw; }
-            // not exit the code
-            if ( puwei_ > 5. ) { std::cout << Form("at entry %llu. Here finds weird puwei = %f\n", ev, puwei_); }
+            if ( puwei_ > 5. ) { std::cout << Form("at entry %llu. Here finds weird puwei = %f\n", ev, puwei_); throw; }
 
             genWeight = data.GetFloat("genWeight");      
             if(genWeight>0.) xsweight=XS;
@@ -815,14 +534,12 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 if(jetGenJetPt[j] > 40 && TMath::Abs(jetGenJetEta[j])<2.4)
                     ngenjet++;
             }
-            h_ngenjet->Fill(ngenjet);      
 
 
             int ngenpho=0;
             //Get gjet gen photon denominator
             for (Int_t k=0; k<nMC; ++k) {
                 if (mcPID[k] == 22 &&  mcPt[k]>15. && TMath::Abs(mcMomPID[k]) <= 22) {
-                    if(mcPt[k]>150.) hmcGenIso->Fill(mcCalIsoDR04[k]);
 
 
                     float GENISO=0.;
@@ -832,44 +549,22 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                         float dr = usefulFuncs::deltaR(mcEta[k], mcPhi[k], mcEta[nn], mcPhi[nn]);
                         if( dr < 0.4) GENISO += mcPt[nn];
                     }
-                    if(mcPt[k]>150.) hmcpartonIso->Fill(GENISO);
 
                     if(mcCalIsoDR04[k]<5.0 ){ //for gammajet photon 	    
                         ngenpho++;
-                        hgenpho_eta_phi->Fill(mcEta[k], mcPhi[k]);
-                        hgenpho_eta_pt->Fill(mcEta[k], mcPt[k]);
-                        if(TMath::Abs(mcEta[k])<1.4442) {
-                            hgenphoEB_pt->Fill(mcPt[k],xsweight*puwei_);
-                            //hgenphoEB_pt_vbin->Fill(mcPt[k]);
-                            hgenphoEB_pt_vbin->Fill(mcPt[k],xsweight*puwei_); //madgraph
-                            hgenphoEB_eta->Fill(mcEta[k]);
-                        }else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.5) {
-                            hgenphoEE_pt->Fill(mcPt[k],xsweight*puwei_);
-                            //hgenphoEE_pt_vbin->Fill(mcPt[k]);
-                            hgenphoEE_pt_vbin->Fill(mcPt[k],xsweight*puwei_); //madgraph
-                            hgenphoEE_eta->Fill(mcEta[k]);
-                        }
-
-                        if(TMath::Abs(mcEta[k])<0.8) hgenphoEBEE0_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-                        else if(TMath::Abs(mcEta[k])<1.4442) hgenphoEBEE1_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.1) hgenphoEBEE2_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.5) hgenphoEBEE3_pt_vbin->Fill(mcPt[k],xsweight*puwei_);
-
-                        if(TMath::Abs(mcEta[k])<0.8) hgenphoEBEE0_pt_vbin->Fill(mcPt[k]);
-                        else if(TMath::Abs(mcEta[k])<1.4442) hgenphoEBEE1_pt_vbin->Fill(mcPt[k]);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.1) hgenphoEBEE2_pt_vbin->Fill(mcPt[k]);
-                        else if(TMath::Abs(mcEta[k])>1.566 && TMath::Abs(mcEta[k])<2.5) hgenphoEBEE3_pt_vbin->Fill(mcPt[k]);
 
                         break;
                     }
                 }
             }
-            h_ngenpho->Fill(ngenpho);
         } // is MC end
         // gen histos  end }}}
 
 
         if(nPho==0) continue; //skip entry if no recoPhoton
+        FillStatus(h_MCSelectionStat,3);
+        if ( phomcid.size() > 0 )
+            FillStatus(h_MCSelectionStat,4);
         Float_t *jetSubVtxPt = nullptr;
         Float_t *jetSubVtxMass = nullptr;
         Float_t *jetSubVtx3DVal = nullptr;
@@ -1029,7 +724,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         if( data.HasMC()) { 
             /* find target gen particles */
-            vector<int> phomcid = GenPhoIdxs(&data);
             vector<int> muonmcid = GenMuonIdxs(&data);
             vector<int> elemcid = GenEleIdxs(&data);
 
@@ -1054,43 +748,30 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
  
                 if(verbose)
                 { LOG_DEBUG("pho Et %.2f, eta %.2f, phi %.2f ,CSEV %d \n", phoEt[recoPhoIdx], phoEta[recoPhoIdx], phoPhi[recoPhoIdx], phoEleVeto[recoPhoIdx]); }
-                int mcIdx = TruthMatch_GenPhoton(&data, recoPhoIdx, phomcid);
-                if ( mcIdx != -1 )
-                {
-                    tmp_isMatched = 1;
-                    tmp_mcPt_  = mcPt[mcIdx];
-                    tmp_mcEta_ = mcEta[mcIdx];
-                    tmp_mcPhi_ = mcPhi[mcIdx];
-                    tmp_mcCalIso04_ = mcCalIsoDR04[mcIdx];
-                    tmp_mcTrkIso04_ = mcTrkIsoDR04[mcIdx];
-                    tmp_momid = mcMomPID[mcIdx];
-                }
-                else
-                {
-                    mcIdx = TruthMatch_GenConvertedPho(&data, recoPhoIdx, elemcid);
-                    if ( mcIdx != -1 )
-                    {
-                        tmp_isMatchedEle = 1;
-                        tmp_isConverted = 1;
-                        tmp_mcPt_  = mcMomPt[mcIdx];
-                        tmp_mcEta_ = mcMomEta[mcIdx];
-                        tmp_mcPhi_ = mcMomPhi[mcIdx];	      
-                        tmp_mcCalIso04_ = mcCalIsoDR04[mcIdx];
-                        tmp_mcTrkIso04_ = mcTrkIsoDR04[mcIdx];
-                        tmp_momid = mcGMomPID[mcIdx];
-                    }
-                }
+                int mcIdxGenPho = TruthMatch_GenPhoton(&data, recoPhoIdx, phomcid);
+                int mcIdxConvPho = TruthMatch_GenConvertedPho(&data, recoPhoIdx, elemcid);
+
+                int mcIdx = -1;
+                if      ( mcIdxGenPho  != -1 ) mcIdx = mcIdxGenPho;
+                else if ( mcIdxConvPho != -1 ) mcIdx = mcIdxConvPho;
+
+                if ( mcIdx == -1 ) continue;
+
+                tmp_isMatched = 1;
+                tmp_isMatchedEle = mcIdxConvPho != -1 ? 1 : 0;
+                tmp_isConverted = mcIdxConvPho != -1 ? 1 : 0;
+                tmp_mcPt_  = mcPt[mcIdx];
+                tmp_mcEta_ = mcEta[mcIdx];
+                tmp_mcPhi_ = mcPhi[mcIdx];
+                tmp_mcCalIso04_ = mcCalIsoDR04[mcIdx];
+                tmp_mcTrkIso04_ = mcTrkIsoDR04[mcIdx];
+                tmp_momid = mcMomPID[mcIdx];
                 
                 if(tmp_isMatched==1) {
                     nmatch++;
                     if(TMath::Abs(phoSCEta[recoPhoIdx])<=1.4442) nmatch_EB++;
                     if(TMath::Abs(phoSCEta[recoPhoIdx])>=1.566 && TMath::Abs(phoSCEta[recoPhoIdx])<2.5) nmatch_EE++;
-                }else{
-                    if(tmp_isConverted==1){
-                        nconv++;
-                        //LOG_DEBUG(" event %d, photon Et %.2f,  tmp_isConverted \n", event, phoEt[recoPhoIdx]);
-                    }
-                }
+                }else if(tmp_isConverted==1){ nconv++; }
 
 
                 mcpt[recoPhoIdx]=tmp_mcPt_;
@@ -1104,21 +785,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 mcmompid[recoPhoIdx]=tmp_momid;
             }
 
-            //if(gjet15to6000 == 0) {
-            //    h_truepho->Fill(nmatch+0.001);
-            //    h_convpho->Fill(nconv+0.001);
-            //}
         }
 
 
         //int npj=0;
         //int npp=0;
-        tp_rho->Fill(nVtx_, rho_, xsweight);
-        h2_nVtx_rho->Fill(nVtx_,rho_,xsweight);
-        if( data.HasMC()) { 
-            if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx_, rho_, xsweight);
-            if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx_, rho_, xsweight);
-        }
         int nphofiredtrgs=0;
         //look for 2nd photon back of HLT matched photon
 
@@ -1127,7 +798,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         float* elePhi = data.GetPtrFloat("elePhi");    
 
 
-        h_MET->Fill(pfMET);
 
 
         vector <int> photon_list;
@@ -1159,8 +829,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     jphoP4.SetPtEtaPhiM(phoEt[j], phoEta[j], phoPhi[j], 0.);
                     TLorentzVector ppP4;
                     ppP4 = iphoP4;	  ppP4 += jphoP4;
-                    h_ppmass->Fill(ppP4.M());
-                    h_ppmass_zoom->Fill(ppP4.M());
                 }
             }
         }
@@ -1187,35 +855,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             phoP4.SetPtEtaPhiM(phoEt[i], phoEta[i], phoPhi[i], 0.);
             //int pho_presel = 1;
             int pho_presel = PhotonPreselection(data, i, kFALSE);
-            // Histogram filling section for checking  CSEV eff vs pt {{{
-            if( data.HasMC()) { 
-                if(i==0 && match[i]==1){
-
-                    if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_den->Fill(phoEt[i]);
-                    else hphoEE_pt_presel_den->Fill(phoEt[i]);	
-                    if(pho_presel == 1){
-                        if(TMath::Abs(phoSCEta[i])<1.5) {
-                            if(phoPFChIso[i]<2.) hphoEB_pt_presel_num->Fill(phoEt[i]);
-                        }else {
-                            if(phoPFChIso[i]<1.5) hphoEE_pt_presel_num->Fill(phoEt[i]);
-                        }
-                    }
-
-                    if( pho_presel == 1 ){
-                        if(TMath::Abs(phoSCEta[i])<1.5) hphoEB_pt_presel_nocsev->Fill(phoEt[i]);
-                        else hphoEE_pt_presel_nocsev->Fill(phoEt[i]);
-
-                        if(pho_presel == 1){
-                            if(TMath::Abs(phoSCEta[i])<1.5) {
-                                hphoEB_pt_presel_csev->Fill(phoEt[i]);
-                            }else {
-                                hphoEE_pt_presel_csev->Fill(phoEt[i]);
-                            }
-                        }
-                    }
-                }
-            }
-            // only for check CSEV eff vs pt end }}}
 
 
 
@@ -1234,12 +873,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
             vector<int> eleID;
             ElectronIDCutBased2015(data, 3, eleID); //0 veto, 1 loose, 2 medium, 3 tight  //asdf
-            h_nele->Fill(eleID.size());
             for(unsigned int j=0; j<eleID.size(); j++){
                 if(elePt[eleID[j]]<100) continue;
                 TLorentzVector tmp_eP4;
                 tmp_eP4.SetPtEtaPhiM(elePt[eleID[j]], eleEta[eleID[j]], elePhi[eleID[j]],  0.511*0.001);
-                h_dR_phoele->Fill(leadingPhoP4.DeltaR(tmp_eP4));
                 if(leadingPhoP4.DeltaR(tmp_eP4) < 0.3) {
                     photon_list.clear(); 
                 }
@@ -1251,7 +888,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             if (photon_list.size() == 0 ) break;
             float jetjecunc = 1.;
             if(TMath::Abs(jetEta[j])<2.4 && jetPt[j]*jetjecunc>30.) {
-                if( jetId[j] ) h_jetIDv->Fill(1.);	else h_jetIDv->Fill(0.);       
                 jetP4.SetPtEtaPhiE(jetPt[j]*jetjecunc, jetEta[j], jetPhi[j], jetEn[j]);
 
 
@@ -1277,7 +913,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             // Check Single photon HLT passing status
             int recoidx = photon_list.size()>0 ? photon_list[0] : 0;
 
-            vector<int> phomcid = GenPhoIdxs(&data);
             for ( unsigned int midx = 0; midx < phomcid.size(); ++midx )
             {
                 int mcIdx = phomcid[midx];
@@ -1307,6 +942,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         }
         if(photon_list.size() < 1)
             continue;
+        FillStatus(h_MCSelectionStat,5);
+        if ( phomcid.size() > 0 )
+            FillStatus(h_MCSelectionStat,6);
 
 
 
@@ -1475,7 +1113,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     jetGenPartonMomID_ = jetGenPartonMomID[jet_index];
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
-                    h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
                 }
                 LOG_DEBUG("Starting sec vtx info");
 
@@ -1485,11 +1122,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     jetSubVtx3DVal_ = jetSubVtx3DVal[jet_index];
                     jetSubVtx3DErr_ = jetSubVtx3DErr[jet_index];
                     jetSubVtxNtrks_ = jetSubVtxNtrks[jet_index];
-                    h_subVtxPt   ->Fill(jetSubVtxPt_   );
-                    h_subVtxMass ->Fill(jetSubVtxMass_ );
-                    h_subVtx3DVal->Fill(jetSubVtx3DVal_);
-                    h_subVtx3DErr->Fill(jetSubVtx3DErr_);
-                    h_subVtxNtrks->Fill(jetSubVtxNtrks_);
                 }
                 LOG_DEBUG("End of sec vtx info");
 
@@ -1549,7 +1181,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     genHT_pthatDef = LHEPtSUM / nLHE;
                 }
 
-                h2_mcPID_mcPt->Fill( mcPt_, 22.01, xsweight);
             }
             LOG_DEBUG("start to find seed time");
             if (!data.HasMC() ) {
@@ -1626,13 +1257,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             
             photonIDmva = phoIDMVA[ipho];
 
-            h2_mcPID_mcPt->Fill( jetPt_, 9.01, xsweight);
-            h2_mcPID_mcPt->Fill( phoEt[ipho], 10.09, xsweight);
 
-            if(isMatched==1){
-                if(TMath::Abs(phoEta[ipho])<1.5) h_EB_bdt->Fill(mva);
-                else h_EE_bdt->Fill(mva);
-            }
 
 
 
@@ -1644,12 +1269,20 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             }
         } // fill tree end
 
-        h_nphoFiredTrgs->Fill(nphofiredtrgs);
 
     } // event loop end
 
     fout_->cd();
     outtree_->Write();
+    hdpt ->Write();
+    hdR ->Write();
+    hdpt_ele->Write();
+    hdR_ele ->Write();
+    h_npho ->Write();
+    h_truepho ->Write();
+    h_convpho ->Write();
+    h_dR_phojet ->Write();
+    h_MCSelectionStat->Write();
 
     if ( data.HasMC() )
     {
@@ -1658,123 +1291,6 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     	nt_sumupgenweight->Write();
     }
 
-    h_subVtxPt   ->Write();
-    h_subVtxMass ->Write();
-    h_subVtx3DVal->Write();
-    h_subVtx3DErr->Write();
-    h_subVtxNtrks->Write();
-
-    h_hasGoodVtx->Write();
-    hpthat->Write();
-    hpthat_wide->Write();
-
-    hdR->Write();
-    hdpt->Write();
-    hdpt_signed->Write();
-    hdR_ele->Write();
-    hdpt_ele->Write();
-    hdpt_ele_signed->Write();
-    hdR_genjet->Write();
-    hmcTrkIso->Write();
-    hmcTrkIsoMini->Write();
-    hmcTrkIsoMicro->Write();
-    hmcCalIso->Write();
-    hmcCalIsoMini->Write();
-    hmcCalIsoMicro->Write();
-    hmcGenIso->Write();
-    hmcpartonIso->Write();
-    h_truepho->Write();
-    h_convpho->Write();
-    h_ngenpho->Write();
-    h_npho->Write();
-    h_nele->Write();
-    h_nphoFiredTrgs->Write();
-
-    hgenphoEB_pt->Write();
-    hgenphoEB_pt_vbin->Write();
-    hgenphoEB_eta->Write();
-    hgenphoEE_pt->Write();
-    hgenphoEE_pt_vbin->Write();
-    hgenphoEE_eta->Write();
-    hgenpho_eta_phi->Write();
-    hgenpho_eta_pt->Write();
-
-    hgenphoEBEE0_pt_vbin->Write();
-    hgenphoEBEE1_pt_vbin->Write();
-    hgenphoEBEE2_pt_vbin->Write();
-    hgenphoEBEE3_pt_vbin->Write();
-
-    h_EB_bdt->Write();
-    h_EE_bdt->Write();
-
-    h_phoEt->Write();
-    //h_npj->Write();
-    h_jetPt->Write();
-    h_pjmass->Write();
-    //h_npp->Write();
-    h_pho2Pt->Write();
-    h_ppmass->Write();
-    h_ppmass_zoom->Write();
-
-    h_njet->Write();
-    h_nrecojet->Write();
-    h_ngenjet->Write();
-    h_detadpt_jet12->Write();
-    h_dR_phojet->Write();
-    h_dR_phoele->Write();
-    h_dpt_phojet->Write();
-
-    h_dphi_recoil->Write();
-    h_dpt_recoil->Write();
-
-    tp_rho->Write();
-    tp_rho_EB->Write();
-    tp_rho_EE->Write();
-    h2_nVtx_rho->Write();
-    h2_nVtx_iso->Write();
-    for(int ii=0; ii<7; ii++){
-        tp_chIso[ii]->Write();
-        tp_phIso[ii]->Write();
-        tp_nhIso[ii]->Write();
-
-        tp_chIso_rho[ii]->Write();
-        tp_phIso_rho[ii]->Write();
-        tp_nhIso_rho[ii]->Write();
-    }
-
-    h_Zee_mass->Write();
-    h_Zee_mass_csev->Write();
-    h_phoPt_eta_Z_all->Write();
-    h_phoPt_eta_Z_csev->Write();
-
-    h_Zmm_mass->Write();
-    h_MET->Write();
-    h_Wen_mt->Write();
-    h_Wmn_mt->Write();
-
-    hist_measured->Write();
-    hist_reco->Write();  
-
-    h_jetID->Write();
-    h_jetIDv->Write();
-    hdR_pho_lep->Write();
-    hdR_fake_lep->Write();
-
-    hphoEB_pt_presel_nocsev->Write();
-    hphoEB_pt_presel_csev->Write();
-    hphoEE_pt_presel_nocsev->Write();
-    hphoEE_pt_presel_csev->Write();
-
-    hphoEB_pt_presel_den->Write();
-    hphoEB_pt_presel_num->Write();
-    hphoEE_pt_presel_den->Write();
-    hphoEE_pt_presel_num->Write();
-    h_EBSeedTime->Write();
-    h_EESeedTime->Write();
-    h_EBSeedTimeW->Write();
-    h_EESeedTimeW->Write();
-
-    h2_mcPID_mcPt->Write();
 
     std::map<std::string, TH1F*>::const_iterator citer = histMap.cbegin();
     std::map<std::string, TH1F*>::const_iterator ciend = histMap.cend  ();
@@ -1787,11 +1303,11 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
 }
 
-void xPhotonHFJet(vector<string> pathes, Char_t oname[200] )
-{ xPhotonHFJet(pathes, oname, "2016ReReco"); }
+void xPhotonHFJet_MCFirst(vector<string> pathes, Char_t oname[200] )
+{ xPhotonHFJet_MCFirst(pathes, oname, "2016ReReco"); }
 
 
-void xPhotonHFJet(Int_t dataset) {
+void xPhotonHFJet_MCFirst(Int_t dataset) {
   Char_t fname[200];
   XS=1.;
   vector <string> pathes;
@@ -1808,22 +1324,22 @@ void xPhotonHFJet(Int_t dataset) {
   Char_t oname[200];
   sprintf(oname, "output_job_PhotonHFJet_%d.root", dataset);
 
-  xPhotonHFJet(pathes, oname);
+  xPhotonHFJet_MCFirst(pathes, oname);
   
 }
 
-void xPhotonHFJet(Char_t fname[200], Char_t oname[200], Double_t crosssection, int dowmnoption){
+void xPhotonHFJet_MCFirst(Char_t fname[200], Char_t oname[200], Double_t crosssection, int dowmnoption){
   //doWmn = dowmnoption;
   //isMC=1;
   vector <string> pathes;
   pathes.push_back(fname);
   XS = crosssection;
-  xPhotonHFJet(pathes, oname);
+  xPhotonHFJet_MCFirst(pathes, oname);
   
 }
 
-//void xPhotonHFJet(std::string ipath, int outID)
-void xPhotonHFJet(std::vector<std::string> ipath, int outID, const std::string dataEra)
+//void xPhotonHFJet_MCFirst(std::string ipath, int outID)
+void xPhotonHFJet_MCFirst(std::vector<std::string> ipath, int outID, const std::string dataEra)
 {
    //Char_t fname[200];
    XS=1.;
@@ -1838,11 +1354,13 @@ void xPhotonHFJet(std::vector<std::string> ipath, int outID, const std::string d
    Char_t oname[200];
    sprintf(oname, "output_job_PhotonHFJet_%d.root", outID);
 
-   xPhotonHFJet(ipath, oname, dataEra);
+   xPhotonHFJet_MCFirst(ipath, oname, dataEra);
 
 }
-std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )
+std::vector<int> _xphoton_MCFirstFunc_::GenPhoIdxs( TreeReader* event )
 {
+    if (!event->HasMC() ) return std::vector<int>();
+
     Int_t* mcPID = event->GetPtrInt("mcPID");
     Float_t* mcPt = event->GetPtrFloat("mcPt");
     Int_t* mcMomPID = event->GetPtrInt("mcMomPID");
@@ -1850,6 +1368,7 @@ std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )
     Float_t* mcEta  = event->GetPtrFloat("mcEta");
     Float_t* mcPhi  = event->GetPtrFloat("mcPhi");
     mcEta = mcEta; mcPhi = mcPhi; // prevent warning
+
     std::vector<int> phomcid;
     for (Int_t k=0; k<nMC; ++k) {
         if (mcPID[k] == 22 &&  mcPt[k]>15. && (mcMomPID[k] <= 22 || mcMomPID[k] == 5100039)) {
@@ -1859,7 +1378,7 @@ std::vector<int> _xphotonFunc_::GenPhoIdxs( TreeReader* event )
     }
    return phomcid; 
 }
-std::vector<int> _xphotonFunc_::GenMuonIdxs( TreeReader* event )
+std::vector<int> _xphoton_MCFirstFunc_::GenMuonIdxs( TreeReader* event )
 {
     Int_t* mcPID = event->GetPtrInt("mcPID");
     Float_t* mcPt = event->GetPtrFloat("mcPt");
@@ -1873,7 +1392,7 @@ std::vector<int> _xphotonFunc_::GenMuonIdxs( TreeReader* event )
     }
     return muonmcid;
 }
-std::vector<int> _xphotonFunc_::GenEleIdxs( TreeReader* event )
+std::vector<int> _xphoton_MCFirstFunc_::GenEleIdxs( TreeReader* event )
 {
     Int_t* mcPID = event->GetPtrInt("mcPID");
     //Float_t* mcPt = event->GetPtrFloat("mcPt");
@@ -1888,7 +1407,7 @@ std::vector<int> _xphotonFunc_::GenEleIdxs( TreeReader* event )
     return elemcid;
 }
 
-int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> phomcid )
+int _xphoton_MCFirstFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, const std::vector<int>& phomcid )
 {
     Float_t* phoEt  = event->GetPtrFloat("phoEt");
     Float_t* phoEta = event->GetPtrFloat("phoEta");
@@ -1908,12 +1427,6 @@ int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std:
         float dpt = (phoEt[recoPhoIdx] - mcPt[mcIdx])/mcPt[mcIdx];
         if(dpt<CUT_DELTAPT)hdR->Fill(dr);
         if(dr<CUT_DELTAR)hdpt->Fill( fabs(dpt) );
-        hmcCalIso->Fill(mcCalIsoDR04[mcIdx]); 
-        hmcCalIsoMini->Fill(mcCalIsoDR04[mcIdx]); 
-        hmcCalIsoMicro->Fill(mcCalIsoDR04[mcIdx]); 
-        hmcTrkIso->Fill(mcTrkIsoDR04[mcIdx]); 
-        hmcTrkIsoMini->Fill(mcTrkIsoDR04[mcIdx]); 
-        hmcTrkIsoMicro->Fill(mcTrkIsoDR04[mcIdx]); 
 
         if(verbose) { LOG_DEBUG("  MCparticle %d, dr %.2f, dpt %.2f \n", mcIdx, dr, dpt); }
         if(verbose) { LOG_DEBUG("     status %d, caliso %.2f, trkiso %.2f \n", mcStatusFlag[mcIdx], mcCalIsoDR04[mcIdx], mcTrkIsoDR04[mcIdx]); }
@@ -1926,7 +1439,7 @@ int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std:
     }
     return -1;
 }
-int _xphotonFunc_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid )
+int _xphoton_MCFirstFunc_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, const std::vector<int>& elemcid )
 {
     Float_t* phoEt  = event->GetPtrFloat("phoEt");
     Float_t* phoEta = event->GetPtrFloat("phoEta");
@@ -1953,15 +1466,4 @@ int _xphotonFunc_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx
         }
     }
     return -1;
-}
-void ShowInfo()
-{
-    printf("==================== Information for this run :       ==================\n");
-    printf("== Only keep leading photon : %s                      ==================\n", ONLY_LEADINGPHOTON ? "Yes": "No ");
-    printf("== Keep information to secondary vertex ? %3s         ==================\n", hasSubVtxInfo ? "Yes": "NO");
-    printf("== Additional jet scale factor information ? %3s      ==================\n", testJetSF ? "Yes": "NO");
-    printf("== Use select a specific Single photon HLT ? %3s      ==================\n", USEHLT ? "Yes": "NO");
-    printf("== Veto electron in photon collection ? %3s           ==================\n", ELECTRONVETO ? "Yes": "NO" );
-    printf("== I have told this run use Jet primary dataset ? %3s  =================\n", JETPD_PHOTONHLT? "Yes":"NO");
-    printf("========================================================================\n");
 }

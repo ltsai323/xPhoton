@@ -115,7 +115,7 @@ struct xQCDTreeContent
         t->Branch("MET",              &MET,               "MET/F");
         t->Branch("pthat_PU" ,&pthat_PU);
 
-        t->Branch("genweight", &genweight, "genweight/F");
+        t->Branch("genWeight", &genweight, "genWeight/F");
     }
 
     Int_t lheNum;

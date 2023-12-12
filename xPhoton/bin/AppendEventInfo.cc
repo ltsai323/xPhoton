@@ -27,6 +27,7 @@ void PrintHelp()
     printf("------ 5. output root file                --------\n");
     printf("------ 6. isQCD                           --------\n");
     printf("------ 7. input root file with genweight  --------\n");
+    printf("------ Note all unit is fb or fb inv.     --------\n");
     printf("--------------------------------------------------\n");
     printf("------ Feature : 1. Add Xsec info         --------\n");
     printf("------           2. xsweight = xs         --------\n");
@@ -146,11 +147,13 @@ int main(int argc, const char* argv[])
     Int_t isQCD;
     Int_t passMaxPUcut;
     Float_t weight_passMaxPUcut;
+    Float_t effLumi10M;
     oT->Branch("xsweight", &xsweight, "xsweight/F"); // xsweight is the variable serve for original RS code.
     oT->Branch("crossSection", &xs, "crossSection/F");
     oT->Branch("integratedLuminosity", &lumi, "integratedLuminosity/F");
     oT->Branch("integratedGenWeight", &sumGenWeight, "integratedGenWeight/F");
     oT->Branch("mcweight", &mcweight, "mcweight/F");
+    oT->Branch("effectiveLuminosityPer10Mevt", &effLumi10M, "effectiveLuminosityPer10Mevt/F");
 
     oT->Branch("isQCD", &isQCD, "isQCD/I");
 
@@ -159,12 +162,12 @@ int main(int argc, const char* argv[])
     BUG("06");
 
 
-    Float_t genweight;
-    Float_t jetPt;
-    Float_t genHT;
-    Int_t   nLHE;
+    Float_t genweight = 1;
+    Float_t jetPt = 0;
+    Float_t genHT = 0;
+    Int_t   nLHE = 0;
     //std::vector<Float_t>* pthat_PU = nullptr;
-    Float_t leadingPUPtHat;
+    Float_t leadingPUPtHat = 0;
 
     INFO("Using xPhoton variables");
     // for xPhoton
@@ -203,6 +206,8 @@ int main(int argc, const char* argv[])
 
         xsweight = genweight > 0 ? new_xs : -1.*new_xs;
         mcweight = new_xs * lumi * genweight / integratedGenWeight;
+        effLumi10M = 1e7 / new_xs;
+        
 
     BUG("09.2");
         if ( isQCDsample && hasGenHT )

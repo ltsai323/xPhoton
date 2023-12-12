@@ -4,6 +4,7 @@ ARG_tmpdir='step1.xsinfoAppended'
 ARG_outdir='step2.mergePDversion'
 ARG_datalumi={ 2016: 35.9, 2017:41.54, 2018:59.96, 'UL2016PreVFP':19.52, 'UL2016PostVFP':16.81 }
 TESTmode=False
+#TESTmode=True
 testDict={
   "QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v15-v1":
@@ -69,6 +70,10 @@ def executeCommand( xsweight_,
         isQCD_,
         inputfile_,
         ):
+    if not dataera_ in ARG_datalumi:
+        raise KeyError('input key "%d" not foun. Available options are [%s]' %
+                ( dataera_, ', '.join(['%d'%_s for _s in ARG_datalumi.keys()]) )
+                )
 
     xs = xsweight_
     genW = integratedGenWeight_ # integrated gen weight
@@ -81,10 +86,6 @@ def executeCommand( xsweight_,
     bashCommand = f'exec_AppendEventInfo_noGenHTcut {xs:.8e} {genW} {lumi:.8e} {iFile} {oFile}'
     print(bashCommand)
 
-    if not dataera_ in ARG_datalumi:
-        raise KeyError('input key "%d" not foun. Available options are [%s]' %
-                ( dataera_, ', '.join(['%d'%_s for _s in ARG_datalumi.keys()]) )
-                )
 
     if TESTmode:
         mylog.debug(bashCommand)
@@ -109,7 +110,6 @@ def executeCommandToTmp( xsweight_,
     integratedGenWeight=integratedGenWeight_
     integratedLuminosity=ARG_datalumi[dataera_]
     inputfile=inputfile_
-    #outdir = ARG_tmpdir
     outputfile=ARG_tmpdir+'/'+nodir(inputfile_)
     isqcd = 'true' if isQCD_ else 'false'
     weightfile=weightfile_
@@ -118,7 +118,7 @@ def executeCommandToTmp( xsweight_,
         MYLOG(executeCommandToTmp, '--- execute with GenHT cut and reweighted PU weight ---')
         execcommand = f'exec_AppendEventInfo {xs:.2e} {integratedGenWeight:.8e} {integratedLuminosity:.8e} {inputfile:s} {outputfile:s} {isqcd:s} {weightfile:s}'
     else:
-        MYLOG(executeCommandToTmp, '--- NO GenHT related information ---')
+        MYLOG(executeCommandToTmp, '--- NO GenHT related information, update information without GenHT Cut ---')
         execcommand = f'exec_AppendEventInfo_noGenHTcut {xs:.8e} {integratedGenWeight:.8e} {integratedLuminosity:.8e} {inputfile:s} {outputfile:s}'
 
 
@@ -134,10 +134,10 @@ def CheckWorkingDir():
 
 def GetXS(pd_, ver_, summaryfile_):
     xs,xserr,xsunit=FindXSInfo(pd_,ver_,summaryfile_)
-    if   xsunit=='pb': xs *= 1000.
-    elif xsunit=='fb': pass
-    else :             mylog.error( 'recorded Xsection in "%s" unit in file %s. Which is not "pb" or "fb". Need to convert it manually!' % (xsunit, summaryfile_) )
-    return xs
+    # 1 pb = 1000 fb
+    if   xsunit=='pb': return 1000. * xs
+    elif xsunit=='fb': return xs
+    raise IOError( 'recorded Xsection in "%s" unit in file %s. Which is not "pb" or "fb". Need to convert it manually!' % (xsunit, summaryfile_) )
 
 if __name__ == '__main__':
     arg_summaryfile='../data/summaryJson/summary_bkgMC_madgraph.json'

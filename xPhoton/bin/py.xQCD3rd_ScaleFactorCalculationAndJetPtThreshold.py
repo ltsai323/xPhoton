@@ -72,7 +72,7 @@ if __name__ == "__main__":
     #    2000:   "QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8"
     #    }
     theLABEL = 'UL2016'
-    InputConnector.PD_DICT = { # UL2016
+    InputConnector.PD_DICT = { # UL2016 PreVFP
         50:     "QCD_HT50to100_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8",
         100:    "QCD_HT100to200_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8",
         200:    "QCD_HT200to300_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8",

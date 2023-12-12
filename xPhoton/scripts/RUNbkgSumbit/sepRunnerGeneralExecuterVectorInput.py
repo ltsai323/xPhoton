@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 def GetArg_PrintHelp():
     raise IOError('''This code manages assigns the number of thread used.

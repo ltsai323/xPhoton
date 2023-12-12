@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 exeCMD='exec_xPhotonRunnerUL2017'
-nThread=4
+nThread=10
 
 
 def GetArg_PrintHelp():
@@ -14,10 +14,11 @@ def GetArg_TextPath(argv):
 
 if __name__ == '__main__':
     import sys
+    import os
     textpath=GetArg_TextPath(sys.argv)
     f=open(textpath,'r')
     useRemote='True' if 'root://' in f.read() else 'False' # read first line
     f.close()
 
-    #os.system( 'python sepRunnerGeneralExecuter.py %s %s %d &'%(textpath,exeCMD,nThread, useRemote) )
-    print( 'python sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+    print(     'python3 sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
+    os.system( 'python3 sepRunnerGeneralExecuter.py %s %s %d %s&'%(textpath,exeCMD,nThread, useRemote) )
