@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import ROOT
 
 def UpperPad(name='upperpad'):
@@ -37,6 +37,24 @@ def Legend( p0_=(0.5,0.3), p1_=(0.89,0.89), title='', useNDC=True ):
     leg.SetTextFont(62)
     return leg
 
+
+def HistFraming( h, xLABEL='', yLABEL='', minFACTOR = 0.1, maxFACTOR = 1.5 ):
+    h.SetMinimum( h.GetMinimum() * minFACTOR)
+    h.SetMaximum( h.GetMaximum() * maxFACTOR)
+    h.GetXaxis().SetTitle(xLABEL)
+    h.GetXaxis().SetTitleSize(0.05)
+    h.GetXaxis().SetLabelSize(0.03)
+
+    h.GetYaxis().SetTitle(yLABEL)
+    #h.GetYaxis().SetTitleSize(0.11)
+    h.GetYaxis().SetTitleSize(0.04)
+    h.GetYaxis().SetTitleOffset(0.8)
+    h.GetYaxis().SetLabelSize(0.03)
+    h.GetYaxis().SetNdivisions(905)
+    #h.GetYaxis().CenterTitle(True)
+    #h.GetYaxis().SetMaxDigits(3)
+    # h.SetStats(False)
+    ROOT.TGaxis.SetMaxDigits(3)
 
 def HistSetting_GeneralStyling_( hist_, xlabel_='', ylabel_=''):
     hist_.GetYaxis().SetRangeUser( 1e-1, hist_.GetMaximum()*1.5 )

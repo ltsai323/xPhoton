@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "makehistoDeepCSV.C": "cpp",
+        "makeComparisonHistWithoutFit.C": "cpp"
+    }
+}

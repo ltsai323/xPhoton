@@ -2,8 +2,8 @@
 # the whole running progress
 # this running file is not well tested.
 
-outFolder=TMVA_UL2017_EB
-inputJson=../data/TMVATrainingUL2017PythiaEB.json
+outFolder=TMVA_UL2017_EE
+inputJson=../data/TMVATrainingUL2017PythiaEE.json
 
 function EXIT {
 echo -e '\n\n'
@@ -25,8 +25,5 @@ hadd rw_out.root rw_outFrag*.root || EXIT 'hadd failed'
 #../exec.TMVATraining.sh
 exec_TMVATraining ../$inputJson || EXIT 'training failed'
 
-#../exec.TMVAReport.sh
-mkdir -p dataset/plots
-root -l ../TMVAReport.C'("'${outFolder}.root'")'
-
-for a in `ls dataset/plots/*.eps`; do epstopdf --nocompress $a; done
+../TMVAReport.sh hiii.root
+../data/TMVATrainingUL2017PythiaEE.json

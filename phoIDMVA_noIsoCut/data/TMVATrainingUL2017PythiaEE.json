@@ -1,0 +1,8 @@
+{
+    "isEndcap": true,
+    "useIsoVars": false,
+    "useShapeVars": true,
+    "UsedAlgorithm": ["BDT"],
+    "OutputTemplate": "TMVA_UL2017_%s",
+    "InputFile": "rw_out.root"
+}
