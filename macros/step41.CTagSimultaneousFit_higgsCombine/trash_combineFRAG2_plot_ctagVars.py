@@ -22,6 +22,7 @@ def GetHist(
     markerSIZE:int = 0,
     xAXISname:str = '',
     ):
+    LOG(f'GetHist() : Loading {histNAME}')
     h = iFILE.Get(histNAME)
     h.SetLineColor(lineCOLOR)
     h.SetLineWidth(lineWIDTH)
@@ -32,7 +33,10 @@ def GetHist(
     h.SetMarkerStyle(markerSTYLE)
     h.SetMarkerSize(markerSIZE)
 
-    h.GetXaxis().SetTitle(xAXISname)
+    if xAXISname == 'hist.GetTitle()':
+        h.GetXaxis().SetTitle(h.GetTitle())
+    else:
+        h.GetXaxis().SetTitle(xAXISname)
 
     return h
 
@@ -49,8 +53,8 @@ class CommonVars:
 
     def SetDiJetYield(self, bkgYIELD):
         self.fake_yield = bkgYIELD
-    def SetCurrentBin(self, *bins):
-        self.pEtaBin, self.jEtaBin, self.pPtBin = bins
+    def SetBinDesc(self, *bins):
+        self.pEtaDesc, self.jEtaDesc, self.pPtDesc = bins
     def SetCurrentPad(self, padIDX):
         if padIDX >= len(self.allpads): raise OverflowError(
                 f'SetCurrentPad():: input idx {padIDX} is larger than pads length {len(self.allpads)}')
@@ -58,6 +62,8 @@ class CommonVars:
         self.lowerpad = self.allpads[padIDX][1]
     def keep_drawing_obj(self, label, drawABLEs):
         self.drawables[label] = drawABLEs
+    def get_bin_desc(self):
+        return ','.join([self.pEtaDesc,self.jEtaDesc,self.pPtDesc])
 
 class CurrentDrawings:
     outTag = ''
@@ -239,13 +245,71 @@ def drawhist1_bdt_score(folderNAME:str, commonobj:CommonVars):
     output.hdata = hdata
     output.hsign = hsign
     output.hfake = hside
+    output.useLogScale = False
+    return output
+
+def drawhist1_ctag_postfit(folderNAME:str, commonobj:CommonVars):
+    inFILE = commonobj.ifile
+
+    varName = folderNAME
+    xAxisName = 'hist.GetTitle()'
+    hdata = GetHist(inFILE,f'{folderNAME}/data_obs',
+                    markerCOLOR=1, markerSIZE=2, xAXISname=xAxisName)
+    h_fit = GetHist(inFILE,f'{folderNAME}/TotalProcs',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+
+    hsign = GetHist(inFILE,f'{folderNAME}/TotalSig',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hside = GetHist(inFILE,f'{folderNAME}/TotalBkg',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=xAxisName)
+
+    hsignL= GetHist(inFILE,f'{folderNAME}/signal_L',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsignC= GetHist(inFILE,f'{folderNAME}/signal_C',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+    hsignB= GetHist(inFILE,f'{folderNAME}/signal_B',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=xAxisName)
+
+    hdata.SetTitle( 'data in 19.52 fb^{-1}')
+    hsign.SetTitle(f'signal MC fitting {hsign.Integral():.1f}')
+    hside.SetTitle(f'di-jet contribution {hside.Integral():.1f}')
+
+    output = CurrentDrawings()
+    output.outTag = varName
+    output.hdata = hdata
+    output.hsign = hsign
+    output.hfake = hside
+    output.useLogScale = False
+    return output
+
+def drawhist1_bdt_score(folderNAME:str, commonobj:CommonVars):
+    inFILE = commonobj.ifile
+    varName='BDTscore'
+    hdata = GetHist(inFILE,f'{folderNAME}/BDT_data_signalRegion',
+                    markerCOLOR=1, markerSIZE=2, xAXISname=varName)
+    hsign = GetHist(inFILE,f'{folderNAME}/BDT_gjet_signalRegion',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=2 , fillSTYLE=1001, xAXISname=varName)
+    #hfake = GetHist(inFILE,f'{folderNAME}/BDT_QCD_signalRegion',
+    #                lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
+    hside = GetHist(inFILE,f'{folderNAME}/BDT_data_dataSideband',
+                    lineCOLOR=1 , lineWIDTH=2, fillCOLOR=38, fillSTYLE=1001, xAXISname=varName)
+
+    scale_hist_according_to_dijet_fit_yield(hdata,hsign,hside, commonobj.fake_yield)
+
+    hdata.SetTitle( 'data in 19.52 fb^{-1}')
+    hsign.SetTitle(f'gjet MC sample')
+    #hfake.SetTitle(f'QCD MC samele')
+    hside.SetTitle(f'di-jet contribution from data sideband')
+
+    output = CurrentDrawings()
+    output.outTag = varName
+    output.hdata = hdata
+    output.hsign = hsign
+    output.hfake = hside
     output.useLogScale = True
     return output
 
 def DrawHist(folderNAME:str, commonobj:CommonVars, drawVAR:str):
-    pEtaBin, jEtaBin, pPtBin = (commonobj.pEtaBin, commonobj.jEtaBin, commonobj.pPtBin)
-    LOG(f'DrawHist():: Drawing var {drawVAR} in folder {folderNAME} @ bin{pEtaBin}_{jEtaBin}_{pPtBin}')
-
     if drawVAR == 'BDTscore':
         current_drawing = drawhist1_bdt_score(folderNAME, commonobj)
     if drawVAR == 'jettag0'+'orig':
@@ -262,7 +326,9 @@ def DrawHist(folderNAME:str, commonobj:CommonVars, drawVAR:str):
         current_drawing = drawhist1_ctag_var_calb(folderNAME, commonobj,2)
     if drawVAR == 'jettag3':
         current_drawing = drawhist1_subvtxmass(folderNAME, commonobj)
-    current_drawing.legTitle = binning_info(pEtaBin,jEtaBin,pPtBin)
+    if drawVAR == 'postfit':
+        current_drawing = drawhist1_ctag_postfit(folderNAME, commonobj)
+    current_drawing.legTitle = commonobj.get_bin_desc()
 
     drawhist0_stackplot_comparison(current_drawing, commonobj)
 
@@ -282,7 +348,7 @@ def binning_info(pETAbin, jETAbin, pPTbin):
 
     from py_pt_ranges_definition import PhoPtBinning
     pt_ranges = PhoPtBinning('UL2016PreVFP')
-    pPTrange = [ pt_ranges[pPTbin],pt_ranges[pPTbin+1] ]
+    pPTrange = [ pt_ranges[pPTbin],pt_ranges[pPTbin+1] ] if pPTbin+1 < len(pt_ranges) else [pt_ranges[pPTbin], 'inf']
     pPtName = f'p_{{T}}^{{\gamma}} = [{pPTrange[0]},{pPTrange[1]}] GeV'
 
     return ','.join([pEtaName,jEtaName,pPtName])
@@ -320,7 +386,6 @@ def drawhist0_stackplot_comparison(
     legendTITLE = currentDRAWINGs.legTitle
     outLABEL = currentDRAWINGs.outTag
     useLOGscale = currentDRAWINGs.useLogScale
-    useLOGscale = False
 
     canv = commonobj.canv
     upperpad = commonobj.upperpad
@@ -395,15 +460,10 @@ def drawhist0_stackplot_comparison(
     commonobj.keep_drawing_obj(outLABEL, (hdata, stackplot, leg, hratio,refline))
 
 if __name__ == "__main__":
-    from DATReadingTools import ReadEvt_FitResult, ReadEvt_Eff, BinValue
     import sys
-    #inputfile = sys.argv[1]
-    #inputfile = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/DeepCSV_gjetMadgraph_cutIdx0_mergeBin_0/makehisto.root'
+    pETAdesc,jETAdesc,pPTdesc, inputfile = sys.argv[1:]
     #inputfile = 'testregion/postfit.root'
-    inputfile = 'makehisto.root'
     LOG(f'input file {inputfile}\n\n')
-    input_dat_file= 'UL2016PreVFP.data.bkg.dat'
-    fit_bkgs = ReadEvt_FitResult(input_dat_file)
 
 
     import xPhoton.analysis.MyCanvas
@@ -411,24 +471,10 @@ if __name__ == "__main__":
 
     inFile = ROOT.TFile.Open(inputfile)
     numCTag = 3
-    commonobj = CommonVars(inFile, numCTag+1)
+    commonobj = CommonVars(inFile, numCTag)
 
-    for pEtaBin in range(2):
-        for jEtaBin in range(2):
-            for pPtBin in range(19):
-                fit_bkg, fit_err = BinValue(pEtaBin,jEtaBin,pPtBin, fit_bkgs)
-                commonobj.SetDiJetYield(fit_bkg)
-                commonobj.SetCurrentBin(pEtaBin,jEtaBin,pPtBin)
-                commonobj.SetCurrentPad(0)
-
-                DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, 'BDTscore')
-                #DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, 'jettag3')
-                for ctag_var_idx in range(numCTag):
-                    commonobj.SetCurrentPad(ctag_var_idx+1)
-                    DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, f'jettag{ctag_var_idx}'+'orig')
-                commonobj.canv.SaveAs(f"varcheck_allvars_{pEtaBin}_{jEtaBin}_{pPtBin}_orig.pdf")
-                for ctag_var_idx in range(numCTag):
-                    commonobj.SetCurrentPad(ctag_var_idx+1)
-                    DrawHist(f'bin_{pEtaBin}_{jEtaBin}_{pPtBin}',commonobj, f'jettag{ctag_var_idx}'+'calb')
-                commonobj.canv.SaveAs(f"varcheck_allvars_{pEtaBin}_{jEtaBin}_{pPtBin}_calb.pdf")
-                break
+    commonobj.SetBinDesc(pETAdesc,jETAdesc,pPTdesc)
+    for idx in range(numCTag):
+        commonobj.SetCurrentPad(idx)
+        DrawHist(f'cat_{idx}_postfit',commonobj, 'postfit')
+    commonobj.canv.SaveAs(f"varcheck_allvars_ctag_Reweig.pdf")

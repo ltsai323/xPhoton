@@ -227,6 +227,9 @@ void Draw_IsovsBDT(const JsonInfo& args) {
     TFile *fdata = TFile::Open( args.Data()  );
     TFile *fqcd  = TFile::Open( args.BkgMC() );
     TFile *fgjet = TFile::Open( args.SigMC() );
+    printf("[LOG] data input %d %s\n", fdata->IsZombie(), args.Data() );
+    printf("[LOG] sign input %d %s\n", fgjet->IsZombie(), args.SigMC() );
+    printf("[LOG] qcd  input %d %s\n", fqcd ->IsZombie(), args.BkgMC() );
 
     BinInfo arg_data(args), arg_gjet(args), arg_qcd(args);
     arg_data.SetFile(fdata);

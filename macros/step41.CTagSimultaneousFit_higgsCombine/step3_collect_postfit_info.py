@@ -44,7 +44,7 @@ def GetInputFile( pETAbin, jETAbin, pPTbin, inFOLDER ):
     inputfile = f'{inFOLDER}/CTag_SimulFit_{pETAbin}_{jETAbin}_{pPTbin}/postfit.root'
     if os.path.exists(inputfile):
         return inputfile
-    sys.stderr.write(f'bin_{pETAbin}_{jETAbin}_{pPTbin} failed to find "{inputfile}", skip it\n')
+    sys.stderr.write(f'[check.ctaggingVars-ERROR] bin_{pETAbin}_{jETAbin}_{pPTbin} failed to find "{inputfile}", skip it\n')
     return None
 
 def GetInfo(pEtaBin,jEtaBin,pPtBin, inFOLDER, outputLIST):

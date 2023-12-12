@@ -136,14 +136,3 @@ def FindEffLumi(dataERA, ptBIN):
 
     ggbit = hltbin_ptbin_definition(dataERA)[ptBIN]
     return hltbit_definition[ggbit].EffLuminosity
-
-if __name__ == "__main__":
-    # show current pt binning definitions
-    pt_ranges = pt_ranges(currentDataEra)
-    used_hlts = hltbin_ptbin(currentDataEra)
-
-    for idx, hltbit in enumerate(used_hlts):
-        ptL = pt_ranges[idx]
-        ptR = pt_ranges[idx+1] if idx+1 < len(pt_ranges) else 9999.
-
-        print(f'ptbin {idx:3d}: pt=[{ptL:4.0f},{ptR:4.0f}] in hlt bit {hltbit}')

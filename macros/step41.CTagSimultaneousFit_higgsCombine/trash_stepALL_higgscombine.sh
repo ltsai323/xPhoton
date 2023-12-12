@@ -4,7 +4,7 @@ data_era=UL2016PreVFP
 
 if [ "$2" == "" ]; then
     echo "input root file not found! Abort"
-    echo "argument : 1: output label. 2: input makehisto.root file"
+    echo "argument : 1: output label. 2: input root file"
     exit
 fi
 

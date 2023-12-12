@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-outputDir=2016ReReco_orig_binning
+outputDir=NLO_loop_sm_no_b_mass_NNPDF3p1nnlo
 
 touch a.pdf; /bin/rm *.pdf 
 touch $outputDir ; /bin/rm -rf $outputDir

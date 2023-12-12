@@ -5,118 +5,7 @@ from array import array
 
 from py_pt_ranges_definition import PhoPtBinning
 from py_pt_ranges_definition import FindEffLumi
-
-
-class DAT:
-    def __init__(self,evt):
-        self.petabin = evt.EBEE
-        self.jetabin = evt.jetbin
-        self.pptbin = evt.ptbin
-    @property
-    def val(self):
-        if hasattr(self,'value'): return getattr(self,'value')
-        raise ValueError('DAT:: No value set in the record')
-    @property
-    def err(self):
-        if hasattr(self,'error'): return getattr(self,'error')
-        raise ValueError('DAT:: No error set in the record')
-
-    def IsBin(self,pETAbin,jETAbin,pPTbin):
-        if pETAbin != self.petabin: return False
-        if jETAbin != self.jetabin: return False
-        if pPTbin  != self.pptbin : return False
-        return True
-    def record(self, val, err):
-        self.value = val
-        self.error = err
-    def __str__(self,newstr):
-        return 'bins(%d,%d,%d): %s' % (self.petabin,self.jetabin,self.pptbin,newstr)
-
-def ReadEvt(inputfile, DAT_STRUCTURE) -> list:
-    inputtree=ROOT.TTree('dat_read_tree','')
-    inputtree.ReadFile(inputfile)
-
-    output_rec = []
-    for evt in inputtree:
-        output_rec.append(DAT_STRUCTURE(evt))
-    return output_rec
-
-#ptbin/I:EBEE/I:jetbin/I:fitvalue/F:fiterror/F
-class DAT_FitResult(DAT):
-    def __init__(self,evt):
-        super().__init__(evt)
-        self.record(evt.fitvalue, evt.fiterror)
-
-    def __str__(self):
-        return super().__str__( 'fits (%8.4f +- %8.4f)' % (self.val,self.err) )
-def ReadEvt_FitResult(inputfile) -> DAT_FitResult:
-    return ReadEvt(inputfile, DAT_FitResult)
-
-
-#ptbin/I:EBEE/I:jetbin/I:sel_passed/F:sel_overall/F:sel_ratio/F:sig_passed/F:sig_overall/F:sig_ratio/F
-class DAT_Efficiency(DAT):
-    class Eff:
-        def __init__(self, _pass, _all, _eff):
-            self.passed = _pass
-            self.overall = _all
-            self.efficiency = _eff
-        @property
-        def ratio(self):
-            return self.efficiency
-
-    def __init__(self,evt):
-        super().__init__(evt)
-        self.selection = DAT_Efficiency.Eff(evt.sel_passed, evt.sel_overall, evt.sel_ratio)
-        self.sigregion = DAT_Efficiency.Eff(evt.sig_passed, evt.sig_overall, evt.sig_ratio)
-    def __str__(self):
-        return super().__str__( 'selection efficiency = %8.4f and signral region efficiency = %8.4f' % (self.selection.ratio, self.sigregion.ratio) )
-def ReadEvt_Efficiencies(inputfile) -> DAT_Efficiency:
-    return ReadEvt(inputfile, DAT_Efficiency)
-
-#ptbin/I:EBEE/I:jetbin/I:sel_passed/F:sel_overall/F:sel_ratio/F:sig_passed/F:sig_overall/F:sig_ratio/F
-class DAT_SignalRegionEfficiency(DAT):
-    def __init__(self,evt):
-        super().__init__(evt)
-        self.record(evt.sig_ratio,0.)
-    def __str__(self):
-        return super().__str__( 'fiducial photon efficiency (%8.4f +- %8.4f)' % (self.val,self.err) )
-def ReadEvt_SignalRegEff(inputfile) -> DAT_SignalRegionEfficiency:
-    return ReadEvt(inputfile, DAT_SignalRegionEfficiency)
-
-#ptbin/I:EBEE/I:jetbin/I:sel_passed/F:sel_overall/F:sel_ratio/F:sig_passed/F:sig_overall/F:sig_ratio/F
-class DAT_SelectionEfficiency(DAT):
-    def __init__(self,evt):
-        super().__init__(evt)
-        self.record(evt.sel_ratio,0.)
-    def __str__(self):
-        return super().__str__( 'selection (%8.4f +- %8.4f)' % (self.val,self.err) )
-def ReadEvt_SelectionEff(inputfile) -> DAT_SelectionEfficiency:
-    return ReadEvt(inputfile, DAT_SelectionEfficiency)
-#phoeta/I:jeteta/I:phopt/I:efficiency/F
-class DAT_PreselectionEfficiency(DAT):
-    def __init__(self,evt):
-        super().__init__(evt)
-        self.record(evt.efficiency,0.)
-    def __str__(self):
-        return super().__str__( 'preselection (%8.4f +- %8.4f)' % (self.val,self.err) )
-def ReadEvt_PreSelectEff(inputfile) -> DAT_PreselectionEfficiency:
-    return ReadEvt(inputfile, DAT_PreselectionEfficiency)
-#phoeta/I:jeteta/I:phopt/I:efficiency/F:error/F
-class DAT_Eff(DAT):
-    def __init__(self,evt):
-        super().__init__(evt)
-        self.record(evt.efficiency,0.)
-    def __str__(self):
-        return super().__str__( 'preselection (%8.4f +- %8.4f)' % (self.val,self.err) )
-def ReadEvt_Eff(inputfile) -> DAT_Eff:
-    return ReadEvt(inputfile, DAT_Eff)
-
-
-def BinValue(pETAbin:int,jETAbin:int,pPTbin:int, vals:DAT) -> tuple:
-    for val in vals:
-        if val.IsBin(pETAbin,jETAbin,pPTbin):
-            return (val.val,val.err)
-    raise ValueError('BinValue(): bin %d %d %d not found in %s', pETAbin,jETAbin,pPTbin, vals)
+from DATReadingTools import ReadEvt_FitResult, ReadEvt_Eff, BinValue
 
 def NewCanvas(isRatioPlot:bool):
     class MyCanvas:
@@ -215,10 +104,6 @@ def MyLegend_Sep(hists,refhists) -> ROOT.TLegend:
         if '0_1' in name: hist_desc = 'barrel #gamma, endcap jet (x10^{4})'
         if '1_0' in name: hist_desc = 'endcap #gamma, barrel jet (x10^{2})'
         if '1_1' in name: hist_desc = 'endcap #gamma, endcap jet'
-        #if '0_0' in name: hist_desc = '|y^{#gamma}|<1.4442,|y^{jet}|<1.5 (x10^6)'
-        #if '1_0' in name: hist_desc = '1.566<|y^{#gamma}|<2.5,|y^{jet}|<1.5 (x10^4)'
-        #if '0_1' in name: hist_desc = '|y^{#gamma}|<1.4442,1.5<|y^{jet}|<2.4 (x10^2)'
-        #if '1_1' in name: hist_desc = '1.566<|y^{#gamma}|<2.5,1.5<|y^{jet}|<2.4'
         if not hist_desc: hist_desc = name
         leg.AddEntry(hist,hist_desc,'pl')
         leg.AddEntry(refhist,'2015 '+hist_desc,'pl')
@@ -226,6 +111,7 @@ def MyLegend_Sep(hists,refhists) -> ROOT.TLegend:
 
 
 
+# bin_width and eff_lumi re-scale
 def Hist_PhotonCrossSection(pETAbin,jETAbin, ptBINNING, fitVALUES, effSOURCES:dict = {}) -> ROOT.TH1F:
     histname = 'h_photonCrossSection_%d_%d' % (pETAbin,jETAbin)
     hist = ROOT.TH1F( histname, '#gamma+jet cross section', len(ptBINNING)-1, ptBINNING )
@@ -258,6 +144,8 @@ def Hist_PhotonCrossSection(pETAbin,jETAbin, ptBINNING, fitVALUES, effSOURCES:di
     hist.SetLineWidth(2)
     hist.SetMarkerSize(2)
     return hist
+
+# no bin_width and eff_lumi re-scale
 def Hist_ValueAssignment(pETAbin,jETAbin, ptBINNING, fitVALUES, effSOURCES:dict = {}) -> ROOT.TH1F:
     histname = 'h_historicalCrossSection_%d_%d' % (pETAbin,jETAbin)
     hist = ROOT.TH1F( histname, '#gamma+jet cross section', len(ptBINNING)-1, ptBINNING )
@@ -267,6 +155,7 @@ def Hist_ValueAssignment(pETAbin,jETAbin, ptBINNING, fitVALUES, effSOURCES:dict 
     for binIdx in range(1,hist.GetNbinsX()+1):
         pPtBin = binIdx-1
 
+        print(fitVALUES)
         fitvalue, fiterror = BinValue(pETAbin,jETAbin,pPtBin, fitVALUES)
         bin_numerator = fitvalue
 
@@ -278,7 +167,12 @@ def Hist_ValueAssignment(pETAbin,jETAbin, ptBINNING, fitVALUES, effSOURCES:dict 
     hist.SetMarkerSize(2)
     return hist
 if __name__ == '__main__':
-    refXSfile='/wk_cms/ltsai/CMSSW/Run3Winter22/CMSSW_12_2_4/src/xPhoton/macros/step5.CompareYields/data/2015_cross_section_gjet_fromSMP16003.dat'
+    # no ptbin etabin re-weight
+    #refXSfile='/wk_cms/ltsai/CMSSW/Run3Winter22/CMSSW_12_2_4/src/xPhoton/macros/step5.CompareYields/data/2015_cross_section_gjet_fromSMP16003.dat'
+    #refXSfile='/home/ltsai/ReceivedFile/GJet/latestsample/MG5_generateResult/sm_no_b_mass/out_mergeMG5Result.dat'
+    #refXSfile='/home/ltsai/ReceivedFile/out_mergeMG5Result.dat' # LO
+    #refXSfile='/home/ltsai/ReceivedFile/NLO_loop_sm_no_b_mass_CT14nnlo/out_mergeMG5Result.dat'
+    refXSfile='NLO_loop_sm_no_b_mass_NNPDF3p1nnlo/out_mergeMG5Result.dat'
     refvalues = ReadEvt_FitResult(refXSfile)
     #inputfile='16yield_newformat.dat'
     inputfile='/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/deepcsv_CUT_NOCUT/2016ReReco.data.yield.dat'
@@ -293,7 +187,6 @@ if __name__ == '__main__':
     effsource['sigreg'] = ReadEvt_Eff(signalregfile)
     effsource['jetsel'] = ReadEvt_Eff(jetselectfile)
 
-    pho_presel = 'newdat'
 
     dataEra = '2016ReReco'
     pt_binning = array( 'd', PhoPtBinning(dataEra) )
@@ -301,6 +194,7 @@ if __name__ == '__main__':
 
     canv = NewCanvas(False)
 
+    # hist settings
     hists = []
     refhists = []
     markers = [34,33,28,27]

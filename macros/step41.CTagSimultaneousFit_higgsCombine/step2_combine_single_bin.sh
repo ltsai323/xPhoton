@@ -6,7 +6,7 @@ inputdatadetail=`realpath $4`
 outDIR=$5
 
 
-cmd_file=cmd_history_step2_$pEtaBin_${jEtaBin}_${pPtBin}.sh
+cmd_file=cmd_history_step2_${pEtaBin}_${jEtaBin}_${pPtBin}.sh
 cat > $cmd_file
 function cmd_exec() { echo -e "[step2.EXEC] $*"; echo "$*" >> $cmd_file; "$@"; }
 function the_exit() { echo -e "\nvvvvv\n$1\n^^^^^\n\n"; exit; }

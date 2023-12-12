@@ -1,6 +1,0 @@
-{
-    "maxpPtBin": 20,
-    "file_signalRegion": "/home/ltsai/Work/workspaceGammaPlusJet/xPhoton/macros/tmpRes/16.16th/isovsbdt_template.root",
-    "file_selection": "hj.root",
-    "outputTag": "hi"
-}
