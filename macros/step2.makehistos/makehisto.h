@@ -83,10 +83,16 @@ struct EvtSelMgr
     int jetID;
     int jetPUIDbit;
     float jetSubVtxMass;
+    float jetSubVtx3DVal, jetSubVtx3DErr; int jetSubVtxNtrks;
     float CvsL;
     int passMaxPUcut;
-    void SetUsedVar_2( float jetPT, float jetETA, float cSCORE, int jetID_, int jetPUidBIT, float jetSUBvtxMASS, float CvsL_, int passMAXpuCUT )
-    { jetPt = jetPT; jetEta = jetETA; cScore = cSCORE; jetID = jetID_; jetPUIDbit = jetPUidBIT; jetSubVtxMass = jetSUBvtxMASS; CvsL = CvsL_; passMaxPUcut = passMAXpuCUT; }
+    void SetUsedVar_2( float jetPT, float jetETA, float cSCORE, int jetID_, int jetPUidBIT,
+            float jetSUBvtxMASS, float jetSUBvtx3Dval, float jetSUBvtx3Derr, int jetSUBvtxNtrks,
+            float CvsL_, int passMAXpuCUT )
+    {
+        jetPt = jetPT; jetEta = jetETA; cScore = cSCORE; jetID = jetID_; jetPUIDbit = jetPUidBIT;
+        jetSubVtxMass = jetSUBvtxMASS; jetSubVtx3DVal = jetSUBvtx3Dval; jetSubVtx3DErr = jetSUBvtx3Derr; jetSubVtxNtrks = jetSUBvtxNtrks;
+        CvsL = CvsL_; passMaxPUcut = passMAXpuCUT; }
     bool PassJetAdditionalSelection(int cutIndicator) const;
 
     float recoSCEta;
@@ -216,6 +222,24 @@ bool EvtSelMgr::PassJetAdditionalSelection(int cutIndicator) const
     //if ( mcweight>3000. ) return false;
     if ( cutIndicator == 1 && jetSubVtxMass == 0 ) return false;
     if ( cutIndicator == 2 && CvsL < 0.155) return false;
+    if ( cutIndicator == 3 ) // too tight
+    {
+        if ( jetSubVtxMass == 0 ) return false;
+        if ( (jetSubVtx3DVal/jetSubVtx3DErr) < 8.0 ) return false;
+        if ( jetSubVtxNtrks < 3 ) return false;
+    }
+    if ( cutIndicator == 4 )
+    {
+        if ( jetSubVtxMass == 0 ) return false;
+        if ( (jetSubVtx3DVal/jetSubVtx3DErr) < 5.0 ) return false;
+        if ( jetSubVtxNtrks < 3 ) return false;
+    }
+    if ( cutIndicator == 5 ) // good
+    {
+        if ( jetSubVtxMass == 0 ) return false;
+        if ( (jetSubVtx3DVal/jetSubVtx3DErr) < 3.0 ) return false;
+        if ( jetSubVtxNtrks < 3 ) return false;
+    }
     
 
 
@@ -258,8 +282,10 @@ int EventBinning::PtBin(float pt) const
 int EventBinning::JetEtaBin(float pt, float Y) const
 {  
     if(pt< 1e-3) return 2;
-    if(TMath::Abs(Y)<1.5) return 0;
-    return 1;
+    // old
+    // if(TMath::Abs(Y)<1.5) return 0;
+    // return 1;
+    return 0; // merge jet eta bin. Only separate photon eta bin.
 }
 int EventBinning::phosignalregion(float isovar) const
 {
