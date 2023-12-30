@@ -36,4 +36,5 @@ mkdir out_fit_result/logs; mv log_* out_fit_result/logs/
 sh step4_collect_result.sh $outputLabel && mv out_fit_result $outputLabel
 echo [$outputLabel] all job finished
 
-echo tmp_BDTFit_blah is kept. you can simply delete them.
+#echo tmp_BDTFit_blah is kept. you can simply delete them.
+/bin/rm -r tmp_BDTFit_*
