@@ -4,7 +4,7 @@ function exec_in_line()
 {
     outLABEL=$1; 
     inDIR=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/;
-    sh stepALL_higgscombine_.sh $outLABEL $inDIR/$outLABEL | tee logALL_$outLABEL;
+    sh stepALL_higgscombine.sh $outLABEL $inDIR/$outLABEL | tee logALL_$outLABEL;
     mv logALL_$outLABEL $outLABEL/;
 }
 
