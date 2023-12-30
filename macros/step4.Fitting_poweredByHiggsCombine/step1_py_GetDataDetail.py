@@ -39,10 +39,13 @@ def GetDataEntries(ifilename,pETAbin,jETAbin,pPTbin):
     BUG(f'{GetDataEntries.__name__}, data name : ','bin_%s_%s_%s/BDT_data_signalRegion'%(pETAbin,jETAbin,pPTbin))
     BUG(f'{GetDataEntries.__name__}, data name : ','bin_%s_%s_%s/BDT_gjet_signalRegion'%(pETAbin,jETAbin,pPTbin))
 
-    dataEntries = hdata.GetEntries()
-    if dataEntries        < 1: raise ValueError("-- Error -- GetDataDetail.py : At Bin %s_%s_%s: Nothing in data."%(pEtaBin,jEtaBin,pPtBin))
-    if hgjet.GetEntries() < 1: raise ValueError("-- Error -- GetDataDetail.py : At Bin %s_%s_%s: Nothing in signal MC."%(pEtaBin,jEtaBin,pPtBin))
-    return int(dataEntries) + 1
+    try:
+        dataEntries = hdata.GetEntries()
+        if dataEntries        < 1: raise ValueError("-- Error -- GetDataDetail.py : At Bin %s_%s_%s: Nothing in data."%(pEtaBin,jEtaBin,pPtBin))
+        if hgjet.GetEntries() < 1: raise ValueError("-- Error -- GetDataDetail.py : At Bin %s_%s_%s: Nothing in signal MC."%(pEtaBin,jEtaBin,pPtBin))
+        return int(dataEntries) + 1
+    except AttributeError as e:
+        raise AttributeError(f'failed @ bin {pETAbin} {jETAbin} {pPTbin}. Check bin_{pETAbin}_{jETAbin}_{pPTbin}/BDT_data(gjet)_signalRegion')
 
 
 def joIN(*argv):
