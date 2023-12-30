@@ -7,6 +7,7 @@ function exec_in_line()
     sh stepALL_higgscombine.sh $outLABEL $inDIR/$outLABEL | tee logALL_$outLABEL;
     mv logALL_$outLABEL $outLABEL/;
     /bin/rm -r cmd_history_step2_*;
+    /bin/rm -r tmp_CTag_SimulFit*;
 }
 
 
