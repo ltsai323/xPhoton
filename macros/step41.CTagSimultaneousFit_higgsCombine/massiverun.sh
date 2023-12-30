@@ -6,6 +6,7 @@ function exec_in_line()
     inDIR=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/;
     sh stepALL_higgscombine.sh $outLABEL $inDIR/$outLABEL | tee logALL_$outLABEL;
     mv logALL_$outLABEL $outLABEL/;
+    /bin/rm -r cmd_history_step2_*;
 }
 
 
