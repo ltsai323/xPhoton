@@ -72,6 +72,9 @@ EvtSelMgr EvtSelFactory(const MakeHistoQCD& loadvar)
         loadvar.jetID,
         loadvar.jetPUIDbit,
         loadvar.jetSubVtxMass,
+        loadvar.jetSubVtx3DVal,
+        loadvar.jetSubVtx3DErr,
+        loadvar.jetSubVtxNtrks,
         //loadvar.DeepCSV_CvsL,
         loadvar.DeepFlavour_CvsL,
         loadvar.passMaxPUcut);
@@ -444,6 +447,9 @@ EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
         loadvar.jetID,
         loadvar.jetPUIDbit,
         loadvar.jetSubVtxMass,
+        loadvar.jetSubVtx3DVal,
+        loadvar.jetSubVtx3DErr,
+        loadvar.jetSubVtxNtrks,
         loadvar.DeepCSV_CvsL,
         0); // passMaxPUcut
 
@@ -811,6 +817,9 @@ EvtSelMgr EvtSelFactory(const MakeHistoData& loadvar)
         0,
         0,
         loadvar.jetSubVtxMass,
+        loadvar.jetSubVtx3DVal,
+        loadvar.jetSubVtx3DErr,
+        loadvar.jetSubVtxNtrks,
         loadvar.DeepCSV_CvsL,
         0); // passMaxPUcut
 
@@ -954,6 +963,7 @@ void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const char*
         NEVENT = 10;
         extracut = 0;
     }
+    NEVENT = -1;
 
     int processTag = 0;
     if ( dataType == "data" )
