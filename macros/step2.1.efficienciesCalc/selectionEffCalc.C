@@ -1,8 +1,9 @@
 #define MakeHistoData_cxx
 #define MakeHistoSIG_cxx
 #define MakeHistoQCD_cxx
-#include "makehisto.h"
-#include "MakeHistoSIG.h"
+// #include "makehisto.h"
+#include "makehisto.C"
+//#include "MakeHistoSIG.h"
 //#include "HLTTriggerBitSetting.cc"
 #include <TH1.h>
 #include <TH2.h>
@@ -157,72 +158,74 @@ struct BinningCounterGroup
 
 
 // sig section {{{
-EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar);
-void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars);
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars );
-BinningCounterGroup LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt );
-EventBinning BinningFactory(const MakeHistoSIG & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
+//EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar);
+//void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars);
+//void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars );
+BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, const char* inputfilename, int processNEvt = -1 );
+//BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt );
+//EventBinning BinningFactory(const MakeHistoSIG & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
 
-EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
-{
-    bool isMC          = true;
-    bool isQCD         = false;
-    bool HLTOPTION     = false;
-    EvtSelMgr output(isMC,isQCD,HLTOPTION);
+// EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
+// {
+//     bool isMC          = true;
+//     bool isQCD         = false;
+//     bool HLTOPTION     = false;
+//     EvtSelMgr output(isMC,isQCD,HLTOPTION);
+// 
+//     output.SetUsedVar_4(loadvar.jetHadFlvr);
+//     output.SetUsedVar_3(
+//         loadvar.chIsoRaw,
+//         loadvar.recoEta,
+//         loadvar.isMatched);
+// 
+//     output.SetUsedVar_2(
+//         loadvar.jetPt,
+//         loadvar.jetEta,
+//         loadvar.jetDeepCSVTags_c,
+//         loadvar.jetID,
+//         loadvar.jetPUIDbit,
+//         loadvar.jetSubVtxMass,
+//         loadvar.DeepCSV_CvsL,
+//         0); // passMaxPUcut
+// 
+//     output.SetUsedVar_1(
+//         loadvar.recoSCEta,
+//         loadvar.sieieFull5x5,
+//         loadvar.HoverE);
+//     output.SetUsedVar_0(
+//         loadvar.MET,
+//         loadvar.recoPt,
+//         loadvar.eleVeto,
+//         loadvar.phoFillIdx);
+// 
+//     output.SetUsedVar__(loadvar.phoFiredTrgs);
+//     return output;
+// }
+//void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
+//{
+//    Fill_allctagreshaped_general(bin,h,val, evt_weight,
+//            loadvars.DeepCSV_ctagWeight_central,
+//            loadvars.DeepCSV_ctagWeight_PUWeightUp,
+//            loadvars.DeepCSV_ctagWeight_PUWeightDown,
+//            loadvars.DeepCSV_ctagWeight_StatUp,
+//            loadvars.DeepCSV_ctagWeight_StatDown
+//            );
+//}
+//void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars )
+//{
+//    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
+//    n.Add(
+//            loadvars.DeepCSV_ctagWeight_central,
+//            loadvars.DeepCSV_ctagWeight_PUWeightUp,
+//            loadvars.DeepCSV_ctagWeight_PUWeightDown,
+//            loadvars.DeepCSV_ctagWeight_StatUp,
+//            loadvars.DeepCSV_ctagWeight_StatDown
+//            );
+//}
 
-    output.SetUsedVar_4(loadvar.jetHadFlvr);
-    output.SetUsedVar_3(
-        loadvar.chIsoRaw,
-        loadvar.recoEta,
-        loadvar.isMatched);
 
-    output.SetUsedVar_2(
-        loadvar.jetPt,
-        loadvar.jetEta,
-        loadvar.jetDeepCSVTags_c,
-        loadvar.jetID,
-        loadvar.jetPUIDbit,
-        loadvar.jetSubVtxMass,
-        loadvar.DeepCSV_CvsL,
-        0); // passMaxPUcut
-
-    output.SetUsedVar_1(
-        loadvar.recoSCEta,
-        loadvar.sieieFull5x5,
-        loadvar.HoverE);
-    output.SetUsedVar_0(
-        loadvar.MET,
-        loadvar.recoPt,
-        loadvar.eleVeto,
-        loadvar.phoFillIdx);
-
-    output.SetUsedVar__(loadvar.phoFiredTrgs);
-    return output;
-}
-void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
-{
-    Fill_allctagreshaped_general(bin,h,val, evt_weight,
-            loadvars.DeepCSV_ctagWeight_central,
-            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-            loadvars.DeepCSV_ctagWeight_StatUp,
-            loadvars.DeepCSV_ctagWeight_StatDown
-            );
-}
-void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars )
-{
-    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-    n.Add(
-            loadvars.DeepCSV_ctagWeight_central,
-            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-            loadvars.DeepCSV_ctagWeight_StatUp,
-            loadvars.DeepCSV_ctagWeight_StatDown
-            );
-}
-
-
-BinningCounterGroup LoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt )
+BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, const char* inputfilename, int processNEvt = -1 )
+//BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt )
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
     BinningCounterGroup counters(NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT);
@@ -251,7 +254,7 @@ BinningCounterGroup LoopSIG( Int_t extracut, const char* dataERA, const char* da
 
 	
         const EventBinning evtbin = BinningFactory(load_sig);
-        EvtSelMgr sel = EvtSelFactory(load_sig);
+        EvtSelMgr sel = EvtSelFactory(load_sig, tagALGO);
 
         // preselections
         if ( evtbin.pPtBin<0 ) continue;
@@ -283,9 +286,8 @@ BinningCounterGroup LoopSIG( Int_t extracut, const char* dataERA, const char* da
 // sig section end }}}
 
 
-void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const std::vector<const char*>& inputfilenames )
+void selLoop(Int_t extracut, const char* dataERA, const std::vector<const char*>& inputfilenames )
 {
-    const std::string dataType(dataTYPE);
 
     //int NEVENT = 10000; // testing event
     int NEVENT = -1; // all event
@@ -294,7 +296,7 @@ void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const std::
     result_singlefile.reserve(inputfilenames.size());
     for ( auto inputfilename : inputfilenames )
         result_singlefile.push_back(
-            LoopSIG(extracut, dataERA, dataTYPE, inputfilename, NEVENT)
+            selLoopSIG(extracut, dataERA,"DeepCSV", inputfilename, NEVENT)
             );
 
     BinningCounterGroup& outresult = result_singlefile.front();
@@ -308,7 +310,7 @@ void Loop(Int_t extracut, const char* dataERA, const char* dataTYPE, const std::
 
 void selectionEffCalc()
 {
-    Loop(0, "UL2016PreVFP", "gjet", {
+    selLoop(0, "UL2016PreVFP", {
             //"/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step1.appendeventinfo/MCeff/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root",
             //"/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step1.appendeventinfo/MCeff/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8.root",
             //"/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step1.appendeventinfo/MCeff/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root"
@@ -318,5 +320,5 @@ void selectionEffCalc()
             } );
 }
 void selection_eff_calc(Int_t extracut, const std::vector<const char*>& inputfilenames )
-{ Loop( extracut, "", "", inputfilenames ); }
+{ selLoop( extracut, "", inputfilenames ); }
 

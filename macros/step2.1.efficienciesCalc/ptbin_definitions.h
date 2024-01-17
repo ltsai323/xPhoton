@@ -1,1 +1,1 @@
-../ptbin_definitions.h
+/wk_cms3/ltsai/wk_cms/ltsai/CMSSW_11_3_4/src/xPhoton/MyCommonTools/cpp/ptbin_definitions/ptbin_definitions_testmode5.h
