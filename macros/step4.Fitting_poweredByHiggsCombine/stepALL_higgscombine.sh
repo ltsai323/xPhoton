@@ -26,8 +26,8 @@ logfile=log_${pEtaBin}_${jEtaBin}_${pPtBin}
 sh step2_combine_single_bin.sh $pEtaBin $jEtaBin $pPtBin $inputfile getdatadetail.txt > $logfile 2>&1
 sh step3_extractFitValue.sh $logfile $pEtaBin $jEtaBin $pPtBin ${data_era}.data.yield.dat ${data_era}.data.bkg.dat
 done; done& done
-
 wait
+python3 step31_extractFitValue_toCSV.py $data_era
 
 echo [$outputLabel] collecting results
 mv *.dat out_fit_result
