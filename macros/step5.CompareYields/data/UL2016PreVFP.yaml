@@ -1,0 +1,10 @@
+data: '/home/ltsai/ReceivedFile/GJet/latestsample/2016ReReco_ctagReshaped/deepcsv_CUT_NOCUT/2016ReReco.data.yield.dat'
+efficiencies:
+    presel: '/wk_cms/ltsai/github/xPhoton/macros/step2.1.efficienciesCalc/UL2016PreVFP/dat_preselectionEfficiency.dat'
+    jetsel: '/wk_cms/ltsai/github/xPhoton/macros/step2.1.efficienciesCalc/UL2016PreVFP/dat_jetSelections.dat'
+    phosel: '/wk_cms/ltsai/github/xPhoton/macros/step2.1.efficienciesCalc/UL2016PreVFP/dat_phoControlReg.dat'
+dataEra: 'UL2016PreVFP'
+outputtag: 'photonCrossSection'
+py_pt_definition: '/wk_cms3/ltsai/wk_cms/ltsai/github/xPhoton/MyCommonTools/python/ptbin_definitions/py_pt_ranges_definition_testmodeOrig.py'
+
+
