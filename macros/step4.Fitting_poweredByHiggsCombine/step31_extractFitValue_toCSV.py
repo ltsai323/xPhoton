@@ -42,11 +42,17 @@ import csv
 if __name__ == "__main__":
     # ShowFitResult('BDTFit_0_0_14/multidimfitTest.root')
     # exit(1)
+    import sys
+    dataERA = sys.argv[1]
+
+    outFOLDER = sys.argv[2] if len(sys.argv) > 2 else 'out_fit_result'
     fit_sig = []
     fit_bkg = []
     fit_shapeUnc = []
     import os
-    bdt_fit_dirs = [ the_dir for the_dir in os.listdir() if 'BDTFit' == the_dir[:len('BDTFit')] ]
+    bdt_fit_dirs = [ os.path.join(outFOLDER,sub_dir) for sub_dir in os.listdir(outFOLDER)
+    #bdt_fit_dirs = [ sub_dir for sub_dir in os.listdir()
+            if 'BDTFit' == sub_dir[:len('BDTFit')] ]
     bdt_fit_dirs.sort()
     for res_dir in bdt_fit_dirs:
         binning = get_binnings(res_dir)
@@ -54,6 +60,7 @@ if __name__ == "__main__":
         jEtaBin = binning['jEtaBin']
         pPtBin  = binning['pPtBin']
 
+        ShowFitResult(res_dir+'/multidimfitTest.root')
         fitres = GetFitResult( res_dir+'/multidimfitTest.root' )
         fill = lambda content, var: content.append({
                 'pEtaBin': pEtaBin,
@@ -68,8 +75,6 @@ if __name__ == "__main__":
         fill(fit_bkg, 'mu2')
         fill(fit_shapeUnc, 'shapeUnc')
 
-    import sys
-    tag = sys.argv[1]
     def write_to_csv(newfilename, contents):
         if len(contents) == 0:
             raise IOError('nothing will recorded in '+newfilename)
@@ -78,8 +83,8 @@ if __name__ == "__main__":
             csvwritter.writeheader()
             csvwritter.writerows(contents)
             print('[CSV Generated] '+newfilename)
-    write_to_csv( f'{tag}.data.yield.csv', fit_sig )
-    write_to_csv( f'{tag}.data.bkg.csv', fit_bkg )
-    write_to_csv( f'{tag}.data.shapeUnc.csv', fit_shapeUnc )
+    write_to_csv( f'{dataERA}.data.yield.csv', fit_sig )
+    write_to_csv( f'{dataERA}.data.bkg.csv', fit_bkg )
+    write_to_csv( f'{dataERA}.data.shapeUnc.csv', fit_shapeUnc )
 
 

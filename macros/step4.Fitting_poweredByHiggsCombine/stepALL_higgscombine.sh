@@ -1,7 +1,8 @@
 outputLabel=$1
-inputfile=$2
+inputFILE=$2
 data_era=UL2016PreVFP
 
+inputfile=`realpath $inputFILE`
 if [ "$2" == "" ]; then
     echo "input root file not found! Abort"
     echo "argument : 1: output label. 2: input makehisto.root file"
@@ -25,12 +26,14 @@ for pPtBin in {0..20}; do # assigned binning > actual binning is allowed
 logfile=log_${pEtaBin}_${jEtaBin}_${pPtBin}
 sh step2_combine_single_bin.sh $pEtaBin $jEtaBin $pPtBin $inputfile getdatadetail.txt > $logfile 2>&1
 sh step3_extractFitValue.sh $logfile $pEtaBin $jEtaBin $pPtBin ${data_era}.data.yield.dat ${data_era}.data.bkg.dat
-done; done& done
+done; done&
+done
 wait
 python3 step31_extractFitValue_toCSV.py $data_era
 
 echo [$outputLabel] collecting results
-mv *.dat out_fit_result
+mv *.dat out_fit_result/
+mv *.csv out_fit_result/
 mkdir out_fit_result/logs; mv log_* out_fit_result/logs/
 
 sh step4_collect_result.sh $outputLabel && mv out_fit_result $outputLabel
