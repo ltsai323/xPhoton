@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-touch py_pt_ranges_definition.py; /bin/rm py_pt_ranges_definition.py
 function exec_in_line()
 {
     outLABEL=$1; 
@@ -9,7 +8,12 @@ function exec_in_line()
     /bin/rm -r cmd_history_step2_*;
     /bin/rm -r tmp_CTag_SimulFit*;
 }
+function link_pt_bin_definition()
+{ unlink py_pt_ranges_definition.py; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/python/ptbin_definitions/$1 py_pt_ranges_definition.py|| the_exit "link failed to $1"; }
 
 
-ln -s ../py_pt_ranges_definition_testmode5.py py_pt_ranges_definition.py
+link_pt_bin_definition py_pt_ranges_definition_testmode5.py
+exec_in_line DeepCSV_gjetPythia_cutIdx4_mergeBin_5
 exec_in_line DeepCSV_gjetPythia_cutIdx5_mergeBin_5
+exec_in_line DeepFlavour_gjetPythia_cutIdx4_mergeBin_5
+exec_in_line DeepFlavour_gjetPythia_cutIdx5_mergeBin_5

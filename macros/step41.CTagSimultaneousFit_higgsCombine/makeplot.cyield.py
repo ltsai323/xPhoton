@@ -4,7 +4,7 @@ import makeplot.tools as myTool
 from makeplot.ratiotool import TakeRatio
 from makeplot.drawingprocess import DrawingProcess
 from makeplot.file_collecter import FileWithDesc
-from makeplot.ratiotool import draw_EP_ratio
+from makeplot.ratiotool import draw_EP_ratio,draw_EP_ratio_lowerLined
 import makeplot.ScatterPlot_PointsConverter as pointConv
 import makeplot.LoadCSVFile as lCSV
 
@@ -18,7 +18,8 @@ def get_data_point(theINPUT:FileWithDesc) -> pointConv.XYscatterPoints:
     pt_binning = PhoPtBinning('UL2016PreVFP')
     def get_data_point_(inCSVfile:str, desc:str,pETAbin:int,jETAbin:int) -> pointConv.XYscatterPoints:
         value_pair = lCSV.LoadCSVFile(inCSVfile, 'fit_yield_C', pETAbin,jETAbin)
-        error_pair = lCSV.LoadCSVFile_CopyNullEntry(value_pair, 0.)
+        error_pair = lCSV.LoadCSVFile(inCSVfile, 'fit_error_C', pETAbin,jETAbin)
+        #error_pair = lCSV.LoadCSVFile_CopyNullEntry(value_pair, 0.)
         ptbins = ( p.pPtBin for p in value_pair )
         eff_lumis = [ FindEffLumi('UL2016PreVFP',ptbin) for ptbin in ptbins ]
 
@@ -44,8 +45,11 @@ def draw_scatter_plot(
         outFIGname:str = 'h_testbarrelpho.png',
         ):
 
-    draw_EP_ratio( xySCATTERpointS,
-            yTITLE='fitted yield of $\gamma$+c ',
+    plt.clf()
+    #draw_EP_ratio( xySCATTERpointS,
+    draw_EP_ratio_lowerLined( xySCATTERpointS,
+            #yTITLE='fitted yield of $\gamma$+c ',
+            yTITLE='$d^2\sigma/dp^\gamma_T d\eta^\gamma$',
             yRANGE = yRANGE,
             logY = True,
             ratioTITLE = 'barrel/endcap',
@@ -59,15 +63,33 @@ def draw_scatter_plot(
 
 if __name__ == "__main__":
     import makeplot.file_collecter as inputs
-    f = inputs.FileWithDesc(
+    f1= inputs.FileWithDesc(
             file='DeepCSV_gjetPythia_cutIdx5_mergeBin_5/UL2016.CTag_SimulFit.csv',
-            desc='UL2016 preVFP data')
+            desc='$\gamma$+c')
+    f2= inputs.FileWithDesc(
+            file='DeepCSV_gjetPythia_cutIdx4_mergeBin_5/UL2016.CTag_SimulFit.csv',
+            desc='$\gamma$+c')
+    f3= inputs.FileWithDesc(
+            file='DeepFlavour_gjetPythia_cutIdx5_mergeBin_5/UL2016.CTag_SimulFit.csv',
+            desc='$\gamma$+c')
+    f4= inputs.FileWithDesc(
+            file='DeepFlavour_gjetPythia_cutIdx4_mergeBin_5/UL2016.CTag_SimulFit.csv',
+            desc='$\gamma$+c')
 
     def task(draw_obj):
-        the_title = 'testing hiii $\gamma$'
-        draw_obj.DrawSingle(f,
+        the_title = 'differencial cross section of $\gamma$ + c channel'
+        draw_obj.DrawSingle(f1,
                 inTITLE=the_title,
-            outFIGtemplate='barrel.pdf')
+            outFIGtemplate='DeepCSV_cutIdx5.pdf')
+        draw_obj.DrawSingle(f2,
+                inTITLE=the_title,
+            outFIGtemplate='DeepCSV_cutIdx4.pdf')
+        draw_obj.DrawSingle(f3,
+                inTITLE=the_title,
+            outFIGtemplate='DeepFlavour_cutIdx5.pdf')
+        draw_obj.DrawSingle(f4,
+                inTITLE=the_title,
+            outFIGtemplate='DeepFlavour_cutIdx4.pdf')
 
     tag='UL2016PreVFP_data'
     task( DrawingProcess(draw_scatter_plot,hackDATAfunc=get_data_point,taG=tag) )

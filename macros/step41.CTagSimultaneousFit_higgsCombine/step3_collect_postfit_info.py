@@ -47,6 +47,81 @@ def GetInputFile( pETAbin, jETAbin, pPTbin, inFOLDER ):
     sys.stderr.write(f'[check.ctaggingVars-ERROR] bin_{pETAbin}_{jETAbin}_{pPTbin} failed to find "{inputfile}", skip it\n')
     return None
 
+def get_input_file( pETAbin, jETAbin, pPTbin, inFOLDER ):
+    inputfile = f'{inFOLDER}/CTag_SimulFit_{pETAbin}_{jETAbin}_{pPTbin}/multidimfitTest.root'
+    if os.path.exists(inputfile):
+        return inputfile
+    sys.stderr.write(f'[check.ctaggingVars-ERROR] bin_{pETAbin}_{jETAbin}_{pPTbin} failed to find "{inputfile}", skip it\n')
+    return None
+
+import uncertainties as unc
+
+def get_fit_result(inFILE):
+    fit_result = inFILE.Get('fit_mdf')
+
+    final_params = fit_result.floatParsFinal()
+
+    # Loop through the parameters and print their names and values
+    readout = {}
+    for i in range(final_params.getSize()):
+        param = final_params.at(i)
+        readout[param.GetName()] = unc.ufloat(param.getVal(),param.getError())
+    return readout
+    ### some feature in RooFitResult
+    '''
+    fit_result.numInvalidNLL()
+    fit_result.numStatusHistory()
+    fit_result.status()
+    fit_result.minNll() # the minized FCN value.
+    fit_result.covarianceMatrix().Print()
+    '''
+def GetInfo_(pEtaBin,jEtaBin,pPtBin, inFOLDER, outputLIST):
+    inputfile = get_input_file( pEtaBin, jEtaBin, pPtBin, inFOLDER )
+    if inputfile == None: return
+
+    LOG(f'input file {inputfile}\n\n')
+    inFile = ROOT.TFile.Open(inputfile)
+    fitres = get_fit_result(inFile)
+    fitL = fitres['mu1']
+    fitC = fitres['mu2']
+    fitB = fitres['mu3']
+    fitUncPU = fitres['PUweight']
+    fitUncStat = fitres['Stat']
+
+    int_L = fitL.nominal_value
+    int_C = fitC.nominal_value
+    int_B = fitB.nominal_value
+
+    frac_L, frac_C, frac_B = FracCalc(int_L,int_C,int_B)
+
+    chi2_tag0 = 0
+    chi2_tag1 = 0
+    chi2_tag2 = 0
+
+    ## output
+    outputLIST.append({
+        'pEtaBin':    pEtaBin,
+        'jEtaBin':    jEtaBin,
+        'pPtBin':     pPtBin,
+
+        'frac_L':     frac_L,
+        'frac_C':     frac_C,
+        'frac_B':     frac_B,
+
+        'fit_yield_L':fitL.nominal_value,
+        'fit_yield_C':fitC.nominal_value,
+        'fit_yield_B':fitB.nominal_value,
+
+        'fit_error_L':fitL.std_dev,
+        'fit_error_C':fitC.std_dev,
+        'fit_error_B':fitB.std_dev,
+
+        'chi2_jet0':  chi2_tag0,
+        'chi2_jet1':  chi2_tag1,
+        'chi2_jet2':  chi2_tag2,
+        })
+    inFile.Close()
+    return
 def GetInfo(pEtaBin,jEtaBin,pPtBin, inFOLDER, outputLIST):
     inputfile = GetInputFile( pEtaBin, jEtaBin, pPtBin, inFOLDER )
     if inputfile == None: return
@@ -62,9 +137,12 @@ def GetInfo(pEtaBin,jEtaBin,pPtBin, inFOLDER, outputLIST):
     int_B = inFile.Get('cat_0_postfit/signal_B').Integral()
     frac_L, frac_C, frac_B = FracCalc(int_L,int_C,int_B)
 
-    chi2_tag0 = GetChi2(inFile, 'cat_0_postfit')
-    chi2_tag1 = GetChi2(inFile, 'cat_1_postfit')
-    chi2_tag2 = GetChi2(inFile, 'cat_2_postfit')
+    #chi2_tag0 = GetChi2(inFile, 'cat_0_postfit')
+    #chi2_tag1 = GetChi2(inFile, 'cat_1_postfit')
+    #chi2_tag2 = GetChi2(inFile, 'cat_2_postfit')
+    chi2_tag0 = 0
+    chi2_tag1 = 0
+    chi2_tag2 = 0
 
     ## output
     outputLIST.append({
@@ -98,7 +176,8 @@ if __name__ == "__main__":
     for pEtaBin in range(2):
         for jEtaBin in range(2):
             for pPtBin in range(maxptbin):
-                GetInfo(pEtaBin, jEtaBin, pPtBin, inFOLDER, csv_output)
+                #GetInfo(pEtaBin, jEtaBin, pPtBin, inFOLDER, csv_output)
+                GetInfo_(pEtaBin, jEtaBin, pPtBin, inFOLDER, csv_output)
 
     if len(csv_output) == 0: raise IOError('[step3_collect_postfit_info-ERROR] no any information found ')
     with open('UL2016.CTag_SimulFit.csv', 'w') as outFile:

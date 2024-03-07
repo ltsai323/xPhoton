@@ -29,6 +29,7 @@ sh step2_combine_single_bin.sh $pEtaBin $jEtaBin $pPtBin getdatadetail.csv $tmp_
 done; done& done; wait
 
 cmd_exec python3 step3_collect_postfit_info.py $data_era $tmp_folder/ || the_exit 'step3 execution failed'
+cmd_exec python3 step31_extractFitValue_toCSV.py ${data_era}.CTag_SimulFit $tmp_folder/ || the_exit 'step31 execution failed'
 
 echo [$outputLABEL] collecting results
 mv *.csv $tmp_folder/; mkdir -p $tmp_folder/logs_CTagSimulFit; mv log_* $tmp_folder/logs_CTagSimulFit/

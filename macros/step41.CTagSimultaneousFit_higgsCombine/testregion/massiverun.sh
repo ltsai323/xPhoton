@@ -1,1 +1,0 @@
-../massiverun.sh

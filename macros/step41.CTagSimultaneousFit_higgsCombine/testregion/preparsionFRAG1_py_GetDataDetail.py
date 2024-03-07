@@ -1,1 +1,0 @@
-../preparsionFRAG1_py_GetDataDetail.py

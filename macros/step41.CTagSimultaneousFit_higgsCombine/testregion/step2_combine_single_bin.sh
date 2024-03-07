@@ -1,1 +1,0 @@
-../step2_combine_single_bin.sh
