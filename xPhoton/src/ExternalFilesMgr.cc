@@ -4,6 +4,19 @@
 void WRONG_DATAERA(const std::string& funcNAME, const std::string& era)
 { LOG_FATAL("ExternalFilesMgr::%s():: invalid input dataera %s",funcNAME.c_str(),era.c_str()); }
 
+const char* ExternalFilesMgr::RooFile_ScaleFactor_TnPZee(std::string era)
+{
+    if      ( era == "UL2016PostVFP" )
+        return "/wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/ScaleFactorFromZee/UL2016PostVFP/TagAndProbeFitting_UL2016PostVFP_SFresult.root";
+    else if ( era == "UL2016PreVFP" )
+        return "/wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/ScaleFactorFromZee/UL2016PreVFP/TagAndProbeFitting_UL2016PreVFP_SFresult.root";
+    else if ( era == "UL2017"     )
+        return "";
+    else if ( era == "UL2018"     )
+        return "";
+    LOG_FATAL( "Unknown input argument era '%s'", era.c_str() );
+    return nullptr;
+}
 const char* ExternalFilesMgr::csvFile_BTagCalib_DeepFlavour(std::string era)
 {
     if      ( era == "2016ReReco" )

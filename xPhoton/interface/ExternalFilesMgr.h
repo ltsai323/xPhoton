@@ -5,6 +5,7 @@
 namespace ExternalFilesMgr
 {
     // era = "2016ReReco", "2017ReReco", "2018ReReco", "UL2016", "UL2017", "UL2018"
+    const char* RooFile_ScaleFactor_TnPZee(std::string era);
 
     const char* xmlFile_MVAweight(int isEndcap, std::string era);
     const char* RooFile_PileUp(std::string era);
