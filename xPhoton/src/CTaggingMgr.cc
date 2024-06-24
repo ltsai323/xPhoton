@@ -169,7 +169,7 @@ void CTaggingMgr::RegBranch(TTree* t)
     //t->Branch( Form("%s.ctagWeight.PSWeightISRFixedUp"   ,_algoType), &weight_PSWeightISRFixedUp   , Form("%s.ctagWeight.PSWeightISRFixedUp/F"   ,_algoType) );
     t->Branch( Form("%s.ctagWeight.PUWeightUp"           ,_algoType), &weight_PUWeightUp           , Form("%s.ctagWeight.PUWeightUp/F"           ,_algoType) );
     t->Branch( Form("%s.ctagWeight.StatUp"               ,_algoType), &weight_StatUp               , Form("%s.ctagWeight.StatUp/F"               ,_algoType) );
-    t->Branch( Form("%s.ctagWeight.TotalUncDown"           ,_algoType), &weight_TotalUncUp           , Form("%s.ctagWeight.TotalUncUp/F"           ,_algoType) );
+    t->Branch( Form("%s.ctagWeight.TotalUncUp"             ,_algoType), &weight_TotalUncUp           , Form("%s.ctagWeight.TotalUncUp/F"           ,_algoType) );
     //t->Branch( Form("%s.ctagWeight.XSec_BRUnc_DYJets_bUp",_algoType), &weight_XSec_BRUnc_DYJets_bUp, Form("%s.ctagWeight.XSec_BRUnc_DYJets_bUp/F",_algoType) );
     //t->Branch( Form("%s.ctagWeight.XSec_BRUnc_DYJets_cUp",_algoType), &weight_XSec_BRUnc_DYJets_cUp, Form("%s.ctagWeight.XSec_BRUnc_DYJets_cUp/F",_algoType) );
     //t->Branch( Form("%s.ctagWeight.XSec_BRunc_WJets_cUp" ,_algoType), &weight_XSec_BRunc_WJets_cUp , Form("%s.ctagWeight.XSec_BRunc_WJets_cUp/F" ,_algoType) );
