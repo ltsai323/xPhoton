@@ -34,6 +34,7 @@ using namespace std;
 #include "xPhoton/xPhoton/interface/JetIDMgr.h"
 #include "xPhoton/xPhoton/interface/ShowerShapeCorrectionAdapter.h"
 #include "xPhoton/xPhoton/interface/RhoCorrection.h"
+#include "xPhoton/xPhoton/interface/LoadScaleFactorMgr_TnPResult.h"
 // switches
 static Int_t MINITREE=1;
 static Double_t XS=1.;
@@ -458,6 +459,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t calib_scEtaWidth,calib_scPhiWidth;
     Float_t calib_esEnergyOverSCRawEnergy;
 
+    Float_t scalefactor_ZeeTnP; // total uncertainties is not recorded evt by evt.
+
     Int_t    run;
     Long64_t event;
 
@@ -478,6 +481,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     Float_t leadingPUPtHat;
     Float_t leadingLHEPt;
     Float_t genHT_pthatDef;
+    Float_t jetP4Smear;
+    Float_t jetP4SmearUp;
+    Float_t jetP4SmearDn;
 
 
     Int_t phoFillIdx = 0;
@@ -654,6 +660,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
     outtree_->Branch("leadingLHEPt", &leadingLHEPt);
     outtree_->Branch("genHT_pthatDef", &genHT_pthatDef, "genHT_pthatDef/F");
     outtree_->Branch("leadingPUPtHat" ,&leadingPUPtHat);
+    outtree_->Branch("scalefactor_photon", &scalefactor_ZeeTnP, "scalefactor_photon/F");
+    outtree_->Branch("jetP4Smear", &jetP4Smear, "jetP4Smear/F");
+    outtree_->Branch("jetP4SmearUp", &jetP4SmearUp, "jetP4SmearUp/F");
+    outtree_->Branch("jetP4SmearDn", &jetP4SmearDn, "jetP4SmearDn/F");
     }
 
     // mc efficiency check
@@ -691,6 +701,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         puCalc.Init(pufile);
     }
     PhotonMVACalculator mvaloader( &data, dataEra );
+    LoadScaleFactorMgr scalefactor_ZeeTnPresult = LoadScaleFactorMgr_TnPResult( ExternalFilesMgr::RooFile_ScaleFactor_TnPZee(dataEra), data.HasMC() );
 
 
 
@@ -725,7 +736,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             if(hasGoodVtx) h_hasGoodVtx->Fill(1.1);
             else h_hasGoodVtx->Fill(0.1);
             if(!hasGoodVtx) continue;
-            int metFilters_ = data.GetInt("metFilters");
+            int metFilters_ = data.GetInt("metFilters"); // reject cosmic Ray
             if(metFilters_ != 0 ) continue;
         }
 
@@ -891,8 +902,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         Float_t pfMET = data.GetFloat("pfMET");
         Float_t pfMETPhi = data.GetFloat("pfMETPhi");
-        Float_t puppiMET = data.GetFloat("puppiMET");
-        Float_t puppiMETPhi = data.GetFloat("puppiMETPhi");
+        Float_t _puppiMET = data.GetFloat("puppiMET");
+        Float_t _puppiMETPhi = data.GetFloat("puppiMETPhi");
         //Int_t    nEle     = data.GetInt("nEle");
 
         Float_t* jetPt = data.GetPtrFloat("jetPt");
@@ -944,6 +955,9 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         Int_t *jetGenPartonID = nullptr;
         Int_t *jetHadFlvr = nullptr;
         Int_t *jetGenPartonMomID = nullptr;
+        Float_t* jetP4smear = nullptr;
+        Float_t* jetP4smearUP = nullptr;
+        Float_t* jetP4smearDN = nullptr;
 
         if ( data.HasMC() )
         {
@@ -951,6 +965,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             jetGenPartonID = data.GetPtrInt("jetGenPartonID");
             jetHadFlvr = data.GetPtrInt("jetHadFlvr");
             jetGenPartonMomID = data.GetPtrInt("jetGenPartonMomID");
+
+            jetP4smear = data.GetPtrFloat("jetP4Smear");
+            jetP4smearUP = data.GetPtrFloat("jetP4SmearUp");
+            jetP4smearDN = data.GetPtrFloat("jetP4SmearDo");
         }
 
         // Float_t* phoE   = data.GetPtrFloat("phoE");
@@ -1220,7 +1238,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
 
             if(pho_presel!=1) continue;
-            if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.7) continue;
+            if(JETPD_PHOTONHLT==1 && phoP4.DeltaR(trigger_jetP4)<0.5) continue;
             photon_list.push_back(i); 
             if(ONLY_LEADINGPHOTON==1 && photon_list.size()==1) break;
         }
@@ -1408,6 +1426,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             leadingLHEPt = 0;
             genHT_pthatDef = 0;
             calib_s4Full5x5=calib_r9Full5x5=calib_scPhiWidth=calib_scEtaWidth=calib_sieieFull5x5=calib_sieipFull5x5=calib_esEnergyOverSCRawEnergy = 0.;
+            scalefactor_ZeeTnP = 0;
+            jetP4Smear = 0;
+            jetP4SmearUp = 0;
+            jetP4SmearDn = 0;
             mygenweight = 0;
             for ( unsigned i=0; i<MAX_LHEPARTICLE; ++i )
                 lhePID[i] = lheE[i]   = lhePx[i]  = lhePy[i]  = lhePz[i]  = 0;
@@ -1417,8 +1439,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             rho = data.GetFloat("rho"); //kk
             MET = pfMET;
             METPhi = pfMETPhi;
-            puppiMET = puppiMET;
-            puppiMETPhi = puppiMETPhi;
+            puppiMET = _puppiMET;
+            puppiMETPhi = _puppiMETPhi;
             nPU=nPU_;
             run     = data.GetInt("run");
             event   = data.GetLong64("event");
@@ -1476,6 +1498,10 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     jetPartonID_ = jetPartonID[jet_index];
                     jetHadFlvr_ = jetHadFlvr[jet_index];
                     h2_mcPID_mcPt->Fill( jetGenJetPt_, jetGenPartonID_+0.01, xsweight);
+
+                    jetP4Smear = jetP4smear[jet_index];
+                    jetP4SmearUp = jetP4smearUP[jet_index];
+                    jetP4SmearDn = jetP4smearDN[jet_index];
                 }
                 LOG_DEBUG("Starting sec vtx info");
 
@@ -1571,6 +1597,8 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             r9        = phoR9[ipho];
             eleVeto   = phoEleVeto[ipho];
             HoverE    = phoHoverE[ipho];
+            scalefactor_ZeeTnP = scalefactor_ZeeTnPresult.ScaleFactor(recoPt, recoEta);
+
 
             phohasPixelSeed_ = phohasPixelSeed[ipho];
             chIsoRaw   = phoPFChIso[ipho];

@@ -35,13 +35,13 @@ inputCODE=makehisto.C
 change_running_location $outputLABEL $num
 root -b <<EOF
 .L $inputCODE
-Loop($num, "UL2016PreVFP", "DeepFlavour", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/data.root");
-//Loop($num, "UL2016PreVFP", "DeepFlavour", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/gjet.pythia.root");
-//Loop($num, "UL2016PreVFP", "DeepFlavour", "QCD", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/qcd.madgraph.root");
+Loop($num, "UL2016PostVFP", "DeepFlavour", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/data.root");
+Loop($num, "UL2016PostVFP", "DeepFlavour", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/sig.pythia.root");
+Loop($num, "UL2016PostVFP", "DeepFlavour", "QCD",  "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/qcd.madgraph.root");
 EOF
 
 if [ "$num" == "-1" ]; then exit; fi
-hadd makehisto.root makehisto_*.root
+hadd -f makehisto.root makehisto_*.root
 tidy_up_working_area /wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/
 cd $orig_path
 }
@@ -52,12 +52,16 @@ function test_code()
 
 
 function link_pt_bin_definition()
-{ unlink ptbin_definitions.h; ln -s $1 ptbin_definitions.h|| the_exit "link failed to $1"; }
+{ unlink ptbin_definitions.h; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/cpp/ptbin_definitions/$1 ptbin_definitions.h|| the_exit "link failed to $1"; }
 
 
 
-link_pt_bin_definition ../ptbin_definitions_testmode5.h
+link_pt_bin_definition ptbin_definitions_testmode5.h
 #main_code 0 DeepCSV DeepCSV_gjetPythia_cutIdx0_mergeBin_Orig
 #main_code 3 DeepCSV DeepCSV_gjetPythia_cutIdx3_mergeBin_Orig
 #main_code 4 DeepCSV DeepCSV_gjetPythia_cutIdx4_mergeBin_Orig
-main_code 5 DeepCSV DeepCSV_gjetPythia_cutIdx5_mergeBin_5
+test_code 4 DeepCSV DeepCSV_gjetPythia_cutIdx4_mergeBin_5
+
+#main_code 5 DeepCSV DeepCSV_gjetPythia_cutIdx5_mergeBin_5
+#main_code 4 DeepFlavour DeepFlavour_gjetPythia_cutIdx4_mergeBin_5
+#main_code 5 DeepFlavour DeepFlavour_gjetPythia_cutIdx5_mergeBin_5

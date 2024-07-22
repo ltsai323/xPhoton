@@ -50,6 +50,7 @@ bool JetIDMgr::PUIDPassed( TreeReader* dataptr, int iJet, PUJetIDCutsFPtr cut_de
 
 
 
+// https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVUL#Preliminary_Recommendations_for
 std::map<std::string,std::pair<float,float>> JetIDMgr::JetIDCuts_ULRun2016_CHS( float jetEta )
 {
     float abseta = fabs(jetEta);

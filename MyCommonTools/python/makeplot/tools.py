@@ -61,7 +61,6 @@ def draw_EP(xySCATTERwithDESC:[XYscatterPoints],
         yTITLE:str = '$d^{3}\sigma$ / d$\eta_{\gamma}$ d$\eta_{C}$ d$p_{T}^{\gamma}$',
         yRANGE:tuple = (), logY:bool = True,
         ):
-    plt.clf()
     fig = plt.figure(facecolor='none', edgecolor='none', figsize=(6, 4), dpi=80)
 
     for idx, xy_scatter_with_desc in enumerate(xySCATTERwithDESC):

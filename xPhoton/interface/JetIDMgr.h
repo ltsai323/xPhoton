@@ -21,8 +21,10 @@ namespace JetIDMgr{
     bool PUIDPassed( TreeReader* dataptr, int iJet, PUJetIDCutsFPtr cut_definition );
     bool FailedSelection( const std::pair<float,float>& selrange, float val );
 
+    // https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVUL#Preliminary_Recommendations_for
     std::map<std::string,std::pair<float,float>> JetIDCuts_ULRun2016_CHS( float jetEta );
     std::map<std::string,std::pair<float,float>> JetIDCuts_ULRun2016_PUPPI( float jetEta );
+    // need UL2017 UL2018 and dataERA selector
 
     float PUJetIDCuts_ULRun2016_CHS_Tight ( float jetPt, float jetEta );
     float PUJetIDCuts_ULRun2016_CHS_Medium( float jetPt, float jetEta );

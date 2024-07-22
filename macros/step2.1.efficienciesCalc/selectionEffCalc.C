@@ -1,9 +1,7 @@
 #define MakeHistoData_cxx
 #define MakeHistoSIG_cxx
 #define MakeHistoQCD_cxx
-// #include "makehisto.h"
 #include "makehisto.C"
-//#include "MakeHistoSIG.h"
 //#include "HLTTriggerBitSetting.cc"
 #include <TH1.h>
 #include <TH2.h>
@@ -16,8 +14,34 @@
 
 // try to find selection efficiency and signal region efficiency.
 
-struct efficiency_record
-{ float eff; float err; };
+struct value_and_error
+{ double nominal_value; double std_error2; };
+value_and_error value_init() { value_and_error a; a.nominal_value = 0; a.std_error2 = 0; return a; }
+class efficiency_record
+{
+    public:
+    value_and_error passed;
+    value_and_error total;
+
+    value_and_error get_efficiency() const
+    {
+        value_and_error eff = value_init();
+
+        // passed values
+        double pv = passed.nominal_value;
+        double pe2= passed.std_error2;
+        double tv = total.nominal_value;
+        double te2= total.std_error2;
+        // failed values
+        double fv = tv - pv;
+        double fe2= te2 - pe2;
+
+        if ( pv == 0 ) return eff;
+        eff.nominal_value = pv / tv;
+        eff.std_error2 = pe2*(fv/tv/tv)*(fv/tv/tv) + fe2*(pv/tv/tv)*(pv/tv/tv);
+        return eff;
+    }
+};
 struct OutputModule
 {
     OutputModule(const char* oFILEname, const char* columnDEFINITION)
@@ -25,7 +49,7 @@ struct OutputModule
         output.open(oFILEname);
         output << columnDEFINITION << "\n";
     }
-    virtual void Write( int pETAbin, int jETAbin, int pPTbin, efficiency_record rec) = 0;
+    virtual void Write( int pETAbin, int jETAbin, int pPTbin, value_and_error rec) = 0;
     virtual ~OutputModule() { output.close(); }
     
     std::ofstream output;
@@ -35,31 +59,34 @@ struct OutputModule_TreeText : OutputModule
     OutputModule_TreeText(const char* oFILEname) :
         OutputModule(oFILEname, "ptbin/I:EBEE/I:jetbin/I:efficiency/F:error/F") { }
 
-    virtual void Write( int pETAbin, int jETAbin, int pPTbin, efficiency_record rec ) override
-    { output << Form("%d %d %d %.10f %.10f\n", pPTbin,pETAbin,jETAbin, rec.eff, rec.err); }
+    virtual void Write( int pETAbin, int jETAbin, int pPTbin, value_and_error rec ) override
+    { output << Form("%d %d %d %.10f %.10f\n", pPTbin,pETAbin,jETAbin, rec.nominal_value, sqrt(rec.std_error2)); }
 
 };
 struct Counter
 {
-    Counter() : passed(0.),overall(0.) {}
-    Counter(const Counter& r)
-    { passed = r.passed; overall = r.overall; }
+    Counter() : eff() {}
     void record_this_event(bool isPassed, double evtWEIGHT)
     {
-        overall += evtWEIGHT;
+        eff.total.nominal_value += evtWEIGHT;
+        eff.total.std_error2 += evtWEIGHT*evtWEIGHT;
         if ( isPassed )
-            passed += evtWEIGHT;
+        {
+            eff.passed.nominal_value += evtWEIGHT;
+            eff.passed.std_error2 += evtWEIGHT*evtWEIGHT;
+        }
     }
-    double get_ratio() const { if ( passed == 0 ) return 0; return passed / overall; }
+    double get_ratio() const { return eff.get_efficiency().nominal_value; }
+    value_and_error get_efficiency() const { return eff.get_efficiency(); }
 
-    double passed, overall;
+    efficiency_record eff;
 };
 
 
 struct BinningCounter
 {
     BinningCounter(int maxPETABIN, int maxJETABIN, int maxPPTBIN ) :
-        _maxPEtaBin(maxPETABIN), _maxJEtaBin(maxJETABIN), _maxPPtBin(maxPPTBIN) { }
+        _maxPEtaBin(maxPETABIN), _maxJEtaBin(maxJETABIN), _maxPPtBin(maxPPTBIN) {}
 
     void RecordThisEvent( int pETAbin, int jETAbin, int pPTbin,
             bool isPASSED, double evtWEIGHT )
@@ -70,8 +97,10 @@ struct BinningCounter
             for ( int jetabin = 0; jetabin < _maxJEtaBin; ++jetabin )
                 for ( int pptbin = 0; pptbin < _maxPPtBin; ++pptbin )
         {
-            _stat[petabin][jetabin][pptbin].passed = r._stat[petabin][jetabin][pptbin].passed;
-            _stat[petabin][jetabin][pptbin].overall = r._stat[petabin][jetabin][pptbin].overall;
+            _stat[petabin][jetabin][pptbin].eff.passed.nominal_value  += r._stat[petabin][jetabin][pptbin].eff.passed.nominal_value;
+            _stat[petabin][jetabin][pptbin].eff.passed.std_error2     += r._stat[petabin][jetabin][pptbin].eff.passed.std_error2;
+            _stat[petabin][jetabin][pptbin].eff.total.nominal_value   += r._stat[petabin][jetabin][pptbin].eff.total.nominal_value;
+            _stat[petabin][jetabin][pptbin].eff.total.std_error2      += r._stat[petabin][jetabin][pptbin].eff.total.std_error2;
         }
     }
         
@@ -83,15 +112,15 @@ struct BinningCounter
                 for ( int pptbin = 0; pptbin < _maxPPtBin; ++pptbin )
                     printf("%d %d %d %.8f %.8f %.8f\n",
                         pptbin,petabin,jetabin,
-                        _stat[petabin][jetabin][pptbin].passed,
-                        _stat[petabin][jetabin][pptbin].overall,
-                        _stat[petabin][jetabin][pptbin].get_ratio()
+                        _stat[petabin][jetabin][pptbin].eff.passed.nominal_value,
+                        _stat[petabin][jetabin][pptbin].eff.total.nominal_value,
+                        _stat[petabin][jetabin][pptbin].get_efficiency().nominal_value
                       );
     }
 
 
     const int _maxPEtaBin, _maxJEtaBin, _maxPPtBin;
-    Counter _stat[2][3][25];
+    Counter _stat[2][3][30];
 };
 struct BinningCounterGroup
 {
@@ -106,7 +135,8 @@ struct BinningCounterGroup
         this->sigregion.Add(r.sigregion);
     }
 
-    void SaveResult() const
+    //void SaveResult() const
+    void SaveResult()
     {
         OutputModule* out_jet = new OutputModule_TreeText("dat_jetSelections.dat");
         OutputModule* out_pho = new OutputModule_TreeText("dat_phoControlReg.dat");
@@ -118,17 +148,13 @@ struct BinningCounterGroup
             for ( int jetabin = 0; jetabin < _maxJEtaBin; ++jetabin )
                 for ( int pptbin = 0; pptbin < _maxPPtBin; ++pptbin )
                 {
-                    efficiency_record jetSelections;
-                    jetSelections.eff =  
-                        this->selection._stat[petabin][jetabin][pptbin].get_ratio();
-                    jetSelections.err =  0.;
-                    out_jet->Write(petabin,jetabin,pptbin,jetSelections);
+                    value_and_error jetSelections_ =
+                        this->selection._stat[petabin][jetabin][pptbin].get_efficiency();
+                    out_jet->Write(petabin,jetabin,pptbin,jetSelections_);
 
-                    efficiency_record phoControlReg;
-                    phoControlReg.eff =  
-                        this->sigregion._stat[petabin][jetabin][pptbin].get_ratio();
-                    phoControlReg.err =  0.;
-                    out_pho->Write(petabin,jetabin,pptbin,phoControlReg);
+                    value_and_error phoControlReg_ =
+                        this->sigregion._stat[petabin][jetabin][pptbin].get_efficiency();
+                    out_pho->Write(petabin,jetabin,pptbin,phoControlReg_);
                 }
 
         delete out_jet;
@@ -145,12 +171,12 @@ struct BinningCounterGroup
                 for ( int pptbin = 0; pptbin < _maxPPtBin; ++pptbin )
                     printf("%d %d %d \t %.8f %.8f %.8f \t %.8f %.8f %.8f\n",
                         pptbin,petabin,jetabin,
-                        this->selection._stat[petabin][jetabin][pptbin].passed,
-                        this->selection._stat[petabin][jetabin][pptbin].overall,
-                        this->selection._stat[petabin][jetabin][pptbin].get_ratio(),
-                        this->sigregion._stat[petabin][jetabin][pptbin].passed,
-                        this->sigregion._stat[petabin][jetabin][pptbin].overall,
-                        this->sigregion._stat[petabin][jetabin][pptbin].get_ratio()
+                        this->selection._stat[petabin][jetabin][pptbin].eff.passed.nominal_value,
+                        this->selection._stat[petabin][jetabin][pptbin].eff.total.nominal_value,
+                        this->selection._stat[petabin][jetabin][pptbin].get_efficiency().nominal_value,
+                        this->sigregion._stat[petabin][jetabin][pptbin].eff.passed.nominal_value,
+                        this->sigregion._stat[petabin][jetabin][pptbin].eff.total.nominal_value,
+                        this->sigregion._stat[petabin][jetabin][pptbin].get_efficiency().nominal_value
                       );
     }
 };
@@ -158,74 +184,7 @@ struct BinningCounterGroup
 
 
 // sig section {{{
-//EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar);
-//void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars);
-//void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars );
-BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, const char* inputfilename, int processNEvt = -1 );
-//BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt );
-//EventBinning BinningFactory(const MakeHistoSIG & v) { return  EventBinning(v.recoPt     ,v.recoEta,v.jetPt,v.jetY,v.chIsoRaw   ); }
-
-// EvtSelMgr EvtSelFactory(const MakeHistoSIG& loadvar)
-// {
-//     bool isMC          = true;
-//     bool isQCD         = false;
-//     bool HLTOPTION     = false;
-//     EvtSelMgr output(isMC,isQCD,HLTOPTION);
-// 
-//     output.SetUsedVar_4(loadvar.jetHadFlvr);
-//     output.SetUsedVar_3(
-//         loadvar.chIsoRaw,
-//         loadvar.recoEta,
-//         loadvar.isMatched);
-// 
-//     output.SetUsedVar_2(
-//         loadvar.jetPt,
-//         loadvar.jetEta,
-//         loadvar.jetDeepCSVTags_c,
-//         loadvar.jetID,
-//         loadvar.jetPUIDbit,
-//         loadvar.jetSubVtxMass,
-//         loadvar.DeepCSV_CvsL,
-//         0); // passMaxPUcut
-// 
-//     output.SetUsedVar_1(
-//         loadvar.recoSCEta,
-//         loadvar.sieieFull5x5,
-//         loadvar.HoverE);
-//     output.SetUsedVar_0(
-//         loadvar.MET,
-//         loadvar.recoPt,
-//         loadvar.eleVeto,
-//         loadvar.phoFillIdx);
-// 
-//     output.SetUsedVar__(loadvar.phoFiredTrgs);
-//     return output;
-// }
-//void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float val, float evt_weight, const MakeHistoSIG& loadvars)
-//{
-//    Fill_allctagreshaped_general(bin,h,val, evt_weight,
-//            loadvars.DeepCSV_ctagWeight_central,
-//            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-//            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-//            loadvars.DeepCSV_ctagWeight_StatUp,
-//            loadvars.DeepCSV_ctagWeight_StatDown
-//            );
-//}
-//void SumNormalization( const EventBinning& bin, Normalization_CTagReshaped& N,const MakeHistoSIG& loadvars )
-//{
-//    normalization_ctagreshaped& n = N.binned_norm[bin.pEtaBin][bin.jEtaBin][bin.pPtBin];
-//    n.Add(
-//            loadvars.DeepCSV_ctagWeight_central,
-//            loadvars.DeepCSV_ctagWeight_PUWeightUp,
-//            loadvars.DeepCSV_ctagWeight_PUWeightDown,
-//            loadvars.DeepCSV_ctagWeight_StatUp,
-//            loadvars.DeepCSV_ctagWeight_StatDown
-//            );
-//}
-
-
 BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, const char* inputfilename, int processNEvt = -1 )
-//BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char* dataTYPE, const char* inputfilename, int processNEvt )
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
     BinningCounterGroup counters(NUMBIN_PHOETA,NUMBIN_JETETA,NUMBIN_PHOPT);
@@ -286,7 +245,7 @@ BinningCounterGroup selLoopSIG( Int_t extracut, const char* dataERA, const char*
 // sig section end }}}
 
 
-void selLoop(Int_t extracut, const char* dataERA, const std::vector<const char*>& inputfilenames )
+void selLoop(Int_t extracut, const char* dataERA, const char* tagALGO, const std::vector<const char*>& inputfilenames )
 {
 
     //int NEVENT = 10000; // testing event
@@ -296,7 +255,7 @@ void selLoop(Int_t extracut, const char* dataERA, const std::vector<const char*>
     result_singlefile.reserve(inputfilenames.size());
     for ( auto inputfilename : inputfilenames )
         result_singlefile.push_back(
-            selLoopSIG(extracut, dataERA,"DeepCSV", inputfilename, NEVENT)
+            selLoopSIG(extracut, dataERA, tagALGO, inputfilename, NEVENT)
             );
 
     BinningCounterGroup& outresult = result_singlefile.front();
@@ -310,7 +269,7 @@ void selLoop(Int_t extracut, const char* dataERA, const std::vector<const char*>
 
 void selectionEffCalc()
 {
-    selLoop(0, "UL2016PreVFP", {
+    selLoop(0, "UL2016PreVFP", "DeepCSV", {
             //"/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step1.appendeventinfo/MCeff/GJet_Pt-20to40_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root",
             //"/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step1.appendeventinfo/MCeff/GJet_Pt-20toInf_DoubleEMEnriched_MGG-40to80_TuneCP5_13TeV_Pythia8.root",
             //"/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step1.appendeventinfo/MCeff/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root"
@@ -320,5 +279,5 @@ void selectionEffCalc()
             } );
 }
 void selection_eff_calc(Int_t extracut, const std::vector<const char*>& inputfilenames )
-{ selLoop( extracut, "", inputfilenames ); }
+{ selLoop( extracut, "UL2016PreVFP", "DeepCSV", inputfilenames ); }
 

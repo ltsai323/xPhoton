@@ -94,6 +94,7 @@ struct EvtSelMgr
         jetSubVtxMass = jetSUBvtxMASS; jetSubVtx3DVal = jetSUBvtx3Dval; jetSubVtx3DErr = jetSUBvtx3Derr; jetSubVtxNtrks = jetSUBvtxNtrks;
         CvsL = CvsL_; passMaxPUcut = passMAXpuCUT; }
     bool PassJetAdditionalSelection(int cutIndicator) const;
+    bool PassJetAdditionalSelection(int cutIndicator, float newJetPt ) const; // used for chekc JEC and JER
 
     float recoSCEta;
     float sieieFull5x5;
@@ -214,6 +215,42 @@ void WriteShapeUncDown(const EventBinning& bin, Hists* hCENTRAL, Hists* hSHAPEun
 bool EvtSelMgr::PassJetAdditionalSelection(int cutIndicator) const
 {
     if ( jetPt < 30. ) return false;
+    if ( fabs(jetEta) > 2.5 ) return false;
+    if ( cScore < -0.99 ) return false;
+    if ( isMC && jetID != 1 ) return false;
+    if ( isMC && jetPUIDbit != 7 ) return false;
+
+    //if ( mcweight>3000. ) return false;
+    if ( cutIndicator == 1 && jetSubVtxMass == 0 ) return false;
+    if ( cutIndicator == 2 && CvsL < 0.155) return false;
+    if ( cutIndicator == 3 ) // too tight
+    {
+        if ( jetSubVtxMass == 0 ) return false;
+        if ( (jetSubVtx3DVal/jetSubVtx3DErr) < 8.0 ) return false;
+        if ( jetSubVtxNtrks < 3 ) return false;
+    }
+    if ( cutIndicator == 4 )
+    {
+        if ( jetSubVtxMass == 0 ) return false;
+        if ( (jetSubVtx3DVal/jetSubVtx3DErr) < 5.0 ) return false;
+        if ( jetSubVtxNtrks < 3 ) return false;
+    }
+    if ( cutIndicator == 5 ) // good
+    {
+        if ( jetSubVtxMass == 0 ) return false;
+        if ( (jetSubVtx3DVal/jetSubVtx3DErr) < 3.0 ) return false;
+        if ( jetSubVtxNtrks < 3 ) return false;
+    }
+    
+
+
+    if ( isMC && isQCD ) if (!passMaxPUcut ) return false;
+
+    return true;
+}
+bool EvtSelMgr::PassJetAdditionalSelection(int cutIndicator, float newJetPt) const
+{ // apply JEC and JER to newJetPt for the selection
+    if ( newJetPt < 30. ) return false;
     if ( fabs(jetEta) > 2.5 ) return false;
     if ( cScore < -0.99 ) return false;
     if ( isMC && jetID != 1 ) return false;

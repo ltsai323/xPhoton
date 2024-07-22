@@ -1,0 +1,10 @@
+data: '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/DeepFlavour_gjetPythia_cutIdx5_mergeBin_5/CTagSimultaneousFit/UL2016.CTag_SimulFit.data.b.csv'
+efficiencies:
+    presel: '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/DeepFlavour_gjetPythia_cutIdx5_mergeBin_5/efficiencies/dat_preselectionEfficiency.dat'
+    jetsel: '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/DeepFlavour_gjetPythia_cutIdx5_mergeBin_5/efficiencies/dat_jetSelections.dat'
+    phosel: '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/DeepFlavour_gjetPythia_cutIdx5_mergeBin_5/efficiencies/dat_phoControlReg.dat'
+dataEra: 'UL2016PreVFP'
+outputtag: 'photonCrossSection_DeepFlavour_gjetPythia_cutIdx5_mergeBin_5_bjet'
+py_pt_definition: '/wk_cms3/ltsai/wk_cms/ltsai/github/xPhoton/MyCommonTools/python/ptbin_definitions/py_pt_ranges_definition_testmode5.py'
+
+

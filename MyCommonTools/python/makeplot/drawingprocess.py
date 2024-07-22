@@ -119,8 +119,10 @@ if __name__ == "__main__":
 
     draw_barrel = DrawingProcess(__single_drawing_func__template__, hackDATAfunc=HackData.barrel_data, taG='barrelPho')
 
+    plt.clf()
     draw_barrel.DrawSingle( f1,f2,
             outFIGtemplate='all_truthC.pdf')
+    plt.clf()
     draw_barrel.DrawSingle( f1,
             outFIGtemplate='NNPDF31_nlo_as_0118_truthC.pdf')
 
@@ -129,4 +131,5 @@ if __name__ == "__main__":
             ('rangeHuge', (1e-3,300.)),
             ('rangeTiny', (1e-2,5.)),
             )
+    plt.clf()
     draw_barrel.DrawDetail(f1,f2, outFIGtemplate = 'intrinsicC_truthC.pdf')

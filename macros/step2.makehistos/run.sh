@@ -2,6 +2,7 @@
 datafile=$1
 signfile=$2
 qcdfile=$3
+data_era="UL2016PostVFP"
 
 function exec_code()
 {
@@ -15,9 +16,9 @@ f_qcd=$6
 mkdir -p $outputfolder
 root -b <<EOF
 .L $inputcode
-Loop($jetCutIdx, "UL2016PreVFP", "data", "$f_data");
-Loop($jetCutIdx, "UL2016PreVFP", "gjet", "$f_sign");
-Loop($jetCutIdx, "UL2016PreVFP", "QCD" , "$f_qcd" );
+Loop($jetCutIdx, "$data_era", "data", "$f_data");
+Loop($jetCutIdx, "$data_era", "gjet", "$f_sign");
+Loop($jetCutIdx, "$data_era", "QCD" , "$f_qcd" );
 EOF
 hadd makehisto.root makehisto_*.root
 

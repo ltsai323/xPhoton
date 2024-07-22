@@ -52,8 +52,8 @@ class InputConnector(object):
 if __name__ == "__main__":
     import sys
     import os
-    InputConnector.source_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.2nd/'
-    InputConnector.output_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/xQCD.3rd/'
+    InputConnector.source_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.2nd/'
+    InputConnector.output_dir = '/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/xQCD.3rd/'
     destFolder = InputConnector.output_dir
 
 

@@ -33,14 +33,14 @@ outputFOLDER=$4
 change_running_location $outputLABEL $num
 root -b <<EOF
 .L $inputCODE
-Loop($num, "UL2016PreVFP", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/data.root");
-Loop($num, "UL2016PreVFP", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/gjet.pythia.root");
-Loop($num, "UL2016PreVFP", "QCD", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/qcd.madgraph.root");
+Loop($num, "UL2016PostVFP", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/data.root");
+Loop($num, "UL2016PostVFP", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/gjet.pythia.root");
+Loop($num, "UL2016PostVFP", "QCD", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/qcd.madgraph.root");
 EOF
 
 if [ "$num" == "-1" ]; then exit; fi
 hadd makehisto.root makehisto_*.root
-tidy_up_working_area /wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/
+tidy_up_working_area /wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/makehistos/
 echo "main_code end..."
 }
 function exec_code()
@@ -49,21 +49,21 @@ function test_code()
 { main_code "-1" "$2" "$3"; }
 
 function link_pt_bin_definition()
-{ unlink ptbin_definitions.h; ln -s $1 ptbin_definitions.h|| the_exit "link failed to $1"; }
+{ unlink ptbin_definitions.h; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/cpp/ptbin_definitions/$1 ptbin_definitions.h|| the_exit "link failed to $1"; }
 
 
 
-#link_pt_bin_definition ../ptbin_definitions_testmodeOrig.h
-#exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_Orig&
-#exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_Orig&
-#exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_Orig&
-#exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_Orig&
-#exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_Orig&
-#exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_Orig&
-#wait
+link_pt_bin_definition ptbin_definitions_testmodeOrig.h
+exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_Orig&
+exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_Orig&
+exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_Orig&
+exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_Orig&
+exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_Orig&
+exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_Orig&
+wait
 
 
-#link_pt_bin_definition ../ptbin_definitions_testmode0.h
+#link_pt_bin_definition ptbin_definitions_testmode0.h
 #exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_0&
 #exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_0&
 #exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_0&
@@ -74,7 +74,7 @@ function link_pt_bin_definition()
 
 
 
-link_pt_bin_definition ../ptbin_definitions_testmode1.h
+link_pt_bin_definition ptbin_definitions_testmode1.h
 exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_1&
 exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_1&
 exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_1&
@@ -85,7 +85,7 @@ wait
 
 
 
-link_pt_bin_definition ../ptbin_definitions_testmode2.h
+link_pt_bin_definition ptbin_definitions_testmode2.h
 exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_2&
 exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_2&
 exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_2&
@@ -96,7 +96,7 @@ wait
 
 
 
-link_pt_bin_definition ../ptbin_definitions_testmode3.h
+link_pt_bin_definition ptbin_definitions_testmode3.h
 exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_3&
 exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_3&
 exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_3&
@@ -105,6 +105,14 @@ exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_3&
 exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_3&
 wait
 
+link_pt_bin_definition ptbin_definitions_testmode5.h
+exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_3&
+exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_3&
+exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_3&
+exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_3&
+exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_3&
+exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_3&
+wait
 # real    73m22.047s
 # user    343m22.508s
 # sys     30m48.940s

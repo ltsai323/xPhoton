@@ -1574,7 +1574,7 @@ void LoopData( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* 
         if (!sel.InFiducialRegion() ) continue;
         if (!sel.PassJetAdditionalSelection(extracut) ) continue;
         if (!sel.PassHLT(hltbit) ) continue;
-        if (load_data.metFilters!=0) continue; // reject cosmic ray event
+        //if (load_data.metFilters!=0) continue; // reject cosmic ray event, this is already rejected in xPhoton
 
 
         if ( evtbin.isSignalRegion )

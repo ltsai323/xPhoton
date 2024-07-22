@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Fri May 12 02:32:10 2023 by ROOT version 6.22/09
+// Mon Jun 24 15:30:28 2024 by ROOT version 6.22/09
 // from TTree t/mini tree
-// found on file: /home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step3.btagSFappended/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root
+// found on file: sig.pythia.root
 //////////////////////////////////////////////////////////
 
 #ifndef MakeHistoSIG_h
@@ -76,6 +76,8 @@ public :
    Int_t           phoIDbit;
    Float_t         MET;
    Float_t         METPhi;
+   Float_t         puppiMET;
+   Float_t         puppiMETPhi;
    Int_t           phohasPixelSeed;
    Float_t         sieieFull5x5;
    Float_t         sieipFull5x5;
@@ -129,34 +131,37 @@ public :
    Float_t         leadingLHEPt;
    Float_t         genHT_pthatDef;
    Float_t         leadingPUPtHat;
+   Float_t         scalefactor_photon;
+   Float_t         jetP4Smear;
+   Float_t         jetP4SmearUp;
+   Float_t         jetP4SmearDn;
    Float_t         xsweight;
    Float_t         crossSection;
    Float_t         integratedLuminosity;
    Float_t         integratedGenWeight;
    Float_t         mcweight;
+   Float_t         effectiveLuminosityPer10Mevt;
    Int_t           isQCD;
-   //Float_t         weight_passMaxPUcut;
-   //Int_t           passMaxPUcut;
    Float_t         DeepCSV_CvsB;
    Float_t         DeepCSV_CvsL;
    Float_t         DeepCSV_bScore;
    Float_t         DeepCSV_ctagWeight_central;
    Float_t         DeepCSV_ctagWeight_PUWeightUp;
    Float_t         DeepCSV_ctagWeight_StatUp;
-   Float_t         DeepCSV_ctagWeight_TotalUncDown;
+   Float_t         DeepCSV_ctagWeight_TotalUncUp;
    Float_t         DeepCSV_ctagWeight_PUWeightDown;
    Float_t         DeepCSV_ctagWeight_StatDown;
-   //Float_t         DeepCSV_ctagWeight_TotalUncDown;
+   Float_t         DeepCSV_ctagWeight_TotalUncDown;
    Float_t         DeepFlavour_CvsB;
    Float_t         DeepFlavour_CvsL;
    Float_t         DeepFlavour_bScore;
    Float_t         DeepFlavour_ctagWeight_central;
    Float_t         DeepFlavour_ctagWeight_PUWeightUp;
    Float_t         DeepFlavour_ctagWeight_StatUp;
-   Float_t         DeepFlavour_ctagWeight_TotalUncDown;
+   Float_t         DeepFlavour_ctagWeight_TotalUncUp;
    Float_t         DeepFlavour_ctagWeight_PUWeightDown;
    Float_t         DeepFlavour_ctagWeight_StatDown;
-   //Float_t         DeepFlavour_ctagWeight_TotalUncDown;
+   Float_t         DeepFlavour_ctagWeight_TotalUncDown;
 
    // List of branches
    TBranch        *b_jetSubVtxPt;   //!
@@ -213,6 +218,8 @@ public :
    TBranch        *b_phoIDbit;   //!
    TBranch        *b_MET;   //!
    TBranch        *b_METPhi;   //!
+   TBranch        *b_puppiMET;   //!
+   TBranch        *b_puppiMETPhi;   //!
    TBranch        *b_phohasPixelSeed;   //!
    TBranch        *b_sieieFull5x5;   //!
    TBranch        *b_sieipFull5x5;   //!
@@ -266,14 +273,17 @@ public :
    TBranch        *b_leadingLHEPt;   //!
    TBranch        *b_genHT_pthatDef;   //!
    TBranch        *b_leadingPUPtHat;   //!
+   TBranch        *b_scalefactor_photon;   //!
+   TBranch        *b_jetP4Smear;   //!
+   TBranch        *b_jetP4SmearUp;   //!
+   TBranch        *b_jetP4SmearDn;   //!
    TBranch        *b_xsweight;   //!
    TBranch        *b_crossSection;   //!
    TBranch        *b_integratedLuminosity;   //!
    TBranch        *b_integratedGenWeight;   //!
    TBranch        *b_mcweight;   //!
+   TBranch        *b_effectiveLuminosityPer10Mevt;   //!
    TBranch        *b_isQCD;   //!
-   //TBranch        *b_weight_passMaxPUcut;   //!
-   //TBranch        *b_passMaxPUcut;   //!
    TBranch        *b_DeepCSV_CvsB;   //!
    TBranch        *b_DeepCSV_CvsL;   //!
    TBranch        *b_DeepCSV_bScore;   //!
@@ -301,7 +311,7 @@ public :
    virtual Int_t    GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
    virtual void     Init(TTree *tree);
-   //virtual void     Loop();
+   virtual void     Loop() {}
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
 };
@@ -314,9 +324,9 @@ MakeHistoSIG::MakeHistoSIG(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step3.btagSFappended/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("sig.pythia.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/step3.btagSFappended/GJet_Pt-40toInf_DoubleEMEnriched_MGG-80toInf_TuneCP5_13TeV_Pythia8.root");
+         f = new TFile("sig.pythia.root");
       }
       f->GetObject("t",tree);
 
@@ -419,6 +429,8 @@ void MakeHistoSIG::Init(TTree *tree)
    fChain->SetBranchAddress("phoIDbit", &phoIDbit, &b_phoIDbit);
    fChain->SetBranchAddress("MET", &MET, &b_MET);
    fChain->SetBranchAddress("METPhi", &METPhi, &b_METPhi);
+   fChain->SetBranchAddress("puppiMET", &puppiMET, &b_puppiMET);
+   fChain->SetBranchAddress("puppiMETPhi", &puppiMETPhi, &b_puppiMETPhi);
    fChain->SetBranchAddress("phohasPixelSeed", &phohasPixelSeed, &b_phohasPixelSeed);
    fChain->SetBranchAddress("sieieFull5x5", &sieieFull5x5, &b_sieieFull5x5);
    fChain->SetBranchAddress("sieipFull5x5", &sieipFull5x5, &b_sieipFull5x5);
@@ -472,34 +484,37 @@ void MakeHistoSIG::Init(TTree *tree)
    fChain->SetBranchAddress("leadingLHEPt", &leadingLHEPt, &b_leadingLHEPt);
    fChain->SetBranchAddress("genHT_pthatDef", &genHT_pthatDef, &b_genHT_pthatDef);
    fChain->SetBranchAddress("leadingPUPtHat", &leadingPUPtHat, &b_leadingPUPtHat);
+   fChain->SetBranchAddress("scalefactor_photon", &scalefactor_photon, &b_scalefactor_photon);
+   fChain->SetBranchAddress("jetP4Smear", &jetP4Smear, &b_jetP4Smear);
+   fChain->SetBranchAddress("jetP4SmearUp", &jetP4SmearUp, &b_jetP4SmearUp);
+   fChain->SetBranchAddress("jetP4SmearDn", &jetP4SmearDn, &b_jetP4SmearDn);
    fChain->SetBranchAddress("xsweight", &xsweight, &b_xsweight);
    fChain->SetBranchAddress("crossSection", &crossSection, &b_crossSection);
    fChain->SetBranchAddress("integratedLuminosity", &integratedLuminosity, &b_integratedLuminosity);
    fChain->SetBranchAddress("integratedGenWeight", &integratedGenWeight, &b_integratedGenWeight);
    fChain->SetBranchAddress("mcweight", &mcweight, &b_mcweight);
+   fChain->SetBranchAddress("effectiveLuminosityPer10Mevt", &effectiveLuminosityPer10Mevt, &b_effectiveLuminosityPer10Mevt);
    fChain->SetBranchAddress("isQCD", &isQCD, &b_isQCD);
-   //fChain->SetBranchAddress("weight_passMaxPUcut", &weight_passMaxPUcut, &b_weight_passMaxPUcut);
-   //fChain->SetBranchAddress("passMaxPUcut", &passMaxPUcut, &b_passMaxPUcut);
    fChain->SetBranchAddress("DeepCSV.CvsB", &DeepCSV_CvsB, &b_DeepCSV_CvsB);
    fChain->SetBranchAddress("DeepCSV.CvsL", &DeepCSV_CvsL, &b_DeepCSV_CvsL);
    fChain->SetBranchAddress("DeepCSV.bScore", &DeepCSV_bScore, &b_DeepCSV_bScore);
    fChain->SetBranchAddress("DeepCSV.ctagWeight.central", &DeepCSV_ctagWeight_central, &b_DeepCSV_ctagWeight_central);
    fChain->SetBranchAddress("DeepCSV.ctagWeight.PUWeightUp", &DeepCSV_ctagWeight_PUWeightUp, &b_DeepCSV_ctagWeight_PUWeightUp);
    fChain->SetBranchAddress("DeepCSV.ctagWeight.StatUp", &DeepCSV_ctagWeight_StatUp, &b_DeepCSV_ctagWeight_StatUp);
-   fChain->SetBranchAddress("DeepCSV.ctagWeight.TotalUncDown", &DeepCSV_ctagWeight_TotalUncDown, &b_DeepCSV_ctagWeight_TotalUncUp);
+   fChain->SetBranchAddress("DeepCSV.ctagWeight.TotalUncUp", &DeepCSV_ctagWeight_TotalUncUp, &b_DeepCSV_ctagWeight_TotalUncUp);
    fChain->SetBranchAddress("DeepCSV.ctagWeight.PUWeightDown", &DeepCSV_ctagWeight_PUWeightDown, &b_DeepCSV_ctagWeight_PUWeightDown);
    fChain->SetBranchAddress("DeepCSV.ctagWeight.StatDown", &DeepCSV_ctagWeight_StatDown, &b_DeepCSV_ctagWeight_StatDown);
-//    fChain->SetBranchAddress("DeepCSV.ctagWeight.TotalUncDown", &DeepCSV_ctagWeight_TotalUncDown, &b_DeepCSV_ctagWeight_TotalUncDown);
+   fChain->SetBranchAddress("DeepCSV.ctagWeight.TotalUncDown", &DeepCSV_ctagWeight_TotalUncDown, &b_DeepCSV_ctagWeight_TotalUncDown);
    fChain->SetBranchAddress("DeepFlavour.CvsB", &DeepFlavour_CvsB, &b_DeepFlavour_CvsB);
    fChain->SetBranchAddress("DeepFlavour.CvsL", &DeepFlavour_CvsL, &b_DeepFlavour_CvsL);
    fChain->SetBranchAddress("DeepFlavour.bScore", &DeepFlavour_bScore, &b_DeepFlavour_bScore);
    fChain->SetBranchAddress("DeepFlavour.ctagWeight.central", &DeepFlavour_ctagWeight_central, &b_DeepFlavour_ctagWeight_central);
    fChain->SetBranchAddress("DeepFlavour.ctagWeight.PUWeightUp", &DeepFlavour_ctagWeight_PUWeightUp, &b_DeepFlavour_ctagWeight_PUWeightUp);
    fChain->SetBranchAddress("DeepFlavour.ctagWeight.StatUp", &DeepFlavour_ctagWeight_StatUp, &b_DeepFlavour_ctagWeight_StatUp);
-   fChain->SetBranchAddress("DeepFlavour.ctagWeight.TotalUncDown", &DeepFlavour_ctagWeight_TotalUncDown, &b_DeepFlavour_ctagWeight_TotalUncUp);
+   fChain->SetBranchAddress("DeepFlavour.ctagWeight.TotalUncUp", &DeepFlavour_ctagWeight_TotalUncUp, &b_DeepFlavour_ctagWeight_TotalUncUp);
    fChain->SetBranchAddress("DeepFlavour.ctagWeight.PUWeightDown", &DeepFlavour_ctagWeight_PUWeightDown, &b_DeepFlavour_ctagWeight_PUWeightDown);
    fChain->SetBranchAddress("DeepFlavour.ctagWeight.StatDown", &DeepFlavour_ctagWeight_StatDown, &b_DeepFlavour_ctagWeight_StatDown);
-//    fChain->SetBranchAddress("DeepFlavour.ctagWeight.TotalUncDown", &DeepFlavour_ctagWeight_TotalUncDown, &b_DeepFlavour_ctagWeight_TotalUncDown);
+   fChain->SetBranchAddress("DeepFlavour.ctagWeight.TotalUncDown", &DeepFlavour_ctagWeight_TotalUncDown, &b_DeepFlavour_ctagWeight_TotalUncDown);
    Notify();
 }
 

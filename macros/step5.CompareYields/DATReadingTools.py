@@ -50,6 +50,35 @@ def ReadEvt_FitResult(inputfile) -> DAT_FitResult:
     return ReadEvt(inputfile, DAT_FitResult)
 
 
+from dataclasses import dataclass
+@dataclass
+class CSVEvt:
+    EBEE : int
+    jetbin : int
+    ptbin : int
+    fitvalue : float
+    fiterror : float
+
+def ReadCSVEvt(inputfile, DAT_STRUCTURE) -> list:
+    import csv
+    output_rec = []
+    with open(inputfile,'r') as ifile:
+        csv_reader = csv.DictReader(ifile)
+        for c in csv_reader:
+            evt = CSVEvt(
+                    EBEE = int(c['pEtaBin']),
+                    jetbin = int(c['jEtaBin']),
+                    ptbin = int(c['pPtBin']),
+                    fitvalue = float(c['values']),
+                    fiterror = float(c['errors']),
+                    )
+            output_rec.append(DAT_STRUCTURE(evt))
+
+    return output_rec
+def ReadCSVEvt_FitResult(inputfile) -> DAT_FitResult:
+    return ReadCSVEvt(inputfile, DAT_FitResult)
+
+
 #ptbin/I:EBEE/I:jetbin/I:sel_passed/F:sel_overall/F:sel_ratio/F:sig_passed/F:sig_overall/F:sig_ratio/F
 class DAT_Efficiency(DAT):
     class Eff:

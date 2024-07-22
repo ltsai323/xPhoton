@@ -60,7 +60,6 @@ def draw_EP_ratio(xySCATTERwithDESC:[myTool.XYscatterPoints],
         ratioTITLE:str = 'ratio',
         ratioYrange:tuple = (0.5,1.5),
         ):
-    plt.clf()
     fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1]},
             facecolor='none', edgecolor='none', figsize=(6,4),dpi=80,
             )
@@ -99,6 +98,57 @@ def draw_EP_ratio(xySCATTERwithDESC:[myTool.XYscatterPoints],
         yErr = xy_scatter.y_err
         desc = xy_scatter.desc
         ax2.errorbar(x,y,yErr, markersize=3, fmt=myTool.MARKER_STYLE[idx], color=myTool.COLORS[idx])
+
+
+    ax2.set_xlabel('$p_{T}^{\gamma}$ (GeV)')
+    ax2.set_ylabel(ratioTITLE)
+    ax2.set_ylim(*ratioYrange)
+def draw_EP_ratio_lowerLined(xySCATTERwithDESC:[myTool.XYscatterPoints],
+        inTITLE:str = 'blah',
+        yTITLE:str = '$d^{3}\sigma$ / d$\eta_{\gamma}$ d$\eta_{C}$ d$p_{T}^{\gamma}$',
+        yRANGE:tuple = (), logY:bool = True,
+        ratioTITLE:str = 'ratio',
+        ratioYrange:tuple = (0.5,1.5),
+        ):
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, gridspec_kw={'height_ratios': [3, 1]},
+            facecolor='none', edgecolor='none', figsize=(6,4),dpi=80,
+            )
+
+
+    ## fill upper pad
+    for idx, xy_scatter_with_desc in enumerate(xySCATTERwithDESC):
+        ax1.errorbar(
+                xy_scatter_with_desc.x,
+                xy_scatter_with_desc.y,
+           yerr=xy_scatter_with_desc.y_err,
+          label=xy_scatter_with_desc.desc,
+                markersize=3,fmt=myTool.MARKER_STYLE[idx], color=myTool.COLORS[idx])
+    ax1.set_title(inTITLE)
+    ax1.set_ylabel(yTITLE)
+
+    if yRANGE and len(yRANGE)>0.:
+        ax1.set_ylim(yRANGE[0],yRANGE[1])
+
+
+        if logY:
+            if yRANGE[0]<0.:
+                print(f'[LogScale - WARNING] Failed log transform to  y axis range {yRANGE}. Use normal scale.')
+            else:
+                ax1.set_yscale('log')
+    else:
+        if logY: ax1.set_yscale('log')
+    ax1.legend()
+
+    ax2.axhline(y=1, color='black', linestyle='--', label='Ratio=1')
+    ## fill lower pad
+    for _idx, xy_scatter in enumerate(TakeRatio(xySCATTERwithDESC)):
+        idx = _idx+1
+        x = xy_scatter.x
+        y = xy_scatter.y
+        yErr = xy_scatter.y_err
+        desc = xy_scatter.desc
+        #ax2.errorbar(x,y,yErr, markersize=3, fmt=myTool.MARKER_STYLE[idx], color=myTool.COLORS[idx])
+        ax2.plot(x,y,marker=myTool.MARKER_STYLE[idx],linestyle='-',color=myTool.COLORS[idx])
 
 
     ax2.set_xlabel('$p_{T}^{\gamma}$ (GeV)')
