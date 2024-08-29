@@ -316,13 +316,19 @@ int EventBinning::PtBin(float pt) const
 
     return NOTHING;
 }
+//int EventBinning::JetEtaBin(float pt, float Y) const
+//{  
+//    if(pt< 1e-3) return 2;
+//    // old
+//    // if(TMath::Abs(Y)<1.5) return 0;
+//    // return 1;
+//    return 0; // merge jet eta bin. Only separate photon eta bin.
+//}
 int EventBinning::JetEtaBin(float pt, float Y) const
 {  
     if(pt< 1e-3) return 2;
-    // old
-    // if(TMath::Abs(Y)<1.5) return 0;
-    // return 1;
-    return 0; // merge jet eta bin. Only separate photon eta bin.
+    if(TMath::Abs(Y)<1.5) return 0;
+    return 1;
 }
 int EventBinning::phosignalregion(float isovar) const
 {
