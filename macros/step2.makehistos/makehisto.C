@@ -12,6 +12,7 @@
 #include <iostream>
 #include <cstring>
 #include <TLorentzVector.h>
+#include <cstdlib>
 
 
 #include "MakeHistoData.h"
@@ -132,6 +133,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
 
     Hists* BDT_QCD_signalRegion = Hists_BDT("BDT_QCD_signalRegion", "calib_mva");
     Hists* BDT_QCD_dataSideband = Hists_BDT("BDT_QCD_dataSideband", "calib_mva");
+    Hists* BDT_QCD              = Hists_BDT("BDT_QCD"             , "calib_mva");
 
     // mva
     Hists* BDT_QCD_signalRegion_shapeUncUp = Hists_BDT("BDT_QCD_signalRegion_shapeUncUp", "mva");
@@ -155,6 +157,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists_CTagReshaped* jettag0_QCD_GJetsC_dataSideband = new Hists_CTagReshaped("jettag0_QCD_GJetsC_dataSideband", Form("%s.bScore",tagALGO));
     Hists_CTagReshaped* jettag0_QCD_GJetsB_signalRegion = new Hists_CTagReshaped("jettag0_QCD_GJetsB_signalRegion", Form("%s.bScore",tagALGO));
     Hists_CTagReshaped* jettag0_QCD_GJetsB_dataSideband = new Hists_CTagReshaped("jettag0_QCD_GJetsB_dataSideband", Form("%s.bScore",tagALGO));
+    Hists_CTagReshaped* jettag0_QCD                     = new Hists_CTagReshaped("jettag0_QCD"                   , Form("%s.bScore",tagALGO));
 
     Hists* jettag0_QCD_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag0_QCD_GJetsL_signalRegion_JetJECUncUp", Form("%s.bScore",tagALGO));
     Hists* jettag0_QCD_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag0_QCD_GJetsC_signalRegion_JetJECUncUp", Form("%s.bScore",tagALGO));
@@ -185,6 +188,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists_CTagReshaped* jettag1_QCD_GJetsC_dataSideband = new Hists_CTagReshaped("jettag1_QCD_GJetsC_dataSideband", Form("%s.CvsL",tagALGO));
     Hists_CTagReshaped* jettag1_QCD_GJetsB_signalRegion = new Hists_CTagReshaped("jettag1_QCD_GJetsB_signalRegion", Form("%s.CvsL",tagALGO));
     Hists_CTagReshaped* jettag1_QCD_GJetsB_dataSideband = new Hists_CTagReshaped("jettag1_QCD_GJetsB_dataSideband", Form("%s.CvsL",tagALGO));
+    Hists_CTagReshaped* jettag1_QCD                     = new Hists_CTagReshaped("jettag1_QCD"                    , Form("%s.CvsL",tagALGO));
 
     Hists* jettag1_QCD_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag1_QCD_GJetsL_signalRegion_JetJECUncUp", Form("%s.CvsL",tagALGO));
     Hists* jettag1_QCD_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag1_QCD_GJetsC_signalRegion_JetJECUncUp", Form("%s.CvsL",tagALGO));
@@ -216,6 +220,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists_CTagReshaped* jettag2_QCD_GJetsC_dataSideband = new Hists_CTagReshaped("jettag2_QCD_GJetsC_dataSideband", Form("%s.CvsB",tagALGO));
     Hists_CTagReshaped* jettag2_QCD_GJetsB_signalRegion = new Hists_CTagReshaped("jettag2_QCD_GJetsB_signalRegion", Form("%s.CvsB",tagALGO));
     Hists_CTagReshaped* jettag2_QCD_GJetsB_dataSideband = new Hists_CTagReshaped("jettag2_QCD_GJetsB_dataSideband", Form("%s.CvsB",tagALGO));
+    Hists_CTagReshaped* jettag2_QCD                     = new Hists_CTagReshaped("jettag2_QCD"                    , Form("%s.CvsB",tagALGO));
 
     Hists* jettag2_QCD_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag2_QCD_GJetsL_signalRegion_JetJECUncUp", Form("%s.CvsB",tagALGO));
     Hists* jettag2_QCD_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag2_QCD_GJetsC_signalRegion_JetJECUncUp", Form("%s.CvsB",tagALGO));
@@ -248,6 +253,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists* jettag3_QCD_GJetsC_dataSideband = Hists_SubVtxMass("jettag3_QCD_GJetsC_dataSideband", Form("%s.jetSubVtxMass", tagALGO));
     Hists* jettag3_QCD_GJetsB_signalRegion = Hists_SubVtxMass("jettag3_QCD_GJetsB_signalRegion", Form("%s.jetSubVtxMass", tagALGO));
     Hists* jettag3_QCD_GJetsB_dataSideband = Hists_SubVtxMass("jettag3_QCD_GJetsB_dataSideband", Form("%s.jetSubVtxMass", tagALGO));
+    Hists* jettag3_QCD                     = Hists_SubVtxMass("jettag3_QCD"                    , Form("%s.jetSubVtxMass", tagALGO));
 
     Hists* jettag3_QCD_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag3_QCD_GJetsL_signalRegion_JetJECUncUp", Form("%s.jetSubVtxMass",tagALGO));
     Hists* jettag3_QCD_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag3_QCD_GJetsC_signalRegion_JetJECUncUp", Form("%s.jetSubVtxMass",tagALGO));
@@ -284,10 +290,10 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
 
 
         // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
-        //Float_t eventweight = load_qcd.mcweight * load_qcd.puwei * load_qcd.weight_passMaxPUcut;
-        Float_t _evt_weig_  = load_qcd.weight_passMaxPUcut * \
-                              load_qcd.puwei * load_qcd.scalefactor_photon * \
-                              load_qcd.genWeight * load_qcd.crossSection / load_qcd.integratedGenWeight;
+        Float_t _evt_weig_  = load_qcd.mcweight * load_qcd.puwei * load_qcd.scalefactor_photon * load_qcd.weight_passMaxPUcut;
+        // Float_t _evt_weig_  = load_qcd.weight_passMaxPUcut * \
+        //                       load_qcd.puwei * load_qcd.scalefactor_photon * \
+        //                       load_qcd.genWeight * load_qcd.crossSection / load_qcd.integratedGenWeight;
         Float_t eventweight = _evt_weig_ * load_qcd.jetP4Smear;
 
 	
@@ -376,6 +382,14 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         {
             Fill(evtbin,BDT_QCD_dataSideband           , load_qcd.calib_mva,eventweight);
             Fill(evtbin,BDT_QCD_dataSideband_shapeUncUp, load_qcd.mva      ,eventweight);
+        }
+        if (                          isFakePhoton)
+        {
+            Fill(evtbin,BDT_QCD                        , load_qcd.calib_mva,eventweight);
+            Fill_AllCTagReshaped(evtbin,jettag0_QCD, GetBJetVar(load_qcd,tagALGO,"bScore"), eventweight, load_qcd, tagALGO);
+            Fill_AllCTagReshaped(evtbin,jettag1_QCD, GetBJetVar(load_qcd,tagALGO,"CvsL")  , eventweight, load_qcd, tagALGO);
+            Fill_AllCTagReshaped(evtbin,jettag2_QCD, GetBJetVar(load_qcd,tagALGO,"CvsB")  , eventweight, load_qcd, tagALGO);
+            Fill(evtbin,jettag3_QCD, load_qcd.jetSubVtxMass,eventweight);
         }
 
 
@@ -513,6 +527,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         EventBinning bin(pEtaIdx,jEtaIdx,pPtIdx);
         Write(bin,BDT_QCD_signalRegion);
         Write(bin,BDT_QCD_dataSideband);
+        Write(bin,BDT_QCD             );
 
         Write(bin,BDT_QCD_signalRegion_shapeUncUp);
         Write(bin,BDT_QCD_dataSideband_shapeUncUp);
@@ -537,6 +552,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write_AllCTagReshaped(bin,jettag0_QCD_GJetsC_dataSideband);
         Write_AllCTagReshaped(bin,jettag0_QCD_GJetsB_signalRegion);
         Write_AllCTagReshaped(bin,jettag0_QCD_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_QCD                    );
         Write(bin,jettag0_QCD_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag0_QCD_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag0_QCD_GJetsB_signalRegion_JetJECUncUp);
@@ -562,6 +578,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write_AllCTagReshaped(bin,jettag1_QCD_GJetsC_dataSideband);
         Write_AllCTagReshaped(bin,jettag1_QCD_GJetsB_signalRegion);
         Write_AllCTagReshaped(bin,jettag1_QCD_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_QCD                    );
         Write(bin,jettag1_QCD_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag1_QCD_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag1_QCD_GJetsB_signalRegion_JetJECUncUp);
@@ -587,6 +604,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write_AllCTagReshaped(bin,jettag2_QCD_GJetsC_dataSideband);
         Write_AllCTagReshaped(bin,jettag2_QCD_GJetsB_signalRegion);
         Write_AllCTagReshaped(bin,jettag2_QCD_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_QCD                    );
         Write(bin,jettag2_QCD_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag2_QCD_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag2_QCD_GJetsB_signalRegion_JetJECUncUp);
@@ -612,6 +630,7 @@ void LoopQCD( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write(bin,jettag3_QCD_GJetsC_dataSideband);
         Write(bin,jettag3_QCD_GJetsB_signalRegion);
         Write(bin,jettag3_QCD_GJetsB_dataSideband);
+        Write(bin,jettag3_QCD                    );
         Write(bin,jettag3_QCD_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag3_QCD_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag3_QCD_GJetsB_signalRegion_JetJECUncUp);
@@ -683,290 +702,6 @@ void Fill_AllCTagReshaped( const EventBinning& bin,Hists_CTagReshaped* h, float 
             GetBJetVarWeights(loadvars,tagALGO, "weight_StatDown")
             );
 } // Fill_AllCTagReshaped end }}}
-//void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* fout, const char* inputfilename, int processNEvt = -1 ) // {{{
-//{
-//    const int NUMBIN_PHOPT = ptbin_ranges().size();
-//
-//    fout->cd();
-//
-//    Hists* BDT_gjet_signalRegion = Hists_BDT("BDT_gjet_signalRegion", "calib_mva");
-//    Hists* BDT_gjet_dataSideband = Hists_BDT("BDT_gjet_dataSideband", "calib_mva");
-//    Hists* BDT_gjet_signalRegion_shapeUncUp = Hists_BDT("BDT_gjet_signalRegion_shapeUncUp", "mva");
-//    Hists* BDT_gjet_dataSideband_shapeUncUp = Hists_BDT("BDT_gjet_dataSideband_shapeUncUp", "mva");
-//
-//
-//    Hists_CTagReshaped* jettag0_gjet_DiJetL_signalRegion = new Hists_CTagReshaped("jettag0_gjet_DiJetL_signalRegion", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_DiJetL_dataSideband = new Hists_CTagReshaped("jettag0_gjet_DiJetL_dataSideband", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_DiJetC_signalRegion = new Hists_CTagReshaped("jettag0_gjet_DiJetC_signalRegion", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_DiJetC_dataSideband = new Hists_CTagReshaped("jettag0_gjet_DiJetC_dataSideband", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_DiJetB_signalRegion = new Hists_CTagReshaped("jettag0_gjet_DiJetB_signalRegion", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_DiJetB_dataSideband = new Hists_CTagReshaped("jettag0_gjet_DiJetB_dataSideband", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_GJetsL_signalRegion = new Hists_CTagReshaped("jettag0_gjet_GJetsL_signalRegion", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_GJetsL_dataSideband = new Hists_CTagReshaped("jettag0_gjet_GJetsL_dataSideband", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_GJetsC_signalRegion = new Hists_CTagReshaped("jettag0_gjet_GJetsC_signalRegion", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_GJetsC_dataSideband = new Hists_CTagReshaped("jettag0_gjet_GJetsC_dataSideband", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_GJetsB_signalRegion = new Hists_CTagReshaped("jettag0_gjet_GJetsB_signalRegion", Form("%s.bScore",tagALGO));
-//    Hists_CTagReshaped* jettag0_gjet_GJetsB_dataSideband = new Hists_CTagReshaped("jettag0_gjet_GJetsB_dataSideband", Form("%s.bScore",tagALGO));
-//
-//    Hists_CTagReshaped* jettag1_gjet_DiJetL_signalRegion = new Hists_CTagReshaped("jettag1_gjet_DiJetL_signalRegion", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_DiJetL_dataSideband = new Hists_CTagReshaped("jettag1_gjet_DiJetL_dataSideband", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_DiJetC_signalRegion = new Hists_CTagReshaped("jettag1_gjet_DiJetC_signalRegion", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_DiJetC_dataSideband = new Hists_CTagReshaped("jettag1_gjet_DiJetC_dataSideband", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_DiJetB_signalRegion = new Hists_CTagReshaped("jettag1_gjet_DiJetB_signalRegion", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_DiJetB_dataSideband = new Hists_CTagReshaped("jettag1_gjet_DiJetB_dataSideband", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_GJetsL_signalRegion = new Hists_CTagReshaped("jettag1_gjet_GJetsL_signalRegion", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_GJetsL_dataSideband = new Hists_CTagReshaped("jettag1_gjet_GJetsL_dataSideband", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_GJetsC_signalRegion = new Hists_CTagReshaped("jettag1_gjet_GJetsC_signalRegion", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_GJetsC_dataSideband = new Hists_CTagReshaped("jettag1_gjet_GJetsC_dataSideband", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_GJetsB_signalRegion = new Hists_CTagReshaped("jettag1_gjet_GJetsB_signalRegion", Form("%s.CvsL",tagALGO));
-//    Hists_CTagReshaped* jettag1_gjet_GJetsB_dataSideband = new Hists_CTagReshaped("jettag1_gjet_GJetsB_dataSideband", Form("%s.CvsL",tagALGO));
-//
-//    Hists_CTagReshaped* jettag2_gjet_DiJetL_signalRegion = new Hists_CTagReshaped("jettag2_gjet_DiJetL_signalRegion", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_DiJetL_dataSideband = new Hists_CTagReshaped("jettag2_gjet_DiJetL_dataSideband", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_DiJetC_signalRegion = new Hists_CTagReshaped("jettag2_gjet_DiJetC_signalRegion", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_DiJetC_dataSideband = new Hists_CTagReshaped("jettag2_gjet_DiJetC_dataSideband", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_DiJetB_signalRegion = new Hists_CTagReshaped("jettag2_gjet_DiJetB_signalRegion", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_DiJetB_dataSideband = new Hists_CTagReshaped("jettag2_gjet_DiJetB_dataSideband", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_GJetsL_signalRegion = new Hists_CTagReshaped("jettag2_gjet_GJetsL_signalRegion", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_GJetsL_dataSideband = new Hists_CTagReshaped("jettag2_gjet_GJetsL_dataSideband", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_GJetsC_signalRegion = new Hists_CTagReshaped("jettag2_gjet_GJetsC_signalRegion", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_GJetsC_dataSideband = new Hists_CTagReshaped("jettag2_gjet_GJetsC_dataSideband", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_GJetsB_signalRegion = new Hists_CTagReshaped("jettag2_gjet_GJetsB_signalRegion", Form("%s.CvsB",tagALGO));
-//    Hists_CTagReshaped* jettag2_gjet_GJetsB_dataSideband = new Hists_CTagReshaped("jettag2_gjet_GJetsB_dataSideband", Form("%s.CvsB",tagALGO));
-//
-//    Hists* jettag3_gjet_DiJetL_signalRegion = Hists_SubVtxMass("jettag3_gjet_DiJetL_signalRegion", "jetSubVtxMass");
-//    Hists* jettag3_gjet_DiJetL_dataSideband = Hists_SubVtxMass("jettag3_gjet_DiJetL_dataSideband", "jetSubVtxMass");
-//    Hists* jettag3_gjet_DiJetC_signalRegion = Hists_SubVtxMass("jettag3_gjet_DiJetC_signalRegion", "jetSubVtxMass");
-//    Hists* jettag3_gjet_DiJetC_dataSideband = Hists_SubVtxMass("jettag3_gjet_DiJetC_dataSideband", "jetSubVtxMass");
-//    Hists* jettag3_gjet_DiJetB_signalRegion = Hists_SubVtxMass("jettag3_gjet_DiJetB_signalRegion", "jetSubVtxMass");
-//    Hists* jettag3_gjet_DiJetB_dataSideband = Hists_SubVtxMass("jettag3_gjet_DiJetB_dataSideband", "jetSubVtxMass");
-//    Hists* jettag3_gjet_GJetsL_signalRegion = Hists_SubVtxMass("jettag3_gjet_GJetsL_signalRegion", "jetSubVtxMass");
-//    Hists* jettag3_gjet_GJetsL_dataSideband = Hists_SubVtxMass("jettag3_gjet_GJetsL_dataSideband", "jetSubVtxMass");
-//    Hists* jettag3_gjet_GJetsC_signalRegion = Hists_SubVtxMass("jettag3_gjet_GJetsC_signalRegion", "jetSubVtxMass");
-//    Hists* jettag3_gjet_GJetsC_dataSideband = Hists_SubVtxMass("jettag3_gjet_GJetsC_dataSideband", "jetSubVtxMass");
-//    Hists* jettag3_gjet_GJetsB_signalRegion = Hists_SubVtxMass("jettag3_gjet_GJetsB_signalRegion", "jetSubVtxMass");
-//    Hists* jettag3_gjet_GJetsB_dataSideband = Hists_SubVtxMass("jettag3_gjet_GJetsB_dataSideband", "jetSubVtxMass");
-//
-//
-//
-//    TFile* iii = TFile::Open(inputfilename);
-//    TTree* ttt = (TTree*) iii->Get("t");
-//    MakeHistoSIG load_sig(ttt);
-//
-//    Long64_t nentries = processNEvt > 0 ? processNEvt : load_sig.fChain->GetEntries();
-//
-//    LOG("Looping in %lli entries", nentries);
-//
-//    Long64_t nbytes = 0, nb = 0;
-//    for (Long64_t jentry=0; jentry<nentries;jentry++)
-//    {
-//        Long64_t ientry = load_sig.LoadTree(jentry);
-//        
-//        if (ientry < 0) break;
-//        nb = load_sig.GetEntry(jentry); nbytes += nb;
-//
-//        if (jentry % 1000000 == 0){ fprintf(stderr, "Processing event %lli of %lli (%.3f)\n", jentry+1, nentries, (jentry+1)*100./nentries); }
-//
-//
-//        // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
-//        //Float_t eventweight = load_sig.mcweight * load_sig.puwei;
-//        Float_t eventweight = load_sig.puwei * load_sig.scalefactor_photon * load_sig.jetP4Smear * \
-//                              load_sig.genWeight * load_sig.crossSection / load_sig.integratedGenWeight;
-//
-//	
-//        const EventBinning evtbin = BinningFactory(load_sig);
-//        int hltbit = TriggerBit(dataERA, evtbin.pPtBin);
-//        EvtSelMgr sel = EvtSelFactory(load_sig, tagALGO);
-//        bool isFakePhoton =
-//            (load_sig.isMatched!=1 && load_sig.isConverted!=1 && load_sig.isMatchedEle!=1 )?
-//            1 : 0;
-//
-//        // preselections
-//        if (!sel.PassPhotonPreSelection(evtbin.pPtBin) ) continue;
-//        if (!sel.InFiducialRegion() ) continue;
-//        if (!sel.PassJetAdditionalSelection(extracut) ) continue;
-//        if (!sel.PassHLT(hltbit) ) continue; // indeed it is useless in signal MC
-//
-//
-//        if ( evtbin.isSignalRegion &&!isFakePhoton )
-//        {
-//            Fill(evtbin,BDT_gjet_signalRegion           , load_sig.calib_mva,eventweight);
-//            Fill(evtbin,BDT_gjet_signalRegion_shapeUncUp, load_sig.mva      ,eventweight);
-//        }
-//        if ( evtbin.isDataSideband &&!isFakePhoton )
-//        {
-//            Fill(evtbin,BDT_gjet_dataSideband           , load_sig.calib_mva,eventweight);
-//            Fill(evtbin,BDT_gjet_dataSideband_shapeUncUp, load_sig.mva      ,eventweight);
-//        }
-//
-//
-//        // L jet
-//        if ( evtbin.isSignalRegion && isFakePhoton && sel.isLJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetL_signalRegion, GetBJetVar(load_sig,tagALGO,"bScore"), eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetL_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsL")  , eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetL_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsB")  , eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_DiJetL_signalRegion, load_sig.jetSubVtxMass,eventweight);
-//        }
-//        if ( evtbin.isDataSideband && isFakePhoton && sel.isLJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetL_dataSideband, GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetL_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetL_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_DiJetL_dataSideband, load_sig.jetSubVtxMass,eventweight);
-//        }
-//
-//        if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isLJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsL_signalRegion, GetBJetVar(load_sig,tagALGO,"bScore"), eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsL_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsL")  , eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsL_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsB")  , eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_GJetsL_signalRegion, load_sig.jetSubVtxMass,eventweight);
-//        }
-//        if ( evtbin.isDataSideband &&!isFakePhoton && sel.isLJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsL_dataSideband, GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsL_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsL_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_GJetsL_dataSideband, load_sig.jetSubVtxMass,eventweight);
-//        }
-//
-//
-//        // c jet
-//        if ( evtbin.isSignalRegion && isFakePhoton && sel.isCJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetC_signalRegion, GetBJetVar(load_sig,tagALGO,"bScore"), eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetC_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsL")  , eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetC_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsB")  , eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_DiJetC_signalRegion, load_sig.jetSubVtxMass,eventweight);
-//        }
-//        if ( evtbin.isDataSideband && isFakePhoton && sel.isCJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetC_dataSideband, GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetC_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetC_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_DiJetC_dataSideband, load_sig.jetSubVtxMass,eventweight);
-//        }
-//
-//        if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isCJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsC_signalRegion, GetBJetVar(load_sig,tagALGO,"bScore"), eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsC_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsL")  , eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsC_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsB")  , eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_GJetsC_signalRegion, load_sig.jetSubVtxMass,eventweight);
-//        }
-//        if ( evtbin.isDataSideband &&!isFakePhoton && sel.isCJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsC_dataSideband, GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsC_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsC_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_GJetsC_dataSideband, load_sig.jetSubVtxMass,eventweight);
-//        }
-//
-//
-//        // bjet
-//        if ( evtbin.isSignalRegion && isFakePhoton && sel.isBJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetB_signalRegion, GetBJetVar(load_sig,tagALGO,"bScore"), eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetB_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsL")  , eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetB_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsB")  , eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_DiJetB_signalRegion, load_sig.jetSubVtxMass,eventweight);
-//        }
-//        if ( evtbin.isDataSideband && isFakePhoton && sel.isBJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_DiJetB_dataSideband, GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_DiJetB_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_DiJetB_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_DiJetB_dataSideband, load_sig.jetSubVtxMass,eventweight);
-//        }
-//
-//        if ( evtbin.isSignalRegion &&!isFakePhoton && sel.isBJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsB_signalRegion, GetBJetVar(load_sig,tagALGO,"bScore"), eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsB_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsL")  , eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsB_signalRegion, GetBJetVar(load_sig,tagALGO,"CvsB")  , eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_GJetsB_signalRegion, load_sig.jetSubVtxMass,eventweight);
-//        }
-//        if ( evtbin.isDataSideband &&!isFakePhoton && sel.isBJet() )
-//        {
-//            Fill_AllCTagReshaped(evtbin,jettag0_gjet_GJetsB_dataSideband, GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag1_gjet_GJetsB_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
-//            Fill_AllCTagReshaped(evtbin,jettag2_gjet_GJetsB_dataSideband, GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
-//            Fill(evtbin,jettag3_gjet_GJetsB_dataSideband, load_sig.jetSubVtxMass,eventweight);
-//        }
-//    }
-//    LOG("hiiii end of loop");
-//
-//    fout->cd();
-//    for ( int pEtaIdx = 0; pEtaIdx < NUMBIN_PHOETA; ++pEtaIdx )
-//        for ( int jEtaIdx = 0; jEtaIdx < NUMBIN_JETETA; ++jEtaIdx )
-//            for ( int pPtIdx = 0; pPtIdx < NUMBIN_PHOPT; ++pPtIdx )
-//    {
-//        TDirectory* outputfolder = fout->mkdir( Form("bin_%d_%d_%d",pEtaIdx,jEtaIdx,pPtIdx) );
-//        outputfolder->cd();
-//        EventBinning bin(pEtaIdx,jEtaIdx,pPtIdx);
-//        Write(bin,BDT_gjet_signalRegion);
-//        Write(bin,BDT_gjet_dataSideband);
-//
-//        Write(bin,BDT_gjet_signalRegion_shapeUncUp);
-//        Write(bin,BDT_gjet_dataSideband_shapeUncUp);
-//        WriteShapeUncDown(bin,BDT_gjet_signalRegion,BDT_gjet_signalRegion_shapeUncUp);
-//        WriteShapeUncDown(bin,BDT_gjet_dataSideband,BDT_gjet_dataSideband_shapeUncUp);
-//
-//
-//        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetL_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetL_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetC_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetC_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_DiJetB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsL_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsL_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_dataSideband);
-//
-//        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetL_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetL_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetC_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetC_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_DiJetB_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsL_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsL_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_dataSideband);
-//
-//        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetL_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetL_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetC_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetC_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_DiJetB_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsL_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsL_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_dataSideband);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_signalRegion);
-//        Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_dataSideband);
-//
-//        Write(bin,jettag3_gjet_DiJetL_signalRegion);
-//        Write(bin,jettag3_gjet_DiJetL_dataSideband);
-//        Write(bin,jettag3_gjet_DiJetC_signalRegion);
-//        Write(bin,jettag3_gjet_DiJetC_dataSideband);
-//        Write(bin,jettag3_gjet_DiJetB_signalRegion);
-//        Write(bin,jettag3_gjet_DiJetB_dataSideband);
-//        Write(bin,jettag3_gjet_GJetsL_signalRegion);
-//        Write(bin,jettag3_gjet_GJetsL_dataSideband);
-//        Write(bin,jettag3_gjet_GJetsC_signalRegion);
-//        Write(bin,jettag3_gjet_GJetsC_dataSideband);
-//        Write(bin,jettag3_gjet_GJetsB_signalRegion);
-//        Write(bin,jettag3_gjet_GJetsB_dataSideband);
-//    }
-//} // LoopSIG end }}}
 void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* fout, const char* inputfilename, int processNEvt = -1 ) // {{{
 {
     const int NUMBIN_PHOPT = ptbin_ranges().size();
@@ -975,6 +710,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
 
     Hists* BDT_gjet_signalRegion = Hists_BDT("BDT_gjet_signalRegion", "calib_mva");
     Hists* BDT_gjet_dataSideband = Hists_BDT("BDT_gjet_dataSideband", "calib_mva");
+    Hists* BDT_gjet              = Hists_BDT("BDT_gjet"             , "calib_mva");
 
     // mva
     Hists* BDT_gjet_signalRegion_shapeUncUp = Hists_BDT("BDT_gjet_signalRegion_shapeUncUp", "mva");
@@ -998,6 +734,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists_CTagReshaped* jettag0_gjet_GJetsC_dataSideband = new Hists_CTagReshaped("jettag0_gjet_GJetsC_dataSideband", Form("%s.bScore",tagALGO));
     Hists_CTagReshaped* jettag0_gjet_GJetsB_signalRegion = new Hists_CTagReshaped("jettag0_gjet_GJetsB_signalRegion", Form("%s.bScore",tagALGO));
     Hists_CTagReshaped* jettag0_gjet_GJetsB_dataSideband = new Hists_CTagReshaped("jettag0_gjet_GJetsB_dataSideband", Form("%s.bScore",tagALGO));
+    Hists_CTagReshaped* jettag0_gjet                     = new Hists_CTagReshaped("jettag0_gjet"                    , Form("%s.bScore",tagALGO));
 
     Hists* jettag0_gjet_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag0_gjet_GJetsL_signalRegion_JetJECUncUp", Form("%s.bScore",tagALGO));
     Hists* jettag0_gjet_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag0_gjet_GJetsC_signalRegion_JetJECUncUp", Form("%s.bScore",tagALGO));
@@ -1028,6 +765,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists_CTagReshaped* jettag1_gjet_GJetsC_dataSideband = new Hists_CTagReshaped("jettag1_gjet_GJetsC_dataSideband", Form("%s.CvsL",tagALGO));
     Hists_CTagReshaped* jettag1_gjet_GJetsB_signalRegion = new Hists_CTagReshaped("jettag1_gjet_GJetsB_signalRegion", Form("%s.CvsL",tagALGO));
     Hists_CTagReshaped* jettag1_gjet_GJetsB_dataSideband = new Hists_CTagReshaped("jettag1_gjet_GJetsB_dataSideband", Form("%s.CvsL",tagALGO));
+    Hists_CTagReshaped* jettag1_gjet                     = new Hists_CTagReshaped("jettag1_gjet"                    , Form("%s.CvsL",tagALGO));
 
     Hists* jettag1_gjet_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag1_gjet_GJetsL_signalRegion_JetJECUncUp", Form("%s.CvsL",tagALGO));
     Hists* jettag1_gjet_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag1_gjet_GJetsC_signalRegion_JetJECUncUp", Form("%s.CvsL",tagALGO));
@@ -1059,6 +797,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists_CTagReshaped* jettag2_gjet_GJetsC_dataSideband = new Hists_CTagReshaped("jettag2_gjet_GJetsC_dataSideband", Form("%s.CvsB",tagALGO));
     Hists_CTagReshaped* jettag2_gjet_GJetsB_signalRegion = new Hists_CTagReshaped("jettag2_gjet_GJetsB_signalRegion", Form("%s.CvsB",tagALGO));
     Hists_CTagReshaped* jettag2_gjet_GJetsB_dataSideband = new Hists_CTagReshaped("jettag2_gjet_GJetsB_dataSideband", Form("%s.CvsB",tagALGO));
+    Hists_CTagReshaped* jettag2_gjet                     = new Hists_CTagReshaped("jettag2_gjet"                    , Form("%s.CvsB",tagALGO));
 
     Hists* jettag2_gjet_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag2_gjet_GJetsL_signalRegion_JetJECUncUp", Form("%s.CvsB",tagALGO));
     Hists* jettag2_gjet_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag2_gjet_GJetsC_signalRegion_JetJECUncUp", Form("%s.CvsB",tagALGO));
@@ -1091,6 +830,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
     Hists* jettag3_gjet_GJetsC_dataSideband = Hists_SubVtxMass("jettag3_gjet_GJetsC_dataSideband", Form("%s.jetSubVtxMass", tagALGO));
     Hists* jettag3_gjet_GJetsB_signalRegion = Hists_SubVtxMass("jettag3_gjet_GJetsB_signalRegion", Form("%s.jetSubVtxMass", tagALGO));
     Hists* jettag3_gjet_GJetsB_dataSideband = Hists_SubVtxMass("jettag3_gjet_GJetsB_dataSideband", Form("%s.jetSubVtxMass", tagALGO));
+    Hists* jettag3_gjet                     = Hists_SubVtxMass("jettag3_gjet"                    , Form("%s.jetSubVtxMass", tagALGO));
 
     Hists* jettag3_gjet_GJetsL_signalRegion_JetJECUncUp = Hists_CTags("jettag3_gjet_GJetsL_signalRegion_JetJECUncUp", Form("%s.jetSubVtxMass",tagALGO));
     Hists* jettag3_gjet_GJetsC_signalRegion_JetJECUncUp = Hists_CTags("jettag3_gjet_GJetsC_signalRegion_JetJECUncUp", Form("%s.jetSubVtxMass",tagALGO));
@@ -1127,10 +867,10 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
 
 
         // not to use mcweight because pre-scaled HLT owns different effective luminosity. So put it afterward.
-        //Float_t eventweight = load_sig.mcweight * load_sig.puwei * load_sig.weight_passMaxPUcut;
-        Float_t _evt_weig_  = \
-                              load_sig.puwei * load_sig.scalefactor_photon * \
-                              load_sig.genWeight * load_sig.crossSection / load_sig.integratedGenWeight;
+        Float_t _evt_weig_  = load_sig.mcweight * load_sig.puwei * load_sig.scalefactor_photon;
+        //Float_t _evt_weig_  = \
+        //                      load_sig.puwei * load_sig.scalefactor_photon * \
+        //                      load_sig.genWeight * load_sig.crossSection / load_sig.integratedGenWeight;
         Float_t eventweight = _evt_weig_ * load_sig.jetP4Smear;
 
 	
@@ -1219,6 +959,14 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         {
             Fill(evtbin,BDT_gjet_dataSideband           , load_sig.calib_mva,eventweight);
             Fill(evtbin,BDT_gjet_dataSideband_shapeUncUp, load_sig.mva      ,eventweight);
+        }
+        if (!isFakePhoton)
+        {
+            Fill(evtbin,BDT_gjet                        , load_sig.calib_mva,eventweight);
+            Fill_AllCTagReshaped(evtbin,jettag0_gjet                    , GetBJetVar(load_sig,tagALGO,"bScore"),eventweight, load_sig, tagALGO);
+            Fill_AllCTagReshaped(evtbin,jettag1_gjet                    , GetBJetVar(load_sig,tagALGO,"CvsL")  ,eventweight, load_sig, tagALGO);
+            Fill_AllCTagReshaped(evtbin,jettag2_gjet                    , GetBJetVar(load_sig,tagALGO,"CvsB")  ,eventweight, load_sig, tagALGO);
+            Fill(evtbin,jettag3_gjet                    , load_sig.jetSubVtxMass,eventweight);
         }
 
 
@@ -1356,6 +1104,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         EventBinning bin(pEtaIdx,jEtaIdx,pPtIdx);
         Write(bin,BDT_gjet_signalRegion);
         Write(bin,BDT_gjet_dataSideband);
+        Write(bin,BDT_gjet             );
 
         Write(bin,BDT_gjet_signalRegion_shapeUncUp);
         Write(bin,BDT_gjet_dataSideband_shapeUncUp);
@@ -1380,6 +1129,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write_AllCTagReshaped(bin,jettag0_gjet_GJetsC_dataSideband);
         Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_signalRegion);
         Write_AllCTagReshaped(bin,jettag0_gjet_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag0_gjet                    );
         Write(bin,jettag0_gjet_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag0_gjet_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag0_gjet_GJetsB_signalRegion_JetJECUncUp);
@@ -1405,6 +1155,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write_AllCTagReshaped(bin,jettag1_gjet_GJetsC_dataSideband);
         Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_signalRegion);
         Write_AllCTagReshaped(bin,jettag1_gjet_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag1_gjet                    );
         Write(bin,jettag1_gjet_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag1_gjet_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag1_gjet_GJetsB_signalRegion_JetJECUncUp);
@@ -1430,6 +1181,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write_AllCTagReshaped(bin,jettag2_gjet_GJetsC_dataSideband);
         Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_signalRegion);
         Write_AllCTagReshaped(bin,jettag2_gjet_GJetsB_dataSideband);
+        Write_AllCTagReshaped(bin,jettag2_gjet                    );
         Write(bin,jettag2_gjet_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag2_gjet_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag2_gjet_GJetsB_signalRegion_JetJECUncUp);
@@ -1455,6 +1207,7 @@ void LoopSIG( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* f
         Write(bin,jettag3_gjet_GJetsC_dataSideband);
         Write(bin,jettag3_gjet_GJetsB_signalRegion);
         Write(bin,jettag3_gjet_GJetsB_dataSideband);
+        Write(bin,jettag3_gjet                    );
         Write(bin,jettag3_gjet_GJetsL_signalRegion_JetJECUncUp);
         Write(bin,jettag3_gjet_GJetsC_signalRegion_JetJECUncUp);
         Write(bin,jettag3_gjet_GJetsB_signalRegion_JetJECUncUp);
@@ -1523,18 +1276,23 @@ void LoopData( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* 
 
     Hists* BDT_data_signalRegion = Hists_BDT("BDT_data_signalRegion", "mva");
     Hists* BDT_data_dataSideband = Hists_BDT("BDT_data_dataSideband", "mva");
+    Hists* BDT_data              = Hists_BDT("BDT_data"             , "mva");
 
     Hists* jettag0_data_signalRegion = Hists_CTags("jettag0_data_signalRegion", Form("%s.bScore",tagALGO));
     Hists* jettag0_data_dataSideband = Hists_CTags("jettag0_data_dataSideband", Form("%s.bScore",tagALGO));
+    Hists* jettag0_data              = Hists_CTags("jettag0_data"             , Form("%s.bScore",tagALGO));
 
     Hists* jettag1_data_signalRegion = Hists_CTags("jettag1_data_signalRegion", Form("%s.CvsL",tagALGO));
     Hists* jettag1_data_dataSideband = Hists_CTags("jettag1_data_dataSideband", Form("%s.CvsL",tagALGO));
+    Hists* jettag1_data              = Hists_CTags("jettag1_data"             , Form("%s.CvsL",tagALGO));
 
     Hists* jettag2_data_signalRegion = Hists_CTags("jettag2_data_signalRegion", Form("%s.CvsB",tagALGO));
     Hists* jettag2_data_dataSideband = Hists_CTags("jettag2_data_dataSideband", Form("%s.CvsB",tagALGO));
+    Hists* jettag2_data              = Hists_CTags("jettag2_data"             , Form("%s.CvsB",tagALGO));
 
     Hists* jettag3_data_signalRegion = Hists_SubVtxMass("jettag3_data_signalRegion", "jetSubVtxMass");
     Hists* jettag3_data_dataSideband = Hists_SubVtxMass("jettag3_data_dataSideband", "jetSubVtxMass");
+    Hists* jettag3_data              = Hists_SubVtxMass("jettag3_data"             , "jetSubVtxMass");
 
     TH1F* hist_HLT[30];
     for ( int i=0; i<30; ++i )
@@ -1593,6 +1351,11 @@ void LoopData( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* 
             Fill(evtbin,jettag2_data_dataSideband, GetBJetVar(load_data,tagALGO,"CvsB")  ,eventweight);
             Fill(evtbin,jettag3_data_dataSideband, load_data.jetSubVtxMass,eventweight);
         }
+        Fill(evtbin,BDT_data                 , load_data.mva,eventweight);
+        Fill(evtbin,jettag0_data             , GetBJetVar(load_data,tagALGO,"bScore"),eventweight);
+        Fill(evtbin,jettag1_data             , GetBJetVar(load_data,tagALGO,"CvsL")  ,eventweight);
+        Fill(evtbin,jettag2_data             , GetBJetVar(load_data,tagALGO,"CvsB")  ,eventweight);
+        Fill(evtbin,jettag3_data             , load_data.jetSubVtxMass,eventweight);
         
     }
     LOG("hiiii end of loop");
@@ -1610,18 +1373,23 @@ void LoopData( Int_t extracut, const char* dataERA, const char* tagALGO, TFile* 
         EventBinning bin(pEtaIdx,jEtaIdx,pPtIdx);
         Write(bin,BDT_data_signalRegion);
         Write(bin,BDT_data_dataSideband);
+        Write(bin,BDT_data             );
 
         Write(bin,jettag0_data_signalRegion);
         Write(bin,jettag0_data_dataSideband);
+        Write(bin,jettag0_data             );
 
         Write(bin,jettag1_data_signalRegion);
         Write(bin,jettag1_data_dataSideband);
+        Write(bin,jettag1_data             );
 
         Write(bin,jettag2_data_signalRegion);
         Write(bin,jettag2_data_dataSideband);
+        Write(bin,jettag2_data             );
 
         Write(bin,jettag3_data_signalRegion);
         Write(bin,jettag3_data_dataSideband);
+        Write(bin,jettag3_data             );
     }
     
 } // LoopData end }}}
@@ -1635,7 +1403,7 @@ void Loop(Int_t extracut, const char* dataERA, const char* tagALGO, const char* 
         NEVENT = 10;
         extracut = 0;
     }
-    NEVENT = -1;
+    std::cout << "args : extracut " << extracut << ", dataERA" << dataERA << ", tagALGO " << tagALGO << ", dataTYPE " << dataTYPE << ", iFile " << inputfilename << std::endl;
 
     TFile *fout = new TFile( Form("makehisto_%s.root", dataTYPE),"recreate");
     LOG("output file : %s", fout->GetName());
@@ -1651,4 +1419,10 @@ void Loop(Int_t extracut, const char* dataERA, const char* tagALGO, const char* 
 
     fout->Close();
     if ( processTag == 0 ) std::cerr << Form("input data type '%s' is wrong. Please check!\n", dataTYPE);
+}
+
+int main(int argc, char* argv[])
+{
+    Loop( std::stoi(argv[1]),argv[2],argv[3],argv[4], argv[5]);
+    return 0;
 }
