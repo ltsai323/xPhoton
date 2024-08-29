@@ -1,0 +1,114 @@
+#!/usr/bin/env sh
+function the_exit()
+{ echo "$1";exit; }
+
+function change_running_location()
+{
+    echo "change_running_location start..."
+    outputLABEL=$1
+    if [ "$2" == "-1" ]; then return 0; fi # running in test mode
+    mkdir -p "$outputLABEL" ; cd "$outputLABEL" || the_exit "cd to $outputLABEL failed"
+    echo "change directory to $PWD"
+    #for usedfile in ../{*.h,*.C}; do ln -s $usedfile; done
+    echo "change_running_location end..."
+}
+function tidy_up_working_area()
+{
+    echo "tidy_up_working_area start..."
+    outputFOLDER=$1
+    current_folder=`realpath .`
+    current_foldername=`basename $current_folder`
+    echo "[tidyup] mv $current_folder $outputFOLDER"
+    #if [ -e "$outputFOLDER/$current_folder" ];then the_exit "output file existed. Nothing put to storage"; fi
+    if [ -e "$outputFOLDER/$current_foldername" ];then the_exit "output file existed. Nothing put to storage"; fi
+    mv $current_folder $outputFOLDER
+    echo "tidy_up_working_area end..."
+    echo "[output] files are stored at $outputFOLDER"
+}
+#function execute_root()
+#{
+#executable_C=$1
+#logFILE=$2
+#extraCUT=$3
+#dataERA=$4
+#tagALGO=$5
+#dataTYPE=$6
+#rootFILE=$7
+#
+## root -b > $logFILE 2>&1 <<EOF
+## .L $inputCODE
+## Loop($extraCUT, "$dataERA", "$tagALGO", "$dataTYPE", "$rootFILE");
+## EOF
+#../makehisto.exe $extraCUT $dataERA $tagALGO $dataTYPE $rootFILE $logFILE 2>&1
+#}
+
+function main_code()
+{
+num=$1
+tagALGO=$2
+outputLABEL=$3
+outputFOLDER=`realpath $4`
+orig_path=$PWD
+
+
+inputCODE=makehisto.C
+
+g++ `root-config --libs --cflags` \
+    -I/wk_cms3/ltsai/wk_cms/ltsai/github/xPhoton/MyCommonTools/cpp/ptbin_definitions/ \
+    $inputCODE -O3 -o makehisto.exe
+change_running_location $outputLABEL $num
+
+#### compile before execution
+#echo "[CompilingCode]"
+#root -b <<EOF
+#.L ${inputCODE}+
+#EOF
+#echo "[CodeCompiled]"
+### valid dataEra = "2016ReReco", "UL2016PreVFP", "UL2016PostVFP", "UL2017", "UL2018"
+dataERA=UL2016PostVFP
+file_data=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/data.root
+file_sign=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/sig.madgraph.root
+file_fake=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/qcd.madgraph.root
+#execute_root $inputCODE log_data $num $dataERA $tagALGO data $file_data &
+#execute_root $inputCODE log_gjet $num $dataERA $tagALGO gjet $file_sign &
+#execute_root $inputCODE log_QCD  $num $dataERA $tagALGO QCD  $file_fake &
+../makehisto.exe $num $dataERA $tagALGO data $file_data > log_data 2>&1 &
+../makehisto.exe $num $dataERA $tagALGO gjet $file_data > log_gjet 2>&1 &
+../makehisto.exe $num $dataERA $tagALGO QCD  $file_data > log_QCD  2>&1 &
+
+echo "[AllJobSentToBKG]"
+wait
+echo "[AllJobsFinished]"
+
+if [ "$num" == "-1" ]; then exit; fi
+hadd -f makehisto.root makehisto_*.root
+tidy_up_working_area $outputFOLDER
+cd $orig_path
+}
+function exec_code()
+{ main_code "$1" "$2" "$3" "$4" > "$3"_log 2>&1; }
+# test_code ignores first command
+function test_code()
+{ echo "[In Test Mode]"; main_code "-1" "$2" "$3" "$4"; }
+
+
+function link_pt_bin_definition()
+{ unlink ptbin_definitions.h; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/cpp/ptbin_definitions/$1 ptbin_definitions.h|| the_exit "link failed to $1"; }
+
+### end of function definition ###
+
+
+
+### usage
+
+#ptDEF_H=$1
+#cutIDX=$2
+#tagALGO=$3
+#outputLABEL=$4
+#outputFOLDER=$5
+#
+#link_pt_bin_definition $ptDEF_H
+#main_code $cutIDX $tagALGO $outputLABEL $outputFOLDER
+
+#link_pt_bin_definition ptbin_definitions_testmode5.h
+#main_code 5 DeepCSV DeepCSV_gjetMadgraph_cutIdx0_mergeBin_5

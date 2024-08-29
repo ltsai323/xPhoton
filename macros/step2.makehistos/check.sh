@@ -1,67 +1,17 @@
 #!/usr/bin/env sh
-# valid dataEra = "2016ReReco", "UL2016PreVFP", "UL2016PostVFP", "UL2017", "UL2018"
-function the_exit()
-{ echo "$1";exit; }
+source ./executable_with_args.sh
 
-function change_running_location()
-{
-    echo "change_running_location start..."
-    outputLABEL=$1
-    if [ "$2" == "-1" ]; then return 0; fi # running in test mode
-    mkdir -p "$outputLABEL" ; cd "$outputLABEL" || the_exit "cd to $outputLABEL failed"
-    for usedfile in ../{*.h,*.C}; do ln -s $usedfile; done
-    echo "change_running_location end..."
-}
-function tidy_up_working_area()
-{
-    echo "tidy_up_working_area start..."
-    outputFOLDER=$1
-    for usedfile in {*.h,*.C}; do unlink $usedfile; done
-    current_folder=`realpath .`
-    if [ -e "$outputFOLDER/$current_folder" ];then the_exit "output file existed. Nothing put to storage"; fi
-    mv $current_folder $outputFOLDER
-    echo "tidy_up_working_area end..."
-}
-function main_code()
-{
-num=$1
-tagALGO=$2
-outputLABEL=$3
-outputFOLDER=$4
-orig_path=$PWD
+#sh executable_with_args.sh \
+#    ptbin_definitions_testmode5.h \
+#    5 \
+#    DeepCSV \
+#    DeepCSV_gjetMadgraph_cutIdx5_mergeBin_5 \
+#    /home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/makehistos/
 
-
-inputCODE=makehisto.C
-change_running_location $outputLABEL $num
-root -b <<EOF
-.L $inputCODE
-Loop($num, "UL2016PostVFP", "DeepFlavour", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/data.root");
-Loop($num, "UL2016PostVFP", "DeepFlavour", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/sig.pythia.root");
-Loop($num, "UL2016PostVFP", "DeepFlavour", "QCD",  "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/qcd.madgraph.root");
-EOF
-
-if [ "$num" == "-1" ]; then exit; fi
-hadd -f makehisto.root makehisto_*.root
-tidy_up_working_area /wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos/
-cd $orig_path
-}
-function exec_code()
-{ main_code "$1" "$2" "$3" > "$3"_log 2>&1; }
-function test_code()
-{ main_code "-1" "$2" "$3"; }
-
-
-function link_pt_bin_definition()
-{ unlink ptbin_definitions.h; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/cpp/ptbin_definitions/$1 ptbin_definitions.h|| the_exit "link failed to $1"; }
-
-
-
-link_pt_bin_definition ptbin_definitions_testmode5.h
-#main_code 0 DeepCSV DeepCSV_gjetPythia_cutIdx0_mergeBin_Orig
-#main_code 3 DeepCSV DeepCSV_gjetPythia_cutIdx3_mergeBin_Orig
-#main_code 4 DeepCSV DeepCSV_gjetPythia_cutIdx4_mergeBin_Orig
-test_code 4 DeepCSV DeepCSV_gjetPythia_cutIdx4_mergeBin_5
-
-#main_code 5 DeepCSV DeepCSV_gjetPythia_cutIdx5_mergeBin_5
-#main_code 4 DeepFlavour DeepFlavour_gjetPythia_cutIdx4_mergeBin_5
-#main_code 5 DeepFlavour DeepFlavour_gjetPythia_cutIdx5_mergeBin_5
+link_pt_bin_definition ptbin_definitions_testmode9.h
+cutIDX=5
+tagALGO=DeepCSV
+outputLABEL=DeepCSV_gjetMadgraph_cutIdx0_mergeBin_9
+outputFOLDER=test_output/
+exec_code $cutIDX $tagALGO $outputLABEL $outputFOLDER
+#test_code $cutIDX $tagALGO $outputLABEL $outputFOLDER
