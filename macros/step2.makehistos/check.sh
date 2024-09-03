@@ -8,10 +8,27 @@ source ./executable_with_args.sh
 #    DeepCSV_gjetMadgraph_cutIdx5_mergeBin_5 \
 #    /home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/makehistos/
 
-link_pt_bin_definition ptbin_definitions_testmode9.h
-cutIDX=5
+binNUM=9
+link_pt_bin_definition ptbin_definitions_testmode${binNUM}.h
 tagALGO=DeepCSV
-outputLABEL=DeepCSV_gjetMadgraph_cutIdx0_mergeBin_9
-outputFOLDER=test_output/
-exec_code $cutIDX $tagALGO $outputLABEL $outputFOLDER
+outputFOLDER=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/makehistos/
+compile_code
+
+cutIDX=0
+outputLABEL=DeepCSV_gjetMadgraph_cutIdx${cutIDX}_mergeBin_${binNUM}
+exec_code $cutIDX $tagALGO $outputLABEL $outputFOLDER &
 #test_code $cutIDX $tagALGO $outputLABEL $outputFOLDER
+
+cutIDX=4
+outputLABEL=DeepCSV_gjetMadgraph_cutIdx${cutIDX}_mergeBin_${binNUM}
+exec_code $cutIDX $tagALGO $outputLABEL $outputFOLDER &
+
+cutIDX=5
+outputLABEL=DeepCSV_gjetMadgraph_cutIdx${cutIDX}_mergeBin_${binNUM}
+exec_code $cutIDX $tagALGO $outputLABEL $outputFOLDER &
+
+echo "[All Job submitted]"
+wait
+echo "[All Job submitted]"
+
+bark.sh 'Job Finished' 'All step2.makehisto finished'

@@ -1,118 +1,34 @@
 #!/usr/bin/env sh
-# valid dataEra = "2016ReReco", "UL2016PreVFP", "UL2016PostVFP", "UL2017", "UL2018"
-function the_exit()
-{ echo "$1";exit; }
-
-function change_running_location()
-{
-    echo "change_running_location start..."
-    outputLABEL=$1
-    if [ "$2" == "-1" ]; then return 0; fi # running in test mode
-    mkdir -p "$outputLABEL" ; cd "$outputLABEL" || the_exit "cd to $outputLABEL failed"
-    for usedfile in ../{*.h,*.C}; do ln -s $usedfile; done
-    echo "change_running_location end..."
-}
-function tidy_up_working_area()
-{
-    echo "tidy_up_working_area start..."
-    outputFOLDER=$1
-    for usedfile in {*.h,*.C}; do unlink $usedfile; done
-    current_folder=`realpath .`
-    mv $current_folder $outputFOLDER
-    echo "tidy_up_working_area end..."
-}
-function main_code()
-{
-echo "main_code start..."
-num=$1
-inputCODE=$2
-outputLABEL=$3
-outputFOLDER=$4
+source ./executable_with_args.sh
 
 
-change_running_location $outputLABEL $num
-root -b <<EOF
-.L $inputCODE
-Loop($num, "UL2016PostVFP", "data", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/data.root");
-Loop($num, "UL2016PostVFP", "gjet", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/gjet.pythia.root");
-Loop($num, "UL2016PostVFP", "QCD", "/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/qcd.madgraph.root");
-EOF
 
-if [ "$num" == "-1" ]; then exit; fi
-hadd makehisto.root makehisto_*.root
-tidy_up_working_area /wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/makehistos/
-echo "main_code end..."
-}
-function exec_code()
-{ main_code "$1" "$2" "$3" > "$3"_log 2>&1; }
-function test_code()
-{ main_code "-1" "$2" "$3"; }
+link_pt_bin_definition ptbin_definitions_testmode9.h
+exec_code 0 DeepCSV     DeepCSV_gjetMadgraph_cutIdx0_bin9 &
+exec_code 4 DeepCSV     DeepCSV_gjetMadgraph_cutIdx4_bin9 &
+exec_code 5 DeepCSV     DeepCSV_gjetMadgraph_cutIdx5_bin9 &
 
-function link_pt_bin_definition()
-{ unlink ptbin_definitions.h; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/cpp/ptbin_definitions/$1 ptbin_definitions.h|| the_exit "link failed to $1"; }
-
-
+exec_code 0 DeepFlavour DeepFlavour_gjetMadgraph_cutIdx0_bin9 &
+exec_code 4 DeepFlavour DeepFlavour_gjetMadgraph_cutIdx4_bin9 &
+exec_code 5 DeepFlavour DeepFlavour_gjetMadgraph_cutIdx5_bin9 &
+bark.sh "JobSubmitted9" "All job related to ptbin_definitions_testmode9.h submitted]"
+wait
+bark.sh "JobFinished9" "All job related to ptbin_definitions_testmode9.h finished]"
 
 link_pt_bin_definition ptbin_definitions_testmodeOrig.h
-exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_Orig&
-exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_Orig&
-exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_Orig&
-exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_Orig&
-exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_Orig&
-exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_Orig&
+exec_code 0 DeepCSV     DeepCSV_gjetMadgraph_cutIdx0_binOrig &
+exec_code 4 DeepCSV     DeepCSV_gjetMadgraph_cutIdx4_binOrig &
+exec_code 5 DeepCSV     DeepCSV_gjetMadgraph_cutIdx5_binOrig &
+
+exec_code 0 DeepFlavour DeepFlavour_gjetMadgraph_cutIdx0_binOrig &
+exec_code 4 DeepFlavour DeepFlavour_gjetMadgraph_cutIdx4_binOrig &
+exec_code 5 DeepFlavour DeepFlavour_gjetMadgraph_cutIdx5_binOrig &
+bark.sh "JobSubmittedORIG" "All job related to ptbin_definitions_testmodeOrig.h submitted]"
 wait
+bark.sh "JobFinishedORIG" "All job related to ptbin_definitions_testmodeOrig.h finished]"
 
+bark.sh "JobFinished" "massiverun.sh at step2 finished"
 
-#link_pt_bin_definition ptbin_definitions_testmode0.h
-#exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_0&
-#exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_0&
-#exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_0&
-#exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_0&
-#exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_0&
-#exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_0&
-#wait
-
-
-
-link_pt_bin_definition ptbin_definitions_testmode1.h
-exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_1&
-exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_1&
-exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_1&
-exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_1&
-exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_1&
-exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_1&
-wait
-
-
-
-link_pt_bin_definition ptbin_definitions_testmode2.h
-exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_2&
-exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_2&
-exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_2&
-exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_2&
-exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_2&
-exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_2&
-wait
-
-
-
-link_pt_bin_definition ptbin_definitions_testmode3.h
-exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_3&
-exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_3&
-exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_3&
-exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_3&
-exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_3&
-exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_3&
-wait
-
-link_pt_bin_definition ptbin_definitions_testmode5.h
-exec_code 0 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx0_mergeBin_3&
-exec_code 1 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx1_mergeBin_3&
-exec_code 2 makehistoDeepFlavour.C DeepFlavour_gjetPythia_cutIdx2_mergeBin_3&
-exec_code 0 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx0_mergeBin_3&
-exec_code 1 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx1_mergeBin_3&
-exec_code 2 makehistoDeepCSV.C DeepCSV_gjetPythia_cutIdx2_mergeBin_3&
-wait
 # real    73m22.047s
 # user    343m22.508s
 # sys     30m48.940s
