@@ -91,6 +91,23 @@ def HistSetting_UpperStyling( hist_, xlabel_='', ylabel_=''):
 
     hist_.SetStats(False)
 
+def HistSetting_Visualization_(hist, **xargs):
+    setting = 'fillCOLOR'
+    if 'fillCOLOR' in xargs: hist.SetFillColor(xargs["fillCOLOR"])
+    if 'fillSTYLE' in xargs: hist.SetFillStyle(xargs["fillSTYLE"])
+    if 'lineCOLOR' in xargs: hist.SetLineColor(xargs["lineCOLOR"])
+    if 'lineWIDTH' in xargs: hist.SetLineWidth(xargs["lineWIDTH"])
+    if 'lineSTYLE' in xargs: hist.SetLineStyle(xargs["lineSTYLE"])
+    if 'markerCOLOR' in xargs: hist.SetMarkerColor(xargs["markerCOLOR"])
+    if 'markerSIZE' in xargs: hist.SetMarkerSize(xargs["markerSIZE"])
+    if 'title' in xargs: hist.SetTitle(xargs["title"])
+
+    if 'xTITLE' in xargs: hist.GetXaxis().SetTitle(xargs["xLABEL"])
+    if 'xRANGE' in xargs: hist.GetYaxis().SetRangeUser(*xargs["xRANGE"])
+
+    if 'yTITLE' in xargs: hist.GetYaxis().SetTitle(xargs["yTITLE"])
+    if 'yRANGE' in xargs: hist.GetYaxis().SetRangeUser(*xargs["yRANGE"])
+
 def HistSetting_Visualization_MC( hist, LineColor_=3, LineWidth_=4, FillColor_=1, FillStyle_=0 ):
     hist.SetLineColor(LineColor_)
     hist.SetLineWidth(LineWidth_)
