@@ -18,11 +18,11 @@ def BUG(*args):
 def INFO(*args):
     print('[INFO]', *args)
 #from py_pt_ranges_definition import pt_ranges_test_for_merge_bin as ptbin_ranges
-from py_pt_ranges_definition import ptbin_ranges
+from py_pt_ranges_definition import PhoPtBinning
 
 def GetPtRange(ptBIN,dataERA):
     pt_bin = int(ptBIN)
-    pt_def = list(ptbin_ranges(dataERA))
+    pt_def = list(PhoPtBinning(dataERA))
     if pt_bin+1 == len(pt_def):
         return '%d<P_{T#gamma}<Inf'%(pt_def[pt_bin])
     return '%d<P_{T#gamma}<%d'%(pt_def[pt_bin],pt_def[pt_bin+1])
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     ifile = ROOT.TFile.Open(ifilename)
 
 
-    maxptbin = len( ptbin_ranges(dataEra) )
+    maxptbin = len( PhoPtBinning(dataEra) )
     with open('getdatadetail.txt','w') as ofile:
         ofile.write('pEtaBin:jEtaBin:pPtBin:dataEntries:sigInit:bkgInit:pEtaRange:jEtaRange:pPtRange\n')
         for pEtaBin in range(2):
