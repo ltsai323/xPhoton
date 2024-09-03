@@ -125,6 +125,9 @@ def executeCommandToTmp( xsweight_,
     if TESTmode:
         print(execcommand)
     else:
+        print('-'*20)
+        print(f'[Bash] {execcommand}')
+        print('-'*20)
         os.system( execcommand )
 
 def CheckWorkingDir():
