@@ -11,7 +11,11 @@ def executeCommand( inputfile_ ):
     #execfile='./exe.AppendBTagCalibration' # use makefile
     execfile='exec_AppendCTagCalibration' # use CMSSW
     command='%s {era} {ifile} %s/{newfile}' %(execfile,newfolder)
-    os.system( command.format( era=dataera, ifile=inputfile_, newfile=nodir(inputfile_) ) )
+    bashcmd=command.format( era=dataera, ifile=inputfile_, newfile=nodir(inputfile_) )
+    print('-'*20)
+    print(f'[Bash] {bashcmd}')
+    print('-'*20)
+    os.system(bashcmd)
 
 if __name__ == '__main__':
     InitLogger(level='info')

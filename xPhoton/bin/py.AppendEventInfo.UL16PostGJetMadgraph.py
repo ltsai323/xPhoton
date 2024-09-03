@@ -12,18 +12,23 @@ arg_isQCD=False
 fDict={
   "GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v17-v1":
+'../scripts/RUNbkgSumbit/bkgRunning/GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8.root'
   },
   "GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v17-v1":
+'../scripts/RUNbkgSumbit/bkgRunning/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8.root'
   },
   "GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v17-v1":
+'../scripts/RUNbkgSumbit/bkgRunning/GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8.root'
   },
   "GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v17-v1":
+'../scripts/RUNbkgSumbit/bkgRunning/GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8.root'
   },
   "GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8": {
     "v17-v1":
+'../scripts/RUNbkgSumbit/bkgRunning/GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8.root'
   }
 }
 
