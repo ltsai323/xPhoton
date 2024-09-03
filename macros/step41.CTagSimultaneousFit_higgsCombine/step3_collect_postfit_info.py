@@ -170,8 +170,8 @@ if __name__ == "__main__":
     import sys
     dataERA, inFOLDER = sys.argv[1:]
 
-    from py_pt_ranges_definition import ptbin_ranges
-    maxptbin = len( ptbin_ranges(dataERA) )
+    from py_pt_ranges_definition import PhoPtBinning
+    maxptbin = len( PhoPtBinning(dataERA) )
     csv_output = []
     for pEtaBin in range(2):
         for jEtaBin in range(2):
