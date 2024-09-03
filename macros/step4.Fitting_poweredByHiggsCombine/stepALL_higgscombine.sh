@@ -1,6 +1,6 @@
 outputLabel=$1
 inputFILE=$2
-data_era=UL2016PreVFP
+data_era=UL2016PostVFP
 
 inputfile=`realpath $inputFILE`
 if [ "$2" == "" ]; then
