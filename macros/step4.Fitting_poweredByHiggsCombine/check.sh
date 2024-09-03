@@ -1,30 +1,19 @@
 #!/usr/bin/env sh
-function the_exit()
-{ echo -e "$1";exit; }
-function link_pt_bin_definition()
-{ unlink py_pt_ranges_definition.py; ln -s $CMSSW_BASE/src/xPhoton/MyCommonTools/python/ptbin_definitions/$1 py_pt_ranges_definition.py|| the_exit "link failed to $1"; }
-function main_func()
-{
-    storageDIR=$1
-    outLABEL=$2
+source ./runfrag.sh
+storage_dir=/wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/makehistos
 
-    touch tmp_BDTFit_a ; /bin/rm -rf tmp_BDTFit*
-    inputfile=${storageDIR}/${outLABEL}/makehisto.root
-    outfolder=${storageDIR}/${outLABEL}/
+link_pt_bin_definition py_pt_ranges_definition_testmode9.py
+#main_func $storage_dir DeepCSV_gjetMadgraph_cutIdx5_mergeBin_5
+#main_func $storage_dir DeepCSV_gjetMadgraph_cutIdx0_mergeBin_9
+main_func $storage_dir DeepCSV_gjetMadgraph_cutIdx0_mergeBin_9
+bark.sh 'Job1 Finished' 'DeepCSV_gjetMadgraph_cutIdx0_mergeBin_9'
+main_func $storage_dir DeepCSV_gjetMadgraph_cutIdx4_mergeBin_9
+bark.sh 'Job2 Finished' 'DeepCSV_gjetMadgraph_cutIdx4_mergeBin_9'
+main_func $storage_dir DeepCSV_gjetMadgraph_cutIdx5_mergeBin_9
+bark.sh 'Job3 Finished' 'DeepCSV_gjetMadgraph_cutIdx5_mergeBin_9'
+bark.sh 'All job finished' 'check.sh in step4.Fitting_poweredByHiggsCombine'
 
-    echo input file    : $inputfile
-    echo output folder : $outfolder
-    sh stepALL_higgscombine.sh $outLABEL $inputfile || the_exit "=====\n-----\nhiggs combine running failed\n-----\n======"
-    #mv $outLABEL/* $outfolder
-    #rmdir $outLABEL
-    echo "testing finished"
-}
 
-storage_dir=/wk_cms3/ltsai/wk_cms/ltsai/ReceivedFile/GJet/latestsample/UL2016PreVFP/makehistos
 
-link_pt_bin_definition py_pt_ranges_definition_testmode5.py
-#main_func $storage_dir DeepCSV_gjetPythia_cutIdx4_mergeBin_5
-main_func $storage_dir DeepCSV_gjetPythia_cutIdx5_mergeBin_5
-#main_func $storage_dir DeepFlavour_gjetPythia_cutIdx4_mergeBin_5
-#main_func $storage_dir DeepFlavour_gjetPythia_cutIdx5_mergeBin_5
 
+# code cannot be paralelly executed
