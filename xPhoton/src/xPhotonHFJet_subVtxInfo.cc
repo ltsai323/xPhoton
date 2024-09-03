@@ -59,6 +59,7 @@ std::vector<int> GenEleIdxs( TreeReader* event );
 int TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std::vector<int> phomcid );
 int TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid );
 void FillStatus(TH1* hist, float val) { hist->Fill(val+0.001); }
+int TruthMatch_GenJet( TreeReader* event, const TLorentzVector& genPHO, const int phoMOMpid );
 };
 using namespace _xphotonFunc_;
 
@@ -747,6 +748,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         Int_t*   mcPID =0;    
         Int_t*   mcMomPID=0;  
         Int_t*   mcGMomPID=0; 
+        Float_t* mcE       =0;
         Float_t* mcPt      =0;
         Float_t* mcEta     =0;
         Float_t* mcPhi     =0;
@@ -781,6 +783,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             mcPID     = data.GetPtrInt("mcPID");
             mcMomPID  = data.GetPtrInt("mcMomPID");
             mcGMomPID = data.GetPtrInt("mcGMomPID");
+            mcE       = data.GetPtrFloat("mcE");
             mcPt      = data.GetPtrFloat("mcPt");
             mcEta     = data.GetPtrFloat("mcEta");
             mcPhi     = data.GetPtrFloat("mcPhi");
@@ -1027,10 +1030,13 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         std::map<int,float> mcCalIso04;
         std::map<int,float> mcTrkIso04;
         std::map<int,int> mcmompid;
+        std::map<int, TLorentzVector> matchedPho;
+        std::map<int, int> genMatchedJetIdx;
 
         mcpt.clear();
         mceta.clear();
         mcphi.clear();
+        matchedPho.clear();
 
         //h_npho->Fill(nPho);
         int nmatch=0;
@@ -1045,7 +1051,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
         }
 
 
-        if( data.HasMC()) { 
+        if( data.HasMC()) {
             /* find target gen particles */
             vector<int> phomcid = GenPhoIdxs(&data);
             vector<int> muonmcid = GenMuonIdxs(&data);
@@ -1063,6 +1069,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 int tmp_isMatchedEle = 0;
                 int tmp_isConverted = 0;
 
+                double tmp_mcE_ = -999.;
                 double tmp_mcPt_ = -999.;
                 double tmp_mcEta_ = -999.;
                 double tmp_mcPhi_ = -999.;
@@ -1076,6 +1083,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 if ( mcIdx != -1 )
                 {
                     tmp_isMatched = 1;
+                    tmp_mcE_   = mcE[mcIdx];
                     tmp_mcPt_  = mcPt[mcIdx];
                     tmp_mcEta_ = mcEta[mcIdx];
                     tmp_mcPhi_ = mcPhi[mcIdx];
@@ -1120,20 +1128,21 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                 match_ele[recoPhoIdx]=tmp_isMatchedEle;
                 converted[recoPhoIdx]=tmp_isConverted;
                 mcmompid[recoPhoIdx]=tmp_momid;
-            }
+                matchedPho[recoPhoIdx] = TLorentzVector();
+                if ( tmp_isMatched )
+                    matchedPho[recoPhoIdx].SetPtEtaPhiE(tmp_mcPt_, tmp_mcEta_, tmp_mcPhi_, tmp_mcE_);
 
-            //if(gjet15to6000 == 0) {
-            //    h_truepho->Fill(nmatch+0.001);
-            //    h_convpho->Fill(nconv+0.001);
-            //}
-        }
+                genMatchedJetIdx[recoPhoIdx] = TruthMatch_GenJet(&data, matchedPho[recoPhoIdx], mcmompid[recoPhoIdx]);
+            } // end of recoPho gen matching
+
+        } // end of data.hasMC()
 
 
         //int npj=0;
         //int npp=0;
         tp_rho->Fill(nVtx_, rho_, xsweight);
         h2_nVtx_rho->Fill(nVtx_,rho_,xsweight);
-        if( data.HasMC()) { 
+        if( data.HasMC()) {
             if(nmatch_EB==1 && nmatch_EE==0) tp_rho_EB->Fill(nVtx_, rho_, xsweight);
             if(nmatch_EB==0 && nmatch_EE==1) tp_rho_EE->Fill(nVtx_, rho_, xsweight);
         }
@@ -1150,7 +1159,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
 
         vector <int> photon_list;
         //vector <int> photon_jetID;
-        int jet_index=-1;
+        int recoLeadingJetIdx=-1;
 
 
         //JETPD find leading jets fired trigger
@@ -1158,7 +1167,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             for(int ijet=0; ijet<nJet; ijet++) {
                 if(jetFiredTrgs!=0){
                     trigger_jetP4.SetPtEtaPhiE(jetPt[ijet], jetEta[ijet], jetPhi[ijet], jetEn[ijet]);
-                    jet_index= ijet;
+                    recoLeadingJetIdx= ijet;
                     break;
                 }
             }
@@ -1278,7 +1287,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
                     leadingPhoP4.SetPtEtaPhiM(phoEt[photon_list[0]], phoEta[photon_list[0]], phoPhi[photon_list[0]], 0.);
                     h_dR_phojet->Fill(leadingPhoP4.DeltaR(jetP4));
                     if(leadingPhoP4.DeltaR(jetP4)>0.4){
-                        if(jet_index<0) { jet_index = j; }
+                        if(recoLeadingJetIdx<0) { recoLeadingJetIdx = j; }
                         else { LOG_DEBUG("more than 1 jet pass the selection. Please check!\n"); }
                     }	    
                 }    
@@ -1299,6 +1308,7 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             for ( unsigned int midx = 0; midx < phomcid.size(); ++midx )
             {
                 int mcIdx = phomcid[midx];
+                const int jet_index = recoLeadingJetIdx;
 
                 float jet_pt_ = jet_index>=0 ? jetPt[jet_index] : -1;
                 float jet_eta_= jet_index>=0 ? jetEta[jet_index]: -1;
@@ -1451,6 +1461,14 @@ void xPhotonHFJet(vector<string> pathes, Char_t oname[200], const std::string da
             //int ipho = photon_list[ii];
             phoFiredTrgs_ = phoFiredTrgs[ipho];
             phoP4.SetPtEtaPhiM(phoEt[ipho], phoEta[ipho], phoPhi[ipho], 0.);
+
+            int jet_index = recoLeadingJetIdx;
+
+            // if there exists gen jet matched to gen photon
+            auto genMatchedJetIter = genMatchedJetIdx.find(ipho);
+            if ( genMatchedJetIter != genMatchedJetIdx.end() )
+                jet_index = genMatchedJetIter->second;
+                
             if(jet_index>=0) {
                 jetP4.SetPtEtaPhiE(jetPt[jet_index], jetEta[jet_index], jetPhi[jet_index], jetEn[jet_index]);
 
@@ -1954,6 +1972,31 @@ int _xphotonFunc_::TruthMatch_GenPhoton( TreeReader* event, int recoPhoIdx, std:
     }
     return -1;
 }
+int _xphotonFunc_::TruthMatch_GenJet( TreeReader* event, const TLorentzVector& genPHO, const int phoMOMpid )
+{
+    Float_t* jetGenJetPt = event->GetPtrFloat("jetGenJetPt");
+    Float_t* jetGenJetEta = event->GetPtrFloat("jetGenJetEta");
+    Float_t* jetGenJetPhi = event->GetPtrFloat("jetGenJetPhi");
+    Float_t* jetGenJetEn = event->GetPtrFloat("jetGenJetEn");
+    Int_t* jetGenPartonID = event->GetPtrInt("jetGenPartonID");
+    Int_t* jetGenPartonMomID = event->GetPtrInt("jetGenPartonMomID");
+    Int_t nJet = event->GetInt("nJet");
+
+    if ( genPHO.E() == 0 ) return -1; // Invalid gen photon, no matching needed.
+
+    for ( int iJet = 0; iJet < nJet; ++iJet )
+    {
+        if ( jetGenPartonID[iJet] < -90 ) continue; // failed offical gen parton matchiing.
+        TLorentzVector genJet;
+        genJet.SetPtEtaPhiE( jetGenJetPt[iJet], jetGenJetEta[iJet], jetGenJetPhi[iJet], jetGenJetEn[iJet] );
+        double deltaPt = (genPHO.Pt() - genJet.Pt()) / genPHO.Pt();
+        if ( deltaPt < 0.5 && genJet.DeltaR(genPHO) < 0.15 ) continue; // remove overlapping jet-pho pair.
+
+        if ( phoMOMpid == jetGenPartonMomID[iJet] ) return iJet;
+    }
+    return -1;
+}
+
 int _xphotonFunc_::TruthMatch_GenConvertedPho( TreeReader* event, int recoPhoIdx, std::vector<int> elemcid )
 {
     Float_t* phoEt  = event->GetPtrFloat("phoEt");
