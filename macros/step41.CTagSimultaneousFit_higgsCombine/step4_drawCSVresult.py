@@ -66,8 +66,8 @@ if __name__ == "__main__":
     import sys
     dataERA, csvFILE, outTAG = sys.argv[1:] if len(sys.argv) >3 else ('UL2016PreVFP', 'UL2016.CTag_SimulFit.csv', 'hi')
 
-    from py_pt_ranges_definition import ptbin_ranges
-    pt_def = ptbin_ranges(dataERA)
+    from py_pt_ranges_definition import PhoPtBinning
+    pt_def = PhoPtBinning(dataERA)
     print(f'\n\n len of pt range is {len(pt_def)}\n\n')
 
     # suppress useless too small float point warning.
