@@ -18,11 +18,11 @@ def BUG(*args):
         print('[py_GetDataDetail-BUG]', *args)
 def LOG(*args):
     print('[py_GetDataDetail-LOG]', *args)
-from py_pt_ranges_definition import ptbin_ranges
+from py_pt_ranges_definition import PhoPtBinning
 
 def GetPtRange(ptBIN,dataERA):
     pt_bin = int(ptBIN)
-    pt_def = list(ptbin_ranges(dataERA))
+    pt_def = list(PhoPtBinning(dataERA))
     if pt_bin+1 == len(pt_def):
         return '%d<P_{T#gamma}<Inf'%(pt_def[pt_bin])
     return '%d<P_{T#gamma}<%d'%(pt_def[pt_bin],pt_def[pt_bin+1])
@@ -58,15 +58,15 @@ def joIN(*argv):
 
 if __name__ == "__main__":
     import os
-    dat_file_name = 'UL2016PreVFP.data.bkg.dat'
+    #dat_file_name = 'UL2016PreVFP.data.bkg.dat'
     try:
         dataEra, inFOLDER= os.sys.argv[1:]
         inROOTfile = f'{inFOLDER}/makehisto.root'
-        inDATbkgYIELD = f'{inFOLDER}/{dat_file_name}'
+        inDATbkgYIELD = f'{inFOLDER}/{dataEra}.data.bkg.dat'
         if not os.path.exists(inROOTfile):
             raise IOError(f'input folder {inFOLDER} does not contain makehisto.root')
         if not os.path.exists(inDATbkgYIELD):
-            raise IOError(f'input folder {inFOLDER} does not contain {dat_file_name}')
+            raise IOError(f'input folder {inFOLDER} does not contain {inDATbkgYIELD}')
 
     except ValueError as vErr:
         PrintHelp(vErr)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
 
     csv_output = []
-    maxptbin = len( ptbin_ranges(dataEra) )
+    maxptbin = len( PhoPtBinning(dataEra) )
     for pEtaBin in range(2):
         for jEtaBin in range(2):
             for pPtBin in range(maxptbin):
