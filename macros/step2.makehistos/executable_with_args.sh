@@ -9,7 +9,6 @@ function change_running_location()
     if [ "$2" == "-1" ]; then return 0; fi # running in test mode
     mkdir -p "$outputLABEL" ; cd "$outputLABEL" || the_exit "cd to $outputLABEL failed"
     echo "change directory to $PWD"
-    #for usedfile in ../{*.h,*.C}; do ln -s $usedfile; done
     echo "change_running_location end..."
 }
 function tidy_up_working_area()
@@ -19,29 +18,20 @@ function tidy_up_working_area()
     current_folder=`realpath .`
     current_foldername=`basename $current_folder`
     echo "[tidyup] mv $current_folder $outputFOLDER"
-    #if [ -e "$outputFOLDER/$current_folder" ];then the_exit "output file existed. Nothing put to storage"; fi
     if [ -e "$outputFOLDER/$current_foldername" ];then the_exit "output file existed. Nothing put to storage"; fi
     mv $current_folder $outputFOLDER
     echo "tidy_up_working_area end..."
     echo "[output] files are stored at $outputFOLDER"
 }
-#function execute_root()
-#{
-#executable_C=$1
-#logFILE=$2
-#extraCUT=$3
-#dataERA=$4
-#tagALGO=$5
-#dataTYPE=$6
-#rootFILE=$7
-#
-## root -b > $logFILE 2>&1 <<EOF
-## .L $inputCODE
-## Loop($extraCUT, "$dataERA", "$tagALGO", "$dataTYPE", "$rootFILE");
-## EOF
-#../makehisto.exe $extraCUT $dataERA $tagALGO $dataTYPE $rootFILE $logFILE 2>&1
-#}
 
+function compile_code()
+{
+inputCODE=makehisto.C
+
+g++ `root-config --libs --cflags` \
+    -I/wk_cms3/ltsai/wk_cms/ltsai/github/xPhoton/MyCommonTools/cpp/ptbin_definitions/ \
+    $inputCODE -O3 -o makehisto.exe
+}
 function main_code()
 {
 num=$1
@@ -51,30 +41,18 @@ outputFOLDER=`realpath $4`
 orig_path=$PWD
 
 
-inputCODE=makehisto.C
-
-g++ `root-config --libs --cflags` \
-    -I/wk_cms3/ltsai/wk_cms/ltsai/github/xPhoton/MyCommonTools/cpp/ptbin_definitions/ \
-    $inputCODE -O3 -o makehisto.exe
+#### compile makehisto.exe before execution
 change_running_location $outputLABEL $num
 
-#### compile before execution
-#echo "[CompilingCode]"
-#root -b <<EOF
-#.L ${inputCODE}+
-#EOF
-#echo "[CodeCompiled]"
 ### valid dataEra = "2016ReReco", "UL2016PreVFP", "UL2016PostVFP", "UL2017", "UL2018"
 dataERA=UL2016PostVFP
 file_data=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/data.root
 file_sign=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/sig.madgraph.root
 file_fake=/home/ltsai/ReceivedFile/GJet/latestsample/UL2016PostVFP/qcd.madgraph.root
-#execute_root $inputCODE log_data $num $dataERA $tagALGO data $file_data &
-#execute_root $inputCODE log_gjet $num $dataERA $tagALGO gjet $file_sign &
-#execute_root $inputCODE log_QCD  $num $dataERA $tagALGO QCD  $file_fake &
+
 ../makehisto.exe $num $dataERA $tagALGO data $file_data > log_data 2>&1 &
-../makehisto.exe $num $dataERA $tagALGO gjet $file_data > log_gjet 2>&1 &
-../makehisto.exe $num $dataERA $tagALGO QCD  $file_data > log_QCD  2>&1 &
+../makehisto.exe $num $dataERA $tagALGO gjet $file_sign > log_gjet 2>&1 &
+../makehisto.exe $num $dataERA $tagALGO QCD  $file_fake > log_QCD  2>&1 &
 
 echo "[AllJobSentToBKG]"
 wait
