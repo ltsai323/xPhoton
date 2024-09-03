@@ -1,6 +1,6 @@
 outputLABEL=$1
 inputFOLDER=$2
-data_era=UL2016PreVFP
+data_era=UL2016PostVFP
 
 ### note: define py_pt_definition.py before execute this code  ###
 
@@ -21,12 +21,23 @@ tmp_folder=out_fit_result
 touch $tmp_folder; /bin/rm -r $tmp_folder
 mkdir -p $tmp_folder
 echo [$outputLABEL] processing step2: combine in single bin.
+function submit_pt_bins() {
+pETAbin=$1
+jETAbin=$2
+tmpFOLDER=$3
 for pPtBin in {0..20}; do # assigned binning > actual binning is allowed
-    for pEtaBin in {0..1}; do
-        for jEtaBin in {0..1}; do
-logfile=log_${pEtaBin}_${jEtaBin}_${pPtBin}
-sh step2_combine_single_bin.sh $pEtaBin $jEtaBin $pPtBin getdatadetail.csv $tmp_folder/ > $logfile 2>&1
-done; done& done; wait
+logfile=log_${pETABin}_${jETABin}_${pPtBin}
+sh step2TEST_combine_single_bin.sh $pETAbin $jETAbin $pPtBin getdatadetail.csv $tmpFOLDER/
+done
+}
+for pEtaBin in {0..1}; do
+    for jEtaBin in {0..1}; do
+        echo "[SubmitPtBins] Using pEtaBin $pEtaBin and jEtaBin $jEtaBin"
+        submit_pt_bins $pEtaBin $jEtaBin $tmp_folder &
+done; done;
+echo [$outputLABEL] All pt binning jobs submitted
+wait
+echo [$outputLABEL] All pt binning jobs executed
 
 cmd_exec python3 step3_collect_postfit_info.py $data_era $tmp_folder/ || the_exit 'step3 execution failed'
 cmd_exec python3 step31_extractFitValue_toCSV.py ${data_era}.CTag_SimulFit $tmp_folder/ || the_exit 'step31 execution failed'
